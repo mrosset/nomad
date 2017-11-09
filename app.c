@@ -57,17 +57,39 @@ on_key_press (GtkWidget * widget, GdkEventKey * event)
     {
 
       if (!gtk_widget_is_visible (minbuf))
-        {
-          gtk_widget_show (minbuf);
-          gtk_widget_grab_focus (minbuf);
-          return TRUE;
-        }
+  {
+    gtk_widget_show (minbuf);
+    gtk_widget_grab_focus (minbuf);
+    return TRUE;
+  }
 
-      if (gtk_widget_is_visible (minbuf))
-        {
-          gtk_widget_hide (minbuf);
-          return TRUE;
-        }
+      if (gtk_widget_is_visible (minbuf) && gtk_widget_is_focus (minbuf))
+  {
+    gtk_widget_hide (minbuf);
+    return TRUE;
+  }
+
+
+      if (gtk_widget_is_visible (minbuf) && !gtk_widget_is_focus (minbuf))
+  {
+    gtk_widget_grab_focus (minbuf);
+    return TRUE;
+  }
+
+      return FALSE;
+    }
+
+  if (event->keyval == GDK_KEY_x &&
+      (event->state & modifiers) == GDK_MOD1_MASK)
+    {
+
+      if (!gtk_widget_is_visible (minbuf))
+  {
+    gtk_widget_show (minbuf);
+    gtk_widget_grab_focus (minbuf);
+    return TRUE;
+  }
+
       return FALSE;
     }
 
@@ -148,7 +170,7 @@ wemacs_activate (GtkApplication * app, gpointer user_data)
 
   // Box
   box = gtk_box_new (TRUE, 1);
-
+  gtk_box_set_homogeneous (GTK_BOX (box), FALSE);
   // Modeline
   modeline = gtk_label_new ("");
 

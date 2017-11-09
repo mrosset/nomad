@@ -8,12 +8,16 @@
 
 (package-initialize)
 
+(setq-default indent-tabs-mode nil)
+(setq tab-width 4)
+(defvaralias 'c-basic-offset 'tab-width)
+
+;; Keybindings
 (global-set-key (kbd "C-x b") 'ibuffer)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
-
 (define-key emacs-lisp-mode-map (kbd "C-c C-c") 'eval-defun)
 
-(add-hook 'after-init-hook 'global-company-mode)
+(global-company-mode)
 
 (setq company-idle-delay nil
       company-minimum-prefix-length 2)
@@ -28,12 +32,15 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
+
 (setq
  geiser-guile-binary "guile2.2"
  geiser-active-implementations '(guile)
  geiser-default-implimentation 'guile)
 
+(find-file "~/session.scm")
 (geiser-connect-local 'guile "/tmp/wemacs")
+(other-window -1)
 
 (eldoc-mode)
 (save-place-mode 1)
@@ -43,12 +50,7 @@
 ;; This buffer is for text that is not saved, and for Guile Scheme evaluation.
 ;; To create a file, visit it with C-x C-f and enter text in its buffer.\n\n")
 
-(switch-to-buffer "*scratch*")
-(delete-other-windows)
-(scheme-mode)
-
-
-;; Mine on't distribute
+;; My custom don't distribute
 (require 'evil)
 (evil-mode 1)
 
