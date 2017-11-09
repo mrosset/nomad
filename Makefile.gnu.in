@@ -1,0 +1,10 @@
+# The configure script fills in these values.
+CC=@CC@
+CFLAGS=@GUILE_CFLAGS@
+LIBS=@GUILE_LIBS@
+
+wemacs: wemacs.o
+    ${CC} wemacs.o ${LIBS} -o wemacs
+
+wemacs.o: wemacs.c
+    ${CC} -c ${CFLAGS} wemacs.c
