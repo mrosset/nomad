@@ -11,13 +11,16 @@ struct _WemacsAppWindow
 G_DEFINE_TYPE(WemacsAppWindow, wemacs_app_window, GTK_TYPE_APPLICATION_WINDOW);
 
 static void
-wemacs_app_window_init (WemacsAppWindow *app)
+wemacs_app_window_init (WemacsAppWindow *win)
 {
+  gtk_widget_init_template (GTK_WIDGET (win));
 }
 
 static void
 wemacs_app_window_class_init (WemacsAppWindowClass *class)
 {
+gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
+                                               "/org/gnu/wemacseapp/window.ui");
 }
 
 WemacsAppWindow *

@@ -11,17 +11,21 @@ test: all
 
 all: $(OUT)
 
-%.o: %.c Makefile 
+%.o: %.c Makefile resources.c
 	@$(CC) -c -o $@ $(CFLAGS) $<
 	@printf "CC\t $@\n"
 
-$(OUT): Makefile bin $(OBJS)
+$(OUT): Makefile bin $(OBJS) resources.o
 	@$(CC) -o $@ $(OBJS) $(LIBS)
 	@printf "LD\t $@\n"
 
 clean:
-	rm -f $(OBJS)
-	rm -f exampleapp
+	-rm -f $(OBJS)
+	-rm -f $(OUT)
+	-rm resources.c
+
+resources.c: window.ui
+	glib-compile-resources .gresource.xml --target=resources.c --generate-source
 
 bin:
 	mkdir bin
