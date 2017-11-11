@@ -10,8 +10,10 @@ bin:
 	-mkdir bin
 
 clean:
-	-rm -r bin *.o 
+	-rm -r bin
 
 test:
 	TERM=xterm-256color bin/wemacs -L $(PWD) -l test.scm -c "(start-repl) (wemacs-start)"
 
+bootstrap:
+	autoreconf -ivm

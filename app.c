@@ -112,7 +112,7 @@ fork_vte_child (VteTerminal * vte, gpointer data)
 
         gchar *pwd = g_get_current_dir ();
 
-        char *argv[] = { "emacs", "-Q", "-nw", "-l", EMACS_INIT, NULL };
+        char *argv[] = { "emacs", "-nw", "-l", EMACS_INIT, NULL };
         /* char *argv[] = { "bash", "--login", NULL }; */
 
         envv = g_get_environ ();

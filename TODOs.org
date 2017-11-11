@@ -1,4 +1,6 @@
 * TODO Convert to autotools
+** DONE autoconf initial
+** TODO automake
 * TODO Use GTK application classes
 ** TODO Decrease the size of vte widget
 * TODO Fancy html startup page?

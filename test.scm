@@ -10,7 +10,6 @@
   (lambda()
     (if (file-exists? socket-path)
         (delete-file socket-path))
-
     (spawn-server
      (make-unix-domain-server-socket #:path socket-path))))
 
