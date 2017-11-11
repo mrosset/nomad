@@ -1,3 +1,4 @@
+/* -*- coding: utf-8 -*- */
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtkx.h>
 #include <libguile.h>
@@ -18,7 +19,7 @@ my_getsize (GtkWidget * widget, GtkAllocation * allocation, void *data)
 
 static void
 web_view_load_changed (WebKitWebView * web_view,
-           WebKitLoadEvent load_event, gpointer user_data)
+											 WebKitLoadEvent load_event, gpointer user_data)
 {
   GtkLabel *label = GTK_LABEL (user_data);
   const gchar *uri = webkit_web_view_get_uri (web_view);
@@ -54,27 +55,27 @@ on_key_press (GtkWidget * widget, GdkEventKey * event)
 
   if (event->keyval == GDK_KEY_m &&
       (event->state & modifiers) == GDK_MOD1_MASK)
-    {
+		{
 
       if (!gtk_widget_is_visible (minbuf))
-  {
-    gtk_widget_show (minbuf);
-    gtk_widget_grab_focus (minbuf);
-    return TRUE;
-  }
+				{
+					gtk_widget_show (minbuf);
+					gtk_widget_grab_focus (minbuf);
+					return TRUE;
+				}
 
       if (gtk_widget_is_visible (minbuf) && gtk_widget_is_focus (minbuf))
-  {
-    gtk_widget_hide (minbuf);
-    return TRUE;
-  }
+				{
+					gtk_widget_hide (minbuf);
+					return TRUE;
+				}
 
 
       if (gtk_widget_is_visible (minbuf) && !gtk_widget_is_focus (minbuf))
-  {
-    gtk_widget_grab_focus (minbuf);
-    return TRUE;
-  }
+				{
+					gtk_widget_grab_focus (minbuf);
+					return TRUE;
+	 			}
 
       return FALSE;
     }
@@ -84,11 +85,11 @@ on_key_press (GtkWidget * widget, GdkEventKey * event)
     {
 
       if (!gtk_widget_is_visible (minbuf))
-  {
-    gtk_widget_show (minbuf);
-    gtk_widget_grab_focus (minbuf);
-    return TRUE;
-  }
+				{
+					gtk_widget_show (minbuf);
+					gtk_widget_grab_focus (minbuf);
+					return TRUE;
+				}
 
       return FALSE;
     }
@@ -104,33 +105,32 @@ child_setup (void *data)
 void
 fork_vte_child (VteTerminal * vte, gpointer data)
 {
-  const char *home;
-  char **envv;
+        const char *home;
+        char **envv;
 
-  g_autoptr (GError) error = NULL;
+        g_autoptr (GError) error = NULL;
 
-  gchar *pwd = g_get_current_dir ();
+        gchar *pwd = g_get_current_dir ();
 
-  char *argv[] = { "bash", "-c", "emacs -Q -nw -l " EMACS_INIT, NULL };
-  /* char *argv[] = { "bash", "--login", NULL }; */
+        char *argv[] = { "emacs", "-Q", "-nw", "-l", EMACS_INIT, NULL };
+        /* char *argv[] = { "bash", "--login", NULL }; */
 
-  home = g_get_home_dir ();
-  envv = g_get_environ ();
+        envv = g_get_environ ();
 
-  /* vte_terminal_fork_command_full (VTE_TERMINAL (vte), VTE_PTY_DEFAULT, home, */
-  /*         argv, envv, */
-  /*         G_SPAWN_DEFAULT | G_SPAWN_SEARCH_PATH, */
-  /*         child_setup, 0, NULL, &error); */
+        /* vte_terminal_fork_command_full (VTE_TERMINAL (vte), VTE_PTY_DEFAULT, home, */
+        /*         argv, envv, */
+        /*         G_SPAWN_DEFAULT | G_SPAWN_SEARCH_PATH, */
+        /*         child_setup, 0, NULL, &error); */
 
-  vte_terminal_spawn_async (vte,
-          VTE_PTY_DEFAULT,
-          home,
-          argv,
-          envv,
-          G_SPAWN_DEFAULT | G_SPAWN_SEARCH_PATH_FROM_ENVP,
-          NULL, 0, NULL, -1, NULL, NULL, NULL);
+        vte_terminal_spawn_async (vte,
+                                  VTE_PTY_DEFAULT,
+                                  NULL,
+                                  argv,
+                                  envv,
+                                  G_SPAWN_DEFAULT | G_SPAWN_SEARCH_PATH_FROM_ENVP,
+                                  NULL, 0, NULL, -1, NULL, NULL, NULL);
 
-  g_free (pwd);
+        g_free (pwd);
 }
 
 GtkWidget *

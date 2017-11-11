@@ -1,0 +1,17 @@
+# -*- mode: makefile; -*-
+CFLAGS = @guile_CFLAGS@ @gtk_CFLAGS@ @webkit_CFLAGS@ @vte_CFLAGS@
+LIBS   = @guile_LIBS@ @gtk_LIBS@ @webkit_LIBS@ @vte_LIBS@
+SRC    = $(wildcard *.c)
+
+bin/wemacs: $(SRC) bin Makefile
+	$(CC) $(CFLAGS) $(LIBS) $(SRC) -o $@
+
+bin:
+	-mkdir bin
+
+clean:
+	-rm -r bin *.o 
+
+test:
+	TERM=xterm-256color bin/wemacs -L $(PWD) -l test.scm -c "(start-repl) (wemacs-start)"
+

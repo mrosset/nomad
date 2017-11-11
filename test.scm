@@ -23,6 +23,9 @@
 (define (forward)
   (web-view-go-forward))
 
+(define (home)
+  (web-view-load-uri "https://www.gnu.org/software/emacs"))
+
 (define (reload)
   (web-view-reload))
 
