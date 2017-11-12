@@ -1,6 +1,6 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*-  */
 /*
- * main.c 
+ * scm.h
  * Copyright (C) 2017 Mike Rosset <mike.rosset@gmail.com>
  * 
  * wemacs is free software: you can redistribute it and/or modify it
@@ -16,17 +16,11 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <libguile.h>
-#include <gtk/gtk.h>
+//#ifndef GUILE_H
+//#define GUILE_H
 
-#include "wemacsapp.h"
-#include "scheme.h"
+#define WEMACS_VERSION "0.1"
 
-int
-main (int argc, char *argv[])
-{
-  scm_with_guile (&register_functions, NULL);
-  scm_shell (argc, argv);
- //return g_application_run (G_APPLICATION (wemacs_app_new ()), argc, argv);
-  
-}
+void * register_functions (void *);
+
+//#endif

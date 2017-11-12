@@ -1,28 +1,32 @@
 CC        = gcc
 PKGCONFIG = $(shell which pkg-config)
-CFLAGS    = $(shell $(PKGCONFIG) --cflags gtk+-3.0)
-LIBS      = $(shell $(PKGCONFIG) --libs gtk+-3.0)
+CFLAGS    = $(shell $(PKGCONFIG) --cflags gtk+-3.0 guile-2.2)
+LIBS      = $(shell $(PKGCONFIG) --libs gtk+-3.0 guile-2.2)
 SRC       = $(wildcard *.c)
 OBJS      = $(SRC:.c=.o)
-OUT       = bin/wemacs
+BIN       = bin/wemacs
+GEN       = scheme.x resources.c
 
-test: all
-	$(OUT)
+test: clean all
+	$(BIN) -l ../test.scm -c "(display (wemacs-version))"
 
-all: $(OUT)
+all: $(BIN)
 
-%.o: %.c Makefile resources.c
+%.o: %.c $(GEN) Makefile 
 	@$(CC) -c -o $@ $(CFLAGS) $<
 	@printf "CC\t $@\n"
 
-$(OUT): Makefile bin $(OBJS) resources.o
-	@$(CC) -o $@ $(OBJS) $(LIBS)
+$(BIN): Makefile bin $(OBJS)
+	$(CC) -o $@ $(OBJS) $(LIBS)
 	@printf "LD\t $@\n"
 
 clean:
 	-rm -f $(OBJS)
-	-rm -f $(OUT)
-	-rm resources.c
+	-rm -rf bin
+	-rm resources.c scheme.x
+
+scheme.x: scheme.c
+	guile-snarf -o $@ $< $(CFLAGS)
 
 resources.c: window.ui
 	glib-compile-resources .gresource.xml --target=resources.c --generate-source
