@@ -1,13 +1,23 @@
-AC_INIT([wemacs], [0.0.1], [mike.rosset@gmail.com])
+PACKAGE=emacs
+VERSION=0.1
 
-# Find a C compiler.
+AC_INIT([wemacs], [0.1], [mike.rosset@gmail.com])
+AM_INIT_AUTOMAKE([-Wall, -Werror gnu])
 AC_PROG_CC
+AC_CONFIG_HEADERS([config.h])
 
-# Check for Guile
-PKG_CHECK_MODULES([guile], [guile-2.2])
-PKG_CHECK_MODULES([gtk], [gtk+-3.0])
-PKG_CHECK_MODULES([webkit], [webkit2gtk-4.0])
-PKG_CHECK_MODULES([vte], [vte-2.91])
+#GUILE_TOOLS=guile2.2
+GUILE_PROGS
 
-# Generate a Makefile, based on the results.
-AC_OUTPUT(Makefile)
+# pkg-config modules
+PKG_CHECK_MODULES([GUILE], [guile-2.2])
+PKG_CHECK_MODULES([GTK], [gtk+-3.0])
+PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
+PKG_CHECK_MODULES([VTE], [vte-2.91])
+
+AC_CONFIG_FILES([
+ Makefile
+ src/Makefile
+])
+
+AC_OUTPUT
