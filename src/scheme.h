@@ -16,11 +16,11 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-//#ifndef GUILE_H
-//#define GUILE_H
+#ifndef GUILE_H
+#define GUILE_H
 
 #define WEMACS_VERSION "0.1"
 
 void * register_functions (void *);
 
-//#endif
+#endif

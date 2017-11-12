@@ -2,7 +2,8 @@ PACKAGE=emacs
 VERSION=0.1
 
 AC_INIT([wemacs], [0.1], [mike.rosset@gmail.com])
-AM_INIT_AUTOMAKE([-Wall, -Werror gnu])
+AM_INIT_AUTOMAKE([-Wall -Werror gnu silent-rules])
+AM_SILENT_RULES([yes])
 AC_PROG_CC
 AC_CONFIG_HEADERS([config.h])
 
