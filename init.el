@@ -18,6 +18,3 @@
    geiser-default-implimentation 'guile))
 
 (geiser-connect-local 'guile "/tmp/wemacs")
-(find-file-noselect "~/session.scm")
-(delete-other-windows)
-(display-about-screen)
