@@ -1,6 +1,16 @@
-* TODO Convert to autotools
+* DONE Convert to autotools
 ** DONE autoconf initial
-** TODO automake
+** DONE automake
 * TODO Use GTK application classes
-** TODO Decrease the size of vte widget
+classes created for application and window, now we need to peice
+together how we want to handle our controls.
+
+* Webkit View
+
+** Vte Terminal
+
+** Decrease the size of vte widget
+
+* DOM link hinting
+
 * TODO Fancy html startup page?

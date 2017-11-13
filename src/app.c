@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 
-#include "wemacsapp.h"
-#include "wemacsappwin.h"
+#include "app.h"
+#include "window.h"
 
 struct _WemacsApp
 {
