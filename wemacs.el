@@ -43,7 +43,7 @@ to emacs minor-mode and melpa package"
 (defun wemacs-download ()
   "Download url to ~/Downloads.
 This is just a place holder and uses emacs url-copy-file. At one
-point we may want this to be done by webkit."
+point we may want this to be done by scheme? or webkit?."
   (interactive)
   (let* ((url (read-string "download? "))(file (file-name-nondirectory url)))
     (url-copy-file url (format "~/Downloads/%s" file))))

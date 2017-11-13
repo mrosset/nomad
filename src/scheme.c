@@ -18,37 +18,128 @@
  */
 #include <libguile.h>
 #include <gtk/gtk.h>
+#include <webkit2/webkit2.h>
 
 #include "app.h"
+#include "window.h"
 
 #define WEMACS_VERSION "0.1"
 
-SCM_DEFINE (scm_wemacs_version, "wemacs-version", 0, 0, 0, (),
-			"test macro")
+
+GApplication *app;
+
+SCM_DEFINE (scm_wemacs_version, "wemacs-version", 0, 0, 0, (), "test macro")
 {
-	return scm_from_locale_string (WEMACS_VERSION);
+  return scm_from_locale_string (WEMACS_VERSION);
 }
 
-SCM_DEFINE (scm_wemacs_start, "wemacs-start", 0, 0, 0, (),
-			"test macro")
+SCM_DEFINE (scm_wemacs_start, "wemacs-start", 0, 0, 0, (), "test macro")
 {
-	intmax_t status;
-	GApplication * app;
-	app = G_APPLICATION(wemacs_app_new());
-	status = g_application_run (app, 0, NULL);
-	return  scm_from_intmax(status);
+  intmax_t status;
+  app = G_APPLICATION (wemacs_app_new ());
+  status = g_application_run (app, 0, NULL);
+  return scm_from_intmax (status);
+}
+
+SCM_DEFINE (scm_wemacs_kill, "wemacs-kill", 0, 0, 0, (), "test macro")
+{
+  g_application_quit (G_APPLICATION (app));
+  return SCM_BOOL_T;
+}
+
+SCM_DEFINE (scm_wemacs_webkit_load_uri, "web-view-load-uri", 1, 0, 0, (SCM uri),
+		"TODO: document this procedure.")
+{
+  gchar *curi;
+  WebKitWebView *webView;
+  WemacsAppWindow *win;
+
+  curi = scm_to_locale_string (uri);
+  webView = wemacs_app_get_webview (WEMACS_APP (app));
+  if (!webView)
+	{
+	  return SCM_BOOL_F;
+	}
+  webkit_web_view_load_uri (webView, curi);
+  return uri;
+}
+
+SCM_DEFINE (scm_wemacs_webkit_go_back, "web-view-go-back", 0, 0, 0, (),
+		"Internal request WebKitView to go back in history. If WebView can not \
+be found or there is no back history then it returns #f. Otherwise \
+it returns #t. TODO: maybe provide a callback for load-change signal.")
+{
+  WebKitWebView *webView;
+
+  webView = wemacs_app_get_webview (WEMACS_APP (app));
+
+  if (!webView)
+	{
+	  return SCM_BOOL_F;
+	}
+
+  if (!webkit_web_view_can_go_back (webView))
+	{
+	  return SCM_BOOL_F;
+	}
+  webkit_web_view_go_back (webView);
+  return SCM_BOOL_T;
+}
+
+SCM_DEFINE (scm_wemacs_webkit_go_foward, "web-view-go-forward", 0, 0, 0, (),
+		"Internal request WebKitView to go forward in history. If WebView can \
+not be found or there is no forward history then it returns \
+#f. Otherwise it returns #t. TODO: maybe provide a callback for \
+load-change signal.")
+{
+  WebKitWebView *webView;
+
+  webView = wemacs_app_get_webview (WEMACS_APP (app));
+
+  if (!webView)
+	{
+	  return SCM_BOOL_F;
+	}
+
+  if (!webkit_web_view_can_go_forward (webView))
+	{
+	  return SCM_BOOL_F;
+	}
+  webkit_web_view_go_forward (webView);
+  return SCM_BOOL_T;
+}
+
+SCM_DEFINE (scm_wemacs_webkit_reload, "web-view-reload", 0, 1, 0, (SCM nocache),
+			"Internally reloads WebKitView, if nocache is #t then bypass WebKit \
+cache. This procedure should almost never be called directly. TODO: \
+detail higher level procedures for reloading webkit. Probably only \
+(reload) in this case.")
+{
+  WebKitWebView *webView;
+
+  webView = wemacs_app_get_webview (WEMACS_APP (app));
+
+  if (!webView)
+	{
+	  return SCM_BOOL_F;
+	}
+
+  if (scm_is_true(nocache))
+	{
+	  webkit_web_view_reload_bypass_cache (webView);
+
+	}
+  else
+	{
+
+	  webkit_web_view_reload (webView);
+	}
+  return SCM_BOOL_T;
 }
 
 void *
 register_functions (void *data)
 {
 #include "scheme.x"
-  /* scm_c_define_gsubr ("wemacs-version", 0, 0, 0, &wemacs_version); */
-  /* scm_c_define_gsubr ("wemacs-start", 0, 0, 0, &wemacs_start); */
-  /* scm_c_define_gsubr ("wemacs-quit", 0, 0, 0, &wemacs_quit); */
-  /* scm_c_define_gsubr ("close-emacs", 0, 0, 0, &close_emacs); */
-  /* scm_c_define_gsubr ("web-view-load-uri", 1, 0, 0, &web_view_load_uri); */
-  /* scm_c_define_gsubr ("web-view-go-back", 0, 0, 0, &web_view_go_back); */
-  /* scm_c_define_gsubr ("web-view-go-forward", 0, 0, 0, &web_view_go_forward); */
   /* scm_c_define_gsubr ("web-view-reload", 0, 0, 0, &web_view_reload); */
 }

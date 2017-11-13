@@ -18,7 +18,9 @@
 #ifndef __WEMACSAPPWIN_H
 #define __WEMACSAPPWIN_H
 
+#include <webkit2/webkit2.h>
 #include <gtk/gtk.h>
+
 #include "app.h"
 
 #define DEFAULT_URI "https://www.gnu.org/software/emacs"
@@ -28,5 +30,6 @@
 G_DECLARE_FINAL_TYPE (WemacsAppWindow, wemacs_app_window, WEMACS, APP_WINDOW, GtkApplicationWindow)
 
 WemacsAppWindow       *wemacs_app_window_new          (WemacsApp *app);
+WebKitWebView         *wemacs_app_window_get_webview  (WemacsAppWindow *win);
 
 #endif /* __WEMACSAPPWIN_H */

@@ -2,4 +2,4 @@ SUBDIRS = src
 dist_doc_DATA = README
 
 run: all
-	src/wemacs -c "(wemacs-start)"
+	src/wemacs -l test.scm -c "(start-repl) (wemacs-start)"

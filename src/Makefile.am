@@ -10,7 +10,7 @@ BUILT_SOURCES = $(DOT_X_FILES) resources.c
 
 CLEANFILES = $(DOT_X_FILES) resources.c
 
-resources.c: gresource.xml
+resources.c: gresource.xml window.ui
 	glib-compile-resources $< --target=$@ --generate-source
 
 snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS)

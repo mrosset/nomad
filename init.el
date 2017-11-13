@@ -1,3 +1,5 @@
+(setq wemacs-hosting t)
+
 (require 'package)
 
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
@@ -10,7 +12,7 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-(use-package geiser 
+(use-package geiser
   :config
   (setq
    geiser-guile-binary "guile2.2"

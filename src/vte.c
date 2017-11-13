@@ -26,7 +26,7 @@ G_DEFINE_TYPE (WemacsVte, wemacs_vte, VTE_TYPE_TERMINAL)
 
 struct _WemacsVtePrivate
 {
- ;
+};
 
 static void
 fork_vte_child (VteTerminal * vte, gint status, gpointer data)
@@ -72,7 +72,7 @@ wemacs_vte_class_init (WemacsVteClass * class)
 static void
 wemacs_vte_init (WemacsVte * self)
 {
-	//self->priv = VTE_PRIVATE (self);
+	self->priv = VTE_PRIVATE (self);
 	WemacsVte *priv = wemacs_vte_get_instance_private (self);
 
 	GdkRGBA b_rgba;

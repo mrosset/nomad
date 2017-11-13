@@ -42,6 +42,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (WemacsAppWindow, wemacs_app_window,
 static void
 wemacs_app_window_init (WemacsAppWindow * win)
 {
+
   WemacsAppWindowPrivate *priv;
 
   gtk_widget_init_template (GTK_WIDGET (win));
@@ -74,13 +75,22 @@ wemacs_app_window_class_init (WemacsAppWindowClass * class)
                                                "/org/gnu/wemacseapp/window.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 WemacsAppWindow, box);
-
 }
 
 WemacsAppWindow *
 wemacs_app_window_new (WemacsApp * app)
 {
   return g_object_new (WEMACS_APP_WINDOW_TYPE, "application", app, NULL);
+}
+
+WebKitWebView *
+wemacs_app_window_get_webview (WemacsAppWindow * win)
+{
+  WemacsAppWindowPrivate *priv;
+
+  priv = wemacs_app_window_get_instance_private (win);
+
+  return priv->webView;
 }
 
 /* Local Variables: */
