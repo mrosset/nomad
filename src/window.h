@@ -1,3 +1,4 @@
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 2; tab-width: 2 -*-  */
 /*
  * wemacsappwin.h
  * Copyright (C) 2017 Mike Rosset <mike.rosset@gmail.com>
@@ -24,12 +25,11 @@
 #include "app.h"
 
 #define DEFAULT_URI "https://www.gnu.org/software/emacs"
-#define EMACS_INIT  "/home/mrosset/src/wemacs/init.el"
 
 #define WEMACS_APP_WINDOW_TYPE (wemacs_app_window_get_type ())
-G_DECLARE_FINAL_TYPE (WemacsAppWindow, wemacs_app_window, WEMACS, APP_WINDOW, GtkApplicationWindow)
-
-WemacsAppWindow       *wemacs_app_window_new          (WemacsApp *app);
-WebKitWebView         *wemacs_app_window_get_webview  (WemacsAppWindow *win);
+G_DECLARE_FINAL_TYPE (WemacsAppWindow, wemacs_app_window, WEMACS, APP_WINDOW,
+		      GtkApplicationWindow)
+     WemacsAppWindow *wemacs_app_window_new (WemacsApp * app);
+     WebKitWebView *wemacs_app_window_get_webview (WemacsAppWindow * win);
 
 #endif /* __WEMACSAPPWIN_H */

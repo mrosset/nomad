@@ -7,6 +7,7 @@
     (geiser-eval-buffer)))
 
 (setq browse-url-browser-function 'wemacs-browse-function)
+;; (setq browse-url-browser-function 'browse-url-xdg-open)
 
 (defun wemacs-browse ()
   (interactive)
@@ -25,7 +26,7 @@
   (wemacs-send "(forward)"))
 
 (defun wemacs-query()
-  (interactive) 
+  (interactive)
   (let ((q (read-string "wemacs? ")))
     (wemacs-send (format "(query \"%s\")" q))))
 

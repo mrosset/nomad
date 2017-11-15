@@ -34,8 +34,8 @@ WemacsApp *
 wemacs_app_new (void)
 {
   return g_object_new (WEMACS_APP_TYPE,
-                       "application-id", "org.gnu.wemacsapp",
-                       "flags", G_APPLICATION_HANDLES_OPEN, NULL);
+		       "application-id", "org.gnu.wemacsapp",
+		       "flags", G_APPLICATION_HANDLES_OPEN, NULL);
 }
 
 WebKitWebView *
@@ -47,10 +47,11 @@ wemacs_app_get_webview (WemacsApp * app)
 
   windows = gtk_application_get_windows (GTK_APPLICATION (app));
 
-  if(!windows) {
-          g_critical("could not find window");
-          return NULL;
-  }
-  win = WEMACS_APP_WINDOW(windows->data);
-  return wemacs_app_window_get_webview(win);
+  if (!windows)
+    {
+      g_critical ("could not find window");
+      return NULL;
+    }
+  win = WEMACS_APP_WINDOW (windows->data);
+  return wemacs_app_window_get_webview (win);
 }

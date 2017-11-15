@@ -1,6 +1,4 @@
 (use-modules (system repl server))
-(use-modules (ice-9 readline))
-(use-modules (web uri))
 
 (define socket-path "/tmp/wemacs")
 
@@ -34,3 +32,5 @@
 (define (query arg)
   (let ((uri (simple-format #f search-provider-format arg)))
     (browse uri)))
+
+(start-repl)

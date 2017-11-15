@@ -2,7 +2,9 @@ AUTOMAKE_OPTIONS = gnu
 
 bin_PROGRAMS = wemacs
 
-AM_CFLAGS = -Werror $(GTK_FLAGS) $(GUILE_CFLAGS) $(VTE_CFLAGS) $(WEBKIT_CFLAGS)
+AM_CFLAGS = -Werror $(GTK_FLAGS) $(GUILE_CFLAGS) $(VTE_CFLAGS) $(WEBKIT_CFLAGS) \
+	-DWEMACS_WEB_EXTENSIONS_DIR=\""$(libexecdir)/wemacs/"\" \
+	-DWEMACS_SCHEME_INIT=\""$(HOME)/src/wemacs/test.scm"\"
 
 DOT_X_FILES = scheme.x
 

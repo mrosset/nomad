@@ -1,4 +1,4 @@
-(setq wemacs-hosting t)
+(setq wemacs-hosted t)
 
 (require 'package)
 
@@ -20,3 +20,5 @@
    geiser-default-implimentation 'guile))
 
 (geiser-connect-local 'guile "/tmp/wemacs")
+(delete-window)
+(find-file "~/session.scm")

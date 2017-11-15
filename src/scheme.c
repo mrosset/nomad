@@ -1,4 +1,4 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*-  */
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 2; tab-width: 2 -*-  */
 /*
  * scm.c
  * Copyright (C) 2017 Mike Rosset <mike.rosset@gmail.com>
@@ -33,7 +33,7 @@ SCM_DEFINE (scm_wemacs_version, "wemacs-version", 0, 0, 0, (), "test macro")
   return scm_from_locale_string (WEMACS_VERSION);
 }
 
-SCM_DEFINE (scm_wemacs_start, "wemacs-start", 0, 0, 0, (), "test macro")
+SCM_DEFINE (scm_wemacs_start, "wemacs-start", 0, 0, 0, (), "")
 {
   intmax_t status;
   app = G_APPLICATION (wemacs_app_new ());
@@ -47,8 +47,8 @@ SCM_DEFINE (scm_wemacs_kill, "wemacs-kill", 0, 0, 0, (), "test macro")
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_wemacs_webkit_load_uri, "web-view-load-uri", 1, 0, 0, (SCM uri),
-		"TODO: document this procedure.")
+SCM_DEFINE (scm_wemacs_webkit_load_uri, "web-view-load-uri", 1, 0, 0,
+	    (SCM uri), "TODO: document this procedure.")
 {
   gchar *curi;
   WebKitWebView *webView;
@@ -57,15 +57,15 @@ SCM_DEFINE (scm_wemacs_webkit_load_uri, "web-view-load-uri", 1, 0, 0, (SCM uri),
   curi = scm_to_locale_string (uri);
   webView = wemacs_app_get_webview (WEMACS_APP (app));
   if (!webView)
-	{
-	  return SCM_BOOL_F;
-	}
+    {
+      return SCM_BOOL_F;
+    }
   webkit_web_view_load_uri (webView, curi);
   return uri;
 }
 
 SCM_DEFINE (scm_wemacs_webkit_go_back, "web-view-go-back", 0, 0, 0, (),
-		"Internal request WebKitView to go back in history. If WebView can not \
+	    "Internal request WebKitView to go back in history. If WebView can not \
 be found or there is no back history then it returns #f. Otherwise \
 it returns #t. TODO: maybe provide a callback for load-change signal.")
 {
@@ -74,20 +74,20 @@ it returns #t. TODO: maybe provide a callback for load-change signal.")
   webView = wemacs_app_get_webview (WEMACS_APP (app));
 
   if (!webView)
-	{
-	  return SCM_BOOL_F;
-	}
+    {
+      return SCM_BOOL_F;
+    }
 
   if (!webkit_web_view_can_go_back (webView))
-	{
-	  return SCM_BOOL_F;
-	}
+    {
+      return SCM_BOOL_F;
+    }
   webkit_web_view_go_back (webView);
   return SCM_BOOL_T;
 }
 
 SCM_DEFINE (scm_wemacs_webkit_go_foward, "web-view-go-forward", 0, 0, 0, (),
-		"Internal request WebKitView to go forward in history. If WebView can \
+	    "Internal request WebKitView to go forward in history. If WebView can \
 not be found or there is no forward history then it returns \
 #f. Otherwise it returns #t. TODO: maybe provide a callback for \
 load-change signal.")
@@ -97,20 +97,21 @@ load-change signal.")
   webView = wemacs_app_get_webview (WEMACS_APP (app));
 
   if (!webView)
-	{
-	  return SCM_BOOL_F;
-	}
+    {
+      return SCM_BOOL_F;
+    }
 
   if (!webkit_web_view_can_go_forward (webView))
-	{
-	  return SCM_BOOL_F;
-	}
+    {
+      return SCM_BOOL_F;
+    }
   webkit_web_view_go_forward (webView);
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_wemacs_webkit_reload, "web-view-reload", 0, 1, 0, (SCM nocache),
-			"Internally reloads WebKitView, if nocache is #t then bypass WebKit \
+SCM_DEFINE (scm_wemacs_webkit_reload, "web-view-reload", 0, 1, 0,
+	    (SCM nocache),
+	    "Internally reloads WebKitView, if nocache is #t then bypass WebKit \
 cache. This procedure should almost never be called directly. TODO: \
 detail higher level procedures for reloading webkit. Probably only \
 (reload) in this case.")
@@ -120,20 +121,20 @@ detail higher level procedures for reloading webkit. Probably only \
   webView = wemacs_app_get_webview (WEMACS_APP (app));
 
   if (!webView)
-	{
-	  return SCM_BOOL_F;
-	}
+    {
+      return SCM_BOOL_F;
+    }
 
-  if (scm_is_true(nocache))
-	{
-	  webkit_web_view_reload_bypass_cache (webView);
+  if (scm_is_true (nocache))
+    {
+      webkit_web_view_reload_bypass_cache (webView);
 
-	}
+    }
   else
-	{
+    {
 
-	  webkit_web_view_reload (webView);
-	}
+      webkit_web_view_reload (webView);
+    }
   return SCM_BOOL_T;
 }
 

@@ -1,4 +1,4 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*-  */
+/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 2; tab-width: 2 -*-  */
 /*
  * main.c
  * Copyright (C) 2017 Mike Rosset <mike.rosset@gmail.com>
@@ -26,5 +26,6 @@ int
 main (int argc, char *argv[])
 {
   scm_with_guile (&register_functions, NULL);
+  scm_c_primitive_load (WEMACS_SCHEME_INIT);
   scm_shell (argc, argv);
 }
