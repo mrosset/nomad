@@ -1,4 +1,3 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 2; tab-width: 2 -*-  */
 /*
  * wemacsappwin.c
  * Copyright (C) 2017 Mike Rosset <mike.rosset@gmail.com>
@@ -33,17 +32,18 @@ typedef struct _WemacsAppWindowPrivate WemacsAppWindowPrivate;
 struct _WemacsAppWindowPrivate
 {
   GtkBox *box;
-  GtkLabel *statusbar;
-  WemacsVte *vte;
+  GtkWidget *statusbar;
+  GtkWidget *vte;
   WebKitWebView *webView;
+  GList *links;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (WemacsAppWindow, wemacs_app_window,
-			    GTK_TYPE_APPLICATION_WINDOW);
+          GTK_TYPE_APPLICATION_WINDOW);
 
 static void
 web_view_load_changed (WebKitWebView * web_view,
-		       WebKitLoadEvent load_event, gpointer user_data)
+           WebKitLoadEvent load_event, gpointer user_data)
 {
   GtkLabel *label = GTK_LABEL (user_data);
   const gchar *uri = webkit_web_view_get_uri (web_view);
@@ -70,29 +70,102 @@ web_view_load_changed (WebKitWebView * web_view,
     }
 }
 
+gboolean
+on_key_press (GtkWidget * widget, GdkEventKey * event)
+{
+  GdkModifierType modifiers;
+
+  WemacsAppWindowPrivate *win =
+    wemacs_app_window_get_instance_private (WEMACS_APP_WINDOW (widget));
+  GtkWidget *vte = win->vte;
+
+  gtk_widget_grab_focus (vte);
+  modifiers = gtk_accelerator_get_default_mod_mask ();
+
+  if (event->keyval == GDK_KEY_m &&
+      (event->state & modifiers) == GDK_MOD1_MASK)
+    {
+
+      if (!gtk_widget_is_visible (vte))
+  {
+    gtk_widget_show (vte);
+    gtk_widget_grab_focus (vte);
+    return TRUE;
+  }
+
+      if (gtk_widget_is_visible (vte) && gtk_widget_is_focus (vte))
+  {
+    gtk_widget_hide (vte);
+    return TRUE;
+  }
+
+
+      if (gtk_widget_is_visible (vte) && !gtk_widget_is_focus (vte))
+  {
+    gtk_widget_grab_focus (vte);
+    return TRUE;
+  }
+
+      return FALSE;
+    }
+
+  if (event->keyval == GDK_KEY_x &&
+      (event->state & modifiers) == GDK_MOD1_MASK)
+    {
+
+      if (!gtk_widget_is_visible (vte))
+  {
+    gtk_widget_show (vte);
+    gtk_widget_grab_focus (vte);
+    return TRUE;
+  }
+
+      return FALSE;
+    }
+
+  return FALSE;
+}
+
+static void
+initialize_web_extensions (WebKitWebContext * context, gpointer user_data)
+{
+  /* Web Extensions get a different ID for each Web Process */
+  static guint32 unique_id = 1;
+
+  webkit_web_context_set_web_extensions_directory (context,
+               WEMACS_WEB_EXTENSIONS_DIR);
+  webkit_web_context_set_web_extensions_initialization_user_data (context,
+                  g_variant_new_uint32
+                  (unique_id++));
+}
+
 static void
 wemacs_app_window_init (WemacsAppWindow * win)
 {
 
   WemacsAppWindowPrivate *priv;
+  GString *test;
 
   gtk_widget_init_template (GTK_WIDGET (win));
 
   priv = wemacs_app_window_get_instance_private (win);
-  priv->vte = wemacs_vte_new ();
+  priv->vte = GTK_WIDGET (wemacs_vte_new ());
+  priv->links = NULL;
+  priv->links = g_list_append (priv->links, g_string_new ("test"));
+  test = (GString *) g_list_first (priv->links)->data;
+  g_print ("window: %s\n", test->str);
+  g_signal_connect (webkit_web_context_get_default (),
+        "initialize-web-extensions",
+        G_CALLBACK (initialize_web_extensions),
+        g_string_new ("test"));
+
   priv->webView = WEBKIT_WEB_VIEW (webkit_web_view_new ());
 
-  if (!priv->statusbar)
-    {
-      g_critical ("status bar is NULL\n");
-    }
   // Signals
   g_signal_connect (priv->webView, "load-changed",
-		    G_CALLBACK (web_view_load_changed), priv->statusbar);
+        G_CALLBACK (web_view_load_changed), priv->statusbar);
 
-
-  webkit_web_context_set_web_extensions_directory
-    (webkit_web_context_get_default (), WEMACS_WEB_EXTENSIONS_DIR);
+  g_signal_connect (win, "key-press-event", G_CALLBACK (on_key_press), NULL);
 
   gtk_box_pack_start (priv->box, GTK_WIDGET (priv->webView), TRUE, TRUE, 0);
   gtk_box_pack_start (priv->box, GTK_WIDGET (priv->vte), FALSE, TRUE, 0);
@@ -102,7 +175,7 @@ wemacs_app_window_init (WemacsAppWindow * win)
   gtk_box_reorder_child (priv->box, GTK_WIDGET (priv->vte), 1);
 
   gtk_widget_show_all (GTK_WIDGET (priv->box));
-  /* gtk_widget_hide(GTK_WIDGET(priv->vte)); */
+  gtk_widget_hide (GTK_WIDGET (priv->vte));
   webkit_web_view_load_uri (priv->webView, DEFAULT_URI);
 }
 
@@ -110,11 +183,12 @@ static void
 wemacs_app_window_class_init (WemacsAppWindowClass * class)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
-					       "/org/gnu/wemacseapp/window.ui");
+                 "/org/gnu/wemacseapp/window.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-						WemacsAppWindow, box);
+            WemacsAppWindow, box);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-						WemacsAppWindow, statusbar);
+            WemacsAppWindow, statusbar);
+  g_type_class_add_private (class, sizeof (WemacsAppWindowPrivate));
 }
 
 WemacsAppWindow *
