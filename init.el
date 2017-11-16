@@ -19,6 +19,6 @@
    geiser-active-implementations '(guile)
    geiser-default-implimentation 'guile))
 
-(geiser-connect-local 'guile "/tmp/wemacs")
+(geiser-connect-local 'guile "/tmp/guile-socket")
 (delete-window)
 (find-file "~/session.scm")

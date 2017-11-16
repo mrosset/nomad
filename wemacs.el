@@ -32,7 +32,7 @@
 
 (defun wemacs-connect ()
   (interactive)
-    (geiser-connect-local 'guile "/tmp/wemacs"))
+    (geiser-connect-local 'guile "/tmp/guile-socket"))
 
 (defun wemacs-reload.el ()
   "Reloads wemacs.el. wemacs.el contains functions for
@@ -52,3 +52,4 @@ point we may want this to be done by scheme? or webkit?."
 (global-set-key (kbd "C-c h") 'wemacs-back)
 (global-set-key (kbd "C-c l") 'wemacs-forward)
 (global-set-key (kbd "C-c s") 'wemacs-query)
+(global-set-key (kbd "C-c o") 'wemacs-browse)
