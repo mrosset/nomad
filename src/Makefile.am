@@ -2,7 +2,12 @@ AUTOMAKE_OPTIONS = gnu
 
 bin_PROGRAMS = wemacs
 
-AM_CFLAGS = -Werror $(GTK_FLAGS) $(GUILE_CFLAGS) $(VTE_CFLAGS) $(WEBKIT_CFLAGS) \
+.PHONY: test
+test:
+	gcc  $(GUILE_CFLAGS) test.c -o $@
+	./test
+
+AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement $(GTK_FLAGS) $(GUILE_CFLAGS) $(VTE_CFLAGS) $(WEBKIT_CFLAGS) \
 	-DWEMACS_WEB_EXTENSIONS_DIR=\""$(libexecdir)/wemacs/"\" \
 	-DWEMACS_SCHEME_INIT=\""$(HOME)/src/wemacs/test.scm"\"
 

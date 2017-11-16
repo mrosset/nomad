@@ -17,6 +17,7 @@ PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
 PKG_CHECK_MODULES([VTE], [vte-2.91])
 PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
+PKG_CHECK_MODULES(GLIB, [glib-2.0])
 
 AC_CONFIG_FILES([
  Makefile
