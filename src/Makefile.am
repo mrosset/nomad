@@ -2,7 +2,8 @@ AUTOMAKE_OPTIONS = gnu
 
 bin_PROGRAMS = wemacs
 
-.PHONY: test
+.PHONY: test indent
+
 test:
 	gcc  $(GUILE_CFLAGS) test.c -o $@
 	./test
@@ -16,6 +17,9 @@ DOT_X_FILES = scheme.x
 BUILT_SOURCES = $(DOT_X_FILES) resources.c
 
 CLEANFILES = $(DOT_X_FILES) resources.c
+
+indent:
+	indent *.c *.h
 
 resources.c: gresource.xml window.ui
 	glib-compile-resources $< --target=$@ --generate-source
