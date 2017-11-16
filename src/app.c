@@ -43,7 +43,6 @@ wemacs_app_get_webview (WemacsApp * app)
 {
   GList *windows;
   WemacsAppWindow *win;
-  WebKitWebView *webView;
 
   windows = gtk_application_get_windows (GTK_APPLICATION (app));
 

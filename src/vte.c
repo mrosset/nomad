@@ -28,7 +28,6 @@ G_DEFINE_TYPE (WemacsVte, wemacs_vte, VTE_TYPE_TERMINAL)
      static void
        fork_vte_child (VteTerminal * vte, gint status, gpointer data)
 {
-  const char *home;
   char **envv;
 
   g_autoptr (GError) error = NULL;
@@ -66,9 +65,10 @@ wemacs_vte_class_init (WemacsVteClass * class)
 static void
 wemacs_vte_init (WemacsVte * self)
 {
-  self->priv = wemacs_vte_get_instance_private (self);
   GdkRGBA b_rgba;
   GdkRGBA f_rgba;
+
+  self->priv = wemacs_vte_get_instance_private (self);
 
   gdk_rgba_parse (&b_rgba, "white");
   gdk_rgba_parse (&f_rgba, "black");

@@ -52,7 +52,6 @@ SCM_DEFINE (scm_wemacs_webkit_load_uri, "web-view-load-uri", 1, 0, 0,
 {
   gchar *curi;
   WebKitWebView *webView;
-  WemacsAppWindow *win;
 
   curi = scm_to_locale_string (uri);
   webView = wemacs_app_get_webview (WEMACS_APP (app));
@@ -142,5 +141,5 @@ void *
 register_functions (void *data)
 {
 #include "scheme.x"
-  /* scm_c_define_gsubr ("web-view-reload", 0, 0, 0, &web_view_reload); */
+  return NULL;
 }
