@@ -1,4 +1,3 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 2; tab-width: 2 -*-  */
 /*
  * vte.c
  * Copyright (C) 2017 Mike Rosset <mike.rosset@gmail.com>
@@ -17,34 +16,25 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <vte/vte.h>
+
 #include "app.h"
 #include "vte.h"
 
-G_DEFINE_TYPE (WemacsVte, wemacs_vte, VTE_TYPE_TERMINAL)
-     struct _WemacsVtePrivate
-     {
-     };
-
-     static void
-       fork_vte_child (VteTerminal * vte, gint status, gpointer data)
+G_DEFINE_TYPE (WemacsVte, wemacs_vte, VTE_TYPE_TERMINAL);
+struct _WemacsVtePrivate
 {
-  char **envv;
+};
 
-  g_autoptr (GError) error = NULL;
+static void
+fork_vte_child (VteTerminal * vte, gint status, gpointer data)
+{
+  gchar **envv;
+  gchar *pwd;
+  gchar *argv[] = { "emacs", "-nw", "-l", EMACS_INIT, NULL };
 
-  gchar *pwd = g_get_current_dir ();
-
-  char *argv[] = { "emacs", "-nw", "-l", EMACS_INIT, NULL };
-  /* char *argv[] = { "bash", "--login", NULL }; */
-
+  pwd = g_get_current_dir ();
   envv = g_get_environ ();
-
   envv = g_environ_setenv (envv, "TERM", "xterm-256color", TRUE);
-
-  /* vte_terminal_fork_command_full (VTE_TERMINAL (vte), VTE_PTY_DEFAULT, home, */
-  /*         argv, envv, */
-  /*         G_SPAWN_DEFAULT | G_SPAWN_SEARCH_PATH, */
-  /*         child_setup, 0, NULL, &error); */
 
   vte_terminal_spawn_async (vte,
 			    VTE_PTY_DEFAULT,
@@ -54,6 +44,7 @@ G_DEFINE_TYPE (WemacsVte, wemacs_vte, VTE_TYPE_TERMINAL)
 			    G_SPAWN_DEFAULT | G_SPAWN_SEARCH_PATH_FROM_ENVP,
 			    NULL, 0, NULL, -1, NULL, NULL, NULL);
 
+  g_strfreev (envv);
   g_free (pwd);
 }
 

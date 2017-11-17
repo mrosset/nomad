@@ -20,5 +20,5 @@
    geiser-default-implimentation 'guile))
 
 (geiser-connect-local 'guile "/tmp/guile-socket")
-(delete-window)
-(find-file "~/session.scm")
+(setq inhibit-startup-message t)
+(delete-other-windows)
