@@ -2,15 +2,40 @@
 ** DONE autoconf initial
 ** DONE automake
 * TODO Use GTK application classes
-classes created for application and window, now we need to peice
-together how we want to handle our controls.
+Classes created for application and window.
 
-* Webkit View
-
-** Vte Terminal
-
-** Decrease the size of vte widget
+** WebKit View
+We may make this a class, currently it is a field.
+** DONE Vte Terminal
+widget to hold Emacs ncurses.
+** TODO Decrease the size of vte widget
 
 * DOM link hinting
+The DOM is not accessible from WebKit. It is single threaded and runs in it's own
+process. In order to access it we need to do use RPC.
+
+1. Javascript injection
+2. Web extension
+
+see [[https://wiki.gnome.org/Projects/WebKitGtk/ProgrammingGuide/Cookbook#Dealing_with_DOM_Tree][WebKit Cookbook]]
+
+Probably our only option is to use a web extention. If we use
+javascript we'll have to provide another layer of RPC anyways
+
+** Prototype
+Create a web extention that spawns a unix socket. Clients connect and
+send a single line that is an s-expression one line is read and then
+evaluated. Results are returned as an s-expression?
 
 * TODO Fancy html startup page?
+
+* Keybindings and UX
+Originally I was going to have Emacs handle keybindings and pop-up
+windows. I still like the idea, but it had an extra layer of
+abstraction. We need to define function both in scheme and elisp to do
+basically the something.
+
+Switch the vte control from Emacs to a Guile REPL. Create simple UI
+for input and pop-up display badd
+
+* Emacs integration
