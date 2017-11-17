@@ -5,28 +5,51 @@
   <template class="WemacsAppWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Wemacs</property>
-    <property name="default_width">600</property>
-    <property name="default_height">400</property>
+    <property name="default_width">800</property>
+    <property name="default_height">640</property>
     <child>
-      <object class="GtkBox" id="box">
+      <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
+          <object class="GtkPaned" id="pane">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="orientation">vertical</property>
+            <property name="position">378</property>
+            <property name="position_set">True</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
           <object class="GtkLabel" id="statusbar">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="margin_top">1</property>
+            <property name="margin_bottom">1</property>
+            <property name="hexpand">True</property>
+            <property name="label" translatable="yes">http://test.com</property>
+            <property name="ellipsize">start</property>
+            <attributes>
+              <attribute name="weight" value="semibold"/>
+              <attribute name="foreground" value="#34346565a4a4"/>
+            </attributes>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
       </object>

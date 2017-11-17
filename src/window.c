@@ -34,23 +34,23 @@ struct _WemacsAppWindowPrivate
   GtkBox *box;
   GtkWidget *statusbar;
   GtkWidget *vte;
+  GtkWidget *pane;
   WebKitWebView *webView;
   GList *links;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (WemacsAppWindow, wemacs_app_window,
-			    GTK_TYPE_APPLICATION_WINDOW);
+          GTK_TYPE_APPLICATION_WINDOW);
 
 static void
 web_view_load_changed (WebKitWebView * web_view,
-		       WebKitLoadEvent load_event, gpointer user_data)
+           WebKitLoadEvent load_event, gpointer user_data)
 {
   GtkLabel *label;
   const gchar *uri;
 
   uri = webkit_web_view_get_uri (web_view);
   label = GTK_LABEL (user_data);
-
   gtk_label_set_text (label, uri);
 }
 
@@ -83,10 +83,10 @@ initialize_web_extensions (WebKitWebContext * context, gpointer user_data)
   static guint32 unique_id = 1;
 
   webkit_web_context_set_web_extensions_directory (context,
-						   WEMACS_WEB_EXTENSIONS_DIR);
+               WEMACS_WEB_EXTENSIONS_DIR);
   webkit_web_context_set_web_extensions_initialization_user_data (context,
-								  g_variant_new_uint32
-								  (unique_id++));
+                  g_variant_new_uint32
+                  (unique_id++));
 }
 
 static void
@@ -100,38 +100,34 @@ wemacs_app_window_init (WemacsAppWindow * win)
   priv = wemacs_app_window_get_instance_private (win);
   priv->vte = GTK_WIDGET (wemacs_vte_new ());
   g_signal_connect (webkit_web_context_get_default (),
-		    "initialize-web-extensions",
-		    G_CALLBACK (initialize_web_extensions), NULL);
+        "initialize-web-extensions",
+        G_CALLBACK (initialize_web_extensions), NULL);
 
   priv->webView = WEBKIT_WEB_VIEW (webkit_web_view_new ());
 
   // Signals
   g_signal_connect (priv->webView, "load-changed",
-		    G_CALLBACK (web_view_load_changed), priv->statusbar);
+        G_CALLBACK (web_view_load_changed), priv->statusbar);
 
   g_signal_connect (win, "key-press-event", G_CALLBACK (on_key_press), NULL);
-
-  gtk_box_pack_start (priv->box, GTK_WIDGET (priv->webView), TRUE, TRUE, 0);
-  gtk_box_pack_start (priv->box, GTK_WIDGET (priv->vte), FALSE, TRUE, 0);
-
-  // Reorder
-  gtk_box_reorder_child (priv->box, GTK_WIDGET (priv->webView), 0);
-  gtk_box_reorder_child (priv->box, GTK_WIDGET (priv->vte), 1);
-
-  gtk_widget_show_all (GTK_WIDGET (priv->box));
-  gtk_widget_hide (GTK_WIDGET (priv->vte));
   webkit_web_view_load_uri (priv->webView, DEFAULT_URI);
+
+  gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET (priv->webView));
+  gtk_paned_add2 (GTK_PANED (priv->pane), priv->vte);
+
+  gtk_widget_show_all (priv->pane);
+  gtk_widget_hide (priv->vte);
 }
 
 static void
 wemacs_app_window_class_init (WemacsAppWindowClass * class)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
-					       "/org/gnu/wemacseapp/window.ui");
+                 "/org/gnu/wemacseapp/window.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-						WemacsAppWindow, box);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-						WemacsAppWindow, statusbar);
+            WemacsAppWindow, pane),
+    gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
+              WemacsAppWindow, statusbar);
 }
 
 WemacsAppWindow *
