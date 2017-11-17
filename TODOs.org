@@ -3,7 +3,7 @@ Originally I was going to have Emacs handle keybindings and pop-up
 windows. I still like the idea, but it had an extra layer of
 abstraction. We need to define function both in scheme and elisp to do
 basically the something.
-** TODO Handle key events inside Wemacs not Emacs      :current:in progress:
+** Todo Handle Key events inside Wemacs not Emacs      :current:in progress:
 ** TODO Create simple UI for input and pop-up display
 
 * TODO Use GTK application classes

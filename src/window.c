@@ -45,82 +45,32 @@ static void
 web_view_load_changed (WebKitWebView * web_view,
 		       WebKitLoadEvent load_event, gpointer user_data)
 {
-  GtkLabel *label = GTK_LABEL (user_data);
-  const gchar *uri = webkit_web_view_get_uri (web_view);
-  gtk_label_set_text (label, uri);
+  GtkLabel *label;
+  const gchar *uri;
 
-  switch (load_event)
-    {
-    case WEBKIT_LOAD_STARTED:
-      /* New load, we have now a provisional URI */
-      /* Here we could start a spinner or update the
-       * location bar with the provisional URI */
-      break;
-    case WEBKIT_LOAD_REDIRECTED:
-      break;
-    case WEBKIT_LOAD_COMMITTED:
-      /* The load is being performed. Current URI is
-       * the final one and it won't change unless a new
-       * load is requested or a navigation within the
-       * same page is performed */
-      break;
-    case WEBKIT_LOAD_FINISHED:
-      /* Load finished, we can now stop the spinner */
-      break;
-    }
+  uri = webkit_web_view_get_uri (web_view);
+  label = GTK_LABEL (user_data);
+
+  gtk_label_set_text (label, uri);
 }
 
 gboolean
 on_key_press (GtkWidget * widget, GdkEventKey * event)
 {
   GdkModifierType modifiers;
+  WemacsAppWindowPrivate *win;
+  GtkWidget *vte;
 
-  WemacsAppWindowPrivate *win =
-    wemacs_app_window_get_instance_private (WEMACS_APP_WINDOW (widget));
-  GtkWidget *vte = win->vte;
-
-  gtk_widget_grab_focus (vte);
+  win = wemacs_app_window_get_instance_private (WEMACS_APP_WINDOW (widget));
+  vte = win->vte;
   modifiers = gtk_accelerator_get_default_mod_mask ();
 
   if (event->keyval == GDK_KEY_m &&
       (event->state & modifiers) == GDK_MOD1_MASK)
     {
-
-      if (!gtk_widget_is_visible (vte))
-	{
-	  gtk_widget_show (vte);
-	  gtk_widget_grab_focus (vte);
-	  return TRUE;
-	}
-
-      if (gtk_widget_is_visible (vte) && gtk_widget_is_focus (vte))
-	{
-	  gtk_widget_hide (vte);
-	  return TRUE;
-	}
-
-
-      if (gtk_widget_is_visible (vte) && !gtk_widget_is_focus (vte))
-	{
-	  gtk_widget_grab_focus (vte);
-	  return TRUE;
-	}
-
-      return FALSE;
-    }
-
-  if (event->keyval == GDK_KEY_x &&
-      (event->state & modifiers) == GDK_MOD1_MASK)
-    {
-
-      if (!gtk_widget_is_visible (vte))
-	{
-	  gtk_widget_show (vte);
-	  gtk_widget_grab_focus (vte);
-	  return TRUE;
-	}
-
-      return FALSE;
+      gtk_widget_set_visible (vte, !gtk_widget_is_visible (vte));
+      gtk_widget_grab_focus (vte);
+      return TRUE;
     }
 
   return FALSE;
@@ -144,20 +94,14 @@ wemacs_app_window_init (WemacsAppWindow * win)
 {
 
   WemacsAppWindowPrivate *priv;
-  GString *test;
 
   gtk_widget_init_template (GTK_WIDGET (win));
 
   priv = wemacs_app_window_get_instance_private (win);
   priv->vte = GTK_WIDGET (wemacs_vte_new ());
-  priv->links = NULL;
-  priv->links = g_list_append (priv->links, g_string_new ("test"));
-  test = (GString *) g_list_first (priv->links)->data;
-  g_print ("window: %s\n", test->str);
   g_signal_connect (webkit_web_context_get_default (),
 		    "initialize-web-extensions",
-		    G_CALLBACK (initialize_web_extensions),
-		    g_string_new ("test"));
+		    G_CALLBACK (initialize_web_extensions), NULL);
 
   priv->webView = WEBKIT_WEB_VIEW (webkit_web_view_new ());
 
@@ -188,7 +132,6 @@ wemacs_app_window_class_init (WemacsAppWindowClass * class)
 						WemacsAppWindow, box);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
 						WemacsAppWindow, statusbar);
-  g_type_class_add_private (class, sizeof (WemacsAppWindowPrivate));
 }
 
 WemacsAppWindow *
@@ -196,7 +139,6 @@ wemacs_app_window_new (WemacsApp * app)
 {
   return g_object_new (WEMACS_APP_WINDOW_TYPE, "application", app, NULL);
 }
-
 
 WebKitWebView *
 wemacs_app_window_get_webview (WemacsAppWindow * win)
