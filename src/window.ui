@@ -29,7 +29,6 @@
                   <object class="GtkLabel" id="page_url">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="halign">end</property>
                     <property name="margin_left">6</property>
                     <property name="margin_right">6</property>
                     <property name="margin_top">4</property>
@@ -42,8 +41,9 @@
                     </attributes>
                   </object>
                   <packing>
-                    <property name="left_attach">1</property>
+                    <property name="left_attach">0</property>
                     <property name="top_attach">0</property>
+                    <property name="width">2</property>
                   </packing>
                 </child>
                 <child>
@@ -56,7 +56,6 @@
                     <property name="left_margin">2</property>
                     <property name="right_margin">2</property>
                     <property name="monospace">True</property>
-                    <property name="show_line_marks">True</property>
                     <signal name="focus-in-event" handler="read_line_focus_in_event_cb" swapped="no"/>
                     <signal name="focus-out-event" handler="read_line_focus_out_event_cb" swapped="no"/>
                   </object>
@@ -65,9 +64,6 @@
                     <property name="top_attach">1</property>
                     <property name="width">2</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>
@@ -92,4 +88,20 @@
       </object>
     </child>
   </template>
+  <object class="GtkPopover" id="result_popover">
+    <property name="can_focus">False</property>
+    <property name="opacity">0.69999999999999996</property>
+    <property name="relative_to">read_line</property>
+    <child>
+      <object class="GtkSourceView" id="result_popover_view">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="editable">False</property>
+        <property name="left_margin">2</property>
+        <property name="right_margin">2</property>
+        <property name="cursor_visible">False</property>
+        <property name="monospace">True</property>
+      </object>
+    </child>
+  </object>
 </interface>

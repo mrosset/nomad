@@ -11,11 +11,9 @@
 (define (catch-eval expr)
   (catch #t
     (lambda ()
-      (eval expr (interaction-environment)))
+      (eval-string expr))
     (lambda (key . args)
-      (simple-format #t "~s: eval failed" expr)
-      ;; (simple-format #t "~s ~s" key args)
-      expr)))
+      (simple-format #f "~s: ~s" key args))))
 
 (define (quasi-eval string)
   "Evaluate non expression string. The string is split into a list by
@@ -48,10 +46,10 @@ are joined as one arguement string."
         (set! url (string-append prefix url)))
     (web-view-load-uri url)))
 
-(define b browse)
-
 (define (forward)
   (web-view-go-forward))
+
+(define f forward)
 
 (define (home)
   (web-view-load-uri "https://www.gnu.org/software/emacs"))
@@ -61,6 +59,8 @@ are joined as one arguement string."
 
 (define (back)
   (web-view-go-back))
+
+(define b back)
 
 (define (query arg)
   (let ((uri (simple-format #f search-provider-format arg)))

@@ -38,9 +38,11 @@ struct _WemacsAppWindowPrivate
 {
   GtkBox *box;
   GtkWidget *minibuf;
-  GtkWidget *read_line;
   GtkWidget *page_url;
   GtkWidget *pane;
+  GtkWidget *read_line;
+  GtkWidget *result_popover;
+  GtkWidget *result_popover_view;
   GtkWidget *vte;
   WebKitWebView *web_view;
 };
@@ -77,6 +79,7 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
     {
       if (!gtk_widget_is_visible (vte))
         {
+          gtk_widget_hide (priv->read_line);
           gtk_widget_show (vte);
           gtk_widget_grab_focus (vte);
           return TRUE;
@@ -88,6 +91,7 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
         }
       if (gtk_widget_is_visible (vte) && gtk_widget_has_focus (vte))
         {
+          gtk_widget_show (priv->read_line);
           gtk_widget_hide (vte);
         }
       return TRUE;
@@ -97,15 +101,12 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
   if (event->keyval == GDK_KEY_x
       && (event->state & modifiers) == GDK_MOD1_MASK)
     {
-      if (!gtk_widget_has_focus (priv->read_line))
+      if (!gtk_widget_has_focus (priv->read_line)
+          && !gtk_widget_has_focus (priv->vte))
         {
           gtk_widget_grab_focus (priv->read_line);
         }
-      else
-        {
-          gtk_widget_grab_focus (GTK_WIDGET (priv->web_view));
-        }
-      return TRUE;
+      return FALSE;
     }
 
   return FALSE;
@@ -131,14 +132,21 @@ pane_size_allocate_cb (GtkWidget *widget, gpointer data)
 }
 
 gboolean
-clear_read_line_buffer (gpointer widget)
+clear_read_line_buffer (gpointer user_data)
 {
   GtkTextBuffer *buf;
-  if (!gtk_widget_has_focus (GTK_WIDGET (widget)))
+  if (!gtk_widget_has_focus (GTK_WIDGET (user_data)))
     {
-      buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
+      buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (user_data));
       gtk_text_buffer_set_text (buf, "", -1);
     }
+  return FALSE;
+}
+
+gboolean
+delayed_popdown (gpointer user_data)
+{
+  gtk_widget_grab_focus (GTK_WIDGET (user_data));
   return FALSE;
 }
 
@@ -146,10 +154,9 @@ gboolean
 read_line_focus_in_event_cb (GtkWidget *widget, GdkEvent *event,
                              gpointer user_data)
 {
-  if (!gtk_widget_has_focus (widget))
-    {
-      clear_read_line_buffer (widget);
-    }
+  g_print ("got focus\n");
+  clear_read_line_buffer (widget);
+
   return FALSE;
 }
 
@@ -171,7 +178,10 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
   GtkTextBuffer *buf;
   GtkTextIter start, end;
   gchar *input;
+  WemacsAppWindowPrivate *priv;
 
+  priv
+      = wemacs_app_window_get_instance_private (WEMACS_APP_WINDOW (user_data));
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
 
   gtk_text_buffer_get_start_iter (buf, &start);
@@ -179,7 +189,7 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
 
   input = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
 
-  exp = scm_list_2 (scm_from_locale_symbol ("quasi-eval"),
+  exp = scm_list_2 (scm_from_locale_symbol ("catch-eval"),
                     scm_from_locale_string (input));
 
   value = scm_eval (exp, scm_interaction_environment ());
@@ -193,8 +203,13 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
   result = scm_to_locale_string (value);
   g_print ("result: %s", result);
 
-  gtk_text_buffer_set_text (buf, result, -1);
-  gtk_widget_grab_focus (GTK_WIDGET (user_data));
+  gtk_text_buffer_set_text (
+      gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->result_popover_view)),
+      result, -1);
+
+  gtk_text_buffer_set_text (buf, "", -1);
+  gtk_popover_popup (GTK_POPOVER (priv->result_popover));
+  g_timeout_add (3500, delayed_popdown, priv->web_view);
   g_free (result);
 }
 
@@ -237,11 +252,11 @@ minibuf_new ()
 }
 
 gboolean
-minibuf_key_press_cb (GtkWidget *view, GdkEventKey *event, gpointer data)
+minibuf_key_press_cb (GtkWidget *view, GdkEventKey *event, gpointer user_data)
 {
   if (event->keyval == GDK_KEY_Return)
     {
-      read_line_eval (view, data);
+      read_line_eval (view, user_data);
       return TRUE;
     }
 
@@ -272,11 +287,12 @@ wemacs_app_window_init (WemacsAppWindow *win)
                             GTK_TEXT_BUFFER (priv->minibuf));
 
   g_signal_connect (priv->read_line, "key-press-event",
-                    G_CALLBACK (minibuf_key_press_cb),
-                    (gpointer)priv->web_view);
+                    G_CALLBACK (minibuf_key_press_cb), (gpointer)win);
   // Vte
   priv->vte = GTK_WIDGET (wemacs_vte_new ());
 
+  gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->result_popover_view),
+                            GTK_TEXT_BUFFER (minibuf_new ()));
   // Packing
   gtk_box_pack_start (GTK_BOX (priv->box), GTK_WIDGET (priv->web_view), TRUE,
                       TRUE, 0);
@@ -300,6 +316,10 @@ wemacs_app_window_class_init (WemacsAppWindowClass *class)
                                                 WemacsAppWindow, box);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 WemacsAppWindow, read_line);
+  gtk_widget_class_bind_template_child_private (
+      GTK_WIDGET_CLASS (class), WemacsAppWindow, result_popover);
+  gtk_widget_class_bind_template_child_private (
+      GTK_WIDGET_CLASS (class), WemacsAppWindow, result_popover_view);
 }
 
 WemacsAppWindow *
