@@ -26,7 +26,7 @@ struct _WemacsVtePrivate
 };
 
 static void
-fork_vte_child (VteTerminal * vte, gint status, gpointer data)
+fork_vte_child (VteTerminal *vte, gint status, gpointer data)
 {
   gchar **envv;
   gchar *pwd;
@@ -36,25 +36,21 @@ fork_vte_child (VteTerminal * vte, gint status, gpointer data)
   envv = g_get_environ ();
   envv = g_environ_setenv (envv, "TERM", "xterm-256color", TRUE);
 
-  vte_terminal_spawn_async (vte,
-			    VTE_PTY_DEFAULT,
-			    NULL,
-			    argv,
-			    envv,
-			    G_SPAWN_DEFAULT | G_SPAWN_SEARCH_PATH_FROM_ENVP,
-			    NULL, 0, NULL, -1, NULL, NULL, NULL);
+  vte_terminal_spawn_async (vte, VTE_PTY_DEFAULT, NULL, argv, envv,
+                            G_SPAWN_DEFAULT | G_SPAWN_SEARCH_PATH_FROM_ENVP,
+                            NULL, 0, NULL, -1, NULL, NULL, NULL);
 
   g_strfreev (envv);
   g_free (pwd);
 }
 
 static void
-wemacs_vte_class_init (WemacsVteClass * class)
+wemacs_vte_class_init (WemacsVteClass *class)
 {
 }
 
 static void
-wemacs_vte_init (WemacsVte * self)
+wemacs_vte_init (WemacsVte *self)
 {
   GdkRGBA b_rgba;
   GdkRGBA f_rgba;
@@ -69,7 +65,7 @@ wemacs_vte_init (WemacsVte * self)
 
   fork_vte_child (VTE_TERMINAL (self->priv), 0, NULL);
   g_signal_connect (self->priv, "child-exited", G_CALLBACK (fork_vte_child),
-		    NULL);
+                    NULL);
 }
 
 WemacsVte *

@@ -16,15 +16,14 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <libguile.h>
 #include <gtk/gtk.h>
+#include <libguile.h>
 #include <webkit2/webkit2.h>
 
 #include "app.h"
 #include "window.h"
 
 #define WEMACS_VERSION "0.1"
-
 
 GApplication *app;
 
@@ -48,7 +47,7 @@ SCM_DEFINE (scm_wemacs_kill, "wemacs-kill", 0, 0, 0, (), "test macro")
 }
 
 SCM_DEFINE (scm_wemacs_webkit_load_uri, "web-view-load-uri", 1, 0, 0,
-	    (SCM uri), "TODO: document this procedure.")
+            (SCM uri), "TODO: document this procedure.")
 {
   gchar *curi;
   WebKitWebView *webView;
@@ -63,8 +62,9 @@ SCM_DEFINE (scm_wemacs_webkit_load_uri, "web-view-load-uri", 1, 0, 0,
   return uri;
 }
 
-SCM_DEFINE (scm_wemacs_webkit_go_back, "web-view-go-back", 0, 0, 0, (),
-	    "Internal request WebKitView to go back in history. If WebView can not \
+SCM_DEFINE (
+    scm_wemacs_webkit_go_back, "web-view-go-back", 0, 0, 0, (),
+    "Internal request WebKitView to go back in history. If WebView can not \
 be found or there is no back history then it returns #f. Otherwise \
 it returns #t. TODO: maybe provide a callback for load-change signal.")
 {
@@ -85,8 +85,9 @@ it returns #t. TODO: maybe provide a callback for load-change signal.")
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_wemacs_webkit_go_foward, "web-view-go-forward", 0, 0, 0, (),
-	    "Internal request WebKitView to go forward in history. If WebView can \
+SCM_DEFINE (
+    scm_wemacs_webkit_go_foward, "web-view-go-forward", 0, 0, 0, (),
+    "Internal request WebKitView to go forward in history. If WebView can \
 not be found or there is no forward history then it returns \
 #f. Otherwise it returns #t. TODO: maybe provide a callback for \
 load-change signal.")
@@ -108,9 +109,9 @@ load-change signal.")
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_wemacs_webkit_reload, "web-view-reload", 0, 1, 0,
-	    (SCM nocache),
-	    "Internally reloads WebKitView, if nocache is #t then bypass WebKit \
+SCM_DEFINE (
+    scm_wemacs_webkit_reload, "web-view-reload", 0, 1, 0, (SCM nocache),
+    "Internally reloads WebKitView, if nocache is #t then bypass WebKit \
 cache. This procedure should almost never be called directly. TODO: \
 detail higher level procedures for reloading webkit. Probably only \
 (reload) in this case.")
@@ -127,7 +128,6 @@ detail higher level procedures for reloading webkit. Probably only \
   if (scm_is_true (nocache))
     {
       webkit_web_view_reload_bypass_cache (webView);
-
     }
   else
     {

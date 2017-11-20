@@ -1,24 +1,54 @@
 (use-modules (ice-9 rdelim))
 (use-modules (ice-9 threads))
 (use-modules (ice-9 match))
+(use-modules (ice-9 eval-string))
 (use-modules (system repl server))
 
 (define client-socket (socket PF_UNIX SOCK_STREAM 0))
 (define socket-path "/tmp/wemacs")
-(define search-provider-format "https://google.com/search?q=~a")
+(define search-provider-format "https://duckduckgo.com/?q=~a")
+
+(define (catch-eval expr)
+  (catch #t
+    (lambda ()
+      (eval expr (interaction-environment)))
+    (lambda (key . args)
+      (simple-format #t "~s: eval failed" expr)
+      ;; (simple-format #t "~s ~s" key args)
+      expr)))
+
+(define (quasi-eval string)
+  "Evaluate non expression string. The string is split into a list by
+whitespaces and then passed to eval as a Scheme expression. The car of
+the list is the symbol of the procedure to eval and the tail of the list
+are joined as one arguement string."
+  (let* ((lst (string-split string #\space))
+         (proc (string->symbol (car lst)))
+         (args  (list-tail lst 1)))
+    (if (>= (length args) 1)
+        (catch-eval (list proc (string-join args)))
+        (catch-eval (list proc)))))
+
+(define (reload-init)
+  (load "test.scm"))
+
+(define (ok-if-exception string)
+  (false-if-exception (eval-string string)))
 
 (define start-repl
-  (lambda()
-    (if (file-exists? "/tmp/guile-socket")
-        (delete-file "/tmp/guile-socket"))
-    (spawn-server
-     (make-unix-domain-server-socket))))
+  (lambda ()
+  (if (file-exists? "/tmp/guile-socket")
+      (delete-file "/tmp/guile-socket"))
+  (spawn-server
+   (make-unix-domain-server-socket))))
 
 (define (browse url)
   (let ((prefix "https://"))
     (if (not (string-prefix? prefix url))
         (set! url (string-append prefix url)))
     (web-view-load-uri url)))
+
+(define b browse)
 
 (define (forward)
   (web-view-go-forward))
@@ -35,6 +65,8 @@
 (define (query arg)
   (let ((uri (simple-format #f search-provider-format arg)))
     (browse uri)))
+
+(define q query)
 
 (define (message msg)
   (connect client-socket AF_UNIX socket-path)
@@ -63,6 +95,10 @@
        (eval-line client-port)
        (close-port client-port)
        (loop)))))
+
+(define (wemacs-restart)
+  (wemacs-kill)
+  (wemacs-start))
 
 (define (make-wemacs)
   (make-thread wemacs-start))
