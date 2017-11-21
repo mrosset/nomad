@@ -3,17 +3,13 @@
 (use-modules (ice-9 match))
 (use-modules (ice-9 eval-string))
 (use-modules (system repl server))
+(add-to-load-path "/home/mrosset/src/wemacs/scheme")
+(use-modules (wemacs keymap))
 
 (define client-socket (socket PF_UNIX SOCK_STREAM 0))
 (define socket-path "/tmp/wemacs")
-(define search-provider-format "https://duckduckgo.com/?q=~a")
+(define search-provider-format "https://google.ca/search?q=~a")
 
-(define (catch-eval expr)
-  (catch #t
-    (lambda ()
-      (eval-string expr))
-    (lambda (key . args)
-      (simple-format #f "~s: ~s" key args))))
 
 (define (quasi-eval string)
   "Evaluate non expression string. The string is split into a list by
@@ -39,34 +35,6 @@ are joined as one arguement string."
       (delete-file "/tmp/guile-socket"))
   (spawn-server
    (make-unix-domain-server-socket))))
-
-(define (browse url)
-  (let ((prefix "https://"))
-    (if (not (string-prefix? prefix url))
-        (set! url (string-append prefix url)))
-    (web-view-load-uri url)))
-
-(define (forward)
-  (web-view-go-forward))
-
-(define f forward)
-
-(define (home)
-  (web-view-load-uri "https://www.gnu.org/software/emacs"))
-
-(define (reload)
-  (web-view-reload))
-
-(define (back)
-  (web-view-go-back))
-
-(define b back)
-
-(define (query arg)
-  (let ((uri (simple-format #f search-provider-format arg)))
-    (browse uri)))
-
-(define q query)
 
 (define (message msg)
   (connect client-socket AF_UNIX socket-path)

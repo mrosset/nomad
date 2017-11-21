@@ -21,11 +21,10 @@
 #include <webkit2/webkit2.h>
 
 #include "app.h"
+#include "scheme.h"
 #include "window.h"
 
 #define WEMACS_VERSION "0.1"
-
-GApplication *app;
 
 SCM_DEFINE (scm_wemacs_version, "wemacs-version", 0, 0, 0, (), "test macro")
 {
@@ -155,9 +154,10 @@ detail higher level procedures for reloading webkit. Probably only \
   return SCM_BOOL_T;
 }
 
-void *
+void
 register_functions (void *data)
 {
 #include "scheme.x"
-  return NULL;
+  scm_c_export ("wemacs-start", "back", "forward", "reload", "scroll-up",
+                "scroll-down", "wemacs-version", NULL);
 }

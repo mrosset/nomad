@@ -19,8 +19,8 @@
 #ifndef GUILE_H
 #define GUILE_H
 
-#define WEMACS_VERSION "0.1"
+GApplication *app;
 
-void *register_functions (void *);
+void register_functions (void *);
 
 #endif

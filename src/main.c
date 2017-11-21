@@ -25,7 +25,10 @@
 int
 main (int argc, char *argv[])
 {
-  scm_with_guile (&register_functions, NULL);
+  scm_init_guile ();
+  // scm_with_guile (&register_functions, NULL);
   scm_c_primitive_load (WEMACS_SCHEME_INIT);
+  scm_c_use_module ("wemacs browser");
+  scm_c_define_module ("wemacs browser", register_functions, NULL);
   scm_shell (argc, argv);
 }

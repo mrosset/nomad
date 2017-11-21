@@ -1,11 +1,9 @@
 (define-module (wemacs keymap)
+  #:use-module (wemacs browser)
   #:export (key-press-hook))
 
 (define modifier-masks '((4 . "C") ;; Control
                          ))
-
-(assoc-ref modifier-masks 4)
-
 (define emacs-keymap '(
                        ("C-u" . (back))
                        ("C-m" . (forward))

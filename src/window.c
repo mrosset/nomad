@@ -193,7 +193,7 @@ void
 read_line_eval (GtkWidget *widget, gpointer user_data)
 {
 
-  SCM exp;
+  SCM proc;
   SCM value;
   gchar *result;
   GtkTextBuffer *buf;
@@ -210,10 +210,8 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
 
   input = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
 
-  exp = scm_list_2 (scm_from_locale_symbol ("catch-eval"),
-                    scm_from_locale_string (input));
-
-  value = scm_eval (exp, scm_interaction_environment ());
+  proc = scm_c_public_ref ("wemacs util", "catch-eval");
+  value = scm_call_1 (proc, scm_from_locale_string (input));
 
   if (!scm_is_string (value))
     {
