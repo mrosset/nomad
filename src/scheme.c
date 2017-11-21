@@ -43,7 +43,7 @@ SCM_DEFINE (scm_wemacs_start, "wemacs-start", 0, 0, 0, (), "")
 SCM_DEFINE (scm_wemacs_kill, "wemacs-kill", 0, 0, 0, (), "test macro")
 {
   g_application_quit (G_APPLICATION (app));
-  return SCM_BOOL_T;
+  return SCM_UNDEFINED;
 }
 
 SCM_DEFINE (scm_wemacs_webkit_load_uri, "web-view-load-uri", 1, 0, 0,
@@ -60,6 +60,24 @@ SCM_DEFINE (scm_wemacs_webkit_load_uri, "web-view-load-uri", 1, 0, 0,
     }
   webkit_web_view_load_uri (webView, curi);
   return uri;
+}
+
+SCM_DEFINE (scm_wemacs_scroll_down, "scroll-down", 0, 0, 0, (), "test macro")
+{
+  WebKitWebView *webView;
+  webView = wemacs_app_get_webview (WEMACS_APP (app));
+  webkit_web_view_run_javascript (webView, "window.scrollBy(0, 25)", NULL,
+                                  NULL, NULL);
+  return SCM_UNDEFINED;
+}
+
+SCM_DEFINE (scm_wemacs_scroll_up, "scroll-up", 0, 0, 0, (), "test macro")
+{
+  WebKitWebView *webView;
+  webView = wemacs_app_get_webview (WEMACS_APP (app));
+  webkit_web_view_run_javascript (webView, "window.scrollBy(0, -25)", NULL,
+                                  NULL, NULL);
+  return SCM_UNDEFINED;
 }
 
 SCM_DEFINE (

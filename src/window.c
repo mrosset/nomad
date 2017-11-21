@@ -68,10 +68,14 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
   GdkModifierType modifiers;
   WemacsAppWindowPrivate *priv;
   GtkWidget *vte;
+  SCM scm_hook;
+
+  gchar *key_name;
 
   priv = wemacs_app_window_get_instance_private (WEMACS_APP_WINDOW (widget));
   vte = priv->vte;
   modifiers = gtk_accelerator_get_default_mod_mask ();
+  key_name = gdk_keyval_name (event->keyval);
 
   // Handles M-m
   if (event->keyval == GDK_KEY_m
@@ -109,6 +113,24 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
       return FALSE;
     }
 
+  // If the webview does note have focus return FALSE, so children can
+  // handle key events
+  if (!gtk_widget_has_focus (GTK_WIDGET (priv->web_view)))
+    {
+      return FALSE;
+    }
+
+  // If event has state then its a modified keypress eg. `C-c' but not
+  // `C-c c' which means we can't handle prefixes, quite yet.  since
+  // we can easily capture this state, we'll use this a starting point
+  // for our keybindings. We'll call our Scheme key-press-hook. from
+  // here the wemacs keymap module will do the work.
+  if (event->state)
+    {
+      scm_hook = scm_c_public_ref ("wemacs keymap", "key-press-hook");
+      scm_run_hook (scm_hook, scm_list_2 (scm_from_int (event->state),
+                                          scm_from_locale_string (key_name)));
+    }
   return FALSE;
 }
 
@@ -135,11 +157,10 @@ gboolean
 clear_read_line_buffer (gpointer user_data)
 {
   GtkTextBuffer *buf;
-  if (!gtk_widget_has_focus (GTK_WIDGET (user_data)))
-    {
-      buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (user_data));
-      gtk_text_buffer_set_text (buf, "", -1);
-    }
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (user_data));
+  gtk_text_buffer_set_text (buf, "", -1);
+
   return FALSE;
 }
 
@@ -147,6 +168,7 @@ gboolean
 delayed_popdown (gpointer user_data)
 {
   gtk_widget_grab_focus (GTK_WIDGET (user_data));
+
   return FALSE;
 }
 
@@ -154,7 +176,6 @@ gboolean
 read_line_focus_in_event_cb (GtkWidget *widget, GdkEvent *event,
                              gpointer user_data)
 {
-  g_print ("got focus\n");
   clear_read_line_buffer (widget);
 
   return FALSE;
@@ -164,7 +185,7 @@ gboolean
 read_line_focus_out_event_cb (GtkWidget *widget, GdkEvent *event,
                               gpointer user_data)
 {
-  g_timeout_add (5000, clear_read_line_buffer, widget);
+  g_timeout_add (3500, clear_read_line_buffer, (gpointer)widget);
   return FALSE;
 }
 
@@ -201,31 +222,12 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
     }
 
   result = scm_to_locale_string (value);
-  g_print ("result: %s", result);
 
-  gtk_text_buffer_set_text (
-      gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->result_popover_view)),
-      result, -1);
+  gtk_text_buffer_set_text (GTK_TEXT_BUFFER (buf), result, -1);
 
-  gtk_text_buffer_set_text (buf, "", -1);
-  gtk_popover_popup (GTK_POPOVER (priv->result_popover));
-  g_timeout_add (3500, delayed_popdown, priv->web_view);
+  gtk_widget_grab_focus (GTK_WIDGET (priv->web_view));
+
   g_free (result);
-}
-
-gboolean
-source_view_focus_out_cb (GtkWidget *widget, gpointer user_data)
-
-{
-  gtk_widget_hide (widget);
-  return FALSE;
-}
-
-void
-source_view_focus_in_cb (GtkWidget *widget, gpointer user_data)
-
-{
-  gtk_widget_show (widget);
 }
 
 GtkSourceBuffer *
@@ -236,7 +238,6 @@ minibuf_new ()
   GtkSourceLanguage *sl;
   GtkSourceStyleSchemeManager *sm;
   GtkSourceStyleScheme *ss;
-
   GtkSourceBuffer *buf;
 
   buf = gtk_source_buffer_new (NULL);
