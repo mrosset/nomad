@@ -1,10 +1,20 @@
+* TODO Autotools
+** TODO convert test.scm to a module
+** TODO Install scheme files to guile site
 * DONE Keybindings and UX
-Originally I was going to have Emacs handle keybindings and pop-up
-windows. I still like the idea, but it had an extra layer of
-abstraction. We need to define function both in scheme and elisp to do
-basically the something.
-** Todo Handle Key events inside Wemacs not Emacs      :current:in progress:
-** TODO Create simple UI for input and pop-up display
+** DONE Todo Handle Key events inside Wemacs not Emacs   :partially done:
+- maps
+key map is a list of pairs. the cons of the pair is the key and the
+cdr is the function it maps too. A key cdr can also have the value of
+a keymap this allows for prefix keys. not sure how to integrate this
+into the events yet. This is loosely modelled after Emacs.
+
+- states
+vi bindings are not quite subject to prefix keys. and maps change
+based on what mode the vi is in. We can have one state that is Emacs
+and maps that handle states for other binding styles.
+** DONE Create simple UI for input and pop-up display
+** TODO Revisit this task, add support for prefix keys, and vim like states
 
 * TODO Use GTK application classes
 Classes created for application and window.
@@ -13,9 +23,9 @@ Classes created for application and window.
 We may make this a class, currently it is a field.
 ** DONE Vte Terminal
 widget to hold Emacs ncurses.
-** TODO Decrease the size of vte widget
+** DONE Decrease the size of vte widget
 
-* DOM link hinting
+* TODO DOM link hinting
 The DOM is not accessible from WebKit. It is single threaded and runs in it's own
 process. In order to access it we need to do use RPC.
 
@@ -33,5 +43,6 @@ send a single line that is an s-expression one line is read and then
 evaluated. Results are returned as an s-expression?
 
 * TODO Fancy html startup page?
-
-* Emacs integration
+* TODO Emacs integration
+* TODO Minibuf history
+* TODO Buffer list aka Tabs
