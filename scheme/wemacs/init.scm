@@ -5,17 +5,21 @@
   #:use-module (wemacs keymap)
   #:use-module (wemacs repl)
   #:use-module (wemacs events)
-  #:export (init run-tests))
+  #:export (init run-tests user-init-file))
+
+(define user-init-file (string-append (getenv "HOME") "/.wemacs.scm"))
 
 (define (run-tests)
   (pretty-print (all-threads))
   (current-thread))
 
 (define (init)
-  (if (file-exists?
+  ;; (if (file-exists? user-init-file)
+  ;;     (load-from-path
   (add-hook! key-press-hook handle-key-press)
   (add-hook! key-press-hook debug-key-press)
-  (add-hook! event-hook debug-event))
+  (add-hook! event-hook debug-event)
+  (repl-start))
 
  ;; (repl-start)
  ;; (browser-start))
