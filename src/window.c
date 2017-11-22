@@ -125,11 +125,12 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
   // we can easily capture this state, we'll use this a starting point
   // for our keybindings. We'll call our Scheme key-press-hook. from
   // here the wemacs keymap module will do the work.
-  if (event->state)
+  if ((event->state) && (event->type == GDK_KEY_PRESS))
     {
       scm_hook = scm_c_public_ref ("wemacs keymap", "key-press-hook");
       scm_run_hook (scm_hook, scm_list_2 (scm_from_int (event->state),
                                           scm_from_locale_string (key_name)));
+      return TRUE;
     }
   return FALSE;
 }

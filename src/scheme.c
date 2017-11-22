@@ -31,7 +31,7 @@ SCM_DEFINE (scm_wemacs_version, "wemacs-version", 0, 0, 0, (), "test macro")
   return scm_from_locale_string (WEMACS_VERSION);
 }
 
-SCM_DEFINE (scm_wemacs_start, "wemacs-start", 0, 0, 0, (), "")
+SCM_DEFINE (scm_wemacs_start, "browser-start", 0, 0, 0, (), "")
 {
   intmax_t status;
   app = G_APPLICATION (wemacs_app_new ());
@@ -148,7 +148,6 @@ detail higher level procedures for reloading webkit. Probably only \
     }
   else
     {
-
       webkit_web_view_reload (webView);
     }
   return SCM_BOOL_T;
@@ -158,6 +157,4 @@ void
 register_functions (void *data)
 {
 #include "scheme.x"
-  scm_c_export ("wemacs-start", "back", "forward", "reload", "scroll-up",
-                "scroll-down", "wemacs-version", NULL);
 }

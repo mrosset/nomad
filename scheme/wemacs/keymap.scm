@@ -1,6 +1,6 @@
 (define-module (wemacs keymap)
   #:use-module (wemacs browser)
-  #:export (key-press-hook))
+  #:export (key-press-hook handle-key-press debug-key-press))
 
 (define modifier-masks '((4 . "C") ;; Control
                          ))
@@ -40,6 +40,3 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
 
 (define (debug-key-press mod key)
   (simple-format #t "mod: ~s key: ~s\n" mod key))
-
-(add-hook! key-press-hook handle-key-press)
-(add-hook! key-press-hook debug-key-press)

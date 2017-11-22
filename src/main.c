@@ -1,4 +1,3 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 2; tab-width: 2 -*-  */
 /*
  * main.c
  * Copyright (C) 2017 Mike Rosset <mike.rosset@gmail.com>
@@ -22,13 +21,20 @@
 #include "app.h"
 #include "scheme.h"
 
+void
+inner_main (void *data, int argc, char **argv)
+{
+  intmax_t status;
+  app = G_APPLICATION (wemacs_app_new ());
+  status = g_application_run (app, argc, argv);
+  exit (status);
+}
+
 int
 main (int argc, char *argv[])
 {
   scm_init_guile ();
-  // scm_with_guile (&register_functions, NULL);
-  scm_c_primitive_load (WEMACS_SCHEME_INIT);
-  scm_c_use_module ("wemacs browser");
+  scm_c_use_module ("wemacs init");
   scm_c_define_module ("wemacs browser", register_functions, NULL);
-  scm_shell (argc, argv);
+  scm_c_eval_string ("(init)");
 }

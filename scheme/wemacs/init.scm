@@ -1,0 +1,11 @@
+(define-module (wemacs init)
+  #:use-module (wemacs keymap)
+  #:use-module (wemacs repl)
+  #:use-module (wemacs browser)
+  #:export (init))
+
+(define (init)
+  (add-hook! key-press-hook handle-key-press)
+  (add-hook! key-press-hook debug-key-press)
+  (repl-start)
+  (browser-start))

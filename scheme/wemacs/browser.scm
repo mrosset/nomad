@@ -1,11 +1,18 @@
 (define-module (wemacs browser)
-  #:use-module (guile-user)
-  #:export (browse
+  #:export (
+            scroll-up
+            scroll-down
+            browser-start
+            search-provider-format
+            browse
             forward
             home
             reload
             back
-            query))
+            query
+            wemacs-kill))
+
+(define search-provider-format "https://google.ca/search?q=~a")
 
 (define (browse url)
   (let ((prefix "https://"))

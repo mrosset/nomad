@@ -1,5 +1,5 @@
 * TODO Autotools
-** TODO convert test.scm to a module
+** TODO convert test.scm to a module                           :in progress:
 ** TODO Install scheme files to guile site
 * DONE Keybindings and UX
 ** DONE Todo Handle Key events inside Wemacs not Emacs   :partially done:
