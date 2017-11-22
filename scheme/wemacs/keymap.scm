@@ -39,4 +39,4 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
         (eval proc (interaction-environment)))))
 
 (define (debug-key-press mod key)
-  (simple-format #t "mod: ~s key: ~s\n" mod key))
+  (simple-format #t "thread: ~s mod: ~s key: ~s\n" (current-thread)  mod key))

@@ -1,4 +1,3 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 2; tab-width: 2 -*-  */
 /*
  * scm.c
  * Copyright (C) 2017 Mike Rosset <mike.rosset@gmail.com>
@@ -61,12 +60,18 @@ SCM_DEFINE (scm_wemacs_webkit_load_uri, "web-view-load-uri", 1, 0, 0,
   return uri;
 }
 
+void *
+scroll_down (void *data)
+{
+  WebKitWebView *web_view;
+  web_view = wemacs_app_get_webview (WEMACS_APP (app));
+  webkit_web_view_run_javascript (web_view, "window.scrollBy(0, 25)", NULL,
+                                  NULL, NULL);
+  return NULL;
+}
 SCM_DEFINE (scm_wemacs_scroll_down, "scroll-down", 0, 0, 0, (), "test macro")
 {
-  WebKitWebView *webView;
-  webView = wemacs_app_get_webview (WEMACS_APP (app));
-  webkit_web_view_run_javascript (webView, "window.scrollBy(0, 25)", NULL,
-                                  NULL, NULL);
+  scm_with_guile (scroll_down, NULL);
   return SCM_UNDEFINED;
 }
 

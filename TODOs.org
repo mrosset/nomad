@@ -1,7 +1,8 @@
 * TODO Autotools
 ** TODO convert test.scm to a module                           :in progress:
 ** TODO Install scheme files to guile site
-* DONE Keybindings and UX
+* TODO Page search
+ * DONE Keybindings and UX
 ** DONE Todo Handle Key events inside Wemacs not Emacs   :partially done:
 - maps
 key map is a list of pairs. the cons of the pair is the key and the
@@ -15,7 +16,6 @@ based on what mode the vi is in. We can have one state that is Emacs
 and maps that handle states for other binding styles.
 ** DONE Create simple UI for input and pop-up display
 ** TODO Revisit this task, add support for prefix keys, and vim like states
-
 * TODO Use GTK application classes
 Classes created for application and window.
 
@@ -41,7 +41,6 @@ javascript we'll have to provide another layer of RPC anyways
 Create a web extention that spawns a unix socket. Clients connect and
 send a single line that is an s-expression one line is read and then
 evaluated. Results are returned as an s-expression?
-
 * TODO Fancy html startup page?
 * TODO Emacs integration
 * TODO Minibuf history

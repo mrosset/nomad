@@ -1,16 +1,17 @@
 (define-module (wemacs browser)
+  #:use-module (wemacs events)
   #:export (
+            browser-run
+            browser-start
             scroll-up
             scroll-down
-            browser-start
             search-provider-format
             browse
             forward
             home
             reload
             back
-            query
-            wemacs-kill))
+            query))
 
 (define search-provider-format "https://google.ca/search?q=~a")
 
@@ -31,6 +32,7 @@
 
 (define (back)
   "go back in history"
+  (run-hook event-hook "(back)")
   (web-view-go-back))
 
 (define (query arg)

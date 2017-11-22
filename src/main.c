@@ -34,7 +34,10 @@ int
 main (int argc, char *argv[])
 {
   scm_init_guile ();
-  scm_c_use_module ("wemacs init");
+  scm_c_use_module ("wemacs browser");
   scm_c_define_module ("wemacs browser", register_functions, NULL);
+  scm_c_use_module ("wemacs init");
+  scm_c_use_module ("wemacs repl");
   scm_c_eval_string ("(init)");
+  scm_boot_guile (argc, argv, inner_main, NULL);
 }

@@ -31,6 +31,7 @@ fork_vte_child (VteTerminal *vte, gint status, gpointer data)
   gchar **envv;
   gchar *pwd;
   gchar *argv[] = { "emacs", "-nw", "-l", EMACS_INIT, NULL };
+  // gchar *argv[] = { "nc", "-U", "/tmp/guile-socket", NULL };
 
   pwd = g_get_current_dir ();
   envv = g_get_environ ();
