@@ -1,9 +1,7 @@
 (define-module (wemacs init)
   #:use-module (ice-9 threads)
   #:use-module (ice-9 pretty-print)
-  #:use-module (wemacs browser)
   #:use-module (wemacs keymap)
-  #:use-module (wemacs repl)
   #:use-module (wemacs events)
   #:export (init run-tests user-init-file))
 
@@ -14,12 +12,11 @@
   (current-thread))
 
 (define (init)
-  ;; (if (file-exists? user-init-file)
-  ;;     (load-from-path
   (add-hook! key-press-hook handle-key-press)
   (add-hook! key-press-hook debug-key-press)
   (add-hook! event-hook debug-event)
-  (repl-start))
+  (if (file-exists? user-init-file)
+      (load user-init-file)))
 
  ;; (repl-start)
  ;; (browser-start))

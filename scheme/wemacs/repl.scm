@@ -13,11 +13,11 @@
   (spawn-server
    (make-unix-domain-server-socket)))
 
-(define (poll-server-start)
-  (make-thread (poll-server-run)))
+;; (define (poll-server-start)
+;;   (make-thread (poll-server-run)))
 
-(define (poll-server-run)
-  (while #t
-    (run-hook event-hook "(poll-server)")
-    (poll-coop-repl-server server)
-    (sleep 1)))
+;; (define (poll-server-run)
+;;   (while #t
+;;     (run-hook event-hook "(poll-server)")
+;;     ;; (poll-coop-repl-server server)
+;;     (sleep 1)))

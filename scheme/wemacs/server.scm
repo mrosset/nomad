@@ -14,19 +14,19 @@
   (let ((line (read-line client-port)))
     (false-if-exception (eval-string line))))
 
-(define (run-server)
-  (when (file-exists? socket-path)
-    (delete-file socket-path))
+;; (define (run-server)
+;;   (when (file-exists? socket-path)
+;;     (delete-file socket-path))
 
-  (set! server-socket (make-unix-domain-server-socket #:path socket-path))
+;;   (set! server-socket (make-unix-domain-server-socket #:path socket-path))
 
-  (sigaction SIGPIPE SIG_IGN)
-  (listen server-socket 1)
-  (let loop ()
-    (match (accept server-socket)
-      (#f
-       (close server-socket))
-      ((client-port . client-addr)
-       (eval-line client-port)
-       (close-port client-port)
-       (loop)))))
+;;   (sigaction SIGPIPE SIG_IGN)
+;;   (listen server-socket 1)
+;;   (let loop ()
+;;     (match (accept server-socket)
+;;       (#f
+;;        (close server-socket))
+;;       ((client-port . client-addr)
+;;        (eval-line client-port)
+;;        (close-port client-port)
+;;        (loop)))))
