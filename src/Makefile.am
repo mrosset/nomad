@@ -21,7 +21,7 @@ wemacs_SOURCES = main.c \
 	window.c \
 	window.h
 
-AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement -rdynamic \
+AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement \
 	$(GTK_FLAGS) \
 	$(GUILE_CFLAGS) \
 	$(VTE_CFLAGS) \
@@ -29,6 +29,8 @@ AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement -rdynamic \
 	$(GTK_SOURCEVIEW_CFLAGS) \
 	-DWEMACS_WEB_EXTENSIONS_DIR=\""$(libexecdir)/wemacs/"\" \
 	-DWEMACS_SCHEME_INIT=\""$(HOME)/src/wemacs/test.scm"\"
+
+AM_LDFLAGS = -export-dynamic
 
 wemacs_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(VTE_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
 
