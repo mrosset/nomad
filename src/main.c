@@ -25,6 +25,13 @@ void
 inner_main (void *data, int argc, char **argv)
 {
   intmax_t status;
+
+  scm_c_use_module ("wemacs browser");
+  scm_c_define_module ("wemacs browser", register_functions, NULL);
+  scm_c_use_module ("wemacs init");
+  scm_c_use_module ("wemacs repl");
+  scm_c_eval_string ("(init)");
+
   app = G_APPLICATION (wemacs_app_new ());
   status = g_application_run (app, argc, argv);
   exit (status);
@@ -33,11 +40,5 @@ inner_main (void *data, int argc, char **argv)
 int
 main (int argc, char *argv[])
 {
-  scm_init_guile ();
-  scm_c_use_module ("wemacs browser");
-  scm_c_define_module ("wemacs browser", register_functions, NULL);
-  scm_c_use_module ("wemacs init");
-  scm_c_use_module ("wemacs repl");
-  scm_c_eval_string ("(init)");
   scm_boot_guile (argc, argv, inner_main, NULL);
 }
