@@ -27,7 +27,7 @@
 
 SCM_DEFINE (scm_wemacs_version, "wemacs-version", 0, 0, 0, (), "test macro")
 {
-  return scm_from_locale_string (WEMACS_VERSION);
+  return scm_from_utf8_string (WEMACS_VERSION);
 }
 
 SCM_DEFINE (scm_wemacs_start, "browser-start", 0, 0, 0, (), "")
@@ -47,17 +47,32 @@ SCM_DEFINE (scm_wemacs_kill, "wemacs-kill", 0, 0, 0, (), "test macro")
 SCM_DEFINE (scm_wemacs_webkit_load_uri, "web-view-load-uri", 1, 0, 0,
             (SCM uri), "TODO: document this procedure.")
 {
-  gchar *curi;
-  WebKitWebView *webView;
+  char *c_uri;
+  WebKitWebView *web_view;
 
-  curi = scm_to_locale_string (uri);
-  webView = wemacs_app_get_webview (WEMACS_APP (app));
-  if (!webView)
+  scm_dynwind_begin (0);
+
+  c_uri = scm_to_locale_string (uri);
+  scm_dynwind_unwind_handler (free, c_uri, SCM_F_WIND_EXPLICITLY);
+
+  web_view = wemacs_app_get_webview (WEMACS_APP (app));
+
+  if (web_view == NULL)
     {
+      scm_dynwind_end ();
       return SCM_BOOL_F;
     }
-  webkit_web_view_load_uri (webView, curi);
+
+  webkit_web_view_load_uri (web_view, c_uri);
+  scm_dynwind_end ();
+
   return uri;
+}
+
+static void
+ignore_result_cb (GObject *source_object, GAsyncResult *res,
+                  gpointer user_data)
+{
 }
 
 void *
@@ -66,20 +81,22 @@ scroll_down (void *data)
   WebKitWebView *web_view;
   web_view = wemacs_app_get_webview (WEMACS_APP (app));
   webkit_web_view_run_javascript (web_view, "window.scrollBy(0, 25)", NULL,
-                                  NULL, NULL);
+                                  ignore_result_cb, NULL);
   return NULL;
 }
+
 SCM_DEFINE (scm_wemacs_scroll_down, "scroll-down", 0, 0, 0, (), "test macro")
 {
   scm_with_guile (scroll_down, NULL);
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE (scm_wemacs_scroll_up, "scroll-up", 0, 0, 0, (), "test macro")
+SCM_DEFINE (scm_wemacs_scroll_up, "scroll-up", 0, 0, 0, (),
+            "Internal procedure to the scroll WebView up")
 {
-  WebKitWebView *webView;
-  webView = wemacs_app_get_webview (WEMACS_APP (app));
-  webkit_web_view_run_javascript (webView, "window.scrollBy(0, -25)", NULL,
+  WebKitWebView *web_view;
+  web_view = wemacs_app_get_webview (WEMACS_APP (app));
+  webkit_web_view_run_javascript (web_view, "window.scrollBy(0, -25)", NULL,
                                   NULL, NULL);
   return SCM_UNDEFINED;
 }
@@ -90,20 +107,20 @@ SCM_DEFINE (
 be found or there is no back history then it returns #f. Otherwise \
 it returns #t. TODO: maybe provide a callback for load-change signal.")
 {
-  WebKitWebView *webView;
+  WebKitWebView *web_view;
 
-  webView = wemacs_app_get_webview (WEMACS_APP (app));
+  web_view = wemacs_app_get_webview (WEMACS_APP (app));
 
-  if (!webView)
+  if (web_view == NULL)
     {
       return SCM_BOOL_F;
     }
 
-  if (!webkit_web_view_can_go_back (webView))
+  if (!webkit_web_view_can_go_back (web_view))
     {
       return SCM_BOOL_F;
     }
-  webkit_web_view_go_back (webView);
+  webkit_web_view_go_back (web_view);
   return SCM_BOOL_T;
 }
 
@@ -114,20 +131,20 @@ not be found or there is no forward history then it returns \
 #f. Otherwise it returns #t. TODO: maybe provide a callback for \
 load-change signal.")
 {
-  WebKitWebView *webView;
+  WebKitWebView *web_view;
 
-  webView = wemacs_app_get_webview (WEMACS_APP (app));
+  web_view = wemacs_app_get_webview (WEMACS_APP (app));
 
-  if (!webView)
+  if (web_view == NULL)
     {
       return SCM_BOOL_F;
     }
 
-  if (!webkit_web_view_can_go_forward (webView))
+  if (!webkit_web_view_can_go_forward (web_view))
     {
       return SCM_BOOL_F;
     }
-  webkit_web_view_go_forward (webView);
+  webkit_web_view_go_forward (web_view);
   return SCM_BOOL_T;
 }
 
@@ -138,31 +155,26 @@ cache. This procedure should almost never be called directly. TODO: \
 detail higher level procedures for reloading webkit. Probably only \
 (reload) in this case.")
 {
-  WebKitWebView *webView;
+  WebKitWebView *web_view;
 
-  webView = wemacs_app_get_webview (WEMACS_APP (app));
+  web_view = wemacs_app_get_webview (WEMACS_APP (app));
 
-  if (!webView)
+  if (web_view == NULL)
     {
       return SCM_BOOL_F;
     }
 
   if (scm_is_true (nocache))
     {
-      webkit_web_view_reload_bypass_cache (webView);
+      webkit_web_view_reload_bypass_cache (web_view);
     }
   else
     {
-      webkit_web_view_reload (webView);
+      webkit_web_view_reload (web_view);
     }
   return SCM_BOOL_T;
 }
 
-void
-register_functions (void *data)
-{
-#include "scheme.x"
-}
 SCM_DEFINE (scm_wemacs_get_current_url, "current-url", 0, 0, 0, (),
             "Return's the WebView's current URL. This calls webkit's \
 webkit_web_view_get_uri. Note: this function can potentially return a \
@@ -191,3 +203,9 @@ URI vs URL")
   return result;
 }
 
+void
+register_functions (void *data)
+{
+#include "scheme.x"
+  return;
+}

@@ -70,7 +70,7 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
   GtkWidget *vte;
   SCM scm_hook;
 
-  gchar *key_name;
+  const gchar *key_name;
 
   priv = wemacs_app_window_get_instance_private (WEMACS_APP_WINDOW (widget));
   vte = priv->vte;
@@ -212,11 +212,11 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
   input = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
 
   proc = scm_c_public_ref ("wemacs util", "catch-eval");
-  value = scm_call_1 (proc, scm_from_locale_string (input));
+  value = scm_call_1 (proc, scm_take_locale_string (input));
 
   if (!scm_is_string (value))
     {
-      value = scm_from_locale_string ("unhandled value: not a string");
+      value = scm_from_utf8_string ("unhandled value: not a string");
       g_critical ("unhandled value: not a string");
     }
 
@@ -268,10 +268,16 @@ wemacs_app_window_init (WemacsAppWindow *win)
 {
 
   WemacsAppWindowPrivate *priv;
+  char *c_home_page;
+  SCM home_page;
 
   gtk_widget_init_template (GTK_WIDGET (win));
 
+  scm_dynwind_begin (0);
+
   priv = wemacs_app_window_get_instance_private (win);
+  home_page = scm_c_public_ref ("wemacs browser", "default-home-page");
+  c_home_page = scm_to_locale_string (home_page);
 
   g_signal_connect (webkit_web_context_get_default (),
                     "initialize-web-extensions",
@@ -299,7 +305,10 @@ wemacs_app_window_init (WemacsAppWindow *win)
   gtk_paned_add2 (GTK_PANED (priv->pane), GTK_WIDGET (priv->vte));
   gtk_widget_show_all (priv->pane);
   gtk_widget_hide (priv->vte);
-  webkit_web_view_load_uri (priv->web_view, DEFAULT_URI);
+  webkit_web_view_load_uri (priv->web_view, c_home_page);
+
+  scm_dynwind_free (c_home_page);
+  scm_dynwind_end ();
 }
 
 static void
