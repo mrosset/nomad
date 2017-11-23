@@ -163,3 +163,31 @@ register_functions (void *data)
 {
 #include "scheme.x"
 }
+SCM_DEFINE (scm_wemacs_get_current_url, "current-url", 0, 0, 0, (),
+            "Return's the WebView's current URL. This calls webkit's \
+webkit_web_view_get_uri. Note: this function can potentially return a \
+URI that is not a URL. Since the API is directed towards end users, \
+we use URL since it's the more common term. \
+\
+see https://danielmiessler.com/study/url-uri/ on the distinction of     \
+URI vs URL")
+{
+  WebKitWebView *web_view;
+  const char *uri;
+  SCM result;
+
+  web_view = wemacs_app_get_webview (WEMACS_APP (app));
+  uri = webkit_web_view_get_uri (web_view);
+
+  if (uri == NULL)
+    {
+      result = scm_from_utf8_string ("URI not loaded");
+    }
+  else
+    {
+      result = scm_from_locale_string (uri);
+    }
+
+  return result;
+}
+

@@ -2,10 +2,23 @@
 ** DONE convert test.scm to a module                           :in progress:
 ** DONE Install scheme files to guile site
 ** TODO Test autotools in clean environment
+* TODO C strings
+** TODO Use scm_from_utf8_string for constant C strings
+** TODO Use scm_take_locale string in place of scm_to_locale.
+
+scm_take_locale is better suited for converting C strings to SCM
+types. Since guile's GC will free them as needed.
+
+** TODO Make sure scm_to_locale strings are freed
+
+Avoid using this function at all. If we do use it ensure the C strings
+are freed after.
+
+see [[https:https://www.gnu.org/software/guile/manual/html_node/Dynamic-Wind.html#Dynamic-Wind][Dynamic-Wind]]
+
 * TODO Page search
 * TODO Keybindings and UX
-
-** DONE Todo Handle Key events inside Wemacs not Emacs   :partially done:
+** TODO Todo Handle Key events inside Wemacs not Emacs   :partially done:
 
 - maps
 key map is a list of pairs. the cons of the pair is the key and the
@@ -20,6 +33,7 @@ and maps that handle states for other binding styles.
 
 ** DONE Create simple UI for input and pop-up display
 ** TODO Revisit this task, add support for prefix keys, and vim like states
+** TODO keybind to copy current url to clipboard
 * TODO Use GTK application classes
 
 Classes created for application and window.
@@ -33,7 +47,6 @@ Maybe turn this into a class?
 widget to hold Emacs ncurses.
 
 ** DONE Decrease the size of vte widget
-
 * TODO DOM link hinting
 
 The DOM is not accessible from WebKit. It is single threaded and runs in it's own
@@ -56,7 +69,6 @@ evaluated. Results are returned as an s-expression?
 
 The server and repl modules, are redundant. Once we figure out what if
 we need to use the webextention remove what we dont't neet.
-
 * TODO Fancy html startup page?
 * TODO Emacs integration
 * TODO Minibuf history

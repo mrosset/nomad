@@ -1,6 +1,8 @@
 (define-module (wemacs browser)
   #:use-module (wemacs events)
   #:export (
+            default-home-page
+            current-url
             browser-run
             browser-start
             scroll-up
@@ -13,7 +15,8 @@
             back
             query))
 
-(define search-provider-format "https://google.ca/search?q=~a")
+(define search-provider-format "https://duckduckgo.com/?q=~a")
+(define default-home-page "https://www.gnu.org/software/guile")
 
 (define (browse url)
   (let ((prefix "https://"))
@@ -25,7 +28,7 @@
   (web-view-go-forward))
 
 (define (home)
-  (web-view-load-uri "https://www.gnu.org/software/emacs"))
+  (web-view-load-uri default-home-page))
 
 (define (reload)
   (web-view-reload))
@@ -38,3 +41,6 @@
 (define (query arg)
   (let ((uri (simple-format #f search-provider-format arg)))
     (browse uri)))
+
+(define (current-url)
+  (web-view-current-url))
