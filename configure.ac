@@ -12,13 +12,15 @@ AC_PROG_CC
 AM_INIT_AUTOMAKE([-Wall gnu silent-rules])
 AM_SILENT_RULES([yes])
 AM_PROG_AR
+
+# libtool
 LT_INIT
 
 # Guile
-GUILE_PROGS([2.2])
-GUILE_PKG([2.2])
+GUILE_PKG([2.2 2.1 2.0])
+GUILE_PROGS
 GUILE_FLAGS
-GUILE_SITE_DIR([2.2])
+GUILE_SITE_DIR
 
 # pkg-config modules
 PKG_CHECK_MODULES([GTK], [gtk+-3.0])
@@ -27,6 +29,16 @@ PKG_CHECK_MODULES([VTE], [vte-2.91])
 PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
 PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-3.0])
 PKG_CHECK_MODULES(GLIB, [glib-2.0])
+
+AC_PATH_PROG(GUILE_SNARF,guile-snarf$GUILE_EFFECTIVE_VERSION, no)
+AC_SUBST(GUILE_SNARF)
+
+AC_PATH_PROG(GUILE_SNARF,guile-snarf, no)
+AC_SUBST(GUILE_SNARF)
+
+if test "$GUILE_SNARF" = "no"; then
+   AC_MSG_ERROR([guile-snarf is required])
+fi
 
 AC_CONFIG_FILES([
  Makefile

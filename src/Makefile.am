@@ -50,4 +50,4 @@ snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS)
 
 SUFFIXES = .x
 .c.x:
-	guile-snarf$(GUILE_EFFECTIVE_VERSION) -o $@ $< $(snarfcppopts) $(AM_FLAGS)
+	$(GUILE_SNARF) -o $@ $< $(snarfcppopts) $(AM_FLAGS)
