@@ -8,10 +8,11 @@ test:
 	gcc  $(GUILE_CFLAGS) test.c -o $@
 	./test
 
+EXTRA_DIST = gresource.xml window.ui
+
 wemacs_SOURCES = main.c \
 	app.c \
 	app.h \
-	gresourec.xml \
 	resources.c \
 	scheme.c \
 	scheme.h \
@@ -27,8 +28,7 @@ AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement \
 	$(VTE_CFLAGS) \
 	$(WEBKIT_CFLAGS) \
 	$(GTK_SOURCEVIEW_CFLAGS) \
-	-DWEMACS_WEB_EXTENSIONS_DIR=\""$(libexecdir)/wemacs/"\" \
-	-DWEMACS_SCHEME_INIT=\""$(HOME)/src/wemacs/test.scm"\"
+	-DWEMACS_WEB_EXTENSIONS_DIR=\""$(libexecdir)/wemacs/"\"
 
 AM_LDFLAGS = -export-dynamic
 
@@ -44,7 +44,7 @@ format:
 	 clang-format -i *.c *.h
 
 resources.c: gresource.xml window.ui
-	glib-compile-resources $< --target=$@ --generate-source
+	$(GLIB_COMPILE_R) $< --target=$@ --generate-source
 
 snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS)
 

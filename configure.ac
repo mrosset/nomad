@@ -18,7 +18,7 @@ LT_INIT
 
 # Guile
 GUILE_PKG([2.2])
-GUILE_PROGS([2.2])
+GUILE_PROGS
 GUILE_FLAGS
 GUILE_SITE_DIR
 
@@ -30,14 +30,18 @@ PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
 PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-3.0])
 PKG_CHECK_MODULES(GLIB, [glib-2.0])
 
-AC_PATH_PROG(GUILE_SNARF,guile-snarf$GUILE_EFFECTIVE_VERSION, no)
-AC_SUBST(GUILE_SNARF)
-
-AC_PATH_PROG(GUILE_SNARF,guile-snarf, no)
+AC_PATH_PROG(GUILE_SNARF, guile-snarf, no)
 AC_SUBST(GUILE_SNARF)
 
 if test "$GUILE_SNARF" = "no"; then
-   AC_MSG_ERROR([guile-snarf is required])
+   AC_MSG_ERROR([program guile-snarf is required])
+fi
+
+AC_PATH_PROG(GLIB_COMPILE_R, glib-compile-resources, no)
+AC_SUBST(GLIB_COMPILE_R)
+
+if test "$GLIB_COMPILE_R" = "no"; then
+   AC_MSG_ERROR([program glib-compile-resources is required])
 fi
 
 AC_CONFIG_FILES([

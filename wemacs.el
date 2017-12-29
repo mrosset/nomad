@@ -6,7 +6,19 @@
     (insert code)
     (geiser-eval-buffer)))
 
-(setq browse-url-browser-function 'wemacs-browse-function)
+(setq wemacs-process nil)
+
+(defun wemacs-connect ()
+  (when (wemacs-process nil)))
+
+;; (setq wemacs-process (make-network-process
+;;                       :name "wemacs-process"
+;;                       :family 'local
+;;                       :buffer (get-buffer-create "*wemacs-process*")
+;;                       :remote "/tmp/guile-socket"))
+
+;; (setq browse-url-browser-function 'wemacs-browse-function)
+(setq browse-url-browser-function 'browse-url-firefox)
 ;; (setq browse-url-browser-function 'browse-url-xdg-open)
 
 (defun wemacs-browse ()

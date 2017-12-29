@@ -17,7 +17,7 @@ vi bindings are not quite subject to prefix keys. and maps change
 based on what mode the vi is in. We can have one state that is Emacs
 and maps that handle states for other binding styles.
 
-** DONE Create simple UI for input and pop-up display
+** TODO Create simple UI for input and pop-up display
 ** TODO Revisit this task, add support for prefix keys, and vim like states
 ** TODO keybind to copy current url to clipboard
 * TODO Use GTK application classes
@@ -59,16 +59,3 @@ we need to use the webextention remove what we dont't neet.
 * TODO Emacs integration
 * TODO Minibuf history
 * TODO Buffer list aka Tabs
-* DONE C strings
-** DONE Use scm_from_utf8_string for constant C strings
-** DONE Use scm_take_locale string in place of scm_to_locale.
-
-scm_take_locale is better suited for converting C strings to SCM
-types. Since guile's GC will free them as needed.
-
-** DONE Make sure scm_to_locale strings are freed
-
-Avoid using this function at all. If we do use it ensure the C strings
-are freed after.
-
-see [[https:https://www.gnu.org/software/guile/manual/html_node/Dynamic-Wind.html#Dynamic-Wind][Dynamic-Wind]]
