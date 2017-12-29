@@ -1,5 +1,5 @@
-(define-module (wemacs repl)
-  #:use-module (wemacs events)
+(define-module (nomad repl)
+  #:use-module (nomad events)
   #:use-module (ice-9 threads)
   #:use-module (system repl server)
   #:use-module (system repl coop-server)

@@ -3,45 +3,45 @@
 #include "app.h"
 #include "window.h"
 
-struct _WemacsApp
+struct _NomadApp
 {
   GtkApplication parent;
 };
 
-G_DEFINE_TYPE (WemacsApp, wemacs_app, GTK_TYPE_APPLICATION);
+G_DEFINE_TYPE (NomadApp, nomad_app, GTK_TYPE_APPLICATION);
 
 static void
-wemacs_app_init (WemacsApp *app)
+nomad_app_init (NomadApp *app)
 {
 }
 
 static void
-wemacs_app_activate (GApplication *app)
+nomad_app_activate (GApplication *app)
 {
-  WemacsAppWindow *win;
+  NomadAppWindow *win;
 
-  win = wemacs_app_window_new (WEMACS_APP (app));
+  win = nomad_app_window_new (NOMAD_APP (app));
   gtk_window_present (GTK_WINDOW (win));
 }
 
 static void
-wemacs_app_class_init (WemacsAppClass *class)
+nomad_app_class_init (NomadAppClass *class)
 {
-  G_APPLICATION_CLASS (class)->activate = wemacs_app_activate;
+  G_APPLICATION_CLASS (class)->activate = nomad_app_activate;
 }
 
-WemacsApp *
-wemacs_app_new (void)
+NomadApp *
+nomad_app_new (void)
 {
-  return g_object_new (WEMACS_APP_TYPE, "application-id", "org.gnu.wemacsapp",
+  return g_object_new (NOMAD_APP_TYPE, "application-id", "org.gnu.nomadapp",
                        "flags", G_APPLICATION_HANDLES_OPEN, NULL);
 }
 
 WebKitWebView *
-wemacs_app_get_webview (WemacsApp *app)
+nomad_app_get_webview (NomadApp *app)
 {
   GList *windows;
-  WemacsAppWindow *win;
+  NomadAppWindow *win;
 
   windows = gtk_application_get_windows (GTK_APPLICATION (app));
 
@@ -50,6 +50,6 @@ wemacs_app_get_webview (WemacsApp *app)
       g_critical ("could not find window");
       return NULL;
     }
-  win = WEMACS_APP_WINDOW (windows->data);
-  return wemacs_app_window_get_webview (win);
+  win = NOMAD_APP_WINDOW (windows->data);
+  return nomad_app_window_get_webview (win);
 }

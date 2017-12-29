@@ -1,4 +1,4 @@
-(define-module (wemacs events)
+(define-module (nomad events)
   #:use-module (ice-9 threads)
   #:export (event-hook debug-event))
 

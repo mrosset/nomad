@@ -1,5 +1,5 @@
-(define-module (wemacs browser)
-  #:use-module (wemacs events)
+(define-module (nomad browser)
+  #:use-module (nomad events)
   #:export (
             default-home-page
             current-url

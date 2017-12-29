@@ -1,5 +1,5 @@
-(define-module (wemacs keymap)
-  #:use-module (wemacs browser)
+(define-module (nomad keymap)
+  #:use-module (nomad browser)
   #:export (key-press-hook handle-key-press debug-key-press))
 
 (define modifier-masks '((4 . "C") ;; Control

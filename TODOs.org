@@ -4,7 +4,7 @@
 ** TODO Test autotools in clean environment
 * TODO Page search
 * TODO Keybindings and UX
-** TODO Todo Handle Key events inside Wemacs not Emacs   :partially done:
+** TODO Todo Handle Key events inside Nomad not Emacs   :partially done:
 
 - maps
 key map is a list of pairs. the cons of the pair is the key and the

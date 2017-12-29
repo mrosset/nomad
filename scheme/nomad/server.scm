@@ -1,7 +1,7 @@
-(define-module (wemacs server))
+(define-module (nomad server))
 
 (define client-socket (socket PF_UNIX SOCK_STREAM 0))
-(define socket-path "/tmp/wemacs")
+(define socket-path "/tmp/nomad")
 
 (define (message msg)
   (connect client-socket AF_UNIX socket-path)

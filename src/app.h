@@ -1,15 +1,15 @@
-#ifndef __WEMACSAPP_H
-#define __WEMACSAPP_H
+#ifndef __NOMADAPP_H
+#define __NOMADAPP_H
 
 #include <gtk/gtk.h>
 #include <webkit2/webkit2.h>
 
-#define EMACS_INIT "/home/mrosset/src/wemacs/init.el"
+#define EMACS_INIT "/home/mrosset/src/nomad/init.el"
 
-#define WEMACS_APP_TYPE (wemacs_app_get_type ())
-G_DECLARE_FINAL_TYPE (WemacsApp, wemacs_app, WEMACS, APP, GtkApplication)
-WemacsApp *wemacs_app_new (void);
-// WemacsAppWindow  *wemacs_app_get_window  (WemacsApp *app);
-WebKitWebView *wemacs_app_get_webview (WemacsApp *app);
+#define NOMAD_APP_TYPE (nomad_app_get_type ())
+G_DECLARE_FINAL_TYPE (NomadApp, nomad_app, NOMAD, APP, GtkApplication)
+NomadApp *nomad_app_new (void);
+// NomadAppWindow  *nomad_app_get_window  (NomadApp *app);
+WebKitWebView *nomad_app_get_webview (NomadApp *app);
 
-#endif /* __WEMACSAPP_H */
+#endif /* __NOMADAPP_H */

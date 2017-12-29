@@ -2,7 +2,7 @@ PACKAGE=emacs
 VERSION=0.1
 
 # autoconf
-AC_INIT([wemacs], [0.1], [mike.rosset@gmail.com])
+AC_INIT([nomad], [0.1], [mike.rosset@gmail.com])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIRS([m4])

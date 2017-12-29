@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/org/gnu/wemacseapp">
+  <gresource prefix="/org/gnu/nomadeapp">
     <file preprocess="xml-stripblanks">window.ui</file>
   </gresource>
 </gresources>

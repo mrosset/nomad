@@ -1,4 +1,4 @@
-(define-module (wemacs util)
+(define-module (nomad util)
   #:export (catch-eval))
 
 (define (quasi-eval string)

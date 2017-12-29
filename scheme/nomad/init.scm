@@ -1,11 +1,11 @@
-(define-module (wemacs init)
+(define-module (nomad init)
   #:use-module (ice-9 threads)
   #:use-module (ice-9 pretty-print)
-  #:use-module (wemacs keymap)
-  #:use-module (wemacs events)
+  #:use-module (nomad keymap)
+  #:use-module (nomad events)
   #:export (init run-tests user-init-file))
 
-(define user-init-file (string-append (getenv "HOME") "/.wemacs.scm"))
+(define user-init-file (string-append (getenv "HOME") "/.nomad.scm"))
 
 (define (run-tests)
   (pretty-print (all-threads))

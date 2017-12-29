@@ -29,10 +29,10 @@ test:
 	  -o "$@" "$<"
 
 SOURCES =					\
-  wemacs/browser.scm				\
-  wemacs/events.scm				\
-  wemacs/init.scm				\
-  wemacs/keymap.scm				\
-  wemacs/repl.scm				\
-  wemacs/server.scm				\
-  wemacs/util.scm
+  nomad/browser.scm				\
+  nomad/events.scm				\
+  nomad/init.scm				\
+  nomad/keymap.scm				\
+  nomad/repl.scm				\
+  nomad/server.scm				\
+  nomad/util.scm

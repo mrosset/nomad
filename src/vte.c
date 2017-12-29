@@ -2,12 +2,12 @@
  * vte.c
  * Copyright (C) 2017 Mike Rosset <mike.rosset@gmail.com>
  *
- * wemacs is free software: you can redistribute it and/or modify it
+ * nomad is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * wemacs is distributed in the hope that it will be useful, but
+ * nomad is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
@@ -20,8 +20,8 @@
 #include "app.h"
 #include "vte.h"
 
-G_DEFINE_TYPE (WemacsVte, wemacs_vte, VTE_TYPE_TERMINAL);
-struct _WemacsVtePrivate
+G_DEFINE_TYPE (NomadVte, nomad_vte, VTE_TYPE_TERMINAL);
+struct _NomadVtePrivate
 {
 };
 
@@ -46,17 +46,17 @@ fork_vte_child (VteTerminal *vte, gint status, gpointer data)
 }
 
 static void
-wemacs_vte_class_init (WemacsVteClass *class)
+nomad_vte_class_init (NomadVteClass *class)
 {
 }
 
 static void
-wemacs_vte_init (WemacsVte *self)
+nomad_vte_init (NomadVte *self)
 {
   GdkRGBA b_rgba;
   GdkRGBA f_rgba;
 
-  self->priv = wemacs_vte_get_instance_private (self);
+  self->priv = nomad_vte_get_instance_private (self);
 
   gdk_rgba_parse (&b_rgba, "white");
   gdk_rgba_parse (&f_rgba, "black");
@@ -69,8 +69,8 @@ wemacs_vte_init (WemacsVte *self)
                     NULL);
 }
 
-WemacsVte *
-wemacs_vte_new (void)
+NomadVte *
+nomad_vte_new (void)
 {
-  return g_object_new (WEMACS_TYPE_VTE, NULL);
+  return g_object_new (NOMAD_TYPE_VTE, NULL);
 }

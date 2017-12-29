@@ -1,13 +1,13 @@
 /*
- * wemacsappwin.c
+ * nomadappwin.c
  * Copyright (C) 2017 Mike Rosset <mike.rosset@gmail.com>
  *
- * wemacs is free software: you can redistribute it and/or modify it
+ * nomad is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * wemacs is distributed in the hope that it will be useful, but
+ * nomad is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
@@ -27,14 +27,14 @@
 #include "vte.h"
 #include "window.h"
 
-struct _WemacsAppWindow
+struct _NomadAppWindow
 {
   GtkApplicationWindow parent;
 };
 
-typedef struct _WemacsAppWindowPrivate WemacsAppWindowPrivate;
+typedef struct _NomadAppWindowPrivate NomadAppWindowPrivate;
 
-struct _WemacsAppWindowPrivate
+struct _NomadAppWindowPrivate
 {
   GtkBox *box;
   GtkWidget *minibuf;
@@ -47,7 +47,7 @@ struct _WemacsAppWindowPrivate
   WebKitWebView *web_view;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (WemacsAppWindow, wemacs_app_window,
+G_DEFINE_TYPE_WITH_PRIVATE (NomadAppWindow, nomad_app_window,
                             GTK_TYPE_APPLICATION_WINDOW)
 
 static void
@@ -66,13 +66,13 @@ gboolean
 key_press_cb (GtkWidget *widget, GdkEventKey *event)
 {
   GdkModifierType modifiers;
-  WemacsAppWindowPrivate *priv;
+  NomadAppWindowPrivate *priv;
   GtkWidget *vte;
   SCM scm_hook;
 
   const gchar *key_name;
 
-  priv = wemacs_app_window_get_instance_private (WEMACS_APP_WINDOW (widget));
+  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
   vte = priv->vte;
   modifiers = gtk_accelerator_get_default_mod_mask ();
   key_name = gdk_keyval_name (event->keyval);
@@ -124,10 +124,10 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
   // `C-c c' which means we can't handle prefixes, quite yet.  since
   // we can easily capture this state, we'll use this a starting point
   // for our keybindings. We'll call our Scheme key-press-hook. from
-  // here the wemacs keymap module will do the work.
+  // here the nomad keymap module will do the work.
   if ((event->state) && (event->type == GDK_KEY_PRESS))
     {
-      scm_hook = scm_c_public_ref ("wemacs keymap", "key-press-hook");
+      scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
       scm_run_hook (scm_hook, scm_list_2 (scm_from_int (event->state),
                                           scm_from_locale_string (key_name)));
       return TRUE;
@@ -142,7 +142,7 @@ initialize_web_extensions (WebKitWebContext *context, gpointer user_data)
   static guint32 unique_id = 1;
 
   webkit_web_context_set_web_extensions_directory (context,
-                                                   WEMACS_WEB_EXTENSIONS_DIR);
+                                                   NOMAD_WEB_EXTENSIONS_DIR);
   webkit_web_context_set_web_extensions_initialization_user_data (
       context, g_variant_new_uint32 (unique_id++));
 }
@@ -200,10 +200,10 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
   GtkTextBuffer *buf;
   GtkTextIter start, end;
   gchar *input;
-  WemacsAppWindowPrivate *priv;
+  NomadAppWindowPrivate *priv;
 
   priv
-      = wemacs_app_window_get_instance_private (WEMACS_APP_WINDOW (user_data));
+      = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
 
   gtk_text_buffer_get_start_iter (buf, &start);
@@ -211,7 +211,7 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
 
   input = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
 
-  proc = scm_c_public_ref ("wemacs util", "catch-eval");
+  proc = scm_c_public_ref ("nomad util", "catch-eval");
   value = scm_call_1 (proc, scm_take_locale_string (input));
 
   if (!scm_is_string (value))
@@ -264,10 +264,10 @@ minibuf_key_press_cb (GtkWidget *view, GdkEventKey *event, gpointer user_data)
 }
 
 static void
-wemacs_app_window_init (WemacsAppWindow *win)
+nomad_app_window_init (NomadAppWindow *win)
 {
 
-  WemacsAppWindowPrivate *priv;
+  NomadAppWindowPrivate *priv;
   char *c_home_page;
   SCM home_page;
 
@@ -275,8 +275,8 @@ wemacs_app_window_init (WemacsAppWindow *win)
 
   scm_dynwind_begin (0);
 
-  priv = wemacs_app_window_get_instance_private (win);
-  home_page = scm_c_public_ref ("wemacs browser", "default-home-page");
+  priv = nomad_app_window_get_instance_private (win);
+  home_page = scm_c_public_ref ("nomad browser", "default-home-page");
   c_home_page = scm_to_locale_string (home_page);
 
   g_signal_connect (webkit_web_context_get_default (),
@@ -295,7 +295,7 @@ wemacs_app_window_init (WemacsAppWindow *win)
   g_signal_connect (priv->read_line, "key-press-event",
                     G_CALLBACK (minibuf_key_press_cb), (gpointer)win);
   // Vte
-  priv->vte = GTK_WIDGET (wemacs_vte_new ());
+  priv->vte = GTK_WIDGET (nomad_vte_new ());
 
   gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->result_popover_view),
                             GTK_TEXT_BUFFER (minibuf_new ()));
@@ -312,37 +312,37 @@ wemacs_app_window_init (WemacsAppWindow *win)
 }
 
 static void
-wemacs_app_window_class_init (WemacsAppWindowClass *class)
+nomad_app_window_class_init (NomadAppWindowClass *class)
 {
 
   gtk_widget_class_set_template_from_resource (
-      GTK_WIDGET_CLASS (class), "/org/gnu/wemacseapp/window.ui");
+      GTK_WIDGET_CLASS (class), "/org/gnu/nomadeapp/window.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                WemacsAppWindow, pane);
+                                                NomadAppWindow, pane);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                WemacsAppWindow, page_url);
+                                                NomadAppWindow, page_url);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                WemacsAppWindow, box);
+                                                NomadAppWindow, box);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                WemacsAppWindow, read_line);
+                                                NomadAppWindow, read_line);
   gtk_widget_class_bind_template_child_private (
-      GTK_WIDGET_CLASS (class), WemacsAppWindow, result_popover);
+      GTK_WIDGET_CLASS (class), NomadAppWindow, result_popover);
   gtk_widget_class_bind_template_child_private (
-      GTK_WIDGET_CLASS (class), WemacsAppWindow, result_popover_view);
+      GTK_WIDGET_CLASS (class), NomadAppWindow, result_popover_view);
 }
 
-WemacsAppWindow *
-wemacs_app_window_new (WemacsApp *app)
+NomadAppWindow *
+nomad_app_window_new (NomadApp *app)
 {
-  return g_object_new (WEMACS_APP_WINDOW_TYPE, "application", app, NULL);
+  return g_object_new (NOMAD_APP_WINDOW_TYPE, "application", app, NULL);
 }
 
 WebKitWebView *
-wemacs_app_window_get_webview (WemacsAppWindow *win)
+nomad_app_window_get_webview (NomadAppWindow *win)
 {
-  WemacsAppWindowPrivate *priv;
+  NomadAppWindowPrivate *priv;
 
-  priv = wemacs_app_window_get_instance_private (win);
+  priv = nomad_app_window_get_instance_private (win);
 
   return priv->web_view;
 }

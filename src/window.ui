@@ -3,9 +3,9 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <requires lib="gtksourceview" version="3.0"/>
-  <template class="WemacsAppWindow" parent="GtkApplicationWindow">
+  <template class="NomadAppWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">Wemacs</property>
+    <property name="title" translatable="yes">Nomad</property>
     <property name="default_width">800</property>
     <property name="default_height">640</property>
     <signal name="key-press-event" handler="key_press_cb" swapped="no"/>

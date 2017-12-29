@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-bin_PROGRAMS = wemacs
+bin_PROGRAMS = nomad
 
 .PHONY: test format
 
@@ -10,7 +10,7 @@ test:
 
 EXTRA_DIST = gresource.xml window.ui
 
-wemacs_SOURCES = main.c \
+nomad_SOURCES = main.c \
 	app.c \
 	app.h \
 	resources.c \
@@ -28,11 +28,11 @@ AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement \
 	$(VTE_CFLAGS) \
 	$(WEBKIT_CFLAGS) \
 	$(GTK_SOURCEVIEW_CFLAGS) \
-	-DWEMACS_WEB_EXTENSIONS_DIR=\""$(libexecdir)/wemacs/"\"
+	-DNOMAD_WEB_EXTENSIONS_DIR=\""$(libexecdir)/nomad/"\"
 
 AM_LDFLAGS = -export-dynamic
 
-wemacs_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(VTE_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
+nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(VTE_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
 
 DOT_X_FILES = scheme.x
 

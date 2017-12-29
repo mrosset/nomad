@@ -1,4 +1,4 @@
-(setq wemacs-hosted t)
+(setq nomad-hosted t)
 
 (require 'package)
 
