@@ -1,4 +1,4 @@
-PACKAGE=emacs
+PACKAGE=nomad
 VERSION=0.1
 
 # autoconf
