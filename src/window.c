@@ -268,7 +268,9 @@ nomad_app_window_init (NomadAppWindow *win)
 {
 
   NomadAppWindowPrivate *priv;
+  WebKitCookieManager *cookie_manager;
   char *c_home_page;
+  char *c_user_cookie_file;
   SCM home_page;
 
   gtk_widget_init_template (GTK_WIDGET (win));
@@ -278,6 +280,7 @@ nomad_app_window_init (NomadAppWindow *win)
   priv = nomad_app_window_get_instance_private (win);
   home_page = scm_c_public_ref ("nomad browser", "default-home-page");
   c_home_page = scm_to_locale_string (home_page);
+  c_user_cookie_file = scm_to_locale_string(scm_c_public_ref("nomad init", "user-cookie-file"));
 
   g_signal_connect (webkit_web_context_get_default (),
                     "initialize-web-extensions",
@@ -307,6 +310,11 @@ nomad_app_window_init (NomadAppWindow *win)
   gtk_widget_hide (priv->vte);
   webkit_web_view_load_uri (priv->web_view, c_home_page);
 
+  // Cookies
+  cookie_manager = webkit_web_context_get_cookie_manager(webkit_web_context_get_default());
+
+  webkit_cookie_manager_set_persistent_storage(cookie_manager, c_user_cookie_file, WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE);
+  scm_dynwind_free(c_user_cookie_file);
   scm_dynwind_free (c_home_page);
   scm_dynwind_end ();
 }
