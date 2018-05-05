@@ -13,9 +13,10 @@
   (package-install 'use-package))
 
 (use-package geiser
+  :ensure t
   :config
   (setq
-   geiser-guile-binary "guile2.2"
+   geiser-guile-binary "guile"
    geiser-active-implementations '(guile)
    geiser-default-implimentation 'guile))
 
