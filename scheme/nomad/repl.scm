@@ -1,23 +1,14 @@
 (define-module (nomad repl)
-  #:use-module (nomad events)
   #:use-module (ice-9 threads)
   #:use-module (system repl server)
   #:use-module (system repl coop-server)
-  #:export (repl-start))
+  #:export (server-start server-force-delete))
 
-;; (define server (spawn-coop-repl-server (make-unix-domain-server-socket)))
-
-(define (repl-start)
+(define (server-start)
   (if (file-exists? "/tmp/guile-socket")
       (delete-file "/tmp/guile-socket"))
   (spawn-server
    (make-unix-domain-server-socket)))
 
-;; (define (poll-server-start)
-;;   (make-thread (poll-server-run)))
-
-;; (define (poll-server-run)
-;;   (while #t
-;;     (run-hook event-hook "(poll-server)")
-;;     ;; (poll-coop-repl-server server)
-;;     (sleep 1)))
+(define (server-force-delete)
+  (stop-server-and-clients!))

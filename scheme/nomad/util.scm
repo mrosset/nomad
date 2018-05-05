@@ -1,17 +1,15 @@
 (define-module (nomad util)
-  #:export (catch-eval))
+  #:export (catch-eval home-dir info))
 
-(define (quasi-eval string)
-  "Evaluate non expression string. The string is split into a list by
-whitespaces and then passed to eval as a Scheme expression. The car of
-the list is the symbol of the procedure to eval and the tail of the list
-are joined as one arguement string."
-  (let* ((lst (string-split string #\space))
-         (proc (string->symbol (car lst)))
-         (args  (list-tail lst 1)))
-    (if (>= (length args) 1)
-        (catch-eval (list proc (string-join args)))
-        (catch-eval (list proc)))))
+(define (info msg)
+  (format #t "INFO: ~a\n" msg))
+
+(define (home-dir)
+  (getenv "HOME"))
+
+;; (if (not (getlogin))
+;;     (getenv "HOME"))
+;;     (passwd:dir (getpwnam (getlogin))))
 
 (define (catch-eval expr)
   (catch #t
