@@ -2,15 +2,13 @@
   #:use-module (nomad browser)
   #:export (key-press-hook handle-key-press debug-key-press))
 
-(define modifier-masks '((4 . "C") ;; Control
-                         ))
+(define modifier-masks '((4 . "C")))
 (define emacs-keymap '(
                        ("C-u" . (back))
                        ("C-m" . (forward))
                        ("C-n" . (scroll-down))
                        ("C-p" . (scroll-up))
-                       ("C-r" . (reload))
-                       ))
+                       ("C-r" . (reload))))
 
 (define default-keymap emacs-keymap)
 
