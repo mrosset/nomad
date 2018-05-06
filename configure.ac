@@ -45,6 +45,13 @@ if test "$GLIB_COMPILE_R" = "no"; then
    AC_MSG_ERROR([program glib-compile-resources is required])
 fi
 
+AC_PATH_PROG(GUILD, guild, no)
+AC_SUBST(GUILD)
+
+if test "$GUILD" = "no"; then
+   AC_MSG_ERROR([program guild is required])
+fi
+
 AC_CONFIG_FILES([
  Makefile
  src/Makefile
