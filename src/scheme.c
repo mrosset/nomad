@@ -44,8 +44,8 @@ SCM_DEFINE (scm_nomad_kill, "nomad-kill", 0, 0, 0, (), "test macro")
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE (scm_nomad_webkit_load_uri, "web-view-load-uri", 1, 0, 0,
-            (SCM uri), "TODO: document this procedure.")
+SCM_DEFINE (scm_nomad_webkit_load_uri, "web-view-load-uri", 1, 0, 0, (SCM uri),
+            "TODO: document this procedure.")
 {
   char *c_uri;
   WebKitWebView *web_view;

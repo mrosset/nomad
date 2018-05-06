@@ -125,7 +125,7 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
   // we can easily capture this state, we'll use this a starting point
   // for our keybindings. We'll call our Scheme key-press-hook. from
   // here the nomad keymap module will do the work.
-  if ((event->state) && (event->type == GDK_KEY_PRESS))
+  if ((event->state & modifiers) == GDK_CONTROL_MASK)
     {
       scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
       scm_run_hook (scm_hook, scm_list_2 (scm_from_int (event->state),
@@ -186,7 +186,7 @@ gboolean
 read_line_focus_out_event_cb (GtkWidget *widget, GdkEvent *event,
                               gpointer user_data)
 {
-  g_timeout_add (3500, clear_read_line_buffer, (gpointer)widget);
+  // g_timeout_add (3500, clear_read_line_buffer, (gpointer)widget);
   return FALSE;
 }
 
@@ -202,8 +202,7 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
   gchar *input;
   NomadAppWindowPrivate *priv;
 
-  priv
-      = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
+  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
 
   gtk_text_buffer_get_start_iter (buf, &start);
@@ -280,7 +279,8 @@ nomad_app_window_init (NomadAppWindow *win)
   priv = nomad_app_window_get_instance_private (win);
   home_page = scm_c_public_ref ("nomad browser", "default-home-page");
   c_home_page = scm_to_locale_string (home_page);
-  c_user_cookie_file = scm_to_locale_string(scm_c_public_ref("nomad init", "user-cookie-file"));
+  c_user_cookie_file = scm_to_locale_string (
+      scm_c_public_ref ("nomad init", "user-cookie-file"));
 
   g_signal_connect (webkit_web_context_get_default (),
                     "initialize-web-extensions",
@@ -311,10 +311,13 @@ nomad_app_window_init (NomadAppWindow *win)
   webkit_web_view_load_uri (priv->web_view, c_home_page);
 
   // Cookies
-  cookie_manager = webkit_web_context_get_cookie_manager(webkit_web_context_get_default());
+  cookie_manager = webkit_web_context_get_cookie_manager (
+      webkit_web_context_get_default ());
 
-  webkit_cookie_manager_set_persistent_storage(cookie_manager, c_user_cookie_file, WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE);
-  scm_dynwind_free(c_user_cookie_file);
+  webkit_cookie_manager_set_persistent_storage (
+      cookie_manager, c_user_cookie_file,
+      WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE);
+  scm_dynwind_free (c_user_cookie_file);
   scm_dynwind_free (c_home_page);
   scm_dynwind_end ();
 }
@@ -323,8 +326,8 @@ static void
 nomad_app_window_class_init (NomadAppWindowClass *class)
 {
 
-  gtk_widget_class_set_template_from_resource (
-      GTK_WIDGET_CLASS (class), "/org/gnu/nomadeapp/window.ui");
+  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
+                                               "/org/gnu/nomadeapp/window.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, pane);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),

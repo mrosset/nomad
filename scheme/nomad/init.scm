@@ -23,7 +23,6 @@
   (add-hook! key-press-hook handle-key-press)
   (add-hook! key-press-hook debug-key-press)
   (add-hook! event-hook debug-event)
-  (format #t "~a\n" user-nomad-directory)
   (if (file-exists? user-nomad-directory)
       (info (format #f "creating ~a" user-nomad-directory))
       (mkdir user-nomad-directory #o755))
