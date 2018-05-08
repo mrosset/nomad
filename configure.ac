@@ -1,8 +1,8 @@
 PACKAGE=nomad
-VERSION=0.1
+VERSION=0.0.1-alpha
 
 # autoconf
-AC_INIT([nomad], [0.1], [mike.rosset@gmail.com])
+AC_INIT([nomad], [0.0.1-alpha], [mike.rosset@gmail.com])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIRS([m4])
@@ -38,18 +38,18 @@ if test "$GUILE_SNARF" = "no"; then
    AC_MSG_ERROR([program guile-snarf is required])
 fi
 
-AC_PATH_PROG(GLIB_COMPILE_R, glib-compile-resources, no)
-AC_SUBST(GLIB_COMPILE_R)
-
-if test "$GLIB_COMPILE_R" = "no"; then
-   AC_MSG_ERROR([program glib-compile-resources is required])
-fi
-
 AC_PATH_PROG(GUILD, guild, no)
 AC_SUBST(GUILD)
 
 if test "$GUILD" = "no"; then
    AC_MSG_ERROR([program guild is required])
+fi
+
+AC_PATH_PROG(GLIB_COMPILE_R, glib-compile-resources, no)
+AC_SUBST(GLIB_COMPILE_R)
+
+if test "$GLIB_COMPILE_R" = "no"; then
+   AC_MSG_ERROR([program glib-compile-resources is required])
 fi
 
 AC_CONFIG_FILES([

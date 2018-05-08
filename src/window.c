@@ -38,7 +38,7 @@ struct _NomadAppWindowPrivate
 {
   GtkBox *box;
   GtkWidget *minibuf;
-  GtkWidget *page_url;
+  GtkWidget *status;
   GtkWidget *pane;
   GtkWidget *read_line;
   GtkWidget *result_popover;
@@ -268,17 +268,14 @@ nomad_app_window_init (NomadAppWindow *win)
 
   NomadAppWindowPrivate *priv;
   WebKitCookieManager *cookie_manager;
-  char *c_home_page;
   char *c_user_cookie_file;
-  SCM home_page;
 
   gtk_widget_init_template (GTK_WIDGET (win));
 
   scm_dynwind_begin (0);
 
   priv = nomad_app_window_get_instance_private (win);
-  home_page = scm_c_public_ref ("nomad browser", "default-home-page");
-  c_home_page = scm_to_locale_string (home_page);
+
   c_user_cookie_file = scm_to_locale_string (
       scm_c_public_ref ("nomad init", "user-cookie-file"));
 
@@ -286,10 +283,6 @@ nomad_app_window_init (NomadAppWindow *win)
                     "initialize-web-extensions",
                     G_CALLBACK (initialize_web_extensions), NULL);
 
-  // WebView
-  priv->web_view = WEBKIT_WEB_VIEW (webkit_web_view_new ());
-  g_signal_connect (priv->web_view, "load-changed",
-                    G_CALLBACK (web_view_load_changed), priv->page_url);
   // Minbuf
   priv->minibuf = GTK_WIDGET (minibuf_new ());
   gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->read_line),
@@ -302,13 +295,14 @@ nomad_app_window_init (NomadAppWindow *win)
 
   gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->result_popover_view),
                             GTK_TEXT_BUFFER (minibuf_new ()));
+
   // Packing
-  gtk_box_pack_start (GTK_BOX (priv->box), GTK_WIDGET (priv->web_view), TRUE,
-                      TRUE, 0);
+  //gtk_box_pack_start (GTK_BOX (priv->box), GTK_WIDGET (priv->web_view), TRUE,
+  //                    TRUE, 0);
+
   gtk_paned_add2 (GTK_PANED (priv->pane), GTK_WIDGET (priv->vte));
   gtk_widget_show_all (priv->pane);
-  gtk_widget_hide (priv->vte);
-  webkit_web_view_load_uri (priv->web_view, c_home_page);
+  //gtk_widget_hide (priv->vte);
 
   // Cookies
   cookie_manager = webkit_web_context_get_cookie_manager (
@@ -318,7 +312,7 @@ nomad_app_window_init (NomadAppWindow *win)
       cookie_manager, c_user_cookie_file,
       WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE);
   scm_dynwind_free (c_user_cookie_file);
-  scm_dynwind_free (c_home_page);
+
   scm_dynwind_end ();
 }
 
@@ -331,7 +325,7 @@ nomad_app_window_class_init (NomadAppWindowClass *class)
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, pane);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, page_url);
+                                                NomadAppWindow, status);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, box);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
@@ -348,6 +342,20 @@ nomad_app_window_new (NomadApp *app)
   return g_object_new (NOMAD_APP_WINDOW_TYPE, "application", app, NULL);
 }
 
+GtkWidget *
+nomad_app_window_get_box (NomadAppWindow *win)
+{
+  NomadAppWindowPrivate *priv = nomad_app_window_get_instance_private(win);
+  return GTK_WIDGET(priv->box);
+}
+
+GtkWidget *
+nomad_app_window_get_status (NomadAppWindow *win)
+{
+  NomadAppWindowPrivate *priv = nomad_app_window_get_instance_private(win);
+  return priv->status;
+}
+
 WebKitWebView *
 nomad_app_window_get_webview (NomadAppWindow *win)
 {
@@ -356,4 +364,14 @@ nomad_app_window_get_webview (NomadAppWindow *win)
   priv = nomad_app_window_get_instance_private (win);
 
   return priv->web_view;
+}
+
+void
+nomad_app_window_set_webview (NomadAppWindow *win, WebKitWebView *view)
+{
+  NomadAppWindowPrivate *priv;
+
+  priv = nomad_app_window_get_instance_private (win);
+
+  priv->web_view = view;
 }

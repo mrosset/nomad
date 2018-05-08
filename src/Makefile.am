@@ -22,7 +22,7 @@ nomad_SOURCES = main.c \
 	window.c \
 	window.h
 
-AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement \
+AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement \
 	$(GTK_FLAGS) \
 	$(GUILE_CFLAGS) \
 	$(VTE_CFLAGS) \

@@ -38,7 +38,7 @@ SCM_DEFINE (scm_nomad_start, "browser-start", 0, 0, 0, (), "")
   return scm_from_intmax (status);
 }
 
-SCM_DEFINE (scm_nomad_kill, "nomad-kill", 0, 0, 0, (), "test macro")
+SCM_DEFINE (scm_nomad_kill, "kill-nomad", 0, 0, 0, (), "test macro")
 {
   g_application_quit (G_APPLICATION (app));
   return SCM_UNDEFINED;
@@ -207,5 +207,6 @@ void
 register_functions (void *data)
 {
 #include "scheme.x"
+  scm_c_export ("kill-nomad", NULL);
   return;
 }
