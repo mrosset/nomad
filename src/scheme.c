@@ -203,10 +203,33 @@ URI vs URL")
   return result;
 }
 
+SCM_DEFINE (scm_nomad_print_buffers, "print-buffers", 0, 0, 0, (), "")
+{
+  nomad_app_print_buffers(NOMAD_APP(app));
+  return SCM_UNSPECIFIED;
+}
+
+SCM_DEFINE (scm_nomad_get_current_buffer, "current-buffer", 0, 0, 0, (), "")
+{
+  WebKitWebView *view;
+
+  view = nomad_app_get_current_buffer(NOMAD_APP(app));
+  g_print("CURRENT\n point: %p title: %s url: %s\n", view,
+          webkit_web_view_get_title(view), webkit_web_view_get_uri(view));
+
+  return SCM_UNSPECIFIED;
+}
+
+SCM_DEFINE (scm_nomad_next_buffer, "next-buffer", 0, 0, 0, (), "")
+{
+  nomad_app_next_buffer(NOMAD_APP(app));
+  return SCM_UNSPECIFIED;
+}
+
 void
 register_functions (void *data)
 {
 #include "scheme.x"
-  scm_c_export ("kill-nomad", NULL);
+  scm_c_export ("kill-nomad", "print-buffers", "current-buffer", "next-buffer", NULL);
   return;
 }

@@ -4,7 +4,7 @@
   #:use-module (nomad keymap)
   #:use-module (nomad events)
   #:use-module (nomad util)
-  #:export (init run-tests user-init-file user-nomad-directory user-cookie-file))
+  #:export (init user-init-file user-nomad-directory user-cookie-file))
 
 (define user-init-file
   (string-append (home-dir) file-name-separator-string ".nomad.scm"))
@@ -14,10 +14,6 @@
 
 (define user-cookie-file
   (string-append user-nomad-directory file-name-separator-string "cookies.db"))
-
-(define (run-tests)
-  (pretty-print (all-threads))
-  (current-thread))
 
 (define (init)
   (add-hook! key-press-hook handle-key-press)

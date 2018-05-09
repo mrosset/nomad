@@ -46,11 +46,12 @@ nomad_app_activate (GApplication *app)
     }
 
   // Home Page
-  nomad_app_switch_to_buffer(NOMAD_APP(app), c_home_page);
+  webkit_web_view_load_uri(g_list_first(priv->buffers)->data, c_home_page);
+  nomad_app_window_replace_webview(win, g_list_first(priv->buffers)->data);
   scm_dynwind_free (c_home_page);
   scm_dynwind_end();
+  nomad_app_print_buffers(NOMAD_APP(app));
   gtk_window_present (GTK_WINDOW (win));
-
 }
 
 static void
@@ -81,18 +82,6 @@ nomad_app_get_window(NomadApp *app) {
   return NOMAD_APP_WINDOW (windows->data);
 }
 
-static void
-web_view_load_changed (WebKitWebView *web_view, WebKitLoadEvent load_event,
-                       gpointer user_data)
-{
-  GtkLabel *label;
-  const gchar *uri;
-
-  uri = webkit_web_view_get_uri (web_view);
-  label = GTK_LABEL (user_data);
-  gtk_label_set_text (label, uri);
-}
-
 void
 nomad_app_switch_to_buffer(NomadApp *app, const char *uri) {
 
@@ -107,12 +96,53 @@ nomad_app_switch_to_buffer(NomadApp *app, const char *uri) {
   webkit_web_view_load_uri(view, uri);
   gtk_box_pack_start (GTK_BOX (box), GTK_WIDGET (view), TRUE,
                       TRUE, 0);
-  g_signal_connect (view, "load-changed",
-                    G_CALLBACK (web_view_load_changed), nomad_app_window_get_status(win));
-
   nomad_app_window_set_webview(win, view);
   gtk_widget_show_all(box);
 
+}
+
+void nomad_app_print_buffers(NomadApp *app) {
+
+  GList *l;
+  NomadAppPrivate *priv;
+
+  priv = nomad_app_get_instance_private(app);
+
+  for (l = priv->buffers; l != NULL; l = l->next)
+    {
+      g_print("point: %p title: %s url: %s\n",l->data,
+              webkit_web_view_get_title(l->data), webkit_web_view_get_uri(l->data));
+    }
+}
+
+WebKitWebView *
+nomad_app_get_current_buffer(NomadApp *app) {
+
+  NomadAppPrivate *priv;
+
+  priv = nomad_app_get_instance_private(app);
+  return priv->buffers->data;
+}
+
+void
+nomad_app_next_buffer(NomadApp *app) {
+
+  NomadAppWindow *win;
+  WebKitWebView *view;
+  NomadAppPrivate *priv = nomad_app_get_instance_private(app);
+
+  win = nomad_app_get_window(app);
+  if(!priv->buffers->next)
+    {
+      priv->buffers = g_list_first(priv->buffers);
+    }
+  else
+    {
+      priv->buffers = priv->buffers->next;
+    }
+  view = priv->buffers->data;
+
+  nomad_app_window_replace_webview(win, view);
 }
 
 WebKitWebView *

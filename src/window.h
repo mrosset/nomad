@@ -30,8 +30,8 @@ G_DECLARE_FINAL_TYPE (NomadAppWindow, nomad_app_window, NOMAD, APP_WINDOW,
                       GtkApplicationWindow)
 NomadAppWindow *nomad_app_window_new (NomadApp *app);
 WebKitWebView *nomad_app_window_get_webview (NomadAppWindow *win);
-GtkWidget * nomad_app_window_get_box(NomadAppWindow *win);
-GtkWidget * nomad_app_window_get_status(NomadAppWindow *win);
-void nomad_app_window_set_webview(NomadAppWindow *win, WebKitWebView *view );
-
+GtkWidget *nomad_app_window_get_box(NomadAppWindow *win);
+GtkWidget *nomad_app_window_get_status(NomadAppWindow *win);
+void nomad_app_window_set_webview(NomadAppWindow *win, WebKitWebView *view);
+void nomad_app_window_replace_webview(NomadAppWindow *win, WebKitWebView *view);
 #endif /* __NOMADAPPWIN_H */

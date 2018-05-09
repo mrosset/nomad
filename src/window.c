@@ -297,9 +297,6 @@ nomad_app_window_init (NomadAppWindow *win)
                             GTK_TEXT_BUFFER (minibuf_new ()));
 
   // Packing
-  //gtk_box_pack_start (GTK_BOX (priv->box), GTK_WIDGET (priv->web_view), TRUE,
-  //                    TRUE, 0);
-
   gtk_paned_add2 (GTK_PANED (priv->pane), GTK_WIDGET (priv->vte));
   gtk_widget_show_all (priv->pane);
   //gtk_widget_hide (priv->vte);
@@ -367,11 +364,35 @@ nomad_app_window_get_webview (NomadAppWindow *win)
 }
 
 void
+nomad_app_window_replace_webview(NomadAppWindow *win, WebKitWebView *view)
+{
+  NomadAppWindowPrivate *priv;
+
+  priv = nomad_app_window_get_instance_private (win);
+  g_object_ref(priv->web_view);
+
+  gtk_container_remove(GTK_CONTAINER(priv->box), GTK_WIDGET(priv->web_view));
+  gtk_box_pack_start (GTK_BOX (priv->box), GTK_WIDGET (view), TRUE,
+                      TRUE, 0);
+
+  // FIXME: this makes duplicate signals. remove existing load-changed
+  // single before removeing webview
+  g_signal_connect (view, "load-changed",
+                    G_CALLBACK (web_view_load_changed), priv->status);
+
+  priv->web_view = view;
+  gtk_widget_show_all(GTK_WIDGET(priv->box));
+}
+
+void
 nomad_app_window_set_webview (NomadAppWindow *win, WebKitWebView *view)
 {
   NomadAppWindowPrivate *priv;
 
   priv = nomad_app_window_get_instance_private (win);
+
+  g_signal_connect (view, "load-changed",
+                    G_CALLBACK (web_view_load_changed), priv->status);
 
   priv->web_view = view;
 }

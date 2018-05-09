@@ -30,6 +30,7 @@ inner_main (void *data, int argc, char **argv)
   scm_c_define_module ("nomad browser", register_functions, NULL);
   scm_c_use_module ("nomad init");
   scm_c_use_module ("nomad repl");
+  scm_c_use_module ("nomad tests");
   scm_c_eval_string ("(init)");
 
   app = G_APPLICATION (nomad_app_new ());
