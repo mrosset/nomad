@@ -30,21 +30,20 @@ nomad_buffer_init (NomadBuffer *self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->priv = nomad_buffer_get_instance_private(self);
+  self->priv = nomad_buffer_get_instance_private (self);
 
   priv = self->priv;
-  if(!priv->status)
+  if (!priv->status)
     {
-      g_critical("status NULL");
+      g_critical ("status NULL");
     }
-  priv->view = WEBKIT_WEB_VIEW(webkit_web_view_new());
-  webkit_web_view_load_uri(priv->view, "http://gnu.org");
-  gtk_box_pack_start(self, GTK_WIDGET(priv->view), TRUE, TRUE, 0);
-  gtk_box_reorder_child(self, GTK_WIDGET(priv->view), 0);
+  priv->view = WEBKIT_WEB_VIEW (webkit_web_view_new ());
+  webkit_web_view_load_uri (priv->view, "http://gnu.org");
+  gtk_box_pack_start (self, GTK_WIDGET (priv->view), TRUE, TRUE, 0);
+  gtk_box_reorder_child (self, GTK_WIDGET (priv->view), 0);
 
-  g_signal_connect (priv->view, "load-changed", G_CALLBACK (web_view_load_changed),
-                    priv->status);
-
+  g_signal_connect (priv->view, "load-changed",
+                    G_CALLBACK (web_view_load_changed), priv->status);
 }
 
 static void

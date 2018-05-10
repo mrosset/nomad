@@ -7,9 +7,8 @@
 
 G_BEGIN_DECLS
 
-#define NOMAD_TYPE_BUFFER nomad_buffer_get_type()
-G_DECLARE_FINAL_TYPE (NomadBuffer, nomad_buffer, NOMAD, BUFFER,
-                      GtkBox)
+#define NOMAD_TYPE_BUFFER nomad_buffer_get_type ()
+G_DECLARE_FINAL_TYPE (NomadBuffer, nomad_buffer, NOMAD, BUFFER, GtkBox)
 
 typedef struct _NomadBuffer NomadBuffer;
 typedef struct _NomadBufferPrivate NomadBufferPrivate;

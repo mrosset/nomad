@@ -46,13 +46,15 @@ nomad_app_activate (GApplication *app)
   /*   } */
 
   /* // Home Page */
-  /* webkit_web_view_load_uri (g_list_first (priv->buffers)->data, c_home_page); */
-  /* nomad_app_window_replace_webview (win, g_list_first (priv->buffers)->data); */
+  /* webkit_web_view_load_uri (g_list_first (priv->buffers)->data,
+   * c_home_page); */
+  /* nomad_app_window_replace_webview (win, g_list_first
+   * (priv->buffers)->data); */
   /* scm_dynwind_free (c_home_page); */
   /* scm_dynwind_end (); */
   /* nomad_app_print_buffers (NOMAD_APP (app)); */
   gtk_window_present (GTK_WINDOW (win));
- }
+}
 
 static void
 nomad_app_class_init (NomadAppClass *class)
