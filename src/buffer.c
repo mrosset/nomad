@@ -23,6 +23,10 @@ web_view_load_changed (WebKitWebView *web_view, WebKitLoadEvent load_event,
   gtk_label_set_text (label, uri);
 }
 
+void
+nomad_buffer_set_view (NomadBuffer *self, WebKitWebView *view)
+{
+}
 static void
 nomad_buffer_init (NomadBuffer *self)
 {
@@ -33,14 +37,10 @@ nomad_buffer_init (NomadBuffer *self)
   self->priv = nomad_buffer_get_instance_private (self);
 
   priv = self->priv;
-  if (!priv->status)
-    {
-      g_critical ("status NULL");
-    }
   priv->view = WEBKIT_WEB_VIEW (webkit_web_view_new ());
-  webkit_web_view_load_uri (priv->view, "http://gnu.org");
-  gtk_box_pack_start (GTK_BOX(self), GTK_WIDGET (priv->view), TRUE, TRUE, 0);
-  gtk_box_reorder_child (GTK_BOX(self), GTK_WIDGET (priv->view), 0);
+
+  gtk_box_pack_start (GTK_BOX (self), GTK_WIDGET (priv->view), TRUE, TRUE, 0);
+  gtk_box_reorder_child (GTK_BOX (self), GTK_WIDGET (priv->view), 0);
 
   g_signal_connect (priv->view, "load-changed",
                     G_CALLBACK (web_view_load_changed), priv->status);
@@ -56,7 +56,7 @@ nomad_buffer_class_init (NomadBufferClass *klass)
 }
 
 WebKitWebView *
-nomad_buffer_get_view(NomadBuffer *buf)
+nomad_buffer_get_view (NomadBuffer *buf)
 {
   return buf->priv->view;
 }

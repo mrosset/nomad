@@ -1,13 +1,9 @@
+#include "app.h"
+#include "buffer.h"
+#include "window.h"
+#include <glib.h>
 #include <gtk/gtk.h>
 #include <libguile.h>
-
-#include "app.h"
-#include "window.h"
-
-struct _NomadApp
-{
-  GtkApplication parent;
-};
 
 typedef struct _NomadAppPrivate NomadAppPrivate;
 
@@ -16,42 +12,45 @@ struct _NomadAppPrivate
   GList *buffers;
 };
 
+struct _NomadApp
+{
+  GtkApplication parent;
+  NomadAppPrivate *priv;
+};
+
 G_DEFINE_TYPE_WITH_PRIVATE (NomadApp, nomad_app, GTK_TYPE_APPLICATION);
 
 static void
-nomad_app_init (NomadApp *app)
+nomad_app_init (NomadApp *self)
 {
+  self->priv = nomad_app_get_instance_private (self);
 }
 
 static void
-nomad_app_activate (GApplication *app)
+nomad_app_activate (GApplication *self)
 {
-
+  NomadBuffer *b;
   NomadAppWindow *win;
-  /* char *c_home_page; */
-  /* SCM home_page; */
+  char *c_home_page;
+  SCM home_page;
+  NomadAppPrivate *priv;
 
-  /* scm_dynwind_begin (0); */
+  scm_dynwind_begin (0);
 
-  /* home_page = scm_c_public_ref ("nomad browser", "default-home-page"); */
-  /* c_home_page = scm_to_locale_string (home_page); */
+  home_page = scm_c_public_ref ("nomad browser", "default-home-page");
+  c_home_page = scm_to_locale_string (home_page);
+  win = nomad_app_window_new (NOMAD_APP (self));
+  priv = NOMAD_APP (self)->priv;
+  for (int i = 0; i <= MAX_BUFFERS; i++)
+    {
+      priv->buffers = g_list_append (priv->buffers, nomad_buffer_new ());
+    }
 
-  /* priv->buffers = NULL; */
-  win = nomad_app_window_new (NOMAD_APP (app));
-  /* for (int i = 0; i <= MAX_BUFFERS; i++) */
-  /*   { */
-  /*     WebKitWebView *view = WEBKIT_WEB_VIEW (webkit_web_view_new ()); */
-  /*     priv->buffers = g_list_append (priv->buffers, view); */
-  /*   } */
-
-  /* // Home Page */
-  /* webkit_web_view_load_uri (g_list_first (priv->buffers)->data,
-   * c_home_page); */
-  /* nomad_app_window_replace_webview (win, g_list_first
-   * (priv->buffers)->data); */
-  /* scm_dynwind_free (c_home_page); */
-  /* scm_dynwind_end (); */
-  /* nomad_app_print_buffers (NOMAD_APP (app)); */
+  b = NOMAD_BUFFER (g_list_nth (priv->buffers, 0)->data);
+  webkit_web_view_load_uri (nomad_buffer_get_view (b), c_home_page);
+  nomad_app_window_set_buffer (win, b);
+  scm_dynwind_free (c_home_page);
+  scm_dynwind_end ();
   gtk_window_present (GTK_WINDOW (win));
 }
 
@@ -132,23 +131,6 @@ nomad_app_get_current_buffer (NomadApp *app)
 void
 nomad_app_next_buffer (NomadApp *app)
 {
-
-  NomadAppWindow *win;
-  WebKitWebView *view;
-  NomadAppPrivate *priv = nomad_app_get_instance_private (app);
-
-  win = nomad_app_get_window (app);
-  if (!priv->buffers->next)
-    {
-      priv->buffers = g_list_first (priv->buffers);
-    }
-  else
-    {
-      priv->buffers = priv->buffers->next;
-    }
-  view = priv->buffers->data;
-
-  nomad_app_window_replace_webview (win, view);
 }
 
 WebKitWebView *

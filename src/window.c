@@ -28,7 +28,6 @@
 #include "vte.h"
 #include "window.h"
 
-
 typedef struct _NomadAppWindowPrivate NomadAppWindowPrivate;
 
 struct _NomadAppWindowPrivate
@@ -290,12 +289,9 @@ nomad_app_window_init (NomadAppWindow *self)
   /* gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->result_popover_view), */
   /*                           GTK_TEXT_BUFFER (minibuf_new ())); */
 
-  priv->buffer = nomad_buffer_new ();
-
   // Packing
-  gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET(priv->buffer));
+  // gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET(priv->buffer));
   gtk_paned_add2 (GTK_PANED (priv->pane), GTK_WIDGET (priv->vte));
-  gtk_widget_show_all (priv->pane);
   /* gtk_widget_hide (priv->vte); */
 
   // Cookies
@@ -309,10 +305,20 @@ nomad_app_window_init (NomadAppWindow *self)
   scm_dynwind_end ();
 }
 void
-realize_event_cb (GtkWidget *widget,
-               gpointer   user_data)
+nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf)
 {
-  scm_c_eval_string ("(format #t \"URL: ~a\n\" (current-url))");
+
+  NomadAppWindowPrivate *priv = self->priv;
+
+  priv->buffer = buf;
+  gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET (priv->buffer));
+  gtk_widget_show_all (priv->pane);
+}
+
+void
+realize_event_cb (GtkWidget *widget, gpointer user_data)
+{
+  // scm_c_eval_string ("(format #t \"URL: ~a\n\" (current-url))");
 }
 static void
 nomad_app_window_class_init (NomadAppWindowClass *class)
@@ -358,7 +364,7 @@ nomad_app_window_get_status (NomadAppWindow *win)
 WebKitWebView *
 nomad_app_window_get_webview (NomadAppWindow *self)
 {
-  return nomad_buffer_get_view(self->priv->buffer);
+  return nomad_buffer_get_view (self->priv->buffer);
 }
 
 void
