@@ -28,17 +28,13 @@
 #include "vte.h"
 #include "window.h"
 
-struct _NomadAppWindow
-{
-  GtkApplicationWindow parent;
-};
 
 typedef struct _NomadAppWindowPrivate NomadAppWindowPrivate;
 
 struct _NomadAppWindowPrivate
 {
   GtkBox *box;
-  GtkWidget *buffer;
+  NomadBuffer *buffer;
   GtkWidget *minibuf;
   GtkWidget *status;
   GtkWidget *pane;
@@ -47,6 +43,12 @@ struct _NomadAppWindowPrivate
   GtkWidget *result_popover_view;
   GtkWidget *vte;
   WebKitWebView *web_view;
+};
+
+struct _NomadAppWindow
+{
+  GtkApplicationWindow parent;
+  NomadAppWindowPrivate *priv;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadAppWindow, nomad_app_window,
@@ -103,6 +105,7 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
       return FALSE;
     }
 
+  return FALSE;
   // If the webview does note have focus return FALSE, so children can
   // handle key events
   if (!gtk_widget_has_focus (GTK_WIDGET (priv->web_view)))
@@ -141,7 +144,7 @@ void
 pane_size_allocate_cb (GtkWidget *widget, gpointer data)
 {
   gint h = gtk_widget_get_allocated_height (widget);
-  gtk_paned_set_position (GTK_PANED (widget), (h - (h / 4)));
+  gtk_paned_set_position (GTK_PANED (widget), (h - (h / 5)));
 }
 
 gboolean
@@ -253,21 +256,22 @@ minibuf_key_press_cb (GtkWidget *view, GdkEventKey *event, gpointer user_data)
 }
 
 static void
-nomad_app_window_init (NomadAppWindow *win)
+nomad_app_window_init (NomadAppWindow *self)
 {
 
   NomadAppWindowPrivate *priv;
-  WebKitCookieManager *cookie_manager;
-  char *c_user_cookie_file;
+  /* WebKitCookieManager *cookie_manager; */
+  /* char *c_user_cookie_file; */
 
-  gtk_widget_init_template (GTK_WIDGET (win));
+  gtk_widget_init_template (GTK_WIDGET (self));
 
   scm_dynwind_begin (0);
 
-  priv = nomad_app_window_get_instance_private (win);
+  priv = nomad_app_window_get_instance_private (self);
 
-  c_user_cookie_file = scm_to_locale_string (
-      scm_c_public_ref ("nomad init", "user-cookie-file"));
+  self->priv = priv;
+  /* c_user_cookie_file = scm_to_locale_string ( */
+  /*     scm_c_public_ref ("nomad init", "user-cookie-file")); */
 
   /* g_signal_connect (webkit_web_context_get_default (), */
   /*                  "initialize-web-extensions", */
@@ -286,13 +290,13 @@ nomad_app_window_init (NomadAppWindow *win)
   /* gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->result_popover_view), */
   /*                           GTK_TEXT_BUFFER (minibuf_new ())); */
 
-  priv->buffer = GTK_WIDGET (nomad_buffer_new ());
+  priv->buffer = nomad_buffer_new ();
 
   // Packing
-  gtk_paned_add1 (GTK_PANED (priv->pane), priv->buffer);
+  gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET(priv->buffer));
   gtk_paned_add2 (GTK_PANED (priv->pane), GTK_WIDGET (priv->vte));
   gtk_widget_show_all (priv->pane);
-  gtk_widget_hide (priv->vte);
+  /* gtk_widget_hide (priv->vte); */
 
   // Cookies
   /* cookie_manager = webkit_web_context_get_cookie_manager ( */
@@ -302,10 +306,14 @@ nomad_app_window_init (NomadAppWindow *win)
   /*     cookie_manager, c_user_cookie_file, */
   /*     WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE); */
   /* scm_dynwind_free (c_user_cookie_file); */
-
   scm_dynwind_end ();
 }
-
+void
+realize_event_cb (GtkWidget *widget,
+               gpointer   user_data)
+{
+  scm_c_eval_string ("(format #t \"URL: ~a\n\" (current-url))");
+}
 static void
 nomad_app_window_class_init (NomadAppWindowClass *class)
 {
@@ -348,13 +356,9 @@ nomad_app_window_get_status (NomadAppWindow *win)
 }
 
 WebKitWebView *
-nomad_app_window_get_webview (NomadAppWindow *win)
+nomad_app_window_get_webview (NomadAppWindow *self)
 {
-  NomadAppWindowPrivate *priv;
-
-  priv = nomad_app_window_get_instance_private (win);
-
-  return priv->web_view;
+  return nomad_buffer_get_view(self->priv->buffer);
 }
 
 void

@@ -28,7 +28,6 @@ nomad_app_activate (GApplication *app)
 {
 
   NomadAppWindow *win;
-  NomadAppPrivate *priv = nomad_app_get_instance_private (NOMAD_APP (app));
   /* char *c_home_page; */
   /* SCM home_page; */
 

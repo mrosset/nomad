@@ -2,13 +2,13 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <requires lib="gtksourceview" version="3.0"/>
   <template class="NomadAppWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Nomad</property>
     <property name="default_width">800</property>
     <property name="default_height">640</property>
     <signal name="key-press-event" handler="key_press_cb" swapped="no"/>
+    <signal name="realize" handler="realize_event_cb" swapped="no"/>
     <child type="titlebar">
       <placeholder/>
     </child>
@@ -17,7 +17,7 @@
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="orientation">vertical</property>
-        <property name="position">378</property>
+        <property name="position">807</property>
         <signal name="size-allocate" handler="pane_size_allocate_cb" swapped="no"/>
         <child>
           <placeholder/>
@@ -32,16 +32,7 @@
     <property name="can_focus">False</property>
     <property name="opacity">0.69999999999999996</property>
     <child>
-      <object class="GtkSourceView" id="result_popover_view">
-        <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="editable">False</property>
-        <property name="left_margin">2</property>
-        <property name="right_margin">2</property>
-        <property name="cursor_visible">False</property>
-        <property name="monospace">True</property>
-        <property name="show_line_numbers">True</property>
-      </object>
+      <placeholder/>
     </child>
   </object>
 </interface>
