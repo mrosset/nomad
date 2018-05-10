@@ -29,30 +29,30 @@ nomad_app_activate (GApplication *app)
 
   NomadAppWindow *win;
   NomadAppPrivate *priv = nomad_app_get_instance_private (NOMAD_APP (app));
-  char *c_home_page;
-  SCM home_page;
+  /* char *c_home_page; */
+  /* SCM home_page; */
 
-  scm_dynwind_begin (0);
+  /* scm_dynwind_begin (0); */
 
-  home_page = scm_c_public_ref ("nomad browser", "default-home-page");
-  c_home_page = scm_to_locale_string (home_page);
+  /* home_page = scm_c_public_ref ("nomad browser", "default-home-page"); */
+  /* c_home_page = scm_to_locale_string (home_page); */
 
-  priv->buffers = NULL;
+  /* priv->buffers = NULL; */
   win = nomad_app_window_new (NOMAD_APP (app));
-  for (int i = 0; i <= MAX_BUFFERS; i++)
-    {
-      WebKitWebView *view = WEBKIT_WEB_VIEW (webkit_web_view_new ());
-      priv->buffers = g_list_append (priv->buffers, view);
-    }
+  /* for (int i = 0; i <= MAX_BUFFERS; i++) */
+  /*   { */
+  /*     WebKitWebView *view = WEBKIT_WEB_VIEW (webkit_web_view_new ()); */
+  /*     priv->buffers = g_list_append (priv->buffers, view); */
+  /*   } */
 
-  // Home Page
-  webkit_web_view_load_uri (g_list_first (priv->buffers)->data, c_home_page);
-  nomad_app_window_replace_webview (win, g_list_first (priv->buffers)->data);
-  scm_dynwind_free (c_home_page);
-  scm_dynwind_end ();
-  nomad_app_print_buffers (NOMAD_APP (app));
+  /* // Home Page */
+  /* webkit_web_view_load_uri (g_list_first (priv->buffers)->data, c_home_page); */
+  /* nomad_app_window_replace_webview (win, g_list_first (priv->buffers)->data); */
+  /* scm_dynwind_free (c_home_page); */
+  /* scm_dynwind_end (); */
+  /* nomad_app_print_buffers (NOMAD_APP (app)); */
   gtk_window_present (GTK_WINDOW (win));
-}
+ }
 
 static void
 nomad_app_class_init (NomadAppClass *class)
@@ -87,18 +87,18 @@ void
 nomad_app_switch_to_buffer (NomadApp *app, const char *uri)
 {
 
-  NomadAppWindow *win;
-  GtkWidget *box;
-  WebKitWebView *view;
-  NomadAppPrivate *priv = nomad_app_get_instance_private (app);
+  /* NomadAppWindow *win; */
+  /* GtkWidget *box; */
+  /* WebKitWebView *view; */
+  /* NomadAppPrivate *priv = nomad_app_get_instance_private (app); */
 
-  win = nomad_app_get_window (app);
-  box = nomad_app_window_get_box (win);
-  view = g_list_first (priv->buffers)->data;
-  webkit_web_view_load_uri (view, uri);
-  gtk_box_pack_start (GTK_BOX (box), GTK_WIDGET (view), TRUE, TRUE, 0);
-  nomad_app_window_set_webview (win, view);
-  gtk_widget_show_all (box);
+  /* win = nomad_app_get_window (app); */
+  /* box = nomad_app_window_get_box (win); */
+  /* view = g_list_first (priv->buffers)->data; */
+  /* webkit_web_view_load_uri (view, uri); */
+  /* gtk_box_pack_start (GTK_BOX (box), GTK_WIDGET (view), TRUE, TRUE, 0); */
+  /* nomad_app_window_set_webview (win, view); */
+  /* gtk_widget_show_all (box); */
 }
 
 void

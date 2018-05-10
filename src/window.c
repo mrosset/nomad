@@ -26,6 +26,7 @@
 #include "app.h"
 #include "vte.h"
 #include "window.h"
+#include "buffer.h"
 
 struct _NomadAppWindow
 {
@@ -37,6 +38,7 @@ typedef struct _NomadAppWindowPrivate NomadAppWindowPrivate;
 struct _NomadAppWindowPrivate
 {
   GtkBox *box;
+  GtkWidget *buffer;
   GtkWidget *minibuf;
   GtkWidget *status;
   GtkWidget *pane;
@@ -50,17 +52,6 @@ struct _NomadAppWindowPrivate
 G_DEFINE_TYPE_WITH_PRIVATE (NomadAppWindow, nomad_app_window,
                             GTK_TYPE_APPLICATION_WINDOW)
 
-static void
-web_view_load_changed (WebKitWebView *web_view, WebKitLoadEvent load_event,
-                       gpointer user_data)
-{
-  GtkLabel *label;
-  const gchar *uri;
-
-  uri = webkit_web_view_get_uri (web_view);
-  label = GTK_LABEL (user_data);
-  gtk_label_set_text (label, uri);
-}
 
 gboolean
 key_press_cb (GtkWidget *widget, GdkEventKey *event)
@@ -279,36 +270,39 @@ nomad_app_window_init (NomadAppWindow *win)
   c_user_cookie_file = scm_to_locale_string (
       scm_c_public_ref ("nomad init", "user-cookie-file"));
 
-  g_signal_connect (webkit_web_context_get_default (),
-                    "initialize-web-extensions",
-                    G_CALLBACK (initialize_web_extensions), NULL);
+   /* g_signal_connect (webkit_web_context_get_default (), */
+   /*                  "initialize-web-extensions", */
+   /*                  G_CALLBACK (initialize_web_extensions), NULL); */
 
   // Minbuf
-  priv->minibuf = GTK_WIDGET (minibuf_new ());
-  gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->read_line),
-                            GTK_TEXT_BUFFER (priv->minibuf));
+  /* priv->minibuf = GTK_WIDGET (minibuf_new ()); */
+  /* gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->read_line), */
+  /*                           GTK_TEXT_BUFFER (priv->minibuf)); */
 
-  g_signal_connect (priv->read_line, "key-press-event",
-                    G_CALLBACK (minibuf_key_press_cb), (gpointer)win);
+  /* g_signal_connect (priv->read_line, "key-press-event", */
+  /*                   G_CALLBACK (minibuf_key_press_cb), (gpointer)win); */
   // Vte
   priv->vte = GTK_WIDGET (nomad_vte_new ());
 
-  gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->result_popover_view),
-                            GTK_TEXT_BUFFER (minibuf_new ()));
+  /* gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->result_popover_view), */
+  /*                           GTK_TEXT_BUFFER (minibuf_new ())); */
+
+  priv->buffer = GTK_WIDGET(nomad_buffer_new());
 
   // Packing
+  gtk_paned_add1 (GTK_PANED (priv->pane), priv->buffer);
   gtk_paned_add2 (GTK_PANED (priv->pane), GTK_WIDGET (priv->vte));
   gtk_widget_show_all (priv->pane);
-  // gtk_widget_hide (priv->vte);
+  gtk_widget_hide (priv->vte);
 
   // Cookies
-  cookie_manager = webkit_web_context_get_cookie_manager (
-      webkit_web_context_get_default ());
+  /* cookie_manager = webkit_web_context_get_cookie_manager ( */
+  /*     webkit_web_context_get_default ()); */
 
-  webkit_cookie_manager_set_persistent_storage (
-      cookie_manager, c_user_cookie_file,
-      WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE);
-  scm_dynwind_free (c_user_cookie_file);
+  /* webkit_cookie_manager_set_persistent_storage ( */
+  /*     cookie_manager, c_user_cookie_file, */
+  /*     WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE); */
+  /* scm_dynwind_free (c_user_cookie_file); */
 
   scm_dynwind_end ();
 }
@@ -318,19 +312,19 @@ nomad_app_window_class_init (NomadAppWindowClass *class)
 {
 
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
-                                               "/org/gnu/nomadeapp/window.ui");
+                                               "/org/gnu/nomadapp/window.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, pane);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, status);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, box);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, read_line);
-  gtk_widget_class_bind_template_child_private (
-      GTK_WIDGET_CLASS (class), NomadAppWindow, result_popover);
-  gtk_widget_class_bind_template_child_private (
-      GTK_WIDGET_CLASS (class), NomadAppWindow, result_popover_view);
+   /* gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class), */
+  /*                                               NomadAppWindow, status); */
+  /* gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class), */
+  /*                                               NomadAppWindow, box); */
+  /* gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class), */
+  /*                                               NomadAppWindow, read_line); */
+  /* gtk_widget_class_bind_template_child_private ( */
+  /*     GTK_WIDGET_CLASS (class), NomadAppWindow, result_popover); */
+  /* gtk_widget_class_bind_template_child_private ( */
+  /*     GTK_WIDGET_CLASS (class), NomadAppWindow, result_popover_view); */
 }
 
 NomadAppWindow *
@@ -366,33 +360,33 @@ nomad_app_window_get_webview (NomadAppWindow *win)
 void
 nomad_app_window_replace_webview (NomadAppWindow *win, WebKitWebView *view)
 {
-  NomadAppWindowPrivate *priv;
+  /* NomadAppWindowPrivate *priv; */
 
-  priv = nomad_app_window_get_instance_private (win);
-  g_object_ref (priv->web_view);
+  /* priv = nomad_app_window_get_instance_private (win); */
+  /* g_object_ref (priv->web_view); */
 
-  gtk_container_remove (GTK_CONTAINER (priv->box),
-                        GTK_WIDGET (priv->web_view));
-  gtk_box_pack_start (GTK_BOX (priv->box), GTK_WIDGET (view), TRUE, TRUE, 0);
+  /* gtk_container_remove (GTK_CONTAINER (priv->box), */
+  /*                       GTK_WIDGET (priv->web_view)); */
+  /* gtk_box_pack_start (GTK_BOX (priv->box), GTK_WIDGET (view), TRUE, TRUE, 0); */
 
   // FIXME: this makes duplicate signals. remove existing load-changed
   // single before removeing webview
-  g_signal_connect (view, "load-changed", G_CALLBACK (web_view_load_changed),
-                    priv->status);
+  /* g_signal_connect (view, "load-changed", G_CALLBACK (web_view_load_changed), */
+  /*                   priv->status); */
 
-  priv->web_view = view;
-  gtk_widget_show_all (GTK_WIDGET (priv->box));
+  /* priv->web_view = view; */
+  /* gtk_widget_show_all (GTK_WIDGET (priv->box)); */
 }
 
 void
 nomad_app_window_set_webview (NomadAppWindow *win, WebKitWebView *view)
 {
-  NomadAppWindowPrivate *priv;
+  /* NomadAppWindowPrivate *priv; */
 
-  priv = nomad_app_window_get_instance_private (win);
+  /* priv = nomad_app_window_get_instance_private (win); */
 
-  g_signal_connect (view, "load-changed", G_CALLBACK (web_view_load_changed),
-                    priv->status);
+  /* g_signal_connect (view, "load-changed", G_CALLBACK (web_view_load_changed), */
+  /*                   priv->status); */
 
-  priv->web_view = view;
+  /* priv->web_view = view; */
 }

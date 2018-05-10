@@ -27,29 +27,29 @@
 G_BEGIN_DECLS
 #define NOMAD_TYPE_VTE nomad_vte_get_type ()
 #define NOMAD_VTE(obj)                                                        \
-  (G_TYPE_CHECK_INSTANCE_CAST ((obj), NOMAD_TYPE_VTE, NomadVte))
+	(G_TYPE_CHECK_INSTANCE_CAST ((obj), NOMAD_TYPE_VTE, NomadVte))
 #define NOMAD_VTE_CLASS(klass)                                                \
-  (G_TYPE_CHECK_CLASS_CAST ((klass), NOMAD_TYPE_VTE, NomadVteClass))
-#define NOMAD_IS_VTE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), NOMAD_TYPE_VTE))
+	(G_TYPE_CHECK_CLASS_CAST ((klass), NOMAD_TYPE_VTE, NomadVteClass))
+ #define NOMAD_IS_VTE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), NOMAD_TYPE_VTE))
 #define NOMAD_IS_VTE_CLASS(klass)                                             \
-  (G_TYPE_CHECK_CLASS_TYPE ((klass), NOMAD_TYPE_VTE))
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), NOMAD_TYPE_VTE))
 #define NOMAD_VTE_GET_CLASS(obj)                                              \
-  (G_TYPE_INSTANCE_GET_CLASS ((obj), NOMAD_TYPE_VTE, NomadVteClass))
+	(G_TYPE_INSTANCE_GET_CLASS ((obj), NOMAD_TYPE_VTE, NomadVteClass))
 typedef struct _NomadVte NomadVte;
 typedef struct _NomadVteClass NomadVteClass;
 typedef struct _NomadVtePrivate NomadVtePrivate;
 
 struct _NomadVte
 {
-  VteTerminal parent;
+	VteTerminal parent;
 
-  NomadVtePrivate *priv;
+	NomadVtePrivate *priv;
 };
 
 struct _NomadVteClass
 {
-  VteTerminal parent_instance;
-  VteTerminalClass parent_class;
+	VteTerminal parent_instance;
+	VteTerminalClass parent_class;
 };
 
 GType nomad_vte_get_type (void) G_GNUC_CONST;

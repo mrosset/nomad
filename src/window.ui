@@ -20,69 +20,7 @@
         <property name="position">378</property>
         <signal name="size-allocate" handler="pane_size_allocate_cb" swapped="no"/>
         <child>
-          <object class="GtkBox" id="box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkGrid">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkLabel" id="status">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="halign">end</property>
-                    <property name="margin_left">6</property>
-                    <property name="margin_right">6</property>
-                    <property name="margin_top">4</property>
-                    <property name="margin_bottom">4</property>
-                    <property name="label" translatable="yes">https://test.com</property>
-                    <attributes>
-                      <attribute name="weight" value="normal"/>
-                      <attribute name="foreground" value="#34346565a4a4"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSourceView" id="read_line">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="valign">baseline</property>
-                    <property name="margin_top">1</property>
-                    <property name="margin_bottom">1</property>
-                    <property name="hexpand">True</property>
-                    <property name="left_margin">2</property>
-                    <property name="right_margin">2</property>
-                    <property name="monospace">True</property>
-                    <signal name="focus-in-event" handler="read_line_focus_in_event_cb" swapped="no"/>
-                    <signal name="focus-out-event" handler="read_line_focus_out_event_cb" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="pack_type">end</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-          <packing>
-            <property name="resize">True</property>
-            <property name="shrink">True</property>
-          </packing>
+          <placeholder/>
         </child>
         <child>
           <placeholder/>

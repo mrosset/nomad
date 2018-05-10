@@ -8,11 +8,13 @@ test:
 	gcc  $(GUILE_CFLAGS) test.c -o $@
 	./test
 
-EXTRA_DIST = gresource.xml window.ui
+EXTRA_DIST = gresource.xml window.ui buffer.ui
 
 nomad_SOURCES = main.c \
 	app.c \
 	app.h \
+	buffer.c \
+	buffer.h \
 	resources.c \
 	scheme.c \
 	scheme.h \
@@ -43,7 +45,7 @@ CLEANFILES = $(DOT_X_FILES) resources.c
 format:
 	 clang-format -i *.c *.h
 
-resources.c: gresource.xml window.ui
+resources.c: gresource.xml window.ui buffer.ui
 	$(GLIB_COMPILE_R) $< --target=$@ --generate-source
 
 snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS)
