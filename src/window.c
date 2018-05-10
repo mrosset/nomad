@@ -104,10 +104,9 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
       return FALSE;
     }
 
-  return FALSE;
-  // If the webview does note have focus return FALSE, so children can
-  // handle key events
-  if (!gtk_widget_has_focus (GTK_WIDGET (priv->web_view)))
+  // If the vte has focus return FALSE, so children can handle key
+  // events
+  if (gtk_widget_has_focus (GTK_WIDGET (priv->vte)))
     {
       return FALSE;
     }
@@ -272,25 +271,23 @@ nomad_app_window_init (NomadAppWindow *self)
   /* c_user_cookie_file = scm_to_locale_string ( */
   /*     scm_c_public_ref ("nomad init", "user-cookie-file")); */
 
-  /* g_signal_connect (webkit_web_context_get_default (), */
-  /*                  "initialize-web-extensions", */
-  /*                  G_CALLBACK (initialize_web_extensions), NULL); */
+  g_signal_connect (webkit_web_context_get_default (),
+                    "initialize-web-extensions",
+                    G_CALLBACK (initialize_web_extensions), NULL);
 
   // Minbuf
-  /* priv->minibuf = GTK_WIDGET (minibuf_new ()); */
-  /* gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->read_line), */
-  /*                           GTK_TEXT_BUFFER (priv->minibuf)); */
+  priv->minibuf = GTK_WIDGET (minibuf_new ());
+  gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->read_line),
+                            GTK_TEXT_BUFFER (priv->minibuf));
 
-  /* g_signal_connect (priv->read_line, "key-press-event", */
-  /*                   G_CALLBACK (minibuf_key_press_cb), (gpointer)win); */
+  g_signal_connect (priv->read_line, "key-press-event",
+                    G_CALLBACK (minibuf_key_press_cb), (gpointer)self);
   // Vte
   priv->vte = GTK_WIDGET (nomad_vte_new ());
 
-  /* gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->result_popover_view), */
-  /*                           GTK_TEXT_BUFFER (minibuf_new ())); */
-
   // Packing
   // gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET(priv->buffer));
+  // gtk_container_remove(GTK_CONTAINER(priv->pane), GTK_WIDGET(priv->box));
   gtk_paned_add2 (GTK_PANED (priv->pane), GTK_WIDGET (priv->vte));
   /* gtk_widget_hide (priv->vte); */
 
@@ -312,7 +309,8 @@ nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf)
 
   priv->buffer = buf;
   gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET (priv->buffer));
-  gtk_widget_show_all (priv->pane);
+  gtk_widget_show_all (GTK_WIDGET (priv->buffer));
+  /* gtk_widget_show_all (GTK_WIDGET(priv->pane)); */
 }
 
 void
@@ -328,13 +326,10 @@ nomad_app_window_class_init (NomadAppWindowClass *class)
                                                "/org/gnu/nomadapp/window.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, pane);
-  /* gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class), */
-  /*                                               NomadAppWindow, status); */
-  /* gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class), */
-  /*                                               NomadAppWindow, box); */
-  /* gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class), */
-  /*                                               NomadAppWindow, read_line);
-   */
+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
+                                                NomadAppWindow, box);
+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
+                                                NomadAppWindow, read_line);
   /* gtk_widget_class_bind_template_child_private ( */
   /*     GTK_WIDGET_CLASS (class), NomadAppWindow, result_popover); */
   /* gtk_widget_class_bind_template_child_private ( */

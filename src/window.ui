@@ -2,6 +2,7 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <requires lib="gtksourceview" version="3.0"/>
   <template class="NomadAppWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Nomad</property>
@@ -13,17 +14,46 @@
       <placeholder/>
     </child>
     <child>
-      <object class="GtkPaned" id="pane">
+      <object class="GtkBox" id="box">
         <property name="visible">True</property>
-        <property name="can_focus">True</property>
+        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="position">807</property>
-        <signal name="size-allocate" handler="pane_size_allocate_cb" swapped="no"/>
         <child>
-          <placeholder/>
+          <object class="GtkPaned" id="pane">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="orientation">vertical</property>
+            <property name="position">807</property>
+            <property name="position_set">True</property>
+            <property name="wide_handle">True</property>
+            <signal name="size-allocate" handler="pane_size_allocate_cb" swapped="no"/>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
-          <placeholder/>
+          <object class="GtkSourceView" id="read_line">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="valign">baseline</property>
+            <property name="margin_top">1</property>
+            <property name="margin_bottom">1</property>
+            <property name="hexpand">True</property>
+            <property name="left_margin">2</property>
+            <property name="right_margin">2</property>
+            <property name="monospace">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
         </child>
       </object>
     </child>
