@@ -1,3 +1,21 @@
+dnl configure.ac
+dnl Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+
+dnl This file is part of Nomad
+
+dnl Nomad is free software: you can redistribute it and/or modify it
+dnl under the terms of the GNU General Public License as published by the
+dnl Free Software Foundation, either version 3 of the License, or
+dnl (at your option) any later version.
+
+dnl Nomad is distributed in the hope that it will be useful, but
+dnl WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+dnl See the GNU General Public License for more details.
+
+dnl You should have received a copy of the GNU General Public License along
+dnl with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 PACKAGE=nomad
 VERSION=0.0.1-alpha
 
@@ -35,28 +53,28 @@ AC_PATH_PROG(GUILE_SNARF, guile-snarf, no)
 AC_SUBST(GUILE_SNARF)
 
 if test "$GUILE_SNARF" = "no"; then
-   AC_MSG_ERROR([program guile-snarf is required])
+AC_MSG_ERROR([program guile-snarf is required])
 fi
 
 AC_PATH_PROG(GUILD, guild, no)
 AC_SUBST(GUILD)
 
 if test "$GUILD" = "no"; then
-   AC_MSG_ERROR([program guild is required])
+AC_MSG_ERROR([program guild is required])
 fi
 
 AC_PATH_PROG(GLIB_COMPILE_R, glib-compile-resources, no)
 AC_SUBST(GLIB_COMPILE_R)
 
 if test "$GLIB_COMPILE_R" = "no"; then
-   AC_MSG_ERROR([program glib-compile-resources is required])
+AC_MSG_ERROR([program glib-compile-resources is required])
 fi
 
 AC_CONFIG_FILES([
- Makefile
- src/Makefile
- ext/Makefile
- scheme/Makefile
+Makefile
+src/Makefile
+ext/Makefile
+scheme/Makefile
 ])
 
 AC_OUTPUT

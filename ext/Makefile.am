@@ -1,3 +1,21 @@
+## Makefile.am
+## Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+
+## This file is part of Nomad
+
+## Nomad is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+
+## Nomad is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 ACLOCAL_AMFLAG = -I m4
 
 AM_CFLAGS = -Wall -Werror
@@ -7,4 +25,4 @@ libnomaddir = $(libexecdir)/nomad/
 libnomad_la_SOURCES = ext.c
 libnomad_la_CFLAGS = $(AM_CFLAGS) $(WEB_EXTENSION_CFLAGS) $(GUILE_CFLAGS)
 libnomad_la_LIBADD = $(WEB_EXTENSION_LIBS) $(GUILE_LIBS) $(GLIB_LIBS)
-libnomad_la_LDFLAGS = -module -avoid-version -no-undefined0
+libnomad_la_LDFLAGS = -module -avoid-version -no-undefined
