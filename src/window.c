@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksource.h>
 #include <gtksourceview/gtksourcebuffer.h>
@@ -113,11 +114,10 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
       return FALSE;
     }
 
-  // If event has state then its a modified keypress eg. `C-c' but not
-  // `C-c c' which means we can't handle prefixes, quite yet.  since
-  // we can easily capture this state, we'll use this a starting point
-  // for our keybindings. We'll call our Scheme key-press-hook. from
-  // here the nomad keymap module will do the work.
+  // If event has state then its a modified keypress eg. `C-c c' which means we
+  // can't handle prefixes, quite yet.  since we can easily capture this state,
+  // we'll use this a starting point for our keybindings. We'll call our Scheme
+  // key-press-hook. from here the nomad keymap module will do the work.
   if ((event->state & modifiers) == GDK_CONTROL_MASK)
     {
       scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
@@ -318,7 +318,7 @@ nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf)
 void
 realize_event_cb (GtkWidget *widget, gpointer user_data)
 {
-  // scm_c_eval_string ("(format #t \"URL: ~a\n\" (current-url))");
+  // scm_c_eval_string ("(format #t "URL: ~a\n" (current-url))");
 }
 static void
 nomad_app_window_class_init (NomadAppWindowClass *class)

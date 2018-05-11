@@ -18,6 +18,7 @@
 
 (define-module (nomad keymap)
   #:use-module (nomad browser)
+  #:use-module (ice-9 threads)
   #:export (key-press-hook handle-key-press debug-key-press))
 
 (define modifier-masks '((4 . "C")))
@@ -49,8 +50,8 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
 
 (define (handle-key-press mod key)
   (let* ((mod-key (modifier-key->string mod key))
-        (proc (assoc-ref default-keymap mod-key)))
-        (if (eq? proc #f)
+         (proc (assoc-ref default-keymap mod-key)))
+    (if (eq? proc #f)
         (simple-format #f "~s : key not found" key)
         (eval proc (interaction-environment)))))
 

@@ -44,18 +44,18 @@ web_page_loaded_callback (WebKitWebPage * web_page, gpointer user_data)
 
 static void
 web_page_created_callback (WebKitWebExtension * extension,
-         WebKitWebPage * web_page, char *user_data)
+                           WebKitWebPage * web_page, char *user_data)
 {
   g_print ("Page %d created\n", (int)webkit_web_page_get_id (web_page));
   g_signal_connect (web_page, "document-loaded",
-        G_CALLBACK (web_page_loaded_callback), NULL);
+                    G_CALLBACK (web_page_loaded_callback), NULL);
 }
 
 G_MODULE_EXPORT void
 webkit_web_extension_initialize_with_user_data (WebKitWebExtension *
-            extension,
-            GString * user_data)
+                                                extension,
+                                                GString * user_data)
 {
   g_signal_connect (extension, "page-created",
-        G_CALLBACK (web_page_created_callback), user_data);
+                    G_CALLBACK (web_page_created_callback), user_data);
 }
