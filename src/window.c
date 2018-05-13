@@ -333,10 +333,6 @@ nomad_app_window_class_init (NomadAppWindowClass *class)
                                                 NomadAppWindow, box);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, read_line);
-  /* gtk_widget_class_bind_template_child_private ( */
-  /*     GTK_WIDGET_CLASS (class), NomadAppWindow, result_popover); */
-  /* gtk_widget_class_bind_template_child_private ( */
-  /*     GTK_WIDGET_CLASS (class), NomadAppWindow, result_popover_view); */
 }
 
 NomadAppWindow *
