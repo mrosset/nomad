@@ -25,7 +25,7 @@
   #:export (init user-init-file user-nomad-directory user-cookie-file))
 
 (define user-init-file
-  (string-append (home-dir) file-name-separator-string ".nomad.scm"))
+  (string-append (home-dir) file-name-separator-string ".nomad"))
 
 (define user-nomad-directory
   (string-append (home-dir) file-name-separator-string ".nomad.d"))

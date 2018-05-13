@@ -23,6 +23,9 @@
   #:export (run-tests))
 
 (define (run-tests)
+  (format #t "~a\n" (print-buffers)))
+
+(define (run-tests-long)
   (next-buffer)
   (sleep 2)
   (browse "https://www.gnu.org/s/guile")
