@@ -26,11 +26,13 @@
 #include <webkit2/webkit2.h>
 
 #define EMACS_INIT "/home/mrosset/src/nomad/init.el"
-#define MAX_BUFFERS 2
+#define MAX_BUFFERS 1
 
 #define NOMAD_APP_TYPE (nomad_app_get_type ())
 G_DECLARE_FINAL_TYPE (NomadApp, nomad_app, NOMAD, APP, GtkApplication)
 NomadApp *nomad_app_new (void);
 WebKitWebView *nomad_app_get_webview (NomadApp *app);
-NomadBuffer *nomad_app_get_first_buffer (NomadApp *self);
+GtkWidget * nomad_app_get_window (NomadApp *self);
+NomadBuffer *nomad_app_get_first_buffer (NomadApp *app);
+GList *nomad_app_get_buffers(NomadApp *app);
 #endif /* __NOMADAPP_H */

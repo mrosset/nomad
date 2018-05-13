@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/org/gnu/nomadapp">
+  <gresource prefix="/org/gnu/nomad">
     <file preprocess="xml-stripblanks">window.ui</file>
     <file preprocess="xml-stripblanks">buffer.ui</file>
   </gresource>

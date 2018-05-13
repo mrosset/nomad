@@ -309,6 +309,7 @@ nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf)
 
   NomadAppWindowPrivate *priv = self->priv;
 
+  gtk_container_remove(GTK_CONTAINER(priv->pane), GTK_WIDGET(priv->buffer));
   priv->buffer = buf;
   gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET (priv->buffer));
   gtk_widget_show_all (GTK_WIDGET (priv->buffer));
@@ -325,7 +326,7 @@ nomad_app_window_class_init (NomadAppWindowClass *class)
 {
 
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
-                                               "/org/gnu/nomadapp/window.ui");
+                                               "/org/gnu/nomad/window.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, pane);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),

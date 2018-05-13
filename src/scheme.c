@@ -206,9 +206,34 @@ URI vs URL")
   return result;
 }
 
+struct buffer {
+  SCM name;
+  NomadBuffer *buffer;
+  WebKitWebView *view;
+};
+
+static SCM buffer_type;
+
+void init_buffer_type(void)
+{
+  SCM name, slots;
+  scm_t_struct_finalize finalizer;
+
+  name = scm_from_utf8_symbol("buffer");
+  finalizer = NULL;
+  slots = scm_list_1(scm_from_utf8_symbol("data"));
+
+  buffer_type = scm_make_foreign_object_type(name, slots, finalizer);
+}
+
 SCM_DEFINE (scm_nomad_print_buffers, "print-buffers", 0, 0, 0, (), "")
 {
-  return SCM_UNSPECIFIED;
+  GList *buffers = nomad_app_get_buffers(NOMAD_APP(app));
+
+  for(GList *l = buffers; l != NULL; l = l->next) {
+    g_print("buffer here\n");
+  }
+  return SCM_UNDEFINED;
 }
 
 SCM_DEFINE (scm_nomad_get_current_buffer, "current-buffer", 0, 0, 0, (), "")
@@ -225,6 +250,7 @@ void
 register_functions (void *data)
 {
 #include "scheme.x"
+  init_buffer_type();
   scm_c_export ("kill-nomad", "print-buffers", "current-buffer", "next-buffer",
                 NULL);
   return;

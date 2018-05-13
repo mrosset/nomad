@@ -45,6 +45,7 @@ void
 nomad_buffer_set_view (NomadBuffer *self, WebKitWebView *view)
 {
 }
+
 static void
 nomad_buffer_init (NomadBuffer *self)
 {
@@ -56,7 +57,6 @@ nomad_buffer_init (NomadBuffer *self)
 
   priv = self->priv;
   priv->view = WEBKIT_WEB_VIEW (webkit_web_view_new ());
-
   gtk_box_pack_start (GTK_BOX (self), GTK_WIDGET (priv->view), TRUE, TRUE, 0);
   gtk_box_reorder_child (GTK_BOX (self), GTK_WIDGET (priv->view), 0);
 
@@ -68,7 +68,7 @@ static void
 nomad_buffer_class_init (NomadBufferClass *klass)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
-                                               "/org/gnu/nomadapp/buffer.ui");
+                                               "/org/gnu/nomad/buffer.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass),
                                                 NomadBuffer, status);
 }
@@ -77,6 +77,12 @@ WebKitWebView *
 nomad_buffer_get_view (NomadBuffer *buf)
 {
   return buf->priv->view;
+}
+
+GtkLabel*
+nomad_buffer_get_status(NomadBuffer *buf)
+{
+  return GTK_LABEL(buf->priv->status);
 }
 
 NomadBuffer *

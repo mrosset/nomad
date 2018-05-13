@@ -61,6 +61,7 @@ nomad_app_activate (GApplication *self)
   c_home_page = scm_to_locale_string (home_page);
   win = nomad_app_window_new (NOMAD_APP (self));
   priv = NOMAD_APP (self)->priv;
+
   for (int i = 0; i <= MAX_BUFFERS; i++)
     {
       priv->buffers = g_list_append (priv->buffers, nomad_buffer_new ());
@@ -83,11 +84,11 @@ nomad_app_class_init (NomadAppClass *class)
 NomadApp *
 nomad_app_new (void)
 {
-  return g_object_new (NOMAD_APP_TYPE, "application-id", "org.gnu.nomadapp",
+  return g_object_new (NOMAD_APP_TYPE, "application-id", "org.gnu.nomad",
                        "flags", G_APPLICATION_HANDLES_OPEN, NULL);
 }
 
-NomadAppWindow *
+GtkWidget *
 nomad_app_get_window (NomadApp *app)
 {
 
@@ -100,7 +101,7 @@ nomad_app_get_window (NomadApp *app)
       g_critical ("could not find window");
       return NULL;
     }
-  return NOMAD_APP_WINDOW (windows->data);
+  return GTK_WIDGET (windows->data);
 }
 
 void
@@ -156,16 +157,14 @@ nomad_app_next_buffer (NomadApp *app)
 WebKitWebView *
 nomad_app_get_webview (NomadApp *app)
 {
-  GList *windows;
   NomadAppWindow *win;
 
-  windows = gtk_application_get_windows (GTK_APPLICATION (app));
-
-  if (!windows)
-    {
-      g_critical ("could not find window");
-      return NULL;
-    }
-  win = NOMAD_APP_WINDOW (windows->data);
+  win = NOMAD_APP_WINDOW(nomad_app_get_window(app));
   return nomad_app_window_get_webview (win);
+}
+
+GList *
+nomad_app_get_buffers (NomadApp *app)
+{
+  return app->priv->buffers;
 }
