@@ -36,5 +36,7 @@ GtkWidget *nomad_app_get_window (NomadApp *self);
 NomadBuffer *nomad_app_get_first_buffer (NomadApp *app);
 GList *nomad_app_get_buffers (NomadApp *app);
 void nomad_app_add_buffer (NomadApp *app, NomadBuffer *buf);
+void nomad_app_next_buffer (NomadApp *app);
+void nomad_app_prev_buffer (NomadApp *app);
 void nomad_app_print_buffers (NomadApp *app);
 #endif /* __NOMADAPP_H */

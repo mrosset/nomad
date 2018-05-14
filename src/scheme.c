@@ -237,27 +237,52 @@ SCM_DEFINE (scm_nomad_print_buffers, "print-buffers", 0, 0, 0, (), "")
 gboolean
 make_buffer_invoke (void *data)
 {
+  char *uri = data;
   NomadBuffer *buf = nomad_buffer_new ();
   WebKitWebView *view = nomad_buffer_get_view (buf);
   GtkWidget *win = nomad_app_get_window (NOMAD_APP (app));
-  webkit_web_view_load_uri (view, "http://gnu.org");
+  webkit_web_view_load_uri (view, uri);
   nomad_app_window_set_buffer (NOMAD_APP_WINDOW (win), buf);
   nomad_app_add_buffer (NOMAD_APP (app), buf);
+  g_free (uri);
   return FALSE;
 }
 
-SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 0, 0, (), "")
+SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 1, 0, (SCM uri), "")
 {
-  g_main_context_invoke (NULL, make_buffer_invoke, NULL);
+
+  char *c_uri = scm_to_locale_string (uri);
+  g_main_context_invoke (NULL, make_buffer_invoke, c_uri);
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE (scm_nomad_get_current_buffer, "current-buffer", 0, 0, 0, (), "")
+gboolean
+next_buffer_invoke (void *data)
 {
+  nomad_app_next_buffer (NOMAD_APP (app));
+  return FALSE;
+}
+
+SCM_DEFINE (scm_nomad_get_next_buffer, "next-buffer", 0, 0, 0, (), "")
+{
+  g_main_context_invoke (NULL, next_buffer_invoke, NULL);
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE (scm_nomad_next_buffer, "next-buffer", 0, 0, 0, (), "")
+gboolean
+prev_buffer_invoke (void *data)
+{
+  nomad_app_prev_buffer (NOMAD_APP (app));
+  return FALSE;
+}
+
+SCM_DEFINE (scm_nomad_get_prev, "prev-buffer", 0, 0, 0, (), "")
+{
+  g_main_context_invoke (NULL, prev_buffer_invoke, NULL);
+  return SCM_UNSPECIFIED;
+}
+
+SCM_DEFINE (scm_nomad_current_buffer, "current-buffer", 0, 0, 0, (), "")
 {
   return SCM_UNSPECIFIED;
 }

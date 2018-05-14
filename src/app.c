@@ -135,19 +135,33 @@ nomad_app_print_buffers (NomadApp *app)
     }
 }
 
-WebKitWebView *
-nomad_app_get_current_buffer (NomadApp *app)
-{
-
-  NomadAppPrivate *priv;
-
-  priv = nomad_app_get_instance_private (app);
-  return priv->buffers->data;
-}
-
 void
 nomad_app_next_buffer (NomadApp *app)
 {
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GList *l = app->priv->buffers->next;
+
+  if (l == NULL)
+    {
+      l = g_list_first (app->priv->buffers);
+    }
+
+  nomad_app_window_set_buffer (win, NOMAD_BUFFER (l->data));
+  app->priv->buffers = l;
+}
+
+void
+nomad_app_prev_buffer (NomadApp *app)
+{
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GList *l = app->priv->buffers->prev;
+
+  if (l == NULL)
+    {
+      l = g_list_last (app->priv->buffers);
+    }
+  nomad_app_window_set_buffer (win, NOMAD_BUFFER (l->data));
+  app->priv->buffers = l;
 }
 
 WebKitWebView *
