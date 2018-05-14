@@ -23,7 +23,9 @@
   #:export (run-tests))
 
 (define (run-tests)
-  (format #t "~a\n" (print-buffers)))
+  (make-buffer)
+  (sleep 3)
+  (print-buffers))
 
 (define (run-tests-long)
   (next-buffer)

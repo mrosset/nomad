@@ -32,7 +32,9 @@
 G_DECLARE_FINAL_TYPE (NomadApp, nomad_app, NOMAD, APP, GtkApplication)
 NomadApp *nomad_app_new (void);
 WebKitWebView *nomad_app_get_webview (NomadApp *app);
-GtkWidget * nomad_app_get_window (NomadApp *self);
+GtkWidget *nomad_app_get_window (NomadApp *self);
 NomadBuffer *nomad_app_get_first_buffer (NomadApp *app);
-GList *nomad_app_get_buffers(NomadApp *app);
+GList *nomad_app_get_buffers (NomadApp *app);
+void nomad_app_add_buffer (NomadApp *app, NomadBuffer *buf);
+void nomad_app_print_buffers (NomadApp *app);
 #endif /* __NOMADAPP_H */

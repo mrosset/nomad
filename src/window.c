@@ -255,13 +255,18 @@ minibuf_key_press_cb (GtkWidget *view, GdkEventKey *event, gpointer user_data)
   return FALSE;
 }
 
+void
+click_cb (GtkWidget *w, void *data)
+{
+}
+
 static void
 nomad_app_window_init (NomadAppWindow *self)
 {
 
   NomadAppWindowPrivate *priv;
-  /* WebKitCookieManager *cookie_manager; */
-  /* char *c_user_cookie_file; */
+  WebKitCookieManager *cookie_manager;
+  char *c_user_cookie_file;
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -270,8 +275,8 @@ nomad_app_window_init (NomadAppWindow *self)
   priv = nomad_app_window_get_instance_private (self);
 
   self->priv = priv;
-  /* c_user_cookie_file = scm_to_locale_string ( */
-  /*     scm_c_public_ref ("nomad init", "user-cookie-file")); */
+  c_user_cookie_file = scm_to_locale_string (
+      scm_c_public_ref ("nomad init", "user-cookie-file"));
 
   g_signal_connect (webkit_web_context_get_default (),
                     "initialize-web-extensions",
@@ -288,39 +293,44 @@ nomad_app_window_init (NomadAppWindow *self)
   priv->vte = GTK_WIDGET (nomad_vte_new ());
 
   // Packing
-  // gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET(priv->buffer));
-  // gtk_container_remove(GTK_CONTAINER(priv->pane), GTK_WIDGET(priv->box));
   gtk_paned_add2 (GTK_PANED (priv->pane), GTK_WIDGET (priv->vte));
   /* gtk_widget_hide (priv->vte); */
 
+  gtk_widget_grab_focus (GTK_WIDGET (priv->vte));
   // Cookies
-  /* cookie_manager = webkit_web_context_get_cookie_manager ( */
-  /*     webkit_web_context_get_default ()); */
+  cookie_manager = webkit_web_context_get_cookie_manager (
+      webkit_web_context_get_default ());
 
-  /* webkit_cookie_manager_set_persistent_storage ( */
-  /*     cookie_manager, c_user_cookie_file, */
-  /*     WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE); */
-  /* scm_dynwind_free (c_user_cookie_file); */
+  webkit_cookie_manager_set_persistent_storage (
+      cookie_manager, c_user_cookie_file,
+      WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE);
+  scm_dynwind_free (c_user_cookie_file);
   scm_dynwind_end ();
 }
+
+NomadBuffer *
+nomad_app_window_get_buffer (NomadAppWindow *self)
+{
+  return self->priv->buffer;
+}
+
 void
 nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf)
 {
 
   NomadAppWindowPrivate *priv = self->priv;
 
-  gtk_container_remove(GTK_CONTAINER(priv->pane), GTK_WIDGET(priv->buffer));
+  if (gtk_paned_get_child1 (GTK_PANED (priv->pane)) != NULL)
+    {
+      g_object_ref (priv->buffer);
+      gtk_container_remove (GTK_CONTAINER (priv->pane),
+                            GTK_WIDGET (priv->buffer));
+    }
   priv->buffer = buf;
   gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET (priv->buffer));
-  gtk_widget_show_all (GTK_WIDGET (priv->buffer));
-  /* gtk_widget_show_all (GTK_WIDGET(priv->pane)); */
+  gtk_widget_show_all (GTK_WIDGET (self));
 }
 
-void
-realize_event_cb (GtkWidget *widget, gpointer user_data)
-{
-  // scm_c_eval_string ("(format #t "URL: ~a\n" (current-url))");
-}
 static void
 nomad_app_window_class_init (NomadAppWindowClass *class)
 {

@@ -9,7 +9,6 @@
     <property name="default_width">800</property>
     <property name="default_height">640</property>
     <signal name="key-press-event" handler="key_press_cb" swapped="no"/>
-    <signal name="realize" handler="realize_event_cb" swapped="no"/>
     <child type="titlebar">
       <placeholder/>
     </child>
@@ -24,8 +23,6 @@
             <property name="can_focus">True</property>
             <property name="orientation">vertical</property>
             <property name="position">807</property>
-            <property name="position_set">True</property>
-            <property name="wide_handle">True</property>
             <signal name="size-allocate" handler="pane_size_allocate_cb" swapped="no"/>
             <child>
               <placeholder/>

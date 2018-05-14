@@ -206,7 +206,8 @@ URI vs URL")
   return result;
 }
 
-struct buffer {
+struct buffer
+{
   SCM name;
   NomadBuffer *buffer;
   WebKitWebView *view;
@@ -214,25 +215,40 @@ struct buffer {
 
 static SCM buffer_type;
 
-void init_buffer_type(void)
+void
+init_buffer_type (void)
 {
   SCM name, slots;
   scm_t_struct_finalize finalizer;
 
-  name = scm_from_utf8_symbol("buffer");
+  name = scm_from_utf8_symbol ("buffer");
   finalizer = NULL;
-  slots = scm_list_1(scm_from_utf8_symbol("data"));
+  slots = scm_list_1 (scm_from_utf8_symbol ("data"));
 
-  buffer_type = scm_make_foreign_object_type(name, slots, finalizer);
+  buffer_type = scm_make_foreign_object_type (name, slots, finalizer);
 }
 
 SCM_DEFINE (scm_nomad_print_buffers, "print-buffers", 0, 0, 0, (), "")
 {
-  GList *buffers = nomad_app_get_buffers(NOMAD_APP(app));
+  nomad_app_print_buffers (NOMAD_APP (app));
+  return SCM_UNDEFINED;
+}
 
-  for(GList *l = buffers; l != NULL; l = l->next) {
-    g_print("buffer here\n");
-  }
+gboolean
+make_buffer_invoke (void *data)
+{
+  NomadBuffer *buf = nomad_buffer_new ();
+  WebKitWebView *view = nomad_buffer_get_view (buf);
+  GtkWidget *win = nomad_app_get_window (NOMAD_APP (app));
+  webkit_web_view_load_uri (view, "http://gnu.org");
+  nomad_app_window_set_buffer (NOMAD_APP_WINDOW (win), buf);
+  nomad_app_add_buffer (NOMAD_APP (app), buf);
+  return FALSE;
+}
+
+SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 0, 0, (), "")
+{
+  g_main_context_invoke (NULL, make_buffer_invoke, NULL);
   return SCM_UNDEFINED;
 }
 
@@ -250,8 +266,8 @@ void
 register_functions (void *data)
 {
 #include "scheme.x"
-  init_buffer_type();
-  scm_c_export ("kill-nomad", "print-buffers", "current-buffer", "next-buffer",
-                NULL);
+  init_buffer_type ();
+  scm_c_export ("kill-nomad", "make-buffer", "print-buffers", "current-buffer",
+                "next-buffer", NULL);
   return;
 }

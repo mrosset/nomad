@@ -49,27 +49,21 @@ nomad_app_init (NomadApp *self)
 static void
 nomad_app_activate (GApplication *self)
 {
-  NomadBuffer *b;
   NomadAppWindow *win;
+  NomadBuffer *buf;
   char *c_home_page;
   SCM home_page;
-  NomadAppPrivate *priv;
 
   scm_dynwind_begin (0);
 
   home_page = scm_c_public_ref ("nomad browser", "default-home-page");
   c_home_page = scm_to_locale_string (home_page);
+
   win = nomad_app_window_new (NOMAD_APP (self));
-  priv = NOMAD_APP (self)->priv;
-
-  for (int i = 0; i <= MAX_BUFFERS; i++)
-    {
-      priv->buffers = g_list_append (priv->buffers, nomad_buffer_new ());
-    }
-
-  b = NOMAD_BUFFER (g_list_nth (priv->buffers, 0)->data);
-  webkit_web_view_load_uri (nomad_buffer_get_view (b), c_home_page);
-  nomad_app_window_set_buffer (win, b);
+  buf = nomad_buffer_new ();
+  webkit_web_view_load_uri (nomad_buffer_get_view (buf), c_home_page);
+  nomad_app_window_set_buffer (win, buf);
+  nomad_app_add_buffer (NOMAD_APP (self), buf);
   scm_dynwind_free (c_home_page);
   scm_dynwind_end ();
   gtk_window_present (GTK_WINDOW (win));
@@ -133,9 +127,11 @@ nomad_app_print_buffers (NomadApp *app)
 
   for (l = priv->buffers; l != NULL; l = l->next)
     {
-      g_print ("point: %p title: %s url: %s\n", l->data,
-               webkit_web_view_get_title (l->data),
-               webkit_web_view_get_uri (l->data));
+      NomadBuffer *buf = NOMAD_BUFFER (l->data);
+      WebKitWebView *view = nomad_buffer_get_view (buf);
+      g_print ("point: %p title: %s url: %s\n", view,
+               webkit_web_view_get_title (view),
+               webkit_web_view_get_uri (view));
     }
 }
 
@@ -159,8 +155,14 @@ nomad_app_get_webview (NomadApp *app)
 {
   NomadAppWindow *win;
 
-  win = NOMAD_APP_WINDOW(nomad_app_get_window(app));
+  win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   return nomad_app_window_get_webview (win);
+}
+
+void
+nomad_app_add_buffer (NomadApp *app, NomadBuffer *buf)
+{
+  app->priv->buffers = g_list_append (app->priv->buffers, buf);
 }
 
 GList *

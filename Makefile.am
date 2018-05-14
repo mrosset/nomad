@@ -26,3 +26,6 @@ export GUILE_LOAD_PATH=$(PWD)/scheme
 
 run: all
 	src/nomad
+
+format:
+	make -C src format

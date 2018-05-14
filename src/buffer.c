@@ -79,10 +79,10 @@ nomad_buffer_get_view (NomadBuffer *buf)
   return buf->priv->view;
 }
 
-GtkLabel*
-nomad_buffer_get_status(NomadBuffer *buf)
+GtkLabel *
+nomad_buffer_get_status (NomadBuffer *buf)
 {
-  return GTK_LABEL(buf->priv->status);
+  return GTK_LABEL (buf->priv->status);
 }
 
 NomadBuffer *
