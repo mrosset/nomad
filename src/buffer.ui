@@ -10,20 +10,46 @@
       <placeholder/>
     </child>
     <child>
-      <object class="GtkLabel" id="status">
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkGrid">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">label</property>
-        <property name="xalign">0.99000000953674316</property>
-        <property name="yalign">0.5</property>
-        <attributes>
-          <attribute name="foreground" value="#34346565a4a4"/>
-        </attributes>
+        <property name="column_homogeneous">True</property>
+        <child>
+          <object class="GtkLabel" id="status">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">status</property>
+            <property name="max_width_chars">40</property>
+            <property name="xalign">0.99000000953674316</property>
+            <property name="yalign">0.5</property>
+            <attributes>
+              <attribute name="foreground" value="#34346565a4a4"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="title">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">title</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
       </object>
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">1</property>
+        <property name="position">2</property>
       </packing>
     </child>
   </template>

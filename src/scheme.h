@@ -21,7 +21,7 @@
 #ifndef GUILE_H
 #define GUILE_H
 
-GApplication *app;
+NomadApp *app;
 
 void register_functions (void *);
 

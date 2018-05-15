@@ -18,18 +18,21 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "app.h"
-#include "buffer.h"
-#include "window.h"
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <libguile.h>
+
+#include "app.h"
+#include "buffer.h"
+#include "scheme.h"
+#include "window.h"
 
 typedef struct _NomadAppPrivate NomadAppPrivate;
 
 struct _NomadAppPrivate
 {
   GList *buffers;
+  SCM current;
 };
 
 struct _NomadApp
@@ -46,6 +49,8 @@ nomad_app_init (NomadApp *self)
   self->priv = nomad_app_get_instance_private (self);
 }
 
+NomadApp *main_app;
+
 static void
 nomad_app_activate (GApplication *self)
 {
@@ -55,7 +60,6 @@ nomad_app_activate (GApplication *self)
   SCM home_page;
 
   scm_dynwind_begin (0);
-
   home_page = scm_c_public_ref ("nomad browser", "default-home-page");
   c_home_page = scm_to_locale_string (home_page);
 
@@ -102,37 +106,20 @@ void
 nomad_app_switch_to_buffer (NomadApp *app, const char *uri)
 {
 
-  /* NomadAppWindow *win; */
-  /* GtkWidget *box; */
-  /* WebKitWebView *view; */
-  /* NomadAppPrivate *priv = nomad_app_get_instance_private (app); */
-
-  /* win = nomad_app_get_window (app); */
-  /* box = nomad_app_window_get_box (win); */
-  /* view = g_list_first (priv->buffers)->data; */
-  /* webkit_web_view_load_uri (view, uri); */
-  /* gtk_box_pack_start (GTK_BOX (box), GTK_WIDGET (view), TRUE, TRUE, 0); */
-  /* nomad_app_window_set_webview (win, view); */
-  /* gtk_widget_show_all (box); */
-}
-
-void
-nomad_app_print_buffers (NomadApp *app)
-{
-
-  GList *l;
-  NomadAppPrivate *priv;
-
-  priv = nomad_app_get_instance_private (app);
-
-  for (l = priv->buffers; l != NULL; l = l->next)
-    {
-      NomadBuffer *buf = NOMAD_BUFFER (l->data);
-      WebKitWebView *view = nomad_buffer_get_view (buf);
-      g_print ("point: %p title: %s url: %s\n", view,
-               webkit_web_view_get_title (view),
-               webkit_web_view_get_uri (view));
-    }
+  /*
+   * NomadAppWindow *win;
+   * GtkWidget *box;
+   * WebKitWebView *view;
+   * NomadAppPrivate *priv = nomad_app_get_instance_private (app);
+   *
+   * win = nomad_app_get_window (app);
+   * box = nomad_app_window_get_box (win);
+   * view = g_list_first (priv->buffers)->data;
+   * webkit_web_view_load_uri (view, uri);
+   * gtk_box_pack_start (GTK_BOX (box), GTK_WIDGET (view), TRUE, TRUE, 0);
+   * nomad_app_window_set_webview (win, view);
+   * gtk_widget_show_all (box);
+   */
 }
 
 void
@@ -173,14 +160,69 @@ nomad_app_get_webview (NomadApp *app)
   return nomad_app_window_get_webview (win);
 }
 
+SCM
+nomad_make_buffer (NomadBuffer *buf)
+{
+  WebKitWebView *view = nomad_buffer_get_view (buf);
+  struct buffer *s_buf = SCM_NEW_BUFFER;
+  s_buf->buffer = buf;
+  if (webkit_web_view_get_title (view) != NULL)
+    {
+      s_buf->title = scm_from_locale_string (webkit_web_view_get_title (view));
+    }
+
+  return scm_make_foreign_object_1 (buffer_type, s_buf);
+}
+
 void
 nomad_app_add_buffer (NomadApp *app, NomadBuffer *buf)
 {
   app->priv->buffers = g_list_append (app->priv->buffers, buf);
 }
 
-GList *
-nomad_app_get_buffers (NomadApp *app)
+void
+nomad_app_set_current (NomadApp *app, SCM cur)
 {
-  return app->priv->buffers;
+  app->priv->current = cur;
+}
+
+SCM
+nomad_app_get_current (NomadApp *app)
+{
+  return app->priv->current;
+}
+
+SCM
+nomad_app_get_buffer_list (NomadApp *app)
+{
+  SCM list = scm_c_eval_string ("(make-list 0)");
+
+  if (app == NULL)
+    {
+      g_critical ("APP IS NULL\n");
+      return SCM_UNSPECIFIED;
+    }
+
+  for (GList *l = app->priv->buffers; l != NULL; l = l->next)
+    {
+      SCM buf = nomad_make_buffer (l->data);
+      list = scm_append (scm_list_2 (list, scm_list_1 (buf)));
+    }
+  return list;
+}
+// scheme
+
+SCM_DEFINE (scm_nomad_buffer_list, "buffer-list", 0, 0, 0, (),
+            "Return a list of all existing buffers.")
+{
+
+  return nomad_app_get_buffer_list (main_app);
+}
+
+void
+nomad_app_register_functions (void *data)
+{
+  main_app = NOMAD_APP (data);
+#include "app.x"
+  scm_c_export ("buffer-list", NULL);
 }

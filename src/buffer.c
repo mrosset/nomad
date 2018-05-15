@@ -25,20 +25,21 @@ struct _NomadBufferPrivate
 {
   WebKitWebView *view;
   GtkWidget *status;
+  GtkWidget *title;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadBuffer, nomad_buffer, GTK_TYPE_BOX)
 
 static void
-web_view_load_changed (WebKitWebView *web_view, WebKitLoadEvent load_event,
+web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
                        gpointer user_data)
 {
-  GtkLabel *label;
-  const gchar *uri;
+  NomadBufferPrivate *priv = user_data;
 
-  uri = webkit_web_view_get_uri (web_view);
-  label = GTK_LABEL (user_data);
-  gtk_label_set_text (label, uri);
+  gtk_label_set_text (GTK_LABEL (priv->title),
+                      webkit_web_view_get_title (view));
+  gtk_label_set_text (GTK_LABEL (priv->status),
+                      webkit_web_view_get_uri (view));
 }
 
 void
@@ -61,7 +62,7 @@ nomad_buffer_init (NomadBuffer *self)
   gtk_box_reorder_child (GTK_BOX (self), GTK_WIDGET (priv->view), 0);
 
   g_signal_connect (priv->view, "load-changed",
-                    G_CALLBACK (web_view_load_changed), priv->status);
+                    G_CALLBACK (web_view_load_changed), priv);
 }
 
 static void
@@ -71,6 +72,8 @@ nomad_buffer_class_init (NomadBufferClass *klass)
                                                "/org/gnu/nomad/buffer.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass),
                                                 NomadBuffer, status);
+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass),
+                                                NomadBuffer, title);
 }
 
 WebKitWebView *

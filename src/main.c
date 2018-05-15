@@ -29,16 +29,16 @@ inner_main (void *data, int argc, char **argv)
 {
   intmax_t status;
 
-  app = G_APPLICATION (nomad_app_new ());
+  app = nomad_app_new ();
 
   scm_c_use_module ("nomad browser");
-  scm_c_define_module ("nomad browser", register_functions, NULL);
+  scm_c_define_module ("nomad browser", register_functions, app);
   scm_c_use_module ("nomad init");
   scm_c_use_module ("nomad repl");
   scm_c_use_module ("nomad tests");
   scm_c_eval_string ("(init)");
 
-  status = g_application_run (app, argc, argv);
+  status = g_application_run (G_APPLICATION (app), argc, argv);
   exit (status);
 }
 

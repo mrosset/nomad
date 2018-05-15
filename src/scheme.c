@@ -36,8 +36,8 @@ SCM_DEFINE (scm_nomad_version, "nomad-version", 0, 0, 0, (), "test macro")
 SCM_DEFINE (scm_nomad_start, "browser-start", 0, 0, 0, (), "")
 {
   intmax_t status;
-  app = G_APPLICATION (nomad_app_new ());
-  status = g_application_run (app, 0, NULL);
+  app = nomad_app_new ();
+  status = g_application_run (G_APPLICATION (app), 0, NULL);
   return scm_from_intmax (status);
 }
 
@@ -206,15 +206,6 @@ URI vs URL")
   return result;
 }
 
-struct buffer
-{
-  SCM name;
-  NomadBuffer *buffer;
-  WebKitWebView *view;
-};
-
-static SCM buffer_type;
-
 void
 init_buffer_type (void)
 {
@@ -228,10 +219,24 @@ init_buffer_type (void)
   buffer_type = scm_make_foreign_object_type (name, slots, finalizer);
 }
 
-SCM_DEFINE (scm_nomad_print_buffers, "print-buffers", 0, 0, 0, (), "")
+gboolean
+scheme_test_invoke (void *data)
 {
-  nomad_app_print_buffers (NOMAD_APP (app));
-  return SCM_UNDEFINED;
+  struct buffer *buf = data;
+  WebKitWebView *view;
+  buf->buffer = nomad_buffer_new ();
+  view = nomad_buffer_get_view (buf->buffer);
+  webkit_web_view_load_uri (view, "http://gnu.org");
+  g_print ("URL: %s\n", webkit_web_view_get_uri (view));
+  return FALSE;
+}
+
+SCM_DEFINE (scm_nomad_scheme_test, "scheme-test", 0, 0, 0, (), "")
+{
+  struct buffer *buf;
+  buf = (struct buffer *)scm_gc_malloc (sizeof (struct buffer), "buffer");
+  g_main_context_invoke (NULL, scheme_test_invoke, buf);
+  return scm_make_foreign_object_1 (buffer_type, buf);
 }
 
 gboolean
@@ -245,12 +250,17 @@ make_buffer_invoke (void *data)
   nomad_app_window_set_buffer (NOMAD_APP_WINDOW (win), buf);
   nomad_app_add_buffer (NOMAD_APP (app), buf);
   g_free (uri);
+
   return FALSE;
+}
+
+SCM_DEFINE (scm_nomad_current_buffer, "current-buffer", 0, 0, 0, (), "")
+{
+  return SCM_UNDEFINED;
 }
 
 SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 1, 0, (SCM uri), "")
 {
-
   char *c_uri = scm_to_locale_string (uri);
   g_main_context_invoke (NULL, make_buffer_invoke, c_uri);
   return SCM_UNDEFINED;
@@ -282,17 +292,14 @@ SCM_DEFINE (scm_nomad_get_prev, "prev-buffer", 0, 0, 0, (), "")
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE (scm_nomad_current_buffer, "current-buffer", 0, 0, 0, (), "")
-{
-  return SCM_UNSPECIFIED;
-}
-
 void
 register_functions (void *data)
 {
+  scm_c_define_module ("nomad app", nomad_app_register_functions, data);
+  nomad_app_register_functions (data);
 #include "scheme.x"
   init_buffer_type ();
-  scm_c_export ("kill-nomad", "make-buffer", "print-buffers", "current-buffer",
-                "next-buffer", NULL);
+  scm_c_export ("kill-nomad", "make-buffer", "buffer-list", "current-buffer",
+                "next-buffer", "prev-buffer", "scheme-test", NULL);
   return;
 }

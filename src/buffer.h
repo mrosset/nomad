@@ -22,6 +22,7 @@
 #define __NOMAD_BUFFER_H__
 
 #include <gtk/gtk.h>
+#include <libguile.h>
 #include <webkit2/webkit2.h>
 
 G_BEGIN_DECLS
@@ -43,6 +44,18 @@ struct _NomadBufferClass
 {
   GtkBoxClass parent_class;
 };
+
+#define SCM_NEW_BUFFER                                                        \
+  (struct buffer *)scm_gc_malloc (sizeof (struct buffer), "buffer")
+
+struct buffer
+{
+  NomadBuffer *buffer;
+  WebKitWebView *view;
+  SCM title;
+};
+
+SCM buffer_type;
 
 GType nomad_buffer_get_type (void) G_GNUC_CONST;
 

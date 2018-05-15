@@ -34,9 +34,11 @@ NomadApp *nomad_app_new (void);
 WebKitWebView *nomad_app_get_webview (NomadApp *app);
 GtkWidget *nomad_app_get_window (NomadApp *self);
 NomadBuffer *nomad_app_get_first_buffer (NomadApp *app);
-GList *nomad_app_get_buffers (NomadApp *app);
+SCM nomad_app_get_buffers (NomadApp *app);
 void nomad_app_add_buffer (NomadApp *app, NomadBuffer *buf);
 void nomad_app_next_buffer (NomadApp *app);
 void nomad_app_prev_buffer (NomadApp *app);
-void nomad_app_print_buffers (NomadApp *app);
+SCM scm_nomad_app_get_buffer_list (NomadApp *app);
+void nomad_app_register_functions (void *data);
+
 #endif /* __NOMADAPP_H */
