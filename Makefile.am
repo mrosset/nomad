@@ -29,3 +29,5 @@ run: all
 
 format:
 	make -C src format
+
+rebuild: clean all

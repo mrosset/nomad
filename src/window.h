@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (NomadAppWindow, nomad_app_window, NOMAD, APP_WINDOW,
 
 NomadAppWindow *nomad_app_window_new (NomadApp *app);
 WebKitWebView *nomad_app_window_get_webview (NomadAppWindow *win);
-NomadBuffer *nomad_app_window_get_buffer (NomadAppWindow *self);
+NomadBuffer *nomad_app_window_get_buffer (const NomadAppWindow *self);
 void nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf);
 
 #endif /* __NOMADAPPWIN_H */

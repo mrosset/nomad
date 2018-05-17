@@ -104,27 +104,31 @@ SCM_DEFINE (scm_nomad_scroll_up, "scroll-up", 0, 0, 0, (),
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE (
-    scm_nomad_webkit_go_back, "web-view-go-back", 0, 0, 0, (),
-    "Internal request WebKitView to go back in history. If WebView can not \
-be found or there is no back history then it returns #f. Otherwise      \
-it returns #t. TODO: maybe provide a callback for load-change signal.")
+gboolean
+web_view_back_invoke (void *data)
 {
-  WebKitWebView *web_view;
-
-  web_view = nomad_app_get_webview (NOMAD_APP (app));
+  WebKitWebView *web_view = nomad_app_get_webview (app);
 
   if (web_view == NULL)
     {
-      return SCM_BOOL_F;
+      return FALSE;
     }
 
   if (!webkit_web_view_can_go_back (web_view))
     {
-      return SCM_BOOL_F;
+      return FALSE;
     }
   webkit_web_view_go_back (web_view);
-  return SCM_BOOL_T;
+  return FALSE;
+}
+
+SCM_DEFINE (scm_nomad_webkit_go_back, "web-view-go-back", 0, 0, 0, (),
+            "Request WebKitView to go back in history. If WebView can not \
+be found or there is no back history then it returns #f. Otherwise      \
+it returns #t.")
+{
+  g_main_context_invoke (NULL, web_view_back_invoke, NULL);
+  return SCM_UNDEFINED;
 }
 
 SCM_DEFINE (
@@ -215,19 +219,12 @@ init_buffer_type (void)
   name = scm_from_utf8_symbol ("buffer");
   finalizer = NULL;
   slots = scm_list_1 (scm_from_utf8_symbol ("data"));
-
   buffer_type = scm_make_foreign_object_type (name, slots, finalizer);
 }
 
 gboolean
 scheme_test_invoke (void *data)
 {
-  struct buffer *buf = data;
-  WebKitWebView *view;
-  buf->buffer = nomad_buffer_new ();
-  view = nomad_buffer_get_view (buf->buffer);
-  webkit_web_view_load_uri (view, "http://gnu.org");
-  g_print ("URL: %s\n", webkit_web_view_get_uri (view));
   return FALSE;
 }
 

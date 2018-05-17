@@ -76,6 +76,12 @@ nomad_buffer_class_init (NomadBufferClass *klass)
                                                 NomadBuffer, title);
 }
 
+GtkWidget *
+nomad_buffer_get_title (NomadBuffer *buf)
+{
+  return buf->priv->title;
+}
+
 WebKitWebView *
 nomad_buffer_get_view (NomadBuffer *buf)
 {

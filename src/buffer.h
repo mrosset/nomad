@@ -45,14 +45,9 @@ struct _NomadBufferClass
   GtkBoxClass parent_class;
 };
 
-#define SCM_NEW_BUFFER                                                        \
-  (struct buffer *)scm_gc_malloc (sizeof (struct buffer), "buffer")
-
 struct buffer
 {
-  NomadBuffer *buffer;
   WebKitWebView *view;
-  SCM title;
 };
 
 SCM buffer_type;
@@ -62,7 +57,7 @@ GType nomad_buffer_get_type (void) G_GNUC_CONST;
 NomadBuffer *nomad_buffer_new (void);
 WebKitWebView *nomad_buffer_get_view (NomadBuffer *buf);
 GtkLabel *nomad_buffer_get_status (NomadBuffer *buf);
-
+GtkWidget *nomad_buffer_get_title (NomadBuffer *buf);
 G_END_DECLS
 
 #endif /* __NOMAD_BUFFER_H__ */

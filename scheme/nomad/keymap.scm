@@ -44,7 +44,7 @@ modifiers bit and returns its string representation, and then formats
 it together with the key string. So given the arguments 4 c it would
 return \"C-c\". When the modifer is not found in the modifer-masks it returns #f"
   (let ((mod-string (assoc-ref modifier-masks mod)))
-    (if (not (eq? mod-string #f))
+    (if mod-string
         (simple-format #f "~a-~a" mod-string key)
         #f)))
 

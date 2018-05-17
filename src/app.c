@@ -164,14 +164,13 @@ SCM
 nomad_make_buffer (NomadBuffer *buf)
 {
   WebKitWebView *view = nomad_buffer_get_view (buf);
-  struct buffer *s_buf = SCM_NEW_BUFFER;
-  s_buf->buffer = buf;
+  struct buffer *fo_buf
+      = (struct buffer *)scm_gc_malloc (sizeof (struct buffer), "buffer");
   if (webkit_web_view_get_title (view) != NULL)
     {
-      s_buf->title = scm_from_locale_string (webkit_web_view_get_title (view));
+      fo_buf->view = view;
     }
-
-  return scm_make_foreign_object_1 (buffer_type, s_buf);
+  return scm_make_foreign_object_1 (buffer_type, fo_buf);
 }
 
 void
@@ -210,12 +209,26 @@ nomad_app_get_buffer_list (NomadApp *app)
     }
   return list;
 }
+
 // scheme
+
+SCM_DEFINE (scm_nomad_buffer_title, "buffer-title", 1, 0, 0, (SCM buffer),
+            "Returns buffer title of BUFFER")
+{
+  struct buffer *buf = scm_foreign_object_ref (buffer, 0);
+  return scm_from_locale_string (webkit_web_view_get_title (buf->view));
+}
+
+SCM_DEFINE (scm_nomad_buffer_uri, "buffer-uri", 1, 0, 0, (SCM buffer),
+            "Returns buffer title of BUFFER")
+{
+  struct buffer *buf = scm_foreign_object_ref (buffer, 0);
+  return scm_from_locale_string (webkit_web_view_get_uri (buf->view));
+}
 
 SCM_DEFINE (scm_nomad_buffer_list, "buffer-list", 0, 0, 0, (),
             "Return a list of all existing buffers.")
 {
-
   return nomad_app_get_buffer_list (main_app);
 }
 
@@ -224,5 +237,5 @@ nomad_app_register_functions (void *data)
 {
   main_app = NOMAD_APP (data);
 #include "app.x"
-  scm_c_export ("buffer-list", NULL);
+  scm_c_export ("buffer-list", "buffer-title", "buffer-uri", NULL);
 }

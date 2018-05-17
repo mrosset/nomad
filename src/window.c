@@ -38,7 +38,6 @@ struct _NomadAppWindowPrivate
   GtkBox *box;
   NomadBuffer *buffer;
   GtkWidget *minibuf;
-  GtkWidget *status;
   GtkWidget *pane;
   GtkWidget *read_line;
   GtkWidget *result_popover;
@@ -114,7 +113,7 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
       return FALSE;
     }
 
-  // If event has state then its a modified keypress eg. `C-c c' which means we
+  // If event has state then its a modified keypress eg. `C-c' which means we
   // can't handle prefixes, quite yet.  since we can easily capture this state,
   // we'll use this a starting point for our keybindings. We'll call our Scheme
   // key-press-hook. from here the nomad keymap module will do the work.
@@ -309,7 +308,7 @@ nomad_app_window_init (NomadAppWindow *self)
 }
 
 NomadBuffer *
-nomad_app_window_get_buffer (NomadAppWindow *self)
+nomad_app_window_get_buffer (const NomadAppWindow *self)
 {
   return self->priv->buffer;
 }
@@ -317,10 +316,10 @@ nomad_app_window_get_buffer (NomadAppWindow *self)
 void
 nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf)
 {
-
   NomadAppWindowPrivate *priv = self->priv;
+  GtkWidget *child1 = gtk_paned_get_child1 (GTK_PANED (priv->pane));
 
-  if (gtk_paned_get_child1 (GTK_PANED (priv->pane)) != NULL)
+  if (child1 != NULL)
     {
       g_object_ref (priv->buffer);
       gtk_container_remove (GTK_CONTAINER (priv->pane),
@@ -328,7 +327,8 @@ nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf)
     }
   priv->buffer = buf;
   gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET (priv->buffer));
-  gtk_widget_show_all (GTK_WIDGET (self));
+  gtk_widget_activate (GTK_WIDGET (priv->buffer));
+  gtk_widget_show_all (GTK_WIDGET (priv->buffer));
 }
 
 static void
@@ -351,59 +351,8 @@ nomad_app_window_new (NomadApp *app)
   return g_object_new (NOMAD_APP_WINDOW_TYPE, "application", app, NULL);
 }
 
-GtkWidget *
-nomad_app_window_get_box (NomadAppWindow *win)
-{
-  NomadAppWindowPrivate *priv = nomad_app_window_get_instance_private (win);
-  return GTK_WIDGET (priv->box);
-}
-
-GtkWidget *
-nomad_app_window_get_status (NomadAppWindow *win)
-{
-  NomadAppWindowPrivate *priv = nomad_app_window_get_instance_private (win);
-  return priv->status;
-}
-
 WebKitWebView *
 nomad_app_window_get_webview (NomadAppWindow *self)
 {
   return nomad_buffer_get_view (self->priv->buffer);
-}
-
-void
-nomad_app_window_replace_webview (NomadAppWindow *win, WebKitWebView *view)
-{
-  /* NomadAppWindowPrivate *priv; */
-
-  /* priv = nomad_app_window_get_instance_private (win); */
-  /* g_object_ref (priv->web_view); */
-
-  /* gtk_container_remove (GTK_CONTAINER (priv->box), */
-  /*                       GTK_WIDGET (priv->web_view)); */
-  /* gtk_box_pack_start (GTK_BOX (priv->box), GTK_WIDGET (view), TRUE, TRUE,
-   * 0); */
-
-  // FIXME: this makes duplicate signals. remove existing load-changed
-  // single before removeing webview
-  /* g_signal_connect (view, "load-changed", G_CALLBACK
-   * (web_view_load_changed), */
-  /*                   priv->status); */
-
-  /* priv->web_view = view; */
-  /* gtk_widget_show_all (GTK_WIDGET (priv->box)); */
-}
-
-void
-nomad_app_window_set_webview (NomadAppWindow *win, WebKitWebView *view)
-{
-  /* NomadAppWindowPrivate *priv; */
-
-  /* priv = nomad_app_window_get_instance_private (win); */
-
-  /* g_signal_connect (view, "load-changed", G_CALLBACK
-   * (web_view_load_changed), */
-  /*                   priv->status); */
-
-  /* priv->web_view = view; */
 }
