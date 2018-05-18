@@ -48,6 +48,7 @@ struct _NomadBufferClass
 struct buffer
 {
   WebKitWebView *view;
+  NomadBuffer *buffer;
 };
 
 SCM buffer_type;

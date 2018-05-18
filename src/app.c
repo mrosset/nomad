@@ -163,13 +163,12 @@ nomad_app_get_webview (NomadApp *app)
 SCM
 nomad_make_buffer (NomadBuffer *buf)
 {
-  WebKitWebView *view = nomad_buffer_get_view (buf);
   struct buffer *fo_buf
       = (struct buffer *)scm_gc_malloc (sizeof (struct buffer), "buffer");
-  if (webkit_web_view_get_title (view) != NULL)
-    {
-      fo_buf->view = view;
-    }
+
+  fo_buf->view = nomad_buffer_get_view (buf);
+  fo_buf->buffer = buf;
+
   return scm_make_foreign_object_1 (buffer_type, fo_buf);
 }
 
@@ -195,6 +194,7 @@ SCM
 nomad_app_get_buffer_list (NomadApp *app)
 {
   SCM list = scm_c_eval_string ("(make-list 0)");
+  int count = 0;
 
   if (app == NULL)
     {
@@ -205,7 +205,9 @@ nomad_app_get_buffer_list (NomadApp *app)
   for (GList *l = app->priv->buffers; l != NULL; l = l->next)
     {
       SCM buf = nomad_make_buffer (l->data);
-      list = scm_append (scm_list_2 (list, scm_list_1 (buf)));
+      SCM pair = scm_cons (scm_from_int (count), buf);
+      list = scm_append (scm_list_2 (list, scm_list_1 (pair)));
+      count++;
     }
   return list;
 }
@@ -226,16 +228,64 @@ SCM_DEFINE (scm_nomad_buffer_uri, "buffer-uri", 1, 0, 0, (SCM buffer),
   return scm_from_locale_string (webkit_web_view_get_uri (buf->view));
 }
 
-SCM_DEFINE (scm_nomad_buffer_list, "buffer-list", 0, 0, 0, (),
-            "Return a list of all existing buffers.")
+SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
+            "Return an alist of existing buffers.")
 {
   return nomad_app_get_buffer_list (main_app);
+}
+
+struct invoke_request
+{
+  SCM id;
+  SCM result;
+};
+
+gboolean
+set_buffer_invoke (void *data)
+{
+  SCM id = data;
+  NomadAppWindow *win;
+  struct buffer *obj;
+  SCM buffer
+      = scm_call_1 (scm_c_public_ref ("nomad buffer", "buffer-with-id"), id);
+
+  if (scm_is_bool (buffer))
+    {
+      g_critical ("buffer not found");
+      return FALSE;
+    }
+
+  obj = scm_foreign_object_ref (buffer, 0);
+  win = NOMAD_APP_WINDOW (nomad_app_get_window (main_app));
+  if (obj->buffer == NULL)
+    {
+      g_critical ("window not found");
+      return FALSE;
+    }
+  nomad_app_window_set_buffer (win, obj->buffer);
+  return FALSE;
+}
+
+// FIXME: this should return true or false depending on the success of
+// trying to switch to buffer.
+SCM_DEFINE (scm_nomad_switch_to_buffer, "switch-to-buffer", 1, 0, 0, (SCM id),
+            "Switch to buffer with ID. Returns UNSPECIFIED")
+{
+  g_main_context_invoke (NULL, set_buffer_invoke, id);
+  return SCM_UNSPECIFIED;
+}
+
+void
+init_app_module (void *data)
+{
+  main_app = NOMAD_APP (data);
+#include "app.x"
+  scm_c_export ("buffer-alist", "buffer-id", "buffer-title", "buffer-uri",
+                "switch-to-buffer", NULL);
 }
 
 void
 nomad_app_register_functions (void *data)
 {
-  main_app = NOMAD_APP (data);
-#include "app.x"
-  scm_c_export ("buffer-list", "buffer-title", "buffer-uri", NULL);
+  scm_c_define_module ("nomad app", init_app_module, data);
 }

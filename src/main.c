@@ -34,8 +34,9 @@ inner_main (void *data, int argc, char **argv)
   scm_c_use_module ("nomad browser");
   scm_c_define_module ("nomad browser", register_functions, app);
   scm_c_use_module ("nomad init");
-  scm_c_use_module ("nomad repl");
   scm_c_use_module ("nomad tests");
+  scm_c_use_module ("nomad buffer");
+  scm_c_use_module ("nomad app");
   scm_c_eval_string ("(init)");
 
   status = g_application_run (G_APPLICATION (app), argc, argv);
