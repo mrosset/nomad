@@ -207,7 +207,6 @@ nomad_app_get_buffer_list (NomadApp *app)
     {
       SCM obj = nomad_make_buffer (l->data);
       SCM pair = scm_cons (scm_from_int (count), obj);
-      g_print ("id: %d\n", scm_to_int (scm_car (pair)));
       list = scm_append (scm_list_2 (list, scm_list_1 (pair)));
       count++;
     }

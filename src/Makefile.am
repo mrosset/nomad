@@ -22,18 +22,15 @@ bin_PROGRAMS = nomad
 
 .PHONY: test format
 
-test:
-	gcc  $(GUILE_CFLAGS) test.c -o $@
-	./test
-
 EXTRA_DIST = gresource.xml window.ui buffer.ui
+
+nodist_nomad_SOURCES = resources.c
 
 nomad_SOURCES = main.c	\
 	app.c		\
 	app.h		\
 	buffer.c	\
 	buffer.h	\
-	resources.c	\
 	vte.c		\
 	vte.h		\
 	webkit.h	\
@@ -41,12 +38,12 @@ nomad_SOURCES = main.c	\
 	window.c	\
 	window.h
 
-AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement \
-	$(GTK_FLAGS) \
-	$(GUILE_CFLAGS) \
-	$(VTE_CFLAGS) \
-	$(WEBKIT_CFLAGS) \
-	$(GTK_SOURCEVIEW_CFLAGS) \
+AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
+	$(GTK_FLAGS)								\
+	$(GUILE_CFLAGS)								\
+	$(VTE_CFLAGS)								\
+	$(WEBKIT_CFLAGS)							\
+	$(GTK_SOURCEVIEW_CFLAGS)						\
 	-DNOMAD_WEB_EXTENSIONS_DIR=\""$(libexecdir)/nomad/"\"
 
 AM_LDFLAGS = -export-dynamic

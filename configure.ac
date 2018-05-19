@@ -17,10 +17,10 @@ dnl You should have received a copy of the GNU General Public License along
 dnl with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 PACKAGE=nomad
-VERSION=0.0.2-alpha
+VERSION=0.0.3-alpha
 
 # autoconf
-AC_INIT([nomad], [0.0.2-alpha], [mike.rosset@gmail.com])
+AC_INIT([nomad], [0.0.3-alpha], [mike.rosset@gmail.com])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIRS([m4])

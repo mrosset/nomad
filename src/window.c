@@ -326,7 +326,6 @@ nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf)
     }
   priv->buffer = buf;
   gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET (priv->buffer));
-  gtk_widget_activate (GTK_WIDGET (priv->buffer));
   gtk_widget_show_all (GTK_WIDGET (priv->buffer));
 }
 

@@ -41,7 +41,7 @@ inner_main (void *data, int argc, char **argv)
   scm_c_use_module ("nomad app");
   scm_c_use_module ("nomad webkit");
   scm_c_use_module ("nomad buffer");
-  scm_c_use_module ("nomad browser");
+  scm_c_use_module ("nomad buffer-internal");
   scm_c_use_module ("nomad init");
   scm_c_use_module ("nomad tests");
 
