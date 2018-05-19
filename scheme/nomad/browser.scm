@@ -22,8 +22,6 @@
   #:export (
             default-home-page
             current-url
-            browser-run
-            browser-start
             search-provider-format
             browse
             forward
@@ -35,7 +33,12 @@
 (define search-provider-format "https://duckduckgo.com/?q=~a")
 (define default-home-page "https://www.gnu.org/software/guile")
 
+;; FIXME: https prefixing is pretty dumb use something that is uri
+;; aware. for example if URL has prefix of http:// already it will
+;; still prefix with https://
 (define (browse url)
+  "Browse to URL. URL is prefixed with https:// if only a domain is
+passed. Returns the final URL passed to webkit"
   (let ((prefix "https://"))
     (if (not (string-prefix? prefix url))
         (set! url (string-append prefix url)))
