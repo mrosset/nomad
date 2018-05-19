@@ -46,11 +46,13 @@ test:
 	  -L "$(abs_srcdir)" -L "$(abs_builddir)"		\
 	  -o "$@" "$<"
 
-SOURCES =					\
-  nomad/browser.scm				\
-  nomad/events.scm				\
-  nomad/init.scm				\
-  nomad/keymap.scm				\
-  nomad/repl.scm				\
-  nomad/server.scm				\
-  nomad/util.scm
+SOURCES =			\
+	nomad/browser.scm	\
+	nomad/buffer.scm	\
+	nomad/events.scm	\
+	nomad/init.scm		\
+	nomad/keymap.scm	\
+	nomad/repl.scm		\
+	nomad/server.scm	\
+	nomad/util.scm		\
+	nomad/webkit.scm
