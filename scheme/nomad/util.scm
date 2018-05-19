@@ -32,6 +32,6 @@
 (define (catch-eval expr)
   (catch #t
     (lambda ()
-      (eval-string expr))
+      (simple-format #f "~s" (eval-string expr)))
     (lambda (key . args)
       (simple-format #f "~s: ~s" key args))))

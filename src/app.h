@@ -30,6 +30,9 @@
 
 #define NOMAD_APP_TYPE (nomad_app_get_type ())
 G_DECLARE_FINAL_TYPE (NomadApp, nomad_app, NOMAD, APP, GtkApplication)
+
+NomadApp *app;
+
 NomadApp *nomad_app_new (void);
 WebKitWebView *nomad_app_get_webview (NomadApp *app);
 GtkWidget *nomad_app_get_window (NomadApp *self);

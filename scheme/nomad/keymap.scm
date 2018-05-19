@@ -18,6 +18,7 @@
 
 (define-module (nomad keymap)
   #:use-module (nomad browser)
+  #:use-module (nomad webkit)
   #:use-module (ice-9 threads)
   #:export (key-press-hook handle-key-press debug-key-press))
 

@@ -18,13 +18,12 @@
 
 (define-module (nomad browser)
   #:use-module (nomad events)
+  #:use-module (nomad webkit)
   #:export (
             default-home-page
             current-url
             browser-run
             browser-start
-            scroll-up
-            scroll-down
             search-provider-format
             browse
             forward

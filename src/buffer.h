@@ -57,8 +57,10 @@ GType nomad_buffer_get_type (void) G_GNUC_CONST;
 
 NomadBuffer *nomad_buffer_new (void);
 WebKitWebView *nomad_buffer_get_view (NomadBuffer *buf);
+void nomad_buffer_grab_view (NomadBuffer *buf);
 GtkLabel *nomad_buffer_get_status (NomadBuffer *buf);
 GtkWidget *nomad_buffer_get_title (NomadBuffer *buf);
+void nomad_buffer_register_functions (void *data);
 G_END_DECLS
 
 #endif /* __NOMAD_BUFFER_H__ */

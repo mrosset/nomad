@@ -18,8 +18,11 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "buffer.h"
 #include <webkit2/webkit2.h>
+
+#include "app.h"
+#include "buffer.h"
+#include "window.h"
 
 struct _NomadBufferPrivate
 {
@@ -98,4 +101,130 @@ NomadBuffer *
 nomad_buffer_new (void)
 {
   return g_object_new (NOMAD_TYPE_BUFFER, NULL);
+}
+
+void
+nomad_buffer_grab_view (NomadBuffer *buf)
+{
+  gtk_widget_grab_focus (GTK_WIDGET (buf->priv->view));
+}
+
+// scheme
+
+void
+init_buffer_type (void)
+{
+  SCM name, slots;
+  scm_t_struct_finalize finalizer;
+
+  name = scm_from_utf8_symbol ("buffer");
+  finalizer = NULL;
+  slots = scm_list_1 (scm_from_utf8_symbol ("data"));
+  buffer_type = scm_make_foreign_object_type (name, slots, finalizer);
+}
+
+gboolean
+make_buffer_invoke (void *data)
+{
+  char *uri = data;
+  NomadBuffer *buf = nomad_buffer_new ();
+  WebKitWebView *view = nomad_buffer_get_view (buf);
+  GtkWidget *win = nomad_app_get_window (NOMAD_APP (app));
+  webkit_web_view_load_uri (view, uri);
+  nomad_app_window_set_buffer (NOMAD_APP_WINDOW (win), buf);
+  nomad_app_add_buffer (NOMAD_APP (app), buf);
+  g_free (uri);
+
+  return FALSE;
+}
+
+SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 1, 0, (SCM uri), "")
+{
+  char *c_uri = scm_to_locale_string (uri);
+  g_main_context_invoke (NULL, make_buffer_invoke, c_uri);
+  return SCM_UNDEFINED;
+}
+
+gboolean
+next_buffer_invoke (void *data)
+{
+  nomad_app_next_buffer (NOMAD_APP (app));
+  return FALSE;
+}
+
+SCM_DEFINE (scm_nomad_get_next_buffer, "next-buffer", 0, 0, 0, (), "")
+{
+  g_main_context_invoke (NULL, next_buffer_invoke, NULL);
+  return SCM_UNSPECIFIED;
+}
+
+gboolean
+prev_buffer_invoke (void *data)
+{
+  nomad_app_prev_buffer (NOMAD_APP (app));
+  return FALSE;
+}
+
+SCM_DEFINE (scm_nomad_get_prev, "prev-buffer", 0, 0, 0, (), "")
+{
+  g_main_context_invoke (NULL, prev_buffer_invoke, NULL);
+  return SCM_UNSPECIFIED;
+}
+SCM_DEFINE (scm_nomad_buffer_title, "buffer-title", 1, 0, 0, (SCM buffer),
+            "Returns buffer title of BUFFER")
+{
+  struct buffer *buf = scm_foreign_object_ref (buffer, 0);
+  return scm_from_locale_string (webkit_web_view_get_title (buf->view));
+}
+
+SCM_DEFINE (scm_nomad_buffer_uri, "buffer-uri", 1, 0, 0, (SCM buffer),
+            "Returns buffer title of BUFFER")
+{
+  struct buffer *buf = scm_foreign_object_ref (buffer, 0);
+  return scm_from_locale_string (webkit_web_view_get_uri (buf->view));
+}
+
+gboolean
+set_buffer_invoke (void *data)
+{
+  SCM id = data;
+  NomadAppWindow *win;
+  struct buffer *obj;
+  SCM buffer
+      = scm_call_1 (scm_c_public_ref ("nomad buffer", "buffer-with-id"), id);
+
+  if (scm_is_bool (buffer))
+    {
+      g_critical ("buffer not found");
+      return FALSE;
+    }
+
+  obj = scm_foreign_object_ref (buffer, 0);
+  win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  if (obj->buffer == NULL)
+    {
+      g_critical ("window not found");
+      return FALSE;
+    }
+  nomad_app_window_set_buffer (win, obj->buffer);
+  return FALSE;
+}
+
+// FIXME: this should return true or false depending on the success of
+// trying to switch to buffer.
+SCM_DEFINE (scm_nomad_switch_to_buffer, "switch-to-buffer", 1, 0, 0, (SCM id),
+            "Switch to buffer with ID. Returns UNSPECIFIED")
+{
+  g_main_context_invoke (NULL, set_buffer_invoke, id);
+  return SCM_UNSPECIFIED;
+}
+
+void
+nomad_buffer_register_functions (void *data)
+{
+#include "buffer.x"
+  init_buffer_type ();
+  scm_c_export ("buffer-title", "buffer-uri", "make-buffer", "current-buffer",
+                "next-buffer", "prev-buffer", "scheme-test", NULL);
+  return;
 }

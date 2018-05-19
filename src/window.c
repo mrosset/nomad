@@ -37,7 +37,7 @@ struct _NomadAppWindowPrivate
 {
   GtkBox *box;
   NomadBuffer *buffer;
-  GtkWidget *minibuf;
+  GtkWidget *text_buffer;
   GtkWidget *pane;
   GtkWidget *read_line;
   GtkWidget *result_popover;
@@ -74,15 +74,10 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
   if (event->keyval == GDK_KEY_m
       && (event->state & modifiers) == GDK_MOD1_MASK)
     {
-      if (!gtk_widget_is_visible (vte))
+      if (!gtk_widget_is_visible (vte) || !gtk_widget_has_focus (vte))
         {
           gtk_widget_hide (priv->read_line);
           gtk_widget_show (vte);
-          gtk_widget_grab_focus (vte);
-          return TRUE;
-        }
-      if (!gtk_widget_has_focus (vte))
-        {
           gtk_widget_grab_focus (vte);
           return TRUE;
         }
@@ -90,6 +85,7 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
         {
           gtk_widget_show (priv->read_line);
           gtk_widget_hide (vte);
+          nomad_buffer_grab_view (priv->buffer);
         }
       return TRUE;
     }
@@ -103,6 +99,7 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
         {
           gtk_widget_grab_focus (priv->read_line);
         }
+
       return FALSE;
     }
 
@@ -186,14 +183,14 @@ void
 read_line_eval (GtkWidget *widget, gpointer user_data)
 {
 
-  SCM proc;
   SCM value;
-  gchar *result;
+  gchar *message;
   GtkTextBuffer *buf;
   GtkTextIter start, end;
   gchar *input;
   NomadAppWindowPrivate *priv;
 
+  scm_dynwind_begin (0);
   priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
 
@@ -202,8 +199,8 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
 
   input = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
 
-  proc = scm_c_public_ref ("nomad util", "catch-eval");
-  value = scm_call_1 (proc, scm_take_locale_string (input));
+  value = scm_call_1 (scm_c_public_ref ("nomad util", "catch-eval"),
+                      scm_take_locale_string (input));
 
   if (!scm_is_string (value))
     {
@@ -211,17 +208,18 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
       g_critical ("unhandled value: not a string");
     }
 
-  result = scm_to_locale_string (value);
+  message = scm_to_locale_string (value);
 
-  gtk_text_buffer_set_text (GTK_TEXT_BUFFER (buf), result, -1);
+  gtk_text_buffer_set_text (GTK_TEXT_BUFFER (buf), message, -1);
 
-  gtk_widget_grab_focus (GTK_WIDGET (priv->web_view));
+  nomad_buffer_grab_view (priv->buffer);
 
-  g_free (result);
+  scm_dynwind_free (message);
+  scm_dynwind_end ();
 }
 
 GtkSourceBuffer *
-minibuf_new ()
+text_buffer_new ()
 {
 
   GtkSourceLanguageManager *lm;
@@ -243,7 +241,8 @@ minibuf_new ()
 }
 
 gboolean
-minibuf_key_press_cb (GtkWidget *view, GdkEventKey *event, gpointer user_data)
+text_buffer_key_press_cb (GtkWidget *view, GdkEventKey *event,
+                          gpointer user_data)
 {
   if (event->keyval == GDK_KEY_Return)
     {
@@ -282,12 +281,12 @@ nomad_app_window_init (NomadAppWindow *self)
                     G_CALLBACK (initialize_web_extensions), NULL);
 
   // Minbuf
-  priv->minibuf = GTK_WIDGET (minibuf_new ());
+  priv->text_buffer = GTK_WIDGET (text_buffer_new ());
   gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->read_line),
-                            GTK_TEXT_BUFFER (priv->minibuf));
+                            GTK_TEXT_BUFFER (priv->text_buffer));
 
   g_signal_connect (priv->read_line, "key-press-event",
-                    G_CALLBACK (minibuf_key_press_cb), (gpointer)self);
+                    G_CALLBACK (text_buffer_key_press_cb), (gpointer)self);
   // Vte
   priv->vte = GTK_WIDGET (nomad_vte_new ());
 

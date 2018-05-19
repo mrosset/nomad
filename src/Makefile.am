@@ -28,18 +28,17 @@ test:
 
 EXTRA_DIST = gresource.xml window.ui buffer.ui
 
-nomad_SOURCES = main.c \
-	app.c \
-	app.h \
-	buffer.c \
-	buffer.h \
-	resources.c \
-	scheme.c \
-	scheme.h \
-	scheme.x \
-	vte.c \
-	vte.h \
-	window.c \
+nomad_SOURCES = main.c	\
+	app.c		\
+	app.h		\
+	buffer.c	\
+	buffer.h	\
+	resources.c	\
+	vte.c		\
+	vte.h		\
+	webkit.h	\
+	webkit.c	\
+	window.c	\
 	window.h
 
 AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement \
@@ -54,7 +53,7 @@ AM_LDFLAGS = -export-dynamic
 
 nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(VTE_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
 
-DOT_X_FILES = scheme.x app.x
+DOT_X_FILES = app.x buffer.x webkit.x
 
 BUILT_SOURCES = $(DOT_X_FILES) resources.c
 

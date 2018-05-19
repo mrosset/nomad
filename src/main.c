@@ -22,7 +22,8 @@
 #include <libguile.h>
 
 #include "app.h"
-#include "scheme.h"
+#include "buffer.h"
+#include "webkit.h"
 
 void
 inner_main (void *data, int argc, char **argv)
@@ -31,12 +32,18 @@ inner_main (void *data, int argc, char **argv)
 
   app = nomad_app_new ();
 
+  // init scheme C modules
+  scm_c_define_module ("nomad app", nomad_app_register_functions, app);
+  scm_c_define_module ("nomad webkit", nomad_webkit_register_functions, NULL);
+  scm_c_define_module ("nomad buffer-internal",
+                       nomad_buffer_register_functions, NULL);
+
+  scm_c_use_module ("nomad app");
+  scm_c_use_module ("nomad buffer");
   scm_c_use_module ("nomad browser");
-  scm_c_define_module ("nomad browser", register_functions, app);
   scm_c_use_module ("nomad init");
   scm_c_use_module ("nomad tests");
-  scm_c_use_module ("nomad buffer");
-  scm_c_use_module ("nomad app");
+
   scm_c_eval_string ("(init)");
 
   status = g_application_run (G_APPLICATION (app), argc, argv);

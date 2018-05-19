@@ -42,9 +42,13 @@
             <property name="margin_top">1</property>
             <property name="margin_bottom">1</property>
             <property name="hexpand">True</property>
-            <property name="left_margin">2</property>
+            <property name="vexpand">False</property>
+            <property name="left_margin">5</property>
             <property name="right_margin">2</property>
+            <property name="input_hints">GTK_INPUT_HINT_WORD_COMPLETION | GTK_INPUT_HINT_NONE</property>
             <property name="monospace">True</property>
+            <property name="background_pattern">grid</property>
+            <signal name="focus-in-event" handler="read_line_focus_in_event_cb" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
