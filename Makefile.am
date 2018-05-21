@@ -22,12 +22,17 @@ ACLOCAL_AMFLAGS = -I m4
 
 dist_doc_DATA = README
 
-export GUILE_LOAD_PATH=$(PWD)/scheme
-
 run: all
-	src/nomad
+	GUILE_LOAD_PATH=$(PWD)/scheme src/nomad
 
 format:
 	make -C src format
 
 rebuild: clean all
+
+TESTS = check-guile
+
+CLEANFILES =		\
+	check-guile.log \
+	check-guile.trs \
+	test-suite.log

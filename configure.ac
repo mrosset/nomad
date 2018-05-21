@@ -49,6 +49,16 @@ PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
 PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-3.0])
 PKG_CHECK_MODULES(GLIB, [glib-2.0])
 
+
+top_builddir_absolute=`pwd`
+AC_SUBST(top_builddir_absolute)
+
+top_srcdir_absolute=`(cd $srcdir && pwd)`
+AC_SUBST(top_srcdir_absolute)
+
+AC_DEFUN([GUILE_CONFIG_SCRIPT],[AC_CONFIG_FILES([$1],[chmod +x $1])])
+GUILE_CONFIG_SCRIPT([check-guile])
+
 AC_PATH_PROG(GUILE_SNARF, guile-snarf, no)
 AC_SUBST(GUILE_SNARF)
 

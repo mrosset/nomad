@@ -36,17 +36,14 @@ AM_V_GUILEC_0 = @echo "  GUILEC" $@;
 
 SUFFIXES = .scm .go
 
-test:
-	echo $(GUILE_SITE)
-	echo $(GUILE_SITE_CCACHE)
-
 .scm.go:
-	$(AM_V_GUILEC)GUILE_AUTO_COMPILE=0			\
+	$(AM_V_GUILEC) GUILE_AUTO_COMPILE=0			\
 	$(GUILD) compile --target="$(host)" $(GUILE_WARNINGS)	\
 	  -L "$(abs_srcdir)" -L "$(abs_builddir)"		\
 	  -o "$@" "$<"
 
 SOURCES =			\
+	nomad/app.scm		\
 	nomad/browser.scm	\
 	nomad/buffer.scm	\
 	nomad/events.scm	\
