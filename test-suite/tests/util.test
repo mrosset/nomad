@@ -1,0 +1,47 @@
+;; util.scm -*- scheme -*-
+;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+
+;; This file is part of Nomad
+
+;; Nomad is free software: you can redistribute it and/or modify it
+;; under the terms of the GNU General Public License as published by the
+;; Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; Nomad is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+;; See the GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License along
+;; with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (test-util)
+  #:use-module (nomad util)
+  #:use-module (test-suite lib))
+
+(define home (getenv "HOME"))
+(define home-dir (string-append home file-name-separator-string))
+
+(with-test-prefix "HOME expansion"
+    (pass-if "procedure ~  expands to $HOME" (string=? ~ home))
+    (pass-if "procedure ~/ expands to $HOME/" (string=? ~/ home-dir)))
+
+;; (pass-if "~ expands to $HOME" (string=? ~ home)))
+
+;; (define home (getenv "HOME"))
+;; (define home-dir (string-append home file-name-separator-string))
+
+;; ;; util
+;; (test-begin "util")
+;; (test-assert "~  expansion" (string= ~ home))
+;; (test-assert "~/ expansion" (string= ~/ home-dir))
+;; (test-end "util")
+
+;; ;; init
+;; (test-begin "init")
+;; (test-assert "user-init-file"
+;;   (string= user-init-file (string-append home-dir ".nomad")))
+;; (test-assert "user-nomad-directory"
+;;   (string= user-nomad-directory (string-append home-dir ".nomad.d")))
+;; (test-end "init")
