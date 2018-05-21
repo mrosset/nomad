@@ -1,4 +1,4 @@
-;; tests.scm
+;; app.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,24 +16,4 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad tests)
-  #:use-module (nomad browser)
-  #:use-module (ice-9 threads)
-  #:use-module (ice-9 pretty-print)
-  #:export (run-tests))
-
-(define (run-tests)
-  (make-buffer)
-  (sleep 3)
-  (print-buffers))
-
-(define (run-tests-long)
-  (next-buffer)
-  (sleep 2)
-  (browse "https://www.gnu.org/s/guile")
-  (sleep 2)
-  (next-buffer)
-  (sleep 2)
-  (next-buffer)
-  (pretty-print (all-threads))
-  (current-thread))
+(define-module (nomad app))
