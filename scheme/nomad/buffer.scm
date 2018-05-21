@@ -18,6 +18,7 @@
 
 (define-module (nomad buffer)
   #:use-module (srfi srfi-9)
+  #:use-module (nomad app)
   #:export (buffer-with-id pp-buffers))
 
 (define (buffer-with-id key)

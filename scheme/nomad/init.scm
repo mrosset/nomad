@@ -17,21 +17,25 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad init)
-  #:use-module (ice-9 threads)
-  #:use-module (ice-9 pretty-print)
   #:use-module (nomad keymap)
   #:use-module (nomad events)
   #:use-module (nomad util)
-  #:export (init user-init-file user-nomad-directory user-cookie-file))
+  #:export (init
+            user-cookie-file
+            user-init-file
+            user-init-hook
+            user-nomad-directory))
+
+(define user-init-hook (make-hook))
 
 (define user-init-file
-  (string-append (home-dir) file-name-separator-string ".nomad"))
+  (string-append ~/ ".nomad"))
 
 (define user-nomad-directory
-  (string-append (home-dir) file-name-separator-string ".nomad.d"))
+  (string-append ~/ ".nomad.d"))
 
 (define user-cookie-file
-  (string-append user-nomad-directory file-name-separator-string "cookies.db"))
+  (string-append user-nomad-directory // "cookies.db"))
 
 (define (init)
   (add-hook! key-press-hook handle-key-press)

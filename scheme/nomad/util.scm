@@ -17,13 +17,16 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad util)
-  #:export (catch-eval home-dir info))
+  #:export (catch-eval info ~ // ~/))
 
 (define (info msg)
   (format #t "INFO: ~a\n" msg))
 
-(define (home-dir)
-  (getenv "HOME"))
+(define ~ (getenv "HOME"))
+
+(define // file-name-separator-string)
+
+(define ~/ (string-append ~ //))
 
 ;; (if (not (getlogin))
 ;;     (getenv "HOME"))

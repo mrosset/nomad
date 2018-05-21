@@ -28,27 +28,25 @@
 void
 inner_main (void *data, int argc, char **argv)
 {
-  intmax_t status;
-
   app = nomad_app_new ();
 
   // init scheme C modules
-  scm_c_define_module ("nomad app", nomad_app_register_functions, app);
-  scm_c_define_module ("nomad webkit", nomad_webkit_register_functions, NULL);
-  scm_c_define_module ("nomad buffer-internal",
-                       nomad_buffer_register_functions, NULL);
 
   scm_c_use_module ("nomad app");
+  scm_c_define_module ("nomad app", nomad_app_register_functions, app);
+
   scm_c_use_module ("nomad webkit");
+  scm_c_define_module ("nomad webkit", nomad_webkit_register_functions, NULL);
+
   scm_c_use_module ("nomad buffer");
-  scm_c_use_module ("nomad buffer-internal");
+  scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
+
   scm_c_use_module ("nomad init");
-  scm_c_use_module ("nomad tests");
-
   scm_c_eval_string ("(init)");
+  scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"),
+                  SCM_LIST0);
 
-  status = g_application_run (G_APPLICATION (app), argc, argv);
-  exit (status);
+  exit (g_application_run (G_APPLICATION (app), argc, argv));
 }
 
 int
