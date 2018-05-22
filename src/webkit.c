@@ -103,10 +103,10 @@ web_view_back_invoke (void *data)
   return FALSE;
 }
 
-SCM_DEFINE (scm_nomad_webkit_go_back, "web-view-go-back", 0, 0, 0, (),
-            "Request WebKitView to go back in history. If WebView can not \
-be found or there is no back history then it returns #f. Otherwise      \
-it returns #t.")
+SCM_DEFINE (
+    scm_nomad_webkit_go_back, "web-view-go-back", 0, 0, 0, (),
+    "Request WebKitView to go back in history. If WebView can not be found or "
+    "there is no back history then it return #f. Otherwise it returns #t.")
 {
   struct request *request
       = &(struct request){ .response = SCM_BOOL_F, .done = FALSE };
@@ -116,12 +116,12 @@ it returns #t.")
   return request->response;
 }
 
+// FIXME: invoke on main thread
 SCM_DEFINE (
     scm_nomad_webkit_go_foward, "web-view-go-forward", 0, 0, 0, (),
-    "Internal request WebKitView to go forward in history. If WebView can \
-not be found or there is no forward history then it returns             \
-#f. Otherwise it returns #t. TODO: maybe provide a callback for         \
-load-change signal.")
+    "Internal request WebKitView to go forward in history. If WebView can not "
+    "be found or there is no forward history then it returns #f. Otherwise it "
+    "returns #t. TODO: maybe provide a callback for load-change signal.")
 {
   WebKitWebView *web_view;
 
@@ -140,12 +140,11 @@ load-change signal.")
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (
-    scm_nomad_webkit_reload, "web-view-reload", 0, 1, 0, (SCM nocache),
-    "Internally reloads WebKitView, if nocache is #t then bypass WebKit \
-cache. This procedure should almost never be called directly. TODO:     \
-detail higher level procedures for reloading webkit. Probably only      \
-(reload) in this case.")
+SCM_DEFINE (scm_nomad_webkit_reload, "web-view-reload", 0, 1, 0, (SCM nocache),
+            "Internally reloads WebKitView, if nocache is #t then bypass "
+            "WebKit cache. This procedure should almost never be called "
+            "directly. TODO: detail higher level procedures for reloading "
+            "webkit. Probably only (reload) in this case.")
 {
   WebKitWebView *web_view;
 
