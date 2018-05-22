@@ -19,30 +19,34 @@
 (define-module (nomad browser)
   #:use-module (nomad events)
   #:use-module (nomad webkit)
-  #:export (
-            default-home-page
-            current-url
-            search-provider-format
+  #:export (back
             browse
+            current-url
+            default-home-page
             forward
             home
+            prefix-url
+            query
             reload
-            back
-            query))
+            search-provider-format))
 
 (define search-provider-format "https://duckduckgo.com/?q=~a")
 (define default-home-page "https://www.gnu.org/software/guile")
 
-;; FIXME: https prefixing is pretty dumb use something that is uri
-;; aware. for example if URL has prefix of http:// already it will
-;; still prefix with https://
+(define (prefix-url url)
+  "Returns a full protocol URI for domain URI.
+
+e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
+
+  (and (not (string-prefix? "http://" url))
+       (not (string-prefix? "https://" url))
+       (set! url (string-append "https://" url)))
+  url)
+
 (define (browse url)
-  "Browse to URL. URL is prefixed with https:// if only a domain is
-passed. Returns the final URL passed to webkit"
-  (let ((prefix "https://"))
-    (if (not (string-prefix? prefix url))
-        (set! url (string-append prefix url)))
-    (web-view-load-uri url)))
+  "Browse to URI. URI is prefixed with https:// if no protocol is
+specified. Returns the final URL passed to webkit"
+    (web-view-load-uri (prefix-url url)))
 
 (define (forward)
   (web-view-go-forward))
