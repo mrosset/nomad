@@ -19,6 +19,7 @@
  */
 
 #include "app.h"
+#include "request.h"
 
 SCM_DEFINE (scm_nomad_webkit_load_uri, "web-view-load-uri", 1, 0, 0, (SCM uri),
             "TODO: document this procedure.")
@@ -78,22 +79,28 @@ SCM_DEFINE (scm_nomad_scroll_down, "scroll-down", 0, 0, 0, (), "")
   return SCM_UNDEFINED;
 }
 
-void *
+gboolean
 web_view_back_invoke (void *data)
 {
+  struct request *request = data;
+
   WebKitWebView *web_view = nomad_app_get_webview (app);
 
   if (web_view == NULL)
     {
-      return SCM_BOOL_F;
+      request->done = TRUE;
+      return FALSE;
     }
 
   if (!webkit_web_view_can_go_back (web_view))
     {
-      return SCM_BOOL_F;
+      request->done = TRUE;
+      return FALSE;
     }
   webkit_web_view_go_back (web_view);
-  return SCM_BOOL_T;
+  request->response = SCM_BOOL_T;
+  request->done = TRUE;
+  return FALSE;
 }
 
 SCM_DEFINE (scm_nomad_webkit_go_back, "web-view-go-back", 0, 0, 0, (),
@@ -101,7 +108,12 @@ SCM_DEFINE (scm_nomad_webkit_go_back, "web-view-go-back", 0, 0, 0, (),
 be found or there is no back history then it returns #f. Otherwise      \
 it returns #t.")
 {
-  return scm_with_guile (web_view_back_invoke, NULL);
+  struct request *request
+      = &(struct request){ .response = SCM_BOOL_F, .done = FALSE };
+
+  g_main_context_invoke (NULL, web_view_back_invoke, request);
+  wait_for_response (request);
+  return request->response;
 }
 
 SCM_DEFINE (

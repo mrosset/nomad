@@ -26,15 +26,18 @@ EXTRA_DIST = gresource.xml window.ui buffer.ui
 
 nodist_nomad_SOURCES = resources.c
 
-nomad_SOURCES = main.c	\
+nomad_SOURCES =		\
 	app.c		\
 	app.h		\
 	buffer.c	\
 	buffer.h	\
+	main.c		\
+	request.c	\
+	request.h	\
 	vte.c		\
 	vte.h		\
-	webkit.h	\
 	webkit.c	\
+	webkit.h	\
 	window.c	\
 	window.h
 

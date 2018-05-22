@@ -22,6 +22,7 @@
 
 #include "app.h"
 #include "buffer.h"
+#include "request.h"
 #include "window.h"
 
 struct _NomadBufferPrivate
@@ -126,23 +127,33 @@ init_buffer_type (void)
 gboolean
 make_buffer_invoke (void *data)
 {
-  char *uri = data;
+  struct request *request = data;
+  char *uri = scm_to_locale_string (request->args);
   NomadBuffer *buf = nomad_buffer_new ();
   WebKitWebView *view = nomad_buffer_get_view (buf);
   GtkWidget *win = nomad_app_get_window (NOMAD_APP (app));
+
   webkit_web_view_load_uri (view, uri);
   nomad_app_window_set_buffer (NOMAD_APP_WINDOW (win), buf);
   nomad_app_add_buffer (NOMAD_APP (app), buf);
   g_free (uri);
 
+  request->response = nomad_app_make_buffer (buf);
+  request->done = TRUE;
   return FALSE;
 }
 
-SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 1, 0, (SCM uri), "")
+SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 1, 0, (SCM uri),
+            "Returns a new foreign object buffer for URI. The buffer will "
+            "become the current buffer and load URI.")
 {
-  char *c_uri = scm_to_locale_string (uri);
-  g_main_context_invoke (NULL, make_buffer_invoke, c_uri);
-  return SCM_UNDEFINED;
+  struct request *request = &(
+      struct request){ .args = uri, .response = SCM_BOOL_F, .done = FALSE };
+
+  g_main_context_invoke (NULL, make_buffer_invoke, request);
+
+  wait_for_response (request);
+  return request->response;
 }
 
 gboolean
@@ -225,6 +236,7 @@ nomad_buffer_register_functions (void *data)
 #include "buffer.x"
   init_buffer_type ();
   scm_c_export ("buffer-title", "buffer-uri", "make-buffer", "current-buffer",
-                "next-buffer", "prev-buffer", "scheme-test", NULL);
+                "next-buffer", "prev-buffer", "scheme-test",
+                "switch-to-buffer", NULL);
   return;
 }
