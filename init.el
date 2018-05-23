@@ -21,7 +21,6 @@
 (require 'package)
 
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                         ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
 
 (package-initialize)
@@ -34,10 +33,16 @@
   :ensure t
   :config
   (setq
+   ;; FIXME: don't assume guile binary is 'guile'
    geiser-guile-binary "guile"
    geiser-active-implementations '(guile)
    geiser-default-implimentation 'guile))
 
-(geiser-connect-local 'guile "/tmp/guile-socket")
-(setq inhibit-startup-message t)
-(delete-other-windows)
+(use-package emacs
+  :init
+  (setq inhibit-startup-message t)
+  :config
+  (menu-bar-mode -1)
+  ;; FIXME: don't assume socket file location
+  (geiser-connect-local 'guile "/tmp/guile-socket")
+  (delete-other-windows))

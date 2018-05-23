@@ -31,7 +31,6 @@ inner_main (void *data, int argc, char **argv)
   app = nomad_app_new ();
 
   // init scheme C modules
-
   scm_c_use_module ("nomad app");
   scm_c_define_module ("nomad app", nomad_app_register_functions, app);
 
@@ -41,12 +40,16 @@ inner_main (void *data, int argc, char **argv)
   scm_c_use_module ("nomad buffer");
   scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
 
+  // use essential modules
+  scm_c_use_module ("nomad browser");
   scm_c_use_module ("nomad init");
   scm_c_eval_string ("(init)");
+
   scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"),
                   SCM_LIST0);
 
-  // FIXME: users can start REPL via user-init-hook in $HOME/.nomad
+  // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
+  // documentation for $HOME/.nomad
   scm_c_use_module ("nomad repl");
   scm_c_eval_string ("(server-start)");
 
@@ -56,5 +59,8 @@ inner_main (void *data, int argc, char **argv)
 int
 main (int argc, char *argv[])
 {
+  // FIXME: this clobbers GUILE_LOAD_COMPILED_PATH we should append to
+  // %load-compiled-path
+  g_setenv ("GUILE_LOAD_COMPILED_PATH", NOMAD_GUILE_LOAD_COMPILED_PATH, true);
   scm_boot_guile (argc, argv, inner_main, NULL);
 }

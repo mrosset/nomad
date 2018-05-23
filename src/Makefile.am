@@ -22,7 +22,8 @@ bin_PROGRAMS = nomad
 
 .PHONY: test format
 
-EXTRA_DIST = gresource.xml window.ui buffer.ui
+G_RESOURCES = gresource.xml window.ui buffer.ui
+EXTRA_DIST = $(G_RESOURCES)
 
 nodist_nomad_SOURCES = resources.c
 
@@ -41,12 +42,18 @@ nomad_SOURCES =		\
 	window.c	\
 	window.h
 
+moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
+
+ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
+
 AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
 	$(GTK_FLAGS)								\
 	$(GUILE_CFLAGS)								\
 	$(VTE_CFLAGS)								\
 	$(WEBKIT_CFLAGS)							\
 	$(GTK_SOURCEVIEW_CFLAGS)						\
+	-DNOMAD_GUILE_LOAD_PATH=\""$(moddir)"\"					\
+	-DNOMAD_GUILE_LOAD_COMPILED_PATH=\""$(ccachedir)"\"			\
 	-DNOMAD_WEB_EXTENSIONS_DIR=\""$(libexecdir)/nomad/"\"			\
 	-DNOMAD_DATAROOT_DIR=\""$(datarootdir)/nomad/"\"
 
@@ -63,7 +70,7 @@ CLEANFILES = $(DOT_X_FILES) resources.c
 format:
 	 clang-format -i *.c *.h
 
-resources.c: gresource.xml window.ui buffer.ui
+resources.c: $(G_RESOURCES)
 	$(GLIB_COMPILE_R) $< --target=$@ --generate-source
 
 snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS)
