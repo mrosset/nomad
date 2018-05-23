@@ -25,12 +25,10 @@
 #include "buffer.h"
 #include "webkit.h"
 
-void
-inner_main (void *data, int argc, char **argv)
+static void
+startup (GApplication *app, gpointer data)
 {
-  app = nomad_app_new ();
-
-  // init scheme C modules
+  // Init scheme C modules
   scm_c_use_module ("nomad app");
   scm_c_define_module ("nomad app", nomad_app_register_functions, app);
 
@@ -40,18 +38,35 @@ inner_main (void *data, int argc, char **argv)
   scm_c_use_module ("nomad buffer");
   scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
 
-  // use essential modules
+  // Use essential modules
   scm_c_use_module ("nomad browser");
-  scm_c_use_module ("nomad init");
-  scm_c_eval_string ("(init)");
-
-  scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"),
-                  SCM_LIST0);
+  scm_c_use_module ("nomad repl");
 
   // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
   // documentation for $HOME/.nomad
-  scm_c_use_module ("nomad repl");
+  scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"),
+                  SCM_LIST0);
   scm_c_eval_string ("(server-start)");
+}
+
+static void
+shutdown (GApplication *app, gpointer data)
+{
+  scm_c_eval_string ("(server-force-delete)");
+}
+
+void
+inner_main (void *data, int argc, char **argv)
+{
+  app = nomad_app_new ();
+
+  g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
+  g_signal_connect (app, "shutdown", G_CALLBACK (shutdown), NULL);
+
+  // We need to call init for so things like GDK_SCALE are used by our
+  // GApplication
+  scm_c_use_module ("nomad init");
+  scm_c_eval_string ("(init)");
 
   exit (g_application_run (G_APPLICATION (app), argc, argv));
 }

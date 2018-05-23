@@ -17,16 +17,22 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad repl)
-  #:use-module (ice-9 threads)
   #:use-module (system repl server)
-  #:use-module (system repl coop-server)
   #:export (server-start server-force-delete))
 
-(define (server-start)
-  (if (file-exists? "/tmp/guile-socket")
-      (delete-file "/tmp/guile-socket"))
-  (spawn-server
-   (make-unix-domain-server-socket)))
+(define socket-file "/tmp/nomad-socket")
 
+(define (server-start)
+  "Spawn a UNIX domain sockert REPL in a new thread. The file is the
+value of socket-file."
+    (spawn-server
+     (make-unix-domain-server-socket #:path socket-file)))
+
+;; FIXME: if socket clients are connected, (server-force-delete) will
+;; throw an excpetion. Which gives us a truncated Backtrace to
+;; stderr. More then likely the end user wants to kill connected
+;; clients. Maybe we should prompt the user? Either way we should
+;; handle the exception in a cleaner way.
 (define (server-force-delete)
-  (stop-server-and-clients!))
+  (stop-server-and-clients!)
+  (delete-file socket-file))

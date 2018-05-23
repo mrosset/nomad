@@ -28,11 +28,9 @@
 
 (define ~/ (string-append ~ //))
 
-;; (if (not (getlogin))
-;;     (getenv "HOME"))
-;;     (passwd:dir (getpwnam (getlogin))))
-
 (define (catch-eval expr)
+  "Evaluates EXP. Return a string representation of results. If an
+exception is thrown, return a string representation of the exception."
   (catch #t
     (lambda ()
       (simple-format #f "~s" (eval-string expr)))

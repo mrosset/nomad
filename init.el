@@ -44,5 +44,5 @@
   :config
   (menu-bar-mode -1)
   ;; FIXME: don't assume socket file location
-  (geiser-connect-local 'guile "/tmp/guile-socket")
+  (geiser-connect-local 'guile "/tmp/nomad-socket")
   (delete-other-windows))

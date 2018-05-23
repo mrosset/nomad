@@ -25,6 +25,6 @@ wait_for_response (struct request *request)
 {
   while (!request->done)
     {
-      usleep (MILLISECOND * 300);
+      usleep (MILLISECOND * 100);
     }
 };

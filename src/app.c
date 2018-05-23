@@ -25,6 +25,7 @@
 #include "../config.h"
 #include "app.h"
 #include "buffer.h"
+#include "request.h"
 #include "window.h"
 
 typedef struct _NomadAppPrivate NomadAppPrivate;
@@ -234,6 +235,27 @@ SCM_DEFINE (scm_nomad_kill, "kill-nomad", 0, 0, 0, (), "Exits Nomad.")
   return SCM_UNDEFINED;
 }
 
+gboolean
+get_main_thread_invoke (void *data)
+{
+  struct request *request = data;
+  request->response = scm_c_eval_string ("(current-thread)");
+  request->done = TRUE;
+  return FALSE;
+}
+
+SCM_DEFINE (scm_nomad_get_main_thread, "main-thread", 0, 0, 0, (),
+            "Return the main GApplication thread")
+{
+  struct request *request
+      = &(struct request){ .response = SCM_BOOL_F, .done = FALSE };
+
+  g_main_context_invoke (NULL, get_main_thread_invoke, request);
+
+  wait_for_response (request);
+  return request->response;
+}
+
 SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
             "Return an alist of existing buffers. The alist is created when "
             "this procedure is called.")
@@ -247,5 +269,5 @@ nomad_app_register_functions (void *data)
   app = NOMAD_APP (data);
 #include "app.x"
   scm_c_export ("nomad-version", "start-browser", "kill-nomad", "buffer-alist",
-                NULL);
+                "main-thread", NULL);
 }
