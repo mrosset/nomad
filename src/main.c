@@ -46,6 +46,10 @@ inner_main (void *data, int argc, char **argv)
   scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"),
                   SCM_LIST0);
 
+  // FIXME: users can start REPL via user-init-hook in $HOME/.nomad
+  scm_c_use_module ("nomad repl");
+  scm_c_eval_string ("(server-start)");
+
   exit (g_application_run (G_APPLICATION (app), argc, argv));
 }
 

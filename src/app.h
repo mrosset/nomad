@@ -25,7 +25,6 @@
 #include <gtk/gtk.h>
 #include <webkit2/webkit2.h>
 
-#define EMACS_INIT "/home/mrosset/src/nomad/init.el"
 #define MAX_BUFFERS 1
 
 #define NOMAD_APP_TYPE (nomad_app_get_type ())

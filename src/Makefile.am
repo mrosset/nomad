@@ -47,7 +47,8 @@ AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
 	$(VTE_CFLAGS)								\
 	$(WEBKIT_CFLAGS)							\
 	$(GTK_SOURCEVIEW_CFLAGS)						\
-	-DNOMAD_WEB_EXTENSIONS_DIR=\""$(libexecdir)/nomad/"\"
+	-DNOMAD_WEB_EXTENSIONS_DIR=\""$(libexecdir)/nomad/"\"			\
+	-DNOMAD_DATAROOT_DIR=\""$(datarootdir)/nomad/"\"
 
 AM_LDFLAGS = -export-dynamic
 

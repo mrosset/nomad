@@ -24,7 +24,7 @@
 #include <glib-object.h>
 #include <vte/vte.h>
 
-#define EMACS_INIT "/home/mrosset/src/nomad/init.el"
+#define EMACS_INIT NOMAD_DATAROOT_DIR "/init.el"
 
 G_BEGIN_DECLS
 #define NOMAD_TYPE_VTE nomad_vte_get_type ()

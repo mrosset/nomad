@@ -20,6 +20,10 @@ SUBDIRS = src ext scheme
 
 ACLOCAL_AMFLAGS = -I m4
 
+## FIXME this is hackish. promote init.el to emacs package
+nomaddir = "$(datadir)/nomad"
+nomad_DATA = init.el
+
 dist_doc_DATA = README
 
 run: all
