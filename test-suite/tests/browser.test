@@ -21,7 +21,7 @@
   #:use-module (test-suite lib))
 
 (with-test-prefix "browser module"
-  (pass-if "http prefix url" (string=? (prefix-url "127.0.0.1") "http://127.0.0.1"))
+  (pass-if "https prefix url" (string=? (prefix-url "127.0.0.1") "https://127.0.0.1"))
   (pass-if "dont prefix http url"
     (string=? (prefix-url "http://127.0.0.1") "http://127.0.0.1"))
   (pass-if "dont prefix https url"

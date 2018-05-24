@@ -44,7 +44,7 @@
 
 (defun nomad-connect ()
   (interactive)
-    (geiser-connect-local 'guile "/tmp/guile-socket"))
+    (geiser-connect-local 'guile "/tmp/nomad-socket"))
 
 (defun nomad-reload.el ()
   "Reloads nomad.el. nomad.el contains functions for
