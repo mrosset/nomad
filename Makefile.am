@@ -28,7 +28,7 @@ nomad_DATA = init.el
 dist_doc_DATA = README
 
 run: install
-	$(prefix)/bin/nomad
+	@$(prefix)/bin/nomad
 
 format:
 	make -C src format
@@ -41,3 +41,5 @@ CLEANFILES =		\
 	check-guile.log \
 	check-guile.trs \
 	test-suite.log
+
+DISTCLEANFILES = check-guile.log

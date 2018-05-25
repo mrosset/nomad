@@ -77,4 +77,5 @@ snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS)
 
 SUFFIXES = .x
 .c.x:
-	$(GUILE_SNARF) -o $@ $< $(snarfcppopts) $(AM_FLAGS)
+	@echo "  SNARF" $@;
+	@$(GUILE_SNARF) -o $@ $< $(snarfcppopts) $(AM_FLAGS)
