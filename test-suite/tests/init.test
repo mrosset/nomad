@@ -22,9 +22,30 @@
 
 (define home (getenv "HOME"))
 (define home-dir (string-append home file-name-separator-string))
+(define test-data "testdata/")
+(define nomad.d "testdata/nomad.d")
+
+(with-test-prefix "testdata directory"
+                  (when (not (file-exists? test-data))
+                    (mkdir test-data #o755))
+                  (pass-if-equal "testdata exists" #t (file-is-directory? test-data)))
+
+(with-test-prefix "dynamic fluids"
+                  (with-fluid* user-nomad-directory nomad.d
+                               (lambda ()
+                                 (pass-if-equal "user-nomad-directory" "testdata/nomad.d"
+                                                (fluid-ref user-nomad-directory)))))
 
 (with-test-prefix "init module"
-  (pass-if "user-init-file expands to $HOME/.nomad"
-    (string=? user-init-file (string-append home-dir ".nomad")))
-  (pass-if "user-nomad-directory expands to $HOME/nomad.d"
-    (string=? user-nomad-directory (string-append home-dir ".nomad.d"))))
+                    (pass-if-equal "user-init-file expands to $HOME/.nomad"
+                                   user-init-file (string-append home-dir ".nomad"))
+                    (pass-if-equal "user-nomad-directory expands to $HOME/nomad.d"
+                                   (fluid-ref user-nomad-directory) (string-append home-dir ".nomad.d")))
+
+(with-test-prefix "functions"
+                  (with-fluid* user-nomad-directory nomad.d
+                               (lambda ()
+                                 (create-nomad-directory)
+                                 (pass-if-equal "user dir exists"
+                                                (file-is-directory? (fluid-ref user-nomad-directory)) #t)
+                                 (rmdir (fluid-ref user-nomad-directory)))))

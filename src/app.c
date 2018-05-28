@@ -55,23 +55,10 @@ NomadApp *app;
 static void
 nomad_app_activate (GApplication *self)
 {
-  NomadAppWindow *win;
-  NomadBuffer *buf;
-  char *c_home_page;
-  SCM home_page;
 
-  scm_dynwind_begin (0);
-  home_page = scm_c_public_ref ("nomad browser", "default-home-page");
-  c_home_page = scm_to_locale_string (home_page);
-
-  win = nomad_app_window_new (NOMAD_APP (self));
-  buf = nomad_buffer_new ();
-  webkit_web_view_load_uri (nomad_buffer_get_view (buf), c_home_page);
-  nomad_app_window_set_buffer (win, buf);
-  nomad_app_add_buffer (NOMAD_APP (self), buf);
-  scm_dynwind_free (c_home_page);
-  scm_dynwind_end ();
+  NomadAppWindow *win = nomad_app_window_new (NOMAD_APP (self));
   gtk_window_present (GTK_WINDOW (win));
+  nomad_app_window_add_vte (win);
 }
 
 static void
@@ -103,24 +90,10 @@ nomad_app_get_window (NomadApp *app)
   return GTK_WIDGET (windows->data);
 }
 
-void
-nomad_app_switch_to_buffer (NomadApp *app, const char *uri)
+NomadBuffer *
+nomad_app_get_first_buffer (NomadApp *app)
 {
-
-  /*
-   * NomadAppWindow *win;
-   * GtkWidget *box;
-   * WebKitWebView *view;
-   * NomadAppPrivate *priv = nomad_app_get_instance_private (app);
-   *
-   * win = nomad_app_get_window (app);
-   * box = nomad_app_window_get_box (win);
-   * view = g_list_first (priv->buffers)->data;
-   * webkit_web_view_load_uri (view, uri);
-   * gtk_box_pack_start (GTK_BOX (box), GTK_WIDGET (view), TRUE, TRUE, 0);
-   * nomad_app_window_set_webview (win, view);
-   * gtk_widget_show_all (box);
-   */
+  return (g_list_first (app->priv->buffers)->data);
 }
 
 void
@@ -180,19 +153,20 @@ nomad_app_add_buffer (NomadApp *app, NomadBuffer *buf)
 }
 
 void
-nomad_app_set_current (NomadApp *app, SCM cur)
+nomad_app_remove_buffer (NomadApp *app, NomadBuffer *buf)
 {
-  app->priv->current = cur;
+  GList *list = g_list_remove (app->priv->buffers, buf);
+  app->priv->buffers = list;
 }
 
-SCM
-nomad_app_get_current (NomadApp *app)
-{
-  return app->priv->current;
-}
-
-SCM
+GList *
 nomad_app_get_buffer_list (NomadApp *app)
+{
+  return app->priv->buffers;
+}
+
+SCM
+nomad_app_get_buffers (NomadApp *app)
 {
   SCM list = scm_c_eval_string ("(make-list 0)");
   int count = 0;
@@ -224,7 +198,6 @@ SCM_DEFINE (scm_nomad_start, "start-browser", 0, 0, 0, (),
             "Start a G_APPLIACTION instance.")
 {
   intmax_t status;
-  app = nomad_app_new ();
   status = g_application_run (G_APPLICATION (app), 0, NULL);
   return scm_from_intmax (status);
 }
@@ -260,7 +233,16 @@ SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
             "Return an alist of existing buffers. The alist is created when "
             "this procedure is called.")
 {
-  return nomad_app_get_buffer_list (app);
+  return nomad_app_get_buffers (app);
+}
+
+SCM_DEFINE (scm_nomad_start_vte, "start-vte", 0, 0, 0, (),
+            "Return an alist of existing buffers. The alist is created when "
+            "this procedure is called.")
+{
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  nomad_app_window_start_repl (win);
+  return SCM_UNDEFINED;
 }
 
 void
@@ -268,6 +250,7 @@ nomad_app_register_functions (void *data)
 {
   app = NOMAD_APP (data);
 #include "app.x"
-  scm_c_export ("nomad-version", "start-browser", "kill-nomad", "buffer-alist",
-                "main-thread", NULL);
+  scm_c_export ("nomad-version", "start-browser", "restart-nomad",
+                "kill-nomad", "buffer-alist", "main-thread", "start-vte",
+                NULL);
 }

@@ -16,4 +16,7 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad app))
+(define-module (nomad app)
+  #:export (emacs-init-file))
+
+(define emacs-init-file "init.el")

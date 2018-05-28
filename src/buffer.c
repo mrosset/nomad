@@ -34,6 +34,8 @@ struct _NomadBufferPrivate
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadBuffer, nomad_buffer, GTK_TYPE_BOX)
 
+SCM scm_nomad_make_buffer (SCM uri);
+
 static void
 web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
                        gpointer user_data)
@@ -46,9 +48,27 @@ web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
                       webkit_web_view_get_uri (view));
 }
 
-void
-nomad_buffer_set_view (NomadBuffer *self, WebKitWebView *view)
+gboolean
+decide_policy_cb (WebKitWebView *view, WebKitPolicyDecision *decision,
+                  WebKitPolicyDecisionType dtype)
 {
+  switch (dtype)
+    {
+    case WEBKIT_POLICY_DECISION_TYPE_NEW_WINDOW_ACTION:
+      {
+        WebKitNavigationAction *nav
+            = webkit_navigation_policy_decision_get_navigation_action (
+                WEBKIT_NAVIGATION_POLICY_DECISION (decision));
+        WebKitURIRequest *req = webkit_navigation_action_get_request (nav);
+        SCM url = scm_from_locale_string (webkit_uri_request_get_uri (req));
+        scm_nomad_make_buffer (url);
+        return TRUE;
+      }
+    default:
+      return FALSE;
+    }
+
+  return TRUE;
 }
 
 static void
@@ -67,6 +87,8 @@ nomad_buffer_init (NomadBuffer *self)
 
   g_signal_connect (priv->view, "load-changed",
                     G_CALLBACK (web_view_load_changed), priv);
+  g_signal_connect (priv->view, "decide-policy", G_CALLBACK (decide_policy_cb),
+                    NULL);
 }
 
 static void
@@ -157,6 +179,29 @@ SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 1, 0, (SCM uri),
 }
 
 gboolean
+kill_buffer_invoke (void *data)
+{
+
+  GList *list = nomad_app_get_buffer_list (app);
+  g_print ("BUFFERS: %d\n", g_list_length (list));
+  if ((g_list_length (list) > 1))
+    {
+      GtkWidget *win = nomad_app_get_window (app);
+      nomad_app_window_remove_buffer (NOMAD_APP_WINDOW (win));
+    }
+  return FALSE;
+}
+
+SCM_DEFINE (scm_nomad_kill_buffer, "kill-buffer", 0, 0, 0, (),
+            "Kill the current buffer. Returns #f if this is the last buffer "
+            "or #t if buffer was killed")
+
+{
+  g_main_context_invoke (NULL, kill_buffer_invoke, NULL);
+  return SCM_BOOL_T;
+}
+
+gboolean
 next_buffer_invoke (void *data)
 {
   nomad_app_next_buffer (NOMAD_APP (app));
@@ -172,13 +217,19 @@ SCM_DEFINE (scm_nomad_get_next_buffer, "next-buffer", 0, 0, 0, (), "")
 gboolean
 prev_buffer_invoke (void *data)
 {
+  struct request *request = data;
   nomad_app_prev_buffer (NOMAD_APP (app));
+  request->done = TRUE;
   return FALSE;
 }
 
 SCM_DEFINE (scm_nomad_get_prev, "prev-buffer", 0, 0, 0, (), "")
 {
-  g_main_context_invoke (NULL, prev_buffer_invoke, NULL);
+  struct request *request
+      = &(struct request){ .response = SCM_BOOL_F, .done = FALSE };
+
+  g_main_context_invoke (NULL, prev_buffer_invoke, request);
+  wait_for_response (request);
   return SCM_UNSPECIFIED;
 }
 SCM_DEFINE (scm_nomad_buffer_title, "buffer-title", 1, 0, 0, (SCM buffer),
@@ -235,8 +286,8 @@ nomad_buffer_register_functions (void *data)
 {
 #include "buffer.x"
   init_buffer_type ();
-  scm_c_export ("buffer-title", "buffer-uri", "make-buffer", "current-buffer",
-                "next-buffer", "prev-buffer", "scheme-test",
+  scm_c_export ("buffer-title", "buffer-uri", "make-buffer", "kill-buffer",
+                "current-buffer", "next-buffer", "prev-buffer", "scheme-test",
                 "switch-to-buffer", NULL);
   return;
 }

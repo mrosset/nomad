@@ -29,6 +29,12 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+(use-package zerodark-theme
+  :ensure t
+  :config
+  (load-theme 'zerodark t)
+  (zerodark-setup-modeline-format))
+
 (use-package geiser
   :ensure t
   :config

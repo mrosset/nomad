@@ -35,8 +35,8 @@ nomad_SOURCES =		\
 	main.c		\
 	request.c	\
 	request.h	\
-	vte.c		\
-	vte.h		\
+	util.c		\
+	util.h		\
 	webkit.c	\
 	webkit.h	\
 	window.c	\
@@ -52,6 +52,7 @@ AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
 	$(VTE_CFLAGS)								\
 	$(WEBKIT_CFLAGS)							\
 	$(GTK_SOURCEVIEW_CFLAGS)						\
+	-DNOMAD_SOCKET_FILE=\""/tmp/nomad-socket"\"				\
 	-DNOMAD_GUILE_LOAD_PATH=\""$(moddir)"\"					\
 	-DNOMAD_GUILE_LOAD_COMPILED_PATH=\""$(ccachedir)"\"			\
 	-DNOMAD_WEB_EXTENSIONS_DIR=\""$(libexecdir)/nomad/"\"			\

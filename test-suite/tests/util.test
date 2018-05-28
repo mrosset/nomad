@@ -27,21 +27,5 @@
     (pass-if "procedure ~  expands to $HOME" (string=? ~ home))
     (pass-if "procedure ~/ expands to $HOME/" (string=? ~/ home-dir)))
 
-;; (pass-if "~ expands to $HOME" (string=? ~ home)))
-
-;; (define home (getenv "HOME"))
-;; (define home-dir (string-append home file-name-separator-string))
-
-;; ;; util
-;; (test-begin "util")
-;; (test-assert "~  expansion" (string= ~ home))
-;; (test-assert "~/ expansion" (string= ~/ home-dir))
-;; (test-end "util")
-
-;; ;; init
-;; (test-begin "init")
-;; (test-assert "user-init-file"
-;;   (string= user-init-file (string-append home-dir ".nomad")))
-;; (test-assert "user-nomad-directory"
-;;   (string= user-nomad-directory (string-append home-dir ".nomad.d")))
-;; (test-end "init")
+~/
+home-dir

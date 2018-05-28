@@ -24,7 +24,8 @@
             user-cookie-file
             user-init-file
             user-init-hook
-            user-nomad-directory))
+            user-nomad-directory
+            create-nomad-directory))
 
 (define user-init-hook (make-hook))
 
@@ -32,17 +33,21 @@
   (string-append ~/ ".nomad"))
 
 (define user-nomad-directory
-  (string-append ~/ ".nomad.d"))
+  (make-fluid (string-append ~/ ".nomad.d")))
 
 (define user-cookie-file
-  (string-append user-nomad-directory // "cookies.db"))
+  (string-append (fluid-ref user-nomad-directory) // "cookies.db"))
+
+(define (create-nomad-directory)
+  (let ((dir (fluid-ref user-nomad-directory)))
+    (when (not (file-exists? dir))
+      (info (format #f "creating ~a" dir))
+      (mkdir dir #o755))))
 
 (define (init)
   (add-hook! key-press-hook handle-key-press)
   (add-hook! key-press-hook debug-key-press)
   (add-hook! event-hook debug-event)
-  (if (file-exists? user-nomad-directory)
-      (info (format #f "creating ~a" user-nomad-directory))
-      (mkdir user-nomad-directory #o755))
+  (create-nomad-directory)
   (if (file-exists? user-init-file)
       (load user-init-file)))

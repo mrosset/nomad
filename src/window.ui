@@ -22,6 +22,7 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <requires lib="gtksourceview" version="3.0"/>
+  <requires lib="vte-2.91" version="0.52"/>
   <template class="NomadAppWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Nomad</property>
@@ -45,6 +46,21 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
             <signal name="size-allocate" handler="pane_size_allocate_cb" swapped="no"/>
             <child>
               <placeholder/>
+            </child>
+            <child>
+              <object class="VteTerminal" id="vte">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="hscroll_policy">natural</property>
+                <property name="vscroll_policy">natural</property>
+                <property name="allow_hyperlink">True</property>
+                <property name="encoding">UTF-8</property>
+                <property name="scroll_on_keystroke">True</property>
+              </object>
+              <packing>
+                <property name="resize">True</property>
+                <property name="shrink">True</property>
+              </packing>
             </child>
           </object>
           <packing>

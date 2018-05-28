@@ -35,7 +35,7 @@ AM_PROG_AR
 LT_INIT
 
 # Guile
-GUILE_PKG([2.2])
+GUILE_PKG([2.2 2.0])
 GUILE_PROGS
 GUILE_FLAGS
 GUILE_SITE_DIR
@@ -63,21 +63,21 @@ AC_PATH_PROG(GUILE_SNARF, guile-snarf, no)
 AC_SUBST(GUILE_SNARF)
 
 if test "$GUILE_SNARF" = "no"; then
-AC_MSG_ERROR([program guile-snarf is required])
+   AC_MSG_ERROR([program guile-snarf is required])
 fi
 
 AC_PATH_PROG(GUILD, guild, no)
 AC_SUBST(GUILD)
 
 if test "$GUILD" = "no"; then
-AC_MSG_ERROR([program guild is required])
+   AC_MSG_ERROR([program guild is required])
 fi
 
 AC_PATH_PROG(GLIB_COMPILE_R, glib-compile-resources, no)
 AC_SUBST(GLIB_COMPILE_R)
 
 if test "$GLIB_COMPILE_R" = "no"; then
-AC_MSG_ERROR([program glib-compile-resources is required])
+   AC_MSG_ERROR([program glib-compile-resources is required])
 fi
 
 AC_CONFIG_FILES([

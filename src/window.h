@@ -26,7 +26,6 @@
 
 #include "app.h"
 
-#define DEFAULT_URI "https://duckduckgo.com/html"
 #define NOMAD_APP_WINDOW_TYPE (nomad_app_window_get_type ())
 
 G_DECLARE_FINAL_TYPE (NomadAppWindow, nomad_app_window, NOMAD, APP_WINDOW,
@@ -36,5 +35,10 @@ NomadAppWindow *nomad_app_window_new (NomadApp *app);
 WebKitWebView *nomad_app_window_get_webview (NomadAppWindow *win);
 NomadBuffer *nomad_app_window_get_buffer (const NomadAppWindow *self);
 void nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf);
-
+void nomad_app_window_remove_buffer (NomadAppWindow *self);
+void nomad_app_window_add_vte (NomadAppWindow *self);
+void nomad_app_window_grab_vte (NomadAppWindow *self);
+void nomad_app_window_show_vte (NomadAppWindow *self);
+void nomad_app_window_hide_vte (NomadAppWindow *self);
+void nomad_app_window_start_repl (NomadAppWindow *self);
 #endif /* __NOMADAPPWIN_H */

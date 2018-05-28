@@ -29,9 +29,6 @@ static void
 startup (GApplication *app, gpointer data)
 {
   // Init scheme C modules
-  scm_c_use_module ("nomad app");
-  scm_c_define_module ("nomad app", nomad_app_register_functions, app);
-
   scm_c_use_module ("nomad webkit");
   scm_c_define_module ("nomad webkit", nomad_webkit_register_functions, NULL);
 
@@ -60,8 +57,16 @@ inner_main (void *data, int argc, char **argv)
 {
   app = nomad_app_new ();
 
+  // App signals
   g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
   g_signal_connect (app, "shutdown", G_CALLBACK (shutdown), NULL);
+
+  scm_c_use_module ("nomad app");
+  scm_c_define_module ("nomad app", nomad_app_register_functions, app);
+
+  // Set emacs-init-file to datadir installed file
+  scm_variable_set_x (scm_c_lookup ("emacs-init-file"),
+                      scm_from_locale_string (NOMAD_DATAROOT_DIR "/init.el"));
 
   // We need to call init for so things like GDK_SCALE are used by our
   // GApplication
@@ -76,6 +81,6 @@ main (int argc, char *argv[])
 {
   // FIXME: this clobbers GUILE_LOAD_COMPILED_PATH we should append to
   // %load-compiled-path
-  g_setenv ("GUILE_LOAD_COMPILED_PATH", NOMAD_GUILE_LOAD_COMPILED_PATH, true);
+  g_setenv ("GUILE_LOAD_COMPILED_PATH", NOMAD_GUILE_LOAD_COMPILED_PATH, TRUE);
   scm_boot_guile (argc, argv, inner_main, NULL);
 }

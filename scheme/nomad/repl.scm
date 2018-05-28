@@ -18,15 +18,46 @@
 
 (define-module (nomad repl)
   #:use-module (system repl server)
-  #:export (server-start server-force-delete))
+  #:use-module (system repl coop-server)
+  #:use-module (ice-9 threads)
+  #:use-module (nomad app)
+  #:export (emacs-command-line
+            nc-command-line
+            repl-command-line
+            repl-server
+            server-force-delete
+            server-start
+            socket-file))
 
 (define socket-file "/tmp/nomad-socket")
 
-(define (server-start)
+(define emacs-command-line (list "emacs" "-q" "-nw" "-l" emacs-init-file))
+
+(define nc-command-line (list "rlwrap" "nc" "-U" socket-file))
+
+(define repl-command-line nc-command-line)
+
+(define repl-server #f)
+
+(define (poll-server)
+  (poll-coop-repl-server repl-server)
+  (usleep 100000)
+  (poll-server))
+
+(define (server-start-old)
+  (set! repl-server
+        (spawn-coop-repl-server (make-unix-domain-server-socket #:path socket-file)))
+  (make-thread (poll-server)))
+
+(define (server-start )
   "Spawn a UNIX domain sockert REPL in a new thread. The file is the
 value of socket-file."
+  (when (file-exists? socket-file)
+    (delete-file socket-file))
     (spawn-server
      (make-unix-domain-server-socket #:path socket-file)))
+             ;; (lambda (key subr message args data)
+             ;; (simple-format #t "~s: ~s ~s ~s ~s ~s\n" key subr socket-file message args data)
 
 ;; FIXME: if socket clients are connected, (server-force-delete) will
 ;; throw an excpetion. Which gives us a truncated Backtrace to
