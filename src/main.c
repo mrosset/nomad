@@ -23,19 +23,29 @@
 
 #include "app.h"
 #include "buffer.h"
+#include "util.h"
 #include "webkit.h"
+#include "window.h"
 
 static void
 startup (GApplication *app, gpointer data)
 {
-  // Init scheme C modules
+  // Define scheme C modules
+  // Modules that are used before defining have a scheme file. This
+  // allows mixing pure scheme with C scheme.
   scm_c_use_module ("nomad webkit");
   scm_c_define_module ("nomad webkit", nomad_webkit_register_functions, NULL);
+
+  scm_c_define_module ("nomad window", nomad_window_register_functions, NULL);
 
   scm_c_use_module ("nomad buffer");
   scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
 
+  scm_c_define_module ("nomad util", nomad_util_register_functions, NULL);
+
   // Use essential modules
+  scm_c_use_module ("nomad util");
+  scm_c_use_module ("nomad window");
   scm_c_use_module ("nomad browser");
   scm_c_use_module ("nomad repl");
 
@@ -43,7 +53,7 @@ startup (GApplication *app, gpointer data)
   // documentation for $HOME/.nomad
   scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"),
                   SCM_LIST0);
-  scm_c_eval_string ("(server-start)");
+  scm_c_eval_string ("(server-start-coop)");
 }
 
 static void

@@ -55,6 +55,7 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <property name="vscroll_policy">natural</property>
                 <property name="allow_hyperlink">True</property>
                 <property name="encoding">UTF-8</property>
+                <property name="pointer_autohide">True</property>
                 <property name="scroll_on_keystroke">True</property>
               </object>
               <packing>

@@ -50,8 +50,6 @@ nomad_app_init (NomadApp *self)
   self->priv = nomad_app_get_instance_private (self);
 }
 
-NomadApp *app;
-
 static void
 nomad_app_activate (GApplication *self)
 {
@@ -230,15 +228,12 @@ SCM_DEFINE (scm_nomad_get_main_thread, "main-thread", 0, 0, 0, (),
 }
 
 SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
-            "Return an alist of existing buffers. The alist is created when "
-            "this procedure is called.")
+            "Return an alist of existing buffers.")
 {
   return nomad_app_get_buffers (app);
 }
 
-SCM_DEFINE (scm_nomad_start_vte, "start-vte", 0, 0, 0, (),
-            "Return an alist of existing buffers. The alist is created when "
-            "this procedure is called.")
+SCM_DEFINE (scm_nomad_start_vte, "start-vte", 0, 0, 0, (), "")
 {
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   nomad_app_window_start_repl (win);
@@ -248,7 +243,6 @@ SCM_DEFINE (scm_nomad_start_vte, "start-vte", 0, 0, 0, (),
 void
 nomad_app_register_functions (void *data)
 {
-  app = NOMAD_APP (data);
 #include "app.x"
   scm_c_export ("nomad-version", "start-browser", "restart-nomad",
                 "kill-nomad", "buffer-alist", "main-thread", "start-vte",

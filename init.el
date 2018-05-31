@@ -15,7 +15,7 @@
 
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+(menu-bar-mode -1)
 (setq nomad-hosted t)
 
 (require 'package)
@@ -35,6 +35,11 @@
   (load-theme 'zerodark t)
   (zerodark-setup-modeline-format))
 
+;; (use-package solarized-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'solarized-light t))
+
 (use-package geiser
   :ensure t
   :config
@@ -48,7 +53,7 @@
   :init
   (setq inhibit-startup-message t)
   :config
-  (menu-bar-mode -1)
+
   ;; FIXME: don't assume socket file location
   (geiser-connect-local 'guile "/tmp/nomad-socket")
   (delete-other-windows))

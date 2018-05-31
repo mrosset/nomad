@@ -62,7 +62,7 @@ AM_LDFLAGS = -export-dynamic
 
 nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(VTE_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
 
-DOT_X_FILES = app.x buffer.x webkit.x
+DOT_X_FILES = app.x buffer.x webkit.x window.x util.x
 
 BUILT_SOURCES = $(DOT_X_FILES) resources.c
 

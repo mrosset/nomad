@@ -66,7 +66,7 @@ fork_vte_child (VteTerminal *vte, gint status, gpointer data)
   scm_to_argv (cmd, argv);
   pwd = g_get_current_dir ();
   envv = g_get_environ ();
-  envv = g_environ_setenv (envv, "TERM", "xterm-256color", TRUE);
+  envv = g_environ_setenv (envv, "TERM6", "xterm-256color", TRUE);
 
   vte_terminal_spawn_async (vte, VTE_PTY_DEFAULT, NULL, argv, envv,
                             G_SPAWN_DEFAULT | G_SPAWN_SEARCH_PATH_FROM_ENVP,
@@ -363,7 +363,7 @@ nomad_app_window_hide_vte (NomadAppWindow *self)
 }
 
 NomadBuffer *
-nomad_app_window_get_buffer (const NomadAppWindow *self)
+nomad_app_window_get_buffer (NomadAppWindow *self)
 {
   return self->priv->buffer;
 }
@@ -432,4 +432,23 @@ WebKitWebView *
 nomad_app_window_get_webview (NomadAppWindow *self)
 {
   return nomad_buffer_get_view (self->priv->buffer);
+}
+
+SCM_DEFINE (scm_nomad_window_focus, "focus", 0, 0, 0, (),
+            "Switch focus to WebView")
+{
+  GtkWidget *view = GTK_WIDGET (nomad_app_get_webview (app));
+  if (gtk_widget_has_focus (view))
+    {
+      return SCM_BOOL_F;
+    }
+  gtk_widget_grab_focus (view);
+  return SCM_BOOL_T;
+}
+
+void
+nomad_window_register_functions (void *data)
+{
+#include "window.x"
+  scm_c_export ("focus", NULL);
 }
