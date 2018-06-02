@@ -37,13 +37,11 @@ typedef struct _NomadAppWindowPrivate NomadAppWindowPrivate;
 struct _NomadAppWindowPrivate
 {
   GtkBox *box;
-  NomadBuffer *buffer;
-  GtkWidget *text_buffer;
   GtkWidget *pane;
   GtkWidget *read_line;
-  GtkWidget *result_popover;
-  GtkWidget *result_popover_view;
+  GtkWidget *text_buffer;
   GtkWidget *vte;
+  NomadBuffer *buffer;
   WebKitWebView *web_view;
 };
 
