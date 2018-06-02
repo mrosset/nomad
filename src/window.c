@@ -291,6 +291,11 @@ nomad_app_window_init (NomadAppWindow *self)
   c_user_cookie_file = scm_to_locale_string (
       scm_c_public_ref ("nomad init", "user-cookie-file"));
 
+  // Connect web extension signals before any new WebViews
+  g_signal_connect (webkit_web_context_get_default (),
+                    "initialize-web-extensions",
+                    G_CALLBACK (initialize_web_extensions), NULL);
+
   // Buffer
   buf = nomad_buffer_new ();
   webkit_web_view_load_uri (nomad_buffer_get_view (buf), c_home_page);
@@ -305,9 +310,6 @@ nomad_app_window_init (NomadAppWindow *self)
   gtk_widget_hide (priv->read_line);
 
   // Signals
-  g_signal_connect (webkit_web_context_get_default (),
-                    "initialize-web-extensions",
-                    G_CALLBACK (initialize_web_extensions), NULL);
   g_signal_connect (priv->read_line, "key-press-event",
                     G_CALLBACK (text_buffer_key_press_cb), (gpointer)self);
   g_signal_connect (VTE_TERMINAL (priv->vte), "child-exited",
