@@ -87,11 +87,6 @@ nomad_app_get_window (NomadApp *app)
   return GTK_WIDGET (windows->data);
 }
 
-NomadBuffer *
-nomad_app_get_first_buffer (NomadApp *app)
-{
-}
-
 void
 nomad_app_next_buffer (NomadApp *app)
 {
@@ -161,16 +156,11 @@ nomad_app_remove_buffer (NomadApp *app, NomadBuffer *buf)
 {
 }
 
-GList *
-nomad_app_get_buffer_list (NomadApp *app)
-{
-}
-
 SCM
 nomad_app_get_buffers (NomadApp *app)
 {
   SCM list = scm_c_eval_string ("(make-list 0)");
-  NomadAppWindow *win = nomad_app_get_window (app);
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   GList *tabs = nomad_window_get_tabs (win);
   int count = 0;
 
