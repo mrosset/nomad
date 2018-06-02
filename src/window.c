@@ -375,6 +375,7 @@ nomad_app_window_get_buffer (NomadAppWindow *self)
   return self->priv->buffer;
 }
 
+void
 nomad_app_window_remove_buffer (NomadAppWindow *self)
 {
   GtkNotebook *notebook = GTK_NOTEBOOK (self->priv->notebook);
