@@ -45,7 +45,32 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
             <property name="position">807</property>
             <signal name="size-allocate" handler="pane_size_allocate_cb" swapped="no"/>
             <child>
-              <placeholder/>
+              <object class="GtkNotebook" id="notebook">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child type="tab">
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="resize">False</property>
+                <property name="shrink">True</property>
+              </packing>
             </child>
             <child>
               <object class="VteTerminal" id="vte">

@@ -32,7 +32,6 @@ typedef struct _NomadAppPrivate NomadAppPrivate;
 
 struct _NomadAppPrivate
 {
-  GList *buffers;
   SCM current;
 };
 
@@ -91,36 +90,44 @@ nomad_app_get_window (NomadApp *app)
 NomadBuffer *
 nomad_app_get_first_buffer (NomadApp *app)
 {
-  return (g_list_first (app->priv->buffers)->data);
 }
 
 void
 nomad_app_next_buffer (NomadApp *app)
 {
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  GList *l = app->priv->buffers->next;
+  GtkNotebook *nbook = nomad_window_get_notebook (win);
 
-  if (l == NULL)
+  // If this is the last tab goto the first tab
+  if (gtk_notebook_get_n_pages (nbook) - 1
+      == gtk_notebook_get_current_page (nbook))
     {
-      l = g_list_first (app->priv->buffers);
+      gtk_notebook_set_current_page (nbook, 0);
     }
+  else
+    {
 
-  nomad_app_window_set_buffer (win, NOMAD_BUFFER (l->data));
-  app->priv->buffers = l;
+      gtk_notebook_next_page (nbook);
+    }
 }
 
 void
 nomad_app_prev_buffer (NomadApp *app)
 {
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  GList *l = app->priv->buffers->prev;
+  GtkNotebook *nbook = nomad_window_get_notebook (win);
 
-  if (l == NULL)
+  // If this is the first tab goto the last tab
+  if (gtk_notebook_get_current_page (nbook) == 0)
     {
-      l = g_list_last (app->priv->buffers);
+      gtk_notebook_set_current_page (nbook,
+                                     gtk_notebook_get_n_pages (nbook) - 1);
     }
-  nomad_app_window_set_buffer (win, NOMAD_BUFFER (l->data));
-  app->priv->buffers = l;
+  else
+    {
+
+      gtk_notebook_prev_page (nbook);
+    }
 }
 
 WebKitWebView *
@@ -147,41 +154,34 @@ nomad_app_make_buffer (NomadBuffer *buf)
 void
 nomad_app_add_buffer (NomadApp *app, NomadBuffer *buf)
 {
-  app->priv->buffers = g_list_append (app->priv->buffers, buf);
 }
 
 void
 nomad_app_remove_buffer (NomadApp *app, NomadBuffer *buf)
 {
-  GList *list = g_list_remove (app->priv->buffers, buf);
-  app->priv->buffers = list;
 }
 
 GList *
 nomad_app_get_buffer_list (NomadApp *app)
 {
-  return app->priv->buffers;
 }
 
 SCM
 nomad_app_get_buffers (NomadApp *app)
 {
   SCM list = scm_c_eval_string ("(make-list 0)");
+  NomadAppWindow *win = nomad_app_get_window (app);
+  GList *tabs = nomad_window_get_tabs (win);
   int count = 0;
 
-  if (app == NULL)
-    {
-      g_critical ("APP IS NULL\n");
-      return SCM_UNSPECIFIED;
-    }
-
-  for (GList *l = app->priv->buffers; l != NULL; l = l->next)
+  for (GList *l = tabs; l != NULL; l = l->next)
     {
       SCM obj = nomad_app_make_buffer (l->data);
       SCM pair = scm_cons (scm_from_int (count), obj);
       list = scm_append (scm_list_2 (list, scm_list_1 (pair)));
       count++;
     }
+
   return list;
 }
 

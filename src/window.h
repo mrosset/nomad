@@ -33,13 +33,15 @@ G_DECLARE_FINAL_TYPE (NomadAppWindow, nomad_app_window, NOMAD, APP_WINDOW,
 
 NomadAppWindow *nomad_app_window_new (NomadApp *app);
 WebKitWebView *nomad_app_window_get_webview (NomadAppWindow *win);
-NomadBuffer *nomad_app_window_get_buffer (NomadAppWindow *self);
-void nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf);
-void nomad_app_window_remove_buffer (NomadAppWindow *self);
-void nomad_app_window_add_vte (NomadAppWindow *self);
-void nomad_app_window_grab_vte (NomadAppWindow *self);
-void nomad_app_window_show_vte (NomadAppWindow *self);
-void nomad_app_window_hide_vte (NomadAppWindow *self);
-void nomad_app_window_start_repl (NomadAppWindow *self);
+GtkNotebook *nomad_window_get_notebook (NomadAppWindow *win);
+NomadBuffer *nomad_app_window_get_buffer (NomadAppWindow *win);
+void nomad_app_window_set_buffer (NomadAppWindow *win, NomadBuffer *buf);
+void nomad_app_window_remove_buffer (NomadAppWindow *win);
+void nomad_app_window_add_vte (NomadAppWindow *win);
+void nomad_app_window_grab_vte (NomadAppWindow *win);
+void nomad_app_window_show_vte (NomadAppWindow *win);
+void nomad_app_window_hide_vte (NomadAppWindow *win);
+void nomad_app_window_start_repl (NomadAppWindow *win);
 void nomad_window_register_functions (void *data);
+GList *nomad_window_get_tabs (NomadAppWindow *win);
 #endif /* __NOMADAPPWIN_H */

@@ -182,13 +182,8 @@ gboolean
 kill_buffer_invoke (void *data)
 {
 
-  GList *list = nomad_app_get_buffer_list (app);
-  g_print ("BUFFERS: %d\n", g_list_length (list));
-  if ((g_list_length (list) > 1))
-    {
-      GtkWidget *win = nomad_app_get_window (app);
-      nomad_app_window_remove_buffer (NOMAD_APP_WINDOW (win));
-    }
+  GtkWidget *win = nomad_app_get_window (app);
+  nomad_app_window_remove_buffer (NOMAD_APP_WINDOW (win));
   return FALSE;
 }
 

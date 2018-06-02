@@ -37,6 +37,7 @@ typedef struct _NomadAppWindowPrivate NomadAppWindowPrivate;
 struct _NomadAppWindowPrivate
 {
   GtkBox *box;
+  GtkWidget *notebook;
   GtkWidget *pane;
   GtkWidget *read_line;
   GtkWidget *text_buffer;
@@ -327,6 +328,12 @@ nomad_app_window_init (NomadAppWindow *self)
   scm_dynwind_end ();
 }
 
+GtkNotebook *
+nomad_window_get_notebook (NomadAppWindow *self)
+{
+  return GTK_NOTEBOOK (self->priv->notebook);
+}
+
 void
 nomad_app_window_add_vte (NomadAppWindow *self)
 {
@@ -368,30 +375,31 @@ nomad_app_window_get_buffer (NomadAppWindow *self)
   return self->priv->buffer;
 }
 
-void
 nomad_app_window_remove_buffer (NomadAppWindow *self)
 {
-  GtkWidget *buf = gtk_paned_get_child1 (GTK_PANED (self->priv->pane));
-  NomadBuffer *first = nomad_app_get_first_buffer (app);
-  gtk_container_remove (GTK_CONTAINER (self->priv->pane), buf);
-  nomad_app_remove_buffer (app, NOMAD_BUFFER (buf));
-  nomad_app_window_set_buffer (self, first);
+  GtkNotebook *notebook = GTK_NOTEBOOK (self->priv->notebook);
+  if (gtk_notebook_get_n_pages (notebook) > 1)
+    {
+      gtk_notebook_remove_page (notebook,
+                                gtk_notebook_get_current_page (notebook));
+    }
 }
 
 void
 nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf)
 {
   NomadAppWindowPrivate *priv = self->priv;
-  GtkWidget *child1 = gtk_paned_get_child1 (GTK_PANED (priv->pane));
-
-  if (child1 != NULL)
-    {
-      g_object_ref (child1);
-      gtk_container_remove (GTK_CONTAINER (priv->pane), child1);
-    }
+  gint n = gtk_notebook_append_page (GTK_NOTEBOOK (priv->notebook),
+                                     GTK_WIDGET (buf), NULL);
+  gtk_widget_show_all (GTK_WIDGET (buf));
+  gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook), n);
   priv->buffer = buf;
-  gtk_paned_add1 (GTK_PANED (priv->pane), GTK_WIDGET (priv->buffer));
-  gtk_widget_show_all (GTK_WIDGET (priv->buffer));
+}
+
+GList *
+nomad_window_get_tabs (NomadAppWindow *self)
+{
+  return gtk_container_get_children (GTK_CONTAINER (self->priv->notebook));
 }
 
 void
@@ -420,6 +428,8 @@ nomad_app_window_class_init (NomadAppWindowClass *class)
                                                 NomadAppWindow, vte);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, read_line);
+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
+                                                NomadAppWindow, notebook);
 }
 
 NomadAppWindow *
