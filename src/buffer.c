@@ -156,8 +156,7 @@ make_buffer_invoke (void *data)
   GtkWidget *win = nomad_app_get_window (NOMAD_APP (app));
 
   webkit_web_view_load_uri (view, uri);
-  nomad_app_window_set_buffer (NOMAD_APP_WINDOW (win), buf);
-  nomad_app_add_buffer (NOMAD_APP (app), buf);
+  nomad_app_window_add_buffer (NOMAD_APP_WINDOW (win), buf);
   g_free (uri);
 
   request->response = nomad_app_make_buffer (buf);
@@ -263,7 +262,7 @@ set_buffer_invoke (void *data)
       g_critical ("window not found");
       return FALSE;
     }
-  nomad_app_window_set_buffer (win, obj->buffer);
+  nomad_app_window_add_buffer (win, obj->buffer);
   return FALSE;
 }
 

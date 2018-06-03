@@ -42,7 +42,7 @@ struct _NomadAppWindowPrivate
   GtkWidget *read_line;
   GtkWidget *text_buffer;
   GtkWidget *vte;
-  NomadBuffer *buffer;
+  /* NomadBuffer *buffer; */
   WebKitWebView *web_view;
 };
 
@@ -65,7 +65,7 @@ fork_vte_child (VteTerminal *vte, gint status, gpointer data)
   scm_to_argv (cmd, argv);
   pwd = g_get_current_dir ();
   envv = g_get_environ ();
-  envv = g_environ_setenv (envv, "TERM6", "xterm-256color", TRUE);
+  envv = g_environ_setenv (envv, "TERM", "xterm-256color", TRUE);
 
   vte_terminal_spawn_async (vte, VTE_PTY_DEFAULT, NULL, argv, envv,
                             G_SPAWN_DEFAULT | G_SPAWN_SEARCH_PATH_FROM_ENVP,
@@ -106,7 +106,8 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
         {
           gtk_widget_show (priv->read_line);
           gtk_widget_hide (vte);
-          nomad_buffer_grab_view (priv->buffer);
+          nomad_buffer_grab_view (
+              nomad_app_window_get_buffer (NOMAD_APP_WINDOW (widget)));
         }
       return TRUE;
     }
@@ -225,7 +226,8 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
 
   gtk_text_buffer_set_text (GTK_TEXT_BUFFER (buf), message, -1);
 
-  nomad_buffer_grab_view (priv->buffer);
+  nomad_buffer_grab_view (
+      nomad_app_window_get_buffer (NOMAD_APP_WINDOW (priv)));
 
   scm_dynwind_free (message);
   scm_dynwind_end ();
@@ -298,8 +300,7 @@ nomad_app_window_init (NomadAppWindow *self)
   // Buffer
   buf = nomad_buffer_new ();
   webkit_web_view_load_uri (nomad_buffer_get_view (buf), c_home_page);
-  nomad_app_window_set_buffer (self, buf);
-  nomad_app_add_buffer (app, buf);
+  nomad_app_window_add_buffer (self, buf);
 
   // Minbuf
   priv->text_buffer = GTK_WIDGET (text_buffer_new ());
@@ -372,7 +373,10 @@ nomad_app_window_hide_vte (NomadAppWindow *self)
 NomadBuffer *
 nomad_app_window_get_buffer (NomadAppWindow *self)
 {
-  return self->priv->buffer;
+  GtkNotebook *notebook = GTK_NOTEBOOK (self->priv->notebook);
+  gint i = gtk_notebook_get_current_page (notebook);
+  GtkWidget *w = gtk_notebook_get_nth_page (notebook, i);
+  return NOMAD_BUFFER (w);
 }
 
 void
@@ -387,14 +391,13 @@ nomad_app_window_remove_buffer (NomadAppWindow *self)
 }
 
 void
-nomad_app_window_set_buffer (NomadAppWindow *self, NomadBuffer *buf)
+nomad_app_window_add_buffer (NomadAppWindow *self, NomadBuffer *buf)
 {
   NomadAppWindowPrivate *priv = self->priv;
   gint n = gtk_notebook_append_page (GTK_NOTEBOOK (priv->notebook),
                                      GTK_WIDGET (buf), NULL);
   gtk_widget_show_all (GTK_WIDGET (buf));
   gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook), n);
-  priv->buffer = buf;
 }
 
 GList *
@@ -442,7 +445,8 @@ nomad_app_window_new (NomadApp *app)
 WebKitWebView *
 nomad_app_window_get_webview (NomadAppWindow *self)
 {
-  return nomad_buffer_get_view (self->priv->buffer);
+  NomadBuffer *buf = nomad_app_window_get_buffer (self);
+  return nomad_buffer_get_view (buf);
 }
 
 SCM_DEFINE (scm_nomad_window_focus, "focus", 0, 0, 0, (),

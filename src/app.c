@@ -147,11 +147,6 @@ nomad_app_make_buffer (NomadBuffer *buf)
 }
 
 void
-nomad_app_add_buffer (NomadApp *app, NomadBuffer *buf)
-{
-}
-
-void
 nomad_app_remove_buffer (NomadApp *app, NomadBuffer *buf)
 {
 }
