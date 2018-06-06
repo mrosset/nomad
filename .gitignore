@@ -41,6 +41,8 @@ Makefile.in
 *.lo
 *.o
 *.x
+*.log
 /config.h
 /config.h.in
 /check-guile
+/src/test
