@@ -28,6 +28,21 @@
 #include "request.h"
 #include "window.h"
 
+#define BUS_INTERFACE_NAME "org.gnu.nomad.webview"
+#define BUS_INTERFACE_PATH "/org/gnu/nomad/webview"
+
+static GDBusConnection *connection;
+static GDBusInterfaceInfo *interface;
+static guint bus_id;
+
+static const gchar introspection_xml[]
+    = "<node>"
+      "<interface name='" BUS_INTERFACE_NAME "'>"
+      "<signal name='Changed'>"
+      "</signal>"
+      "</interface>"
+      "</node>";
+
 typedef struct _NomadAppPrivate NomadAppPrivate;
 
 struct _NomadAppPrivate
@@ -50,12 +65,65 @@ nomad_app_init (NomadApp *self)
 }
 
 static void
+on_bus_acquired (GDBusConnection *con, const gchar *name)
+{
+  GError *error = NULL;
+  GDBusNodeInfo *node
+      = g_dbus_node_info_new_for_xml (introspection_xml, &error);
+
+  connection = con;
+  if (node == NULL)
+    goto fail;
+  interface = g_dbus_node_info_lookup_interface (node, BUS_INTERFACE_NAME);
+  if (interface == NULL)
+    goto fail;
+
+  bus_id = g_dbus_connection_register_object (
+      connection, BUS_INTERFACE_PATH, interface, NULL, NULL, NULL, &error);
+
+  if (bus_id == 0)
+    goto fail;
+
+  return;
+
+fail:
+  if (error != NULL)
+    {
+      g_critical ("Error hooking up web extension DBus interface: %s",
+                  error->message);
+      g_clear_error (&error);
+    }
+  else
+    {
+      g_critical ("Unknown error hooking up web extension DBus interface");
+    }
+}
+
+static void
+on_name_lost (GDBusConnection *connection, const gchar *name)
+{
+  if (connection == NULL)
+    {
+      g_error ("Couldn't connect to DBus for name %s", name);
+      return;
+    }
+
+  if (!g_dbus_connection_unregister_object (connection, bus_id))
+    g_critical ("Trouble unregistering object");
+}
+
+static void
 nomad_app_activate (GApplication *self)
 {
 
   NomadAppWindow *win = nomad_app_window_new (NOMAD_APP (self));
   gtk_window_present (GTK_WINDOW (win));
   nomad_app_window_add_vte (win);
+  nomad_app_window_grab_vte (win);
+  g_bus_own_name (G_BUS_TYPE_SESSION, "com.endlessm.webviewdemo",
+                  G_BUS_NAME_OWNER_FLAGS_NONE,
+                  (GBusAcquiredCallback)on_bus_acquired, NULL,
+                  (GBusNameLostCallback)on_name_lost, NULL, NULL);
 }
 
 static void
@@ -226,10 +294,46 @@ SCM_DEFINE (scm_nomad_start_vte, "start-vte", 0, 0, 0, (), "")
 }
 
 void
+run_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
+{
+  WebKitWebView *view = user_data;
+  GError *error = NULL;
+  webkit_web_view_run_javascript_from_gresource_finish (view, res, &error);
+  if (error != NULL)
+    {
+      g_printerr ("Error invoking Javascript resource: %s\n", error->message);
+      g_error_free (error);
+    }
+  g_print ("RESULT CB\n");
+}
+
+// FIXME: invoke on main thread?
+SCM_DEFINE (scm_nomad_show_hints, "hints", 0, 0, 0, (),
+            "Shows WebView html links.")
+{
+  GError *error = NULL;
+  WebKitWebView *view = nomad_app_get_webview (app);
+
+  g_dbus_connection_emit_signal (connection, NULL, BUS_INTERFACE_PATH,
+                                 BUS_INTERFACE_NAME, "Changed", NULL, &error);
+
+  if (error != NULL)
+    {
+      g_printerr ("Error invoking Changed(): %s\n", error->message);
+      g_error_free (error);
+    }
+
+  webkit_web_view_run_javascript_from_gresource (
+      view, "/org/gnu/nomad/hints.js", NULL, run_cb, view);
+
+  return SCM_UNDEFINED;
+}
+
+void
 nomad_app_register_functions (void *data)
 {
 #include "app.x"
   scm_c_export ("nomad-version", "start-browser", "restart-nomad",
                 "kill-nomad", "buffer-alist", "main-thread", "start-vte",
-                NULL);
+                "hints", NULL);
 }

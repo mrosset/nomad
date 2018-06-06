@@ -18,44 +18,70 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <webkit2/webkit-web-extension.h>
+#include <dbus/dbus.h>
 #include <libguile.h>
-#include <sys/socket.h>
+#include <webkit2/webkit-web-extension.h>
 
-/*
-static void
-msg (void *data)
-{
-   SCM sock;
-   SCM fam = scm_from_int (AF_UNIX);
-   SCM addr = scm_from_locale_string ("/tmp/nomad");
-   SCM message = scm_string_to_utf8 (scm_from_locale_string ("(version)"));
-   scm_connect (sock, scm_from_int(AF_UNIX), scm_from_locale_string("/tmp/nomad"), SCM_EOL);
-   scm_sendto (sock, message, fam, addr, 0);
-}
-*/
+#define BUS_INTERFACE_NAME "org.gnu.nomad.webview"
+#define BUS_INTERFACE_PATH "/org/gnu/nomad/webview"
 
 static void
-web_page_loaded_callback (WebKitWebPage * web_page, gpointer user_data)
+web_page_loaded_callback (WebKitWebPage *web_page, gpointer user_data)
 {
-  g_print ("loaded: %s\n", webkit_web_page_get_uri (web_page));
-  //scm_with_guile (msg, NULL);
 }
 
 static void
-web_page_created_callback (WebKitWebExtension * extension,
-                           WebKitWebPage * web_page, char *user_data)
+web_page_created_callback (WebKitWebExtension *extension,
+                           WebKitWebPage *web_page, char *user_data)
 {
-  g_print ("Page %d created\n", (int)webkit_web_page_get_id (web_page));
   g_signal_connect (web_page, "document-loaded",
                     G_CALLBACK (web_page_loaded_callback), NULL);
 }
 
+void
+changed ()
+{
+  g_print ("Changes Signal\n");
+}
+
+void *
+on_name_appear (GDBusConnection *connection, const char *name,
+                const char *name_owner, void *user_data)
+{
+  int id = g_dbus_connection_signal_subscribe (
+      connection, NULL, BUS_INTERFACE_NAME, "Changed", BUS_INTERFACE_PATH,
+      NULL, G_DBUS_SIGNAL_FLAGS_NONE, changed, NULL, NULL);
+
+  if (id == 0)
+    {
+      g_critical ("Could not connect to signal 'Changed'\n");
+    }
+
+  return NULL;
+}
+
+void *
+on_name_lost (GDBusConnection *connection, const char *name,
+              const char *name_owner, gpointer user_data)
+{
+  return NULL;
+}
+
 G_MODULE_EXPORT void
-webkit_web_extension_initialize_with_user_data (WebKitWebExtension *
-                                                extension,
-                                                GString * user_data)
+webkit_web_extension_initialize_with_user_data (WebKitWebExtension *extension,
+                                                GString *user_data)
 {
   g_signal_connect (extension, "page-created",
                     G_CALLBACK (web_page_created_callback), user_data);
+
+  /*
+   * g_signal_connect (webkit_script_world_get_default (),
+   *                   "window-object-cleared",
+   *                   G_CALLBACK (window_object_cleared_callback), NULL);
+   */
+
+  g_bus_watch_name (G_BUS_TYPE_SESSION, BUS_INTERFACE_NAME,
+                    G_BUS_NAME_OWNER_FLAGS_NONE,
+                    (GBusNameAppearedCallback)on_name_appear,
+                    (GBusNameLostCallback)on_name_lost, NULL, NULL);
 }

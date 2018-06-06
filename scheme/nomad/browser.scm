@@ -18,6 +18,7 @@
 
 (define-module (nomad browser)
   #:use-module (nomad events)
+  #:use-module (nomad buffer)
   #:use-module (nomad webkit)
   #:export (back
             browse
@@ -25,6 +26,7 @@
             default-home-page
             forward
             home
+            make-query
             prefix-url
             query
             reload
@@ -35,7 +37,6 @@
 
 (define (prefix-url url)
   "Returns a full protocol URI for domain URI.
-
 e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 
   (and (not (string-prefix? "http://" url))
@@ -62,7 +63,12 @@ specified. Returns the final URL passed to webkit"
   (run-hook event-hook "(back)")
   (web-view-go-back))
 
+(define (make-query arg)
+  "Makes a new buffer and queries ARG using 'search-provider-format"
+  (make-buffer (simple-format #f search-provider-format arg)))
+
 (define (query arg)
+  "Queries ARG using 'search-provider-format"
   (let ((uri (simple-format #f search-provider-format arg)))
     (browse uri)))
 

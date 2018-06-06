@@ -271,7 +271,6 @@ text_buffer_key_press_cb (GtkWidget *view, GdkEventKey *event,
 static void
 nomad_app_window_init (NomadAppWindow *self)
 {
-
   NomadAppWindowPrivate *priv;
   WebKitCookieManager *cookie_manager;
   char *c_user_cookie_file;

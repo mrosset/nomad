@@ -23,5 +23,7 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
   <gresource prefix="/org/gnu/nomad">
     <file preprocess="xml-stripblanks">window.ui</file>
     <file preprocess="xml-stripblanks">buffer.ui</file>
+    <file>test.js</file>
+    <file alias="hints.js">../ext/hints.js</file>
   </gresource>
 </gresources>

@@ -18,7 +18,7 @@
 
 AUTOMAKE_OPTIONS = gnu
 
-bin_PROGRAMS = nomad
+bin_PROGRAMS = nomad test
 
 .PHONY: test format
 
@@ -42,6 +42,8 @@ nomad_SOURCES =		\
 	window.c	\
 	window.h
 
+test_SOURCES = test.c
+
 moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
 
 ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
@@ -61,6 +63,7 @@ AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
 AM_LDFLAGS = -export-dynamic
 
 nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(VTE_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
+test_LDADD = $(nomad_LDADD)
 
 DOT_X_FILES = app.x buffer.x webkit.x window.x util.x
 
@@ -80,3 +83,6 @@ SUFFIXES = .x
 .c.x:
 	@echo "  SNARF" $@;
 	@$(GUILE_SNARF) -o $@ $< $(snarfcppopts) $(AM_FLAGS)
+
+run_test: test
+	./test

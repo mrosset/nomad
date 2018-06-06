@@ -28,7 +28,7 @@ nomad_DATA = init.el
 dist_doc_DATA = README
 
 run: install
-	@$(prefix)/bin/nomad
+	$(prefix)/bin/nomad
 
 format:
 	make -C src format

@@ -27,8 +27,10 @@
                        ("C-u" . (back))
                        ("C-m" . (forward))
                        ("C-n" . (scroll-down))
+                       ("C-f" . (hints))
                        ("C-p" . (scroll-up))
-                       ("C-r" . (reload))))
+                       ("C-r" . (reload))
+                       ("C-x" . (kill-buffer))))
 
 (define default-keymap emacs-keymap)
 
