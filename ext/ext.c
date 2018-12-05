@@ -25,9 +25,12 @@
 #define BUS_INTERFACE_NAME "org.gnu.nomad.webview"
 #define BUS_INTERFACE_PATH "/org/gnu/nomad/webview"
 
+WebKitWebPage *page = NULL;
+
 static void
 web_page_loaded_callback (WebKitWebPage *web_page, gpointer user_data)
 {
+  page = web_page;
 }
 
 static void
@@ -41,7 +44,7 @@ web_page_created_callback (WebKitWebExtension *extension,
 void
 changed ()
 {
-  g_print ("Changes Signal\n");
+  g_print ("Changed Signal\n");
 }
 
 void *
@@ -52,6 +55,7 @@ on_name_appear (GDBusConnection *connection, const char *name,
       connection, NULL, BUS_INTERFACE_NAME, "Changed", BUS_INTERFACE_PATH,
       NULL, G_DBUS_SIGNAL_FLAGS_NONE, changed, NULL, NULL);
 
+  g_print ("APPEAR\n");
   if (id == 0)
     {
       g_critical ("Could not connect to signal 'Changed'\n");
@@ -64,6 +68,7 @@ void *
 on_name_lost (GDBusConnection *connection, const char *name,
               const char *name_owner, gpointer user_data)
 {
+  g_print ("LOST\n");
   return NULL;
 }
 

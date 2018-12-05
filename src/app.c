@@ -120,7 +120,7 @@ nomad_app_activate (GApplication *self)
   gtk_window_present (GTK_WINDOW (win));
   nomad_app_window_add_vte (win);
   nomad_app_window_grab_vte (win);
-  g_bus_own_name (G_BUS_TYPE_SESSION, "com.endlessm.webviewdemo",
+  g_bus_own_name (G_BUS_TYPE_SESSION, BUS_INTERFACE_NAME,
                   G_BUS_NAME_OWNER_FLAGS_NONE,
                   (GBusAcquiredCallback)on_bus_acquired, NULL,
                   (GBusNameLostCallback)on_name_lost, NULL, NULL);
@@ -294,7 +294,7 @@ SCM_DEFINE (scm_nomad_start_vte, "start-vte", 0, 0, 0, (), "")
 }
 
 void
-run_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
+run_hints_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
   WebKitWebView *view = user_data;
   GError *error = NULL;
@@ -311,12 +311,12 @@ run_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 SCM_DEFINE (scm_nomad_show_hints, "hints", 0, 0, 0, (),
             "Shows WebView html links.")
 {
-  GError *error = NULL;
+
   WebKitWebView *view = nomad_app_get_webview (app);
+  GError *error = NULL;
 
   g_dbus_connection_emit_signal (connection, NULL, BUS_INTERFACE_PATH,
                                  BUS_INTERFACE_NAME, "Changed", NULL, &error);
-
   if (error != NULL)
     {
       g_printerr ("Error invoking Changed(): %s\n", error->message);
@@ -324,7 +324,7 @@ SCM_DEFINE (scm_nomad_show_hints, "hints", 0, 0, 0, (),
     }
 
   webkit_web_view_run_javascript_from_gresource (
-      view, "/org/gnu/nomad/hints.js", NULL, run_cb, view);
+      view, "/org/gnu/nomad/hints.js", NULL, run_hints_cb, view);
 
   return SCM_UNDEFINED;
 }
