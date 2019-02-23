@@ -24,6 +24,7 @@
 #include <gtksourceview/gtksourcelanguage.h>
 #include <gtksourceview/gtksourcelanguagemanager.h>
 #include <libguile.h>
+#include <libguile/hooks.h>
 #include <vte/vte.h>
 #include <webkit2/webkit2.h>
 

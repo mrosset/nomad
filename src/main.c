@@ -20,7 +20,7 @@
 
 #include <gtk/gtk.h>
 #include <libguile.h>
-
+#include <libguile/hooks.h>
 #include "app.h"
 #include "buffer.h"
 #include "util.h"
@@ -52,7 +52,7 @@ startup (GApplication *app, gpointer data)
   // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
   // documentation for $HOME/.nomad
   scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"),
-                  SCM_LIST0);
+                  NULL);
   scm_c_eval_string ("(server-start-coop)");
 }
 
