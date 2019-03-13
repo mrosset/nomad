@@ -16,33 +16,33 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIRS = ext scheme qt
+export QT_SELECT=qt5
+export GUILE_LOAD_PATH=../scheme
 
-ACLOCAL_AMFLAGS = -I m4
+AUTOMAKE_OPTIONS = gnu
 
-EXTRA_DIST = init.el
-## FIXME this is hackish. promote init.el to emacs package
-nomaddir = "$(datadir)/nomad"
-nomad_DATA = init.el
+bin_PROGRAMS = nomad
 
-dist_doc_DATA = README
+nomad_SOURCES =		\
+	main.cpp	\
+	resource.cpp
 
-test:
-	$(MAKE) -C ./qt test
+AM_CPPFLAGS = -Wall -Werror -Wno-unused-function -fPIC			\
+	$(GUILE_CFLAGS)							\
+	$(QT_WIDGETS_CFLAGS)						\
+	$(QT_WEB_CFLAGS)						\
+	-DNOMAD_GUILE_LOAD_COMPILED_PATH=\""$(ccachedir)"\"
 
-run: install
-	$(prefix)/bin/nomad
+nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(VTE_LIBS) $(WEBKIT_LIBS)	\
+	$(GTK_SOURCEVIEW_LIBS)						\
+	$(QT_WIDGETS_LIBS)						\
+	$(QT_WEB_LIBS)
+
+test: all
+	./nomad
 
 format:
-	make -C src format
+	clang-format -i *.c *.h
 
-rebuild: clean all
-
-TESTS = check-guile
-
-CLEANFILES =		\
-	check-guile.log \
-	check-guile.trs \
-	test-suite.log
-
-DISTCLEANFILES = check-guile.log
+resource.cpp: main.qml
+	rcc qml.qrc -o $@

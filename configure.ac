@@ -28,7 +28,7 @@ AM_INIT_AUTOMAKE([-Wall gnu silent-rules serial-tests color-tests])
 AM_SILENT_RULES([yes])
 
 # programs
-AC_PROG_CC
+AC_PROG_CXX
 AM_PROG_AR
 
 # libtool
@@ -42,6 +42,9 @@ GUILE_SITE_DIR
 
 # pkg-config modules
 PKG_CHECK_MODULES([GUILE], [guile-2.2])
+PKG_CHECK_MODULES([QT_WIDGETS], [Qt5Widgets])
+#PKG_CHECK_MODULES([QT_QML], [Qt5Qml])
+PKG_CHECK_MODULES([QT_WEB], [Qt5WebEngine])
 PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
 PKG_CHECK_MODULES([VTE], [vte-2.91])
@@ -82,7 +85,7 @@ fi
 
 AC_CONFIG_FILES([
 Makefile
-src/Makefile
+qt/Makefile
 ext/Makefile
 scheme/Makefile
 ])
