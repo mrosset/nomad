@@ -1,4 +1,4 @@
-;; webkit.scm
+;; webview.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,4 +16,4 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad webkit))
+(define-module (nomad webview))

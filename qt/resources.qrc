@@ -1,0 +1,7 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+  <qresource prefix="/">
+    <file>ApplicationRoot.qml</file>
+    <file>BrowserWindow.qml</file>
+  </qresource>
+</RCC>

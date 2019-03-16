@@ -19,7 +19,7 @@
 (define-module (nomad browser)
   #:use-module (nomad events)
   #:use-module (nomad buffer)
-  #:use-module (nomad webkit)
+  #:use-module (nomad webview)
   #:export (back
             browse
             current-url
@@ -47,21 +47,21 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 (define (browse url)
   "Browse to URI. URI is prefixed with https:// if no protocol is
 specified. Returns the final URL passed to webkit"
-    (web-view-load-uri (prefix-url url)))
+    (webview-load-uri (prefix-url url)))
 
 (define (forward)
-  (web-view-go-forward))
+  (webview-go-forward))
 
 (define (home)
-  (web-view-load-uri default-home-page))
+  (webview-load-uri default-home-page))
 
 (define (reload)
-  (web-view-reload))
+  (webview-reload))
 
 (define (back)
   "go back in history"
   (run-hook event-hook "(back)")
-  (web-view-go-back))
+  (webview-go-back))
 
 (define (make-query arg)
   "Makes a new buffer and queries ARG using 'search-provider-format"
@@ -73,4 +73,4 @@ specified. Returns the final URL passed to webkit"
     (browse uri)))
 
 (define (current-url)
-  (web-view-current-url))
+  (webview-current-url))
