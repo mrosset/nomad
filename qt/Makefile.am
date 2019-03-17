@@ -24,21 +24,27 @@ bin_PROGRAMS = nomad
 
 nomad_SOURCES =			\
 	main.cpp		\
+	app.cpp			\
 	webview.cpp		\
 	resource.cpp
 
-AM_CPPFLAGS = -Wall -Werror -Wno-unused-function -fPIC			\
+AM_CPPFLAGS = -Wall -Wno-unused-function -fPIC				\
 	$(GUILE_CFLAGS)							\
 	$(QT_WIDGETS_CFLAGS)						\
 	$(QT_WEB_CFLAGS)						\
 	$(QT_WEB_WIDGETS_CFLAGS)					\
 	-DNOMAD_GUILE_LOAD_COMPILED_PATH=\""$(ccachedir)"\"
 
-nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(VTE_LIBS) $(WEBKIT_LIBS)	\
-	$(GTK_SOURCEVIEW_LIBS)						\
-	$(QT_WIDGETS_LIBS)						\
-	$(QT_WEB_WIDGETS_LIBS)						\
+nomad_LDADD =			\
+	$(GTK_LIBS)		\
+	$(GUILE_LIBS)		\
+	$(VTE_LIBS)		\
+	$(WEBKIT_LIBS)		\
+	$(GTK_SOURCEVIEW_LIBS)	\
+	$(QT_WIDGETS_LIBS)	\
+	$(QT_TERM_WIDGET_LIB)	\
 	$(QT_WEB_LIBS)
+
 
 DOT_X_FILES = webview.x
 

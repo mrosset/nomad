@@ -7,6 +7,8 @@
 #include <libguile.h>
 #include <qtwebengineglobal.h>
 
+QObject *root = NULL;
+
 static QUrl
 startupUrl ()
 {
@@ -63,6 +65,7 @@ inner_main (void *data, int argc, char *argv[])
   scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"), NULL);
   scm_c_eval_string ("(server-start-coop)");
 
+  // scm_putenv (scm_from_locale_string ("SHELL=/usr/bin/emacs"));
   exit (start_app (argc, argv));
 }
 

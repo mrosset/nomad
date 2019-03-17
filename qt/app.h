@@ -20,6 +20,8 @@
 #ifndef APP_H
 #define APP_H
 #include <QGuiApplication>
+#include <QVariant>
 
-static QObject *root;
+extern QObject *root;
+QVariant invoke_method(QObject*, const char*);
 #endif // APP_H

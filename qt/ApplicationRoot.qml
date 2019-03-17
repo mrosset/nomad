@@ -42,7 +42,18 @@ QtObject {
     }
 
     function currentUrl() {
-        console.log(this.window.currentUrl());
         return this.window.currentUrl();
+    }
+
+    function setUrl(url) {
+        this.window.setUrl(url);
+    }
+
+    function goBack() {
+        this.window.goBack();
+    }
+
+    function goForward() {
+        this.window.goForward();
     }
 }

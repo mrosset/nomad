@@ -22,15 +22,42 @@
 #include <cstddef>
 #include <libguile.h>
 
-SCM_DEFINE (scm_current_url, "webview-current-url", 0, 0, 0, (),
+SCM_DEFINE (scm_webview_current_url, "webview-current-url", 0, 0, 0, (),
             "Return's the WebView's current URL.")
 {
-  QVariant returnedValue;
-  QMetaObject::invokeMethod (root, "currentUrl",
-                             Q_RETURN_ARG (QVariant, returnedValue));
-  qInfo ("%s", returnedValue.toString ().toLatin1 ().data ());
-  return scm_from_locale_string (
-      returnedValue.toString ().toLatin1 ().data ());
+  QVariant value = invoke_method (root, "currentUrl");
+  char *url = value.toString ().toLatin1 ().data ();
+  qInfo ("qml: %s", url);
+  return scm_from_locale_string (url);
+}
+
+SCM_DEFINE (scm_webview_load_uri, "webview-load-uri", 1, 0, 0, (SCM uri),
+            "Set's the current WebView to uri")
+{
+  QVariant arg = QVariant (scm_to_locale_string (uri));
+
+  QMetaObject::invokeMethod (root, "setUrl", Qt::BlockingQueuedConnection,
+                             Q_ARG (QVariant, arg));
+  return SCM_UNSPECIFIED;
+}
+
+SCM_DEFINE (
+    scm_webview_go_back, "webview-go-back", 0, 0, 0, (),
+    "Request WebView to go back in history. If WebView can not be found or "
+    "there is no back history then it return #f. Otherwise it returns #t.")
+{
+  QMetaObject::invokeMethod (root, "goBack", Qt::BlockingQueuedConnection);
+  return SCM_BOOL_T;
+}
+
+SCM_DEFINE (
+    scm_nomad_webkit_go_foward, "webview-go-forward", 0, 0, 0, (),
+    "Internal request WebKitView to go forward in history. If WebView can not "
+    "be found or there is no forward history then it returns #f. Otherwise it "
+    "returns #t. TODO: maybe provide a callback for load-change signal.")
+{
+  QMetaObject::invokeMethod (root, "goForward", Qt::BlockingQueuedConnection);
+  return SCM_UNSPECIFIED;
 }
 
 void

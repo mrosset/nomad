@@ -23,8 +23,7 @@
   #:export (key-press-hook handle-key-press debug-key-press))
 
 (define modifier-masks '((4 . "C")))
-(define emacs-keymap '(
-                       ("C-b" . (next-buffer))
+(define emacs-keymap '(("C-b" . (next-buffer))
                        ("C-u" . (back))
                        ("C-m" . (forward))
                        ("C-n" . (scroll-down))
