@@ -16,16 +16,15 @@ ApplicationWindow {
 
     width: 640
     height: 480
-
     Action {
         shortcut: "Alt+m"
         onTriggered: {
             terminal.visible = !terminal.visible;
             if(terminal.visible) {
-                currentWebView.focus = false;
+                tabs.focus = false;
                 terminal.focus = true;
             } else {
-                currentWebView.focus = true;
+                tabs.focus = true;
                 terminal.focus = false;
             }
             tabs.updateSize();
@@ -46,6 +45,7 @@ ApplicationWindow {
                 // We must do this first to make sure that tab.active gets set so that tab.item gets instantiated immediately.
                 tab.active = true;
                 /* tab.title = Qt.binding(function() { return tab.item.title }); */
+                tab.title = Qt.binding(function() { return tabs.focus });
                 statusTitle.text = Qt.binding(function() { return tab.item.title });
                 statusUrl.text  = Qt.binding(function() { return tab.item.url });
                 tab.item.profile = profile;
@@ -59,24 +59,43 @@ ApplicationWindow {
                     this.Layout.preferredHeight = parent.height - terminal.height - statusRow.height;
                 }
             }
+            Keys.onPressed: {
+                if (event.modifiers == Qt.ControlModifier) {
+                    switch(event.key) {
+                    case Qt.Key_N:
+                        scrollv(currentWebView, 100)
+                        break
+                    case Qt.Key_P:
+                        scrollv(currentWebView, -100)
+                        break
+                    case Qt.Key_R:
+                        currentWebView.reload()
+                        break
+                    }
+                }
+            }
         }
         RowLayout {
             id: statusRow
             Label {
-                color: 'steelblue'
+                color: "steelblue"
                 id: statusTitle
                 Layout.fillWidth: true
                 Layout.preferredWidth: parent.width / 2
-                anchors.left: parent.left
+            }
+            Button {
+                id: testButton
+                text: "press"
+                onClicked: killBuffer()
             }
             Label {
                 id: statusUrl
                 color: "steelblue"
-                anchors.right: parent.right
             }
         }
         QMLTermWidget {
             id: terminal
+            focus: true
             Layout.alignment: Qt.AlignBottom
             Layout.preferredWidth: parent.width
             Layout.preferredHeight: parent.height / 4
@@ -110,53 +129,39 @@ ApplicationWindow {
         }
         Component.onCompleted: terminal.forceActiveFocus();
     }
-
     function currentUrl() {
         return this.currentWebView.url;
     }
-
     function setUrl(url) {
         this.currentWebView.url = url;
     }
-
-      function goBack() {
+    function goBack() {
         this.currentWebView.goBack();
-      }
+    }
 
     function goForward() {
         this.currentWebView.goForward();
+    }
+    function scrollv(obj, y) {
+        var method = "window.scrollBy(0, %1)".arg(y)
+        console.log(method)
+        obj.runJavaScript(method)
+    }
+
+    function makeBuffer(url) {
+        tabs.createEmptyTab(defaultProfile);
+        tabs.currentIndex++
+        currentWebView.url = url;
+    }
+
+    function killBuffer() {
+        tabs.removeTab(tabs.currentIndex)
     }
 
     Component {
         id: webView
         WebEngineView {
             id: webView
-            focus: true
-            Action {
-                shortcut: "Ctrl+r"
-                onTriggered: {
-                        reload();
-                }
-            }
-            Action {
-                shortcut: "Ctrl+n"
-                onTriggered: {
-                    if(focus) {
-                        scroll(0, 100);
-                    }
-                }
-            }
-            Action {
-                shortcut: "Ctrl+p"
-                onTriggered: {
-                    if(focus) {
-                        scroll(0, -100);
-                    }
-                }
-            }
-            function scroll(x, y) {
-                runJavaScript("window.scrollBy("+x+","+y+")");
-            }
         }
     }
  }

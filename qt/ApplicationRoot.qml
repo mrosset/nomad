@@ -56,4 +56,12 @@ QtObject {
     function goForward() {
         this.window.goForward();
     }
+
+    function makeBuffer(url) {
+        this.window.makeBuffer(url);
+    }
+
+    function killBuffer() {
+        this.window.killBuffer();
+    }
 }

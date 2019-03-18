@@ -26,6 +26,7 @@ nomad_SOURCES =			\
 	main.cpp		\
 	app.cpp			\
 	webview.cpp		\
+	buffer.cpp		\
 	resource.cpp
 
 AM_CPPFLAGS = -Wall -Wno-unused-function -fPIC				\
@@ -46,7 +47,7 @@ nomad_LDADD =			\
 	$(QT_WEB_LIBS)
 
 
-DOT_X_FILES = webview.x
+DOT_X_FILES = webview.x buffer.x
 
 BUILT_SOURCES = $(DOT_X_FILES)
 

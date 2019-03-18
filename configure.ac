@@ -32,7 +32,7 @@ AC_PROG_CXX
 AM_PROG_AR
 
 # libtool
-LT_INIT
+dnl LT_INIT
 
 # Guile
 GUILE_PKG([2.2 2.0])
@@ -86,7 +86,6 @@ fi
 AC_CONFIG_FILES([
 Makefile
 qt/Makefile
-ext/Makefile
 scheme/Makefile
 ])
 

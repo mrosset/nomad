@@ -1,4 +1,5 @@
 #include "app.h"
+#include "buffer.h"
 #include "webview.h"
 
 #include <QApplication>
@@ -49,8 +50,7 @@ inner_main (void *data, int argc, char *argv[])
   // NULL);
 
   scm_c_use_module ("nomad buffer");
-  // scm_c_define_module ("nomad buffer", nomad_buffer_register_functions,
-  // NULL);
+  scm_c_define_module ("nomad buffer", buffer_register_functions, NULL);
 
   // scm_c_define_module ("nomad util", nomad_util_register_functions, NULL);
 

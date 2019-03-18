@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad buffer)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-9)
   #:use-module (nomad app)
   #:export (buffer-with-id pp-buffers))

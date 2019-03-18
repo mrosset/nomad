@@ -47,7 +47,7 @@ SCM_DEFINE (
     "there is no back history then it return #f. Otherwise it returns #t.")
 {
   QMetaObject::invokeMethod (root, "goBack", Qt::BlockingQueuedConnection);
-  return SCM_BOOL_T;
+  return SCM_UNSPECIFIED;
 }
 
 SCM_DEFINE (
