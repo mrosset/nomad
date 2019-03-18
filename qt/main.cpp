@@ -37,9 +37,6 @@ start_app (int argc, char *argv[])
 void
 inner_main (void *data, int argc, char *argv[])
 {
-  scm_c_use_module ("nomad init");
-  scm_c_eval_string ("(init)");
-
   // Define scheme C modules
   // Modules that are used before defining have a scheme file. This
   // allows mixing pure scheme with C scheme.
@@ -59,6 +56,9 @@ inner_main (void *data, int argc, char *argv[])
   // scm_c_use_module ("nomad window");
   scm_c_use_module ("nomad browser");
   scm_c_use_module ("nomad repl");
+
+  scm_c_use_module ("nomad init");
+  scm_c_eval_string ("(init)");
 
   // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
   // documentation for $HOME/.nomad

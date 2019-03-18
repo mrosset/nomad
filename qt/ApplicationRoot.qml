@@ -64,4 +64,7 @@ QtObject {
     function killBuffer() {
         this.window.killBuffer();
     }
+    function nextBuffer() {
+        this.window.nextBuffer();
+    }
 }

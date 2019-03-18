@@ -44,8 +44,7 @@ ApplicationWindow {
                 var tab = addTab("", webView);
                 // We must do this first to make sure that tab.active gets set so that tab.item gets instantiated immediately.
                 tab.active = true;
-                /* tab.title = Qt.binding(function() { return tab.item.title }); */
-                tab.title = Qt.binding(function() { return tabs.focus });
+                tab.title = Qt.binding(function() { return tab.item.title });
                 statusTitle.text = Qt.binding(function() { return tab.item.title });
                 statusUrl.text  = Qt.binding(function() { return tab.item.url });
                 tab.item.profile = profile;
@@ -71,6 +70,12 @@ ApplicationWindow {
                     case Qt.Key_R:
                         currentWebView.reload()
                         break
+                    case Qt.Key_B:
+                        nextBuffer()
+                        break
+                    case Qt.Key_X:
+                        killBuffer()
+                        break
                     }
                 }
             }
@@ -83,11 +88,11 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.preferredWidth: parent.width / 2
             }
-            Button {
-                id: testButton
-                text: "press"
-                onClicked: killBuffer()
-            }
+            /* Button { */
+            /*     id: testButton */
+            /*     text: "press" */
+            /*     onClicked: killBuffer() */
+            /* } */
             Label {
                 id: statusUrl
                 color: "steelblue"
@@ -129,12 +134,15 @@ ApplicationWindow {
         }
         Component.onCompleted: terminal.forceActiveFocus();
     }
+
     function currentUrl() {
         return this.currentWebView.url;
     }
+
     function setUrl(url) {
         this.currentWebView.url = url;
     }
+
     function goBack() {
         this.currentWebView.goBack();
     }
@@ -142,6 +150,7 @@ ApplicationWindow {
     function goForward() {
         this.currentWebView.goForward();
     }
+
     function scrollv(obj, y) {
         var method = "window.scrollBy(0, %1)".arg(y)
         console.log(method)
@@ -155,7 +164,13 @@ ApplicationWindow {
     }
 
     function killBuffer() {
-        tabs.removeTab(tabs.currentIndex)
+        if(tabs.count != 1) {
+            tabs.removeTab(tabs.currentIndex)
+        }
+    }
+
+    function nextBuffer() {
+        tabs.currentIndex = tabs.currentIndex < tabs.count - 1 ? tabs.currentIndex + 1: 0
     }
 
     Component {

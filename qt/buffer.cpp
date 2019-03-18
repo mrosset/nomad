@@ -40,9 +40,16 @@ SCM_DEFINE (scm_nomad_kill_buffer, "kill-buffer", 0, 0, 0, (),
   return SCM_UNSPECIFIED;
 }
 
+SCM_DEFINE (scm_nomad_next_buffer, "next-buffer", 0, 0, 0, (),
+            "Switch to next buffer")
+{
+  QMetaObject::invokeMethod (root, "nextBuffer", Qt::BlockingQueuedConnection);
+  return SCM_UNSPECIFIED;
+}
+
 void
 buffer_register_functions (void *data)
 {
 #include "buffer.x"
-  scm_c_export ("make-buffer", "kill-buffer", NULL);
+  scm_c_export ("make-buffer", "kill-buffer", "next-buffer", NULL);
 }
