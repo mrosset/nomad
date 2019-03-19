@@ -8,9 +8,12 @@ import QMLTermWidget 1.0
 
 ApplicationWindow {
     id: browserWindow
+    objectName: "browserWindow"
     property QtObject applicationRoot
-    property Item currentWebView: tabs.currentIndex < tabs.count ? tabs.getTab(tabs.currentIndex).item : null
+    property Item currentWebView: tabs.count > 0 ? tabs.getTab(tabs.currentIndex).item: null
     property int previousVisibility: Window.Windowed
+
+    signal submitKeymap(int modifers, int key)
 
     visible: true
 
@@ -23,9 +26,11 @@ ApplicationWindow {
             if(terminal.visible) {
                 tabs.focus = false;
                 terminal.focus = true;
+                currentWebView.focus = false;
             } else {
                 tabs.focus = true;
                 terminal.focus = false;
+                currentWebView.focus = false;
             }
             tabs.updateSize();
         }
@@ -44,7 +49,7 @@ ApplicationWindow {
                 var tab = addTab("", webView);
                 // We must do this first to make sure that tab.active gets set so that tab.item gets instantiated immediately.
                 tab.active = true;
-                tab.title = Qt.binding(function() { return tab.item.title });
+                tab.title = Qt.binding(function() { return tabs.focus });
                 statusTitle.text = Qt.binding(function() { return tab.item.title });
                 statusUrl.text  = Qt.binding(function() { return tab.item.url });
                 tab.item.profile = profile;
@@ -59,25 +64,34 @@ ApplicationWindow {
                 }
             }
             Keys.onPressed: {
-                if (event.modifiers == Qt.ControlModifier) {
-                    switch(event.key) {
-                    case Qt.Key_N:
-                        scrollv(currentWebView, 100)
-                        break
-                    case Qt.Key_P:
-                        scrollv(currentWebView, -100)
-                        break
-                    case Qt.Key_R:
-                        currentWebView.reload()
-                        break
-                    case Qt.Key_B:
-                        nextBuffer()
-                        break
-                    case Qt.Key_X:
-                        killBuffer()
-                        break
-                    }
-                }
+                submitKeymap(event.modifiers, event.key)
+                /* ; event.modifers, event.key) */
+
+                /* if (event.modifiers == Qt.ControlModifier) { */
+                /*     switch(event.key) { */
+                /*     case Qt.Key_N: */
+                /*         scrollv(100) */
+                /*         break */
+                /*     case Qt.Key_U: */
+                /*          goBack() */
+                /*         break */
+                /*     case Qt.Key_M: */
+                /*         goForward() */
+                /*         break */
+                /*     case Qt.Key_P: */
+                /*         scrollv(-100) */
+                /*         break */
+                /*     case Qt.Key_R: */
+                /*         currentWebView.reload() */
+                /*         break */
+                /*     case Qt.Key_B: */
+                /*         nextBuffer() */
+                /*         break */
+                /*     case Qt.Key_X: */
+                /*         killBuffer() */
+                /*         break */
+                /*     } */
+                /* } */
             }
         }
         RowLayout {
@@ -135,26 +149,10 @@ ApplicationWindow {
         Component.onCompleted: terminal.forceActiveFocus();
     }
 
-    function currentUrl() {
-        return this.currentWebView.url;
-    }
-
-    function setUrl(url) {
-        this.currentWebView.url = url;
-    }
-
-    function goBack() {
-        this.currentWebView.goBack();
-    }
-
-    function goForward() {
-        this.currentWebView.goForward();
-    }
-
-    function scrollv(obj, y) {
+    function scrollv(y) {
         var method = "window.scrollBy(0, %1)".arg(y)
-        console.log(method)
-        obj.runJavaScript(method)
+        currentWebView.runJavaScript(method)
+
     }
 
     function makeBuffer(url) {
@@ -173,10 +171,20 @@ ApplicationWindow {
         tabs.currentIndex = tabs.currentIndex < tabs.count - 1 ? tabs.currentIndex + 1: 0
     }
 
+    function goBack() {
+        currentWebView.goBack();
+    }
+
+    function goForward() {
+        currentWebView.goForward();
+    }
+
     Component {
         id: webView
         WebEngineView {
-            id: webView
+            function setUrl(uri) {
+                url =  uri
+            }
         }
     }
  }

@@ -1,14 +1,19 @@
 #include "app.h"
 #include "buffer.h"
+#include "keymap.h"
 #include "webview.h"
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlProperty>
 #include <QVariant>
 #include <libguile.h>
 #include <qtwebengineglobal.h>
 
 QObject *root = NULL;
+QObject *window = NULL;
+
+Keymap keymap;
 
 static QUrl
 startupUrl ()
@@ -31,6 +36,32 @@ start_app (int argc, char *argv[])
   engine.load (QUrl (QStringLiteral ("qrc:/ApplicationRoot.qml")));
   root = engine.rootObjects ().first ();
   QMetaObject::invokeMethod (root, "load", Q_ARG (QVariant, startupUrl ()));
+
+  window = qvariant_cast<QObject *> (QQmlProperty::read (root, "window"));
+
+  // UML signals to C++ methods
+  QObject::connect (window, SIGNAL (submitKeymap (int, int)), &keymap,
+                    SLOT (handleKeymap (int, int)));
+
+  // C++ signals to UML methods
+  QObject::connect (&keymap, SIGNAL (scrollv (QVariant)), window,
+                    SLOT (scrollv (QVariant)));
+
+  QObject::connect (&keymap, SIGNAL (goBack ()), window, SLOT (goBack ()));
+
+  QObject::connect (&keymap, SIGNAL (goForward ()), window,
+                    SLOT (goForward ()));
+
+  QObject::connect (&keymap, SIGNAL (killBuffer ()), window,
+                    SLOT (killBuffer ()));
+
+  // QMetaObject::invokeMethod (window, "submitKeymap", Q_ARG (QString,
+  // "RAWR"));
+
+  // QObject::connect (&keymap, SIGNAL (setTextField (QVariant)), window,
+  //                  SLOT (setTextField (QVariant)));
+
+  // print_methods (currentWebView);
   return app.exec ();
 }
 

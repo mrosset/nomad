@@ -18,16 +18,26 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "app.h"
+#include "keymap.h"
+
+#include <QQmlProperty>
 #include <QVariant>
 #include <cstddef>
 #include <libguile.h>
 
-SCM_DEFINE (scm_webview_current_url, "webview-current-url", 0, 0, 0, (),
-            "Return's the WebView's current URL.")
+QObject *
+currentWebView ()
 {
-  QVariant value = invoke_method (root, "currentUrl");
+  return qvariant_cast<QObject *> (
+      QQmlProperty::read (root, "currentWebView"));
+}
+
+SCM_DEFINE (scm_webview_current_url, "webview-current-url", 0, 0, 0, (),
+            "Return's the Web View's current URL.")
+{
+  QVariant value = qvariant_cast<QVariant> (
+      QQmlProperty::read (currentWebView (), "url"));
   char *url = value.toString ().toLatin1 ().data ();
-  qInfo ("qml: %s", url);
   return scm_from_locale_string (url);
 }
 
@@ -36,7 +46,8 @@ SCM_DEFINE (scm_webview_load_uri, "webview-load-uri", 1, 0, 0, (SCM uri),
 {
   QVariant arg = QVariant (scm_to_locale_string (uri));
 
-  QMetaObject::invokeMethod (root, "setUrl", Qt::BlockingQueuedConnection,
+  QMetaObject::invokeMethod (currentWebView (), "setUrl",
+                             Qt::BlockingQueuedConnection,
                              Q_ARG (QVariant, arg));
   return SCM_UNSPECIFIED;
 }
@@ -46,18 +57,39 @@ SCM_DEFINE (
     "Request WebView to go back in history. If WebView can not be found or "
     "there is no back history then it return #f. Otherwise it returns #t.")
 {
-  QMetaObject::invokeMethod (root, "goBack", Qt::BlockingQueuedConnection);
+  keymap.handleGoBack ();
   return SCM_UNSPECIFIED;
 }
 
 SCM_DEFINE (
     scm_nomad_webkit_go_foward, "webview-go-forward", 0, 0, 0, (),
-    "Internal request WebKitView to go forward in history. If WebView can not "
+    "Internal request WebView to go forward in history. If WebView can not "
     "be found or there is no forward history then it returns #f. Otherwise it "
     "returns #t. TODO: maybe provide a callback for load-change signal.")
 {
-  QMetaObject::invokeMethod (root, "goForward", Qt::BlockingQueuedConnection);
+  keymap.handleGoForward ();
   return SCM_UNSPECIFIED;
+}
+
+SCM_DEFINE (scm_nomad_scroll_up, "scroll-up", 0, 0, 0, (),
+            "Scrolls the current webview up")
+{
+  keymap.scrollv (-100);
+  return SCM_UNDEFINED;
+}
+
+SCM_DEFINE (scm_nomad_scroll_down, "scroll-down", 0, 0, 0, (),
+            "Scrolls the current webview down")
+{
+  keymap.scrollv (100);
+  return SCM_UNDEFINED;
+}
+
+SCM_DEFINE (scm_nomad_debug_webview, "debug-webview-methods", 0, 0, 0, (),
+            "prints webview methods")
+{
+  print_methods (currentWebView ());
+  return SCM_UNDEFINED;
 }
 
 void
@@ -66,5 +98,5 @@ webview_register_functions (void *data)
 #include "webview.x"
   scm_c_export ("webview-load-uri", "webview-go-back", "webview-go-forward",
                 "webview-reload", "webview-current-url", "scroll-up",
-                "scroll-down", NULL);
+                "scroll-down", "debug-webview-methods", NULL);
 }

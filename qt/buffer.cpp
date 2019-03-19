@@ -28,7 +28,8 @@ SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 1, 0, (SCM uri),
 {
   QVariant arg = QVariant (scm_to_locale_string (uri));
 
-  QMetaObject::invokeMethod (root, "makeBuffer", Qt::BlockingQueuedConnection,
+  QMetaObject::invokeMethod (window, "makeBuffer",
+                             Qt::BlockingQueuedConnection,
                              Q_ARG (QVariant, arg));
   return SCM_UNSPECIFIED;
 }
@@ -36,14 +37,15 @@ SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 1, 0, (SCM uri),
 SCM_DEFINE (scm_nomad_kill_buffer, "kill-buffer", 0, 0, 0, (),
             "Kill the current buffer")
 {
-  QMetaObject::invokeMethod (root, "killBuffer", Qt::BlockingQueuedConnection);
+  keymap.handleKillBuffer ();
   return SCM_UNSPECIFIED;
 }
 
 SCM_DEFINE (scm_nomad_next_buffer, "next-buffer", 0, 0, 0, (),
             "Switch to next buffer")
 {
-  QMetaObject::invokeMethod (root, "nextBuffer", Qt::BlockingQueuedConnection);
+  QMetaObject::invokeMethod (window, "nextBuffer",
+                             Qt::BlockingQueuedConnection);
   return SCM_UNSPECIFIED;
 }
 

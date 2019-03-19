@@ -20,5 +20,6 @@
 #ifndef WEBVIEW_H
 #define WEBVIEW_H
 void webview_register_functions (void *data);
+QObject *currentWebView();
 char * current_url ();
 #endif // WEBVIEW_H

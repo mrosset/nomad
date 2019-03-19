@@ -27,6 +27,8 @@ nomad_SOURCES =			\
 	app.cpp			\
 	webview.cpp		\
 	buffer.cpp		\
+	moc_keymap.cpp		\
+	keymap.cpp		\
 	resource.cpp
 
 AM_CPPFLAGS = -Wall -Wno-unused-function -fPIC				\

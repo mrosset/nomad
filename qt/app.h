@@ -19,9 +19,14 @@
  */
 #ifndef APP_H
 #define APP_H
+#include "keymap.h"
 #include <QGuiApplication>
 #include <QVariant>
 
 extern QObject *root;
+extern QObject *window;
+extern Keymap keymap;
+
+void print_methods (QObject *object);
 QVariant invoke_method(QObject*, const char*);
 #endif // APP_H

@@ -22,7 +22,13 @@
   #:use-module (ice-9 threads)
   #:export (key-press-hook handle-key-press debug-key-press))
 
-(define modifier-masks '((4 . "C")))
+(define modifier-masks '((67108864 . "C")))
+
+(define key-masks '((78 . "n")
+                    (80 . "p")
+                    (85 . "u")
+                    (88 . "x")))
+
 (define emacs-keymap '(("C-b" . (next-buffer))
                        ("C-u" . (back))
                        ("C-m" . (forward))
@@ -46,9 +52,10 @@
 modifiers bit and returns its string representation, and then formats
 it together with the key string. So given the arguments 4 c it would
 return \"C-c\". When the modifer is not found in the modifer-masks it returns #f"
-  (let ((mod-string (assoc-ref modifier-masks mod)))
+  (let* ((mod-string (assoc-ref modifier-masks mod))
+         (key-string (assoc-ref key-masks key)))
     (if mod-string
-        (simple-format #f "~a-~a" mod-string key)
+        (simple-format #f "~a-~a" mod-string key-string)
         #f)))
 
 (define (handle-key-press mod key)

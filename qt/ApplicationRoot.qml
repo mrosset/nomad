@@ -19,16 +19,18 @@ QtObject {
         onClosing: destroy()
     }
 
-    property ApplicationWindow window: ApplicationWindow {
+    property WebEngineView currentWebView: window.currentWebView
 
-    }
+    property BrowserWindow window
 
     function createWindow(profile) {
         var newWindow = browserWindowComponent.createObject(root);
         newWindow.currentWebView.profile = profile;
         /* profile.downloadRequested.connect(newWindow.onDownloadRequested); */
+        window = newWindow;
         return newWindow;
     }
+
     function createDialog(profile) {
         var newDialog = browserDialogComponent.createObject(root);
         newDialog.currentWebView.profile = profile;
@@ -38,33 +40,5 @@ QtObject {
     function load(url) {
         var browserWindow = createWindow(defaultProfile);
         browserWindow.currentWebView.url = url;
-        this.window = browserWindow;
-    }
-
-    function currentUrl() {
-        return this.window.currentUrl();
-    }
-
-    function setUrl(url) {
-        this.window.setUrl(url);
-    }
-
-    function goBack() {
-        this.window.goBack();
-    }
-
-    function goForward() {
-        this.window.goForward();
-    }
-
-    function makeBuffer(url) {
-        this.window.makeBuffer(url);
-    }
-
-    function killBuffer() {
-        this.window.killBuffer();
-    }
-    function nextBuffer() {
-        this.window.nextBuffer();
     }
 }
