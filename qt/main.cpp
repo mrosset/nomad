@@ -40,10 +40,10 @@ start_app (int argc, char *argv[])
   root = engine.rootObjects ().first ();
 
   // set nomad directory
-  SCM nomad = scm_fluid_ref(scm_c_public_ref ("nomad init", "user-nomad-directory"));
-  QVariant arg = QVariant (scm_to_locale_string(nomad));
-  QMetaObject::invokeMethod (root, "setNomadDir",
-                             Q_ARG (QVariant, arg));
+  SCM nomad = scm_fluid_ref (
+      scm_c_public_ref ("nomad init", "user-nomad-directory"));
+  QVariant arg = QVariant (scm_to_locale_string (nomad));
+  QMetaObject::invokeMethod (root, "setNomadDir", Q_ARG (QVariant, arg));
 
   QMetaObject::invokeMethod (root, "load", Q_ARG (QVariant, startupUrl ()));
 

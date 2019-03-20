@@ -18,9 +18,32 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "app.h"
+
+#include <QUrl>
 #include <QVariant>
 #include <cstddef>
 #include <libguile.h>
+
+SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
+            "Return an alist of existing buffers.")
+{
+  SCM list = scm_c_eval_string ("(make-list 0)");
+
+  int count = invoke_method (window, "totalBuffers").toInt ();
+  // QList<QVariant> buffers = invoke_method (window, "getBuffers").to List ();
+  for (int i = 0; i < count; i++)
+    {
+      QVariant var;
+      QMetaObject::invokeMethod (
+          window, "getBuffer", Qt::BlockingQueuedConnection,
+          Q_RETURN_ARG (QVariant, var), Q_ARG (QVariant, i));
+      QUrl uri = qvariant_cast<QUrl> (var);
+      const char *url = uri.toString ().toLatin1 ().data ();
+      SCM pair = scm_cons (scm_from_int (i), scm_from_utf8_string (url));
+      list = scm_append (scm_list_2 (list, scm_list_1 (pair)));
+    }
+  return list;
+}
 
 SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 1, 0, (SCM uri),
             "Returns a new foreign object buffer for URI. The buffer will "
@@ -52,5 +75,6 @@ void
 buffer_register_functions (void *data)
 {
 #include "buffer.x"
-  scm_c_export ("make-buffer", "kill-buffer", "next-buffer", NULL);
+  scm_c_export ("make-buffer", "kill-buffer", "next-buffer", "buffer-alist",
+                NULL);
 }

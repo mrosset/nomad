@@ -32,10 +32,9 @@ is not found returns #f"
 
 (define (format-buffer buffer)
   "Returns a human readable buffer string in 80 column format"
-  (format #f "id: ~80:@y title: ~80:@y uri: ~80:@y\n"
+  (format #f "id: ~80:@y uri: ~80:@y\n"
           (car buffer)
-          (buffer-title (cdr buffer))
-          (buffer-uri (cdr buffer))))
+          (cdr buffer)))
 
 (define (pp-buffers)
   "Pretty prints buffers-alist."

@@ -37,8 +37,8 @@ SCM_DEFINE (scm_webview_current_url, "webview-current-url", 0, 0, 0, (),
 {
   QVariant value = qvariant_cast<QVariant> (
       QQmlProperty::read (currentWebView (), "url"));
-  char *url = value.toString ().toLatin1 ().data ();
-  return scm_from_locale_string (url);
+  const char *url = value.toString ().toLatin1 ().data ();
+  return scm_from_utf8_string (url);
 }
 
 SCM_DEFINE (scm_webview_load_uri, "webview-load-uri", 1, 0, 0, (SCM uri),

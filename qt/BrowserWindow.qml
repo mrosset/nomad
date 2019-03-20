@@ -23,7 +23,7 @@ ApplicationWindow {
     Action {
         shortcut: "Alt+m"
         onTriggered: {
-            if(terminal.state == "" && terminal.focus) {
+            if(terminal.state == "") {
                 console.log("close")
                 terminal.state = "Close"
             } else {
@@ -37,7 +37,8 @@ ApplicationWindow {
         shortcut: "Ctrl+i"
         onTriggered: {
             console.log(shortcut)
-            terminal.focus = true
+            tabs.focus = true
+            currentWebView.focus = false
         }
     }
 
@@ -203,6 +204,14 @@ ApplicationWindow {
     function goForward() {
         currentWebView.goForward();
     }
+
+    function totalBuffers( ) {
+        return tabs.count
+    }
+
+    function getBuffer(index) {
+        return tabs.getTab(index).item.url
+     }
 
     Component {
         id: webView

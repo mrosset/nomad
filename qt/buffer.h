@@ -19,5 +19,7 @@
  */
 #ifndef BUFFER_H
 #define BUFFER_H
+
 void buffer_register_functions (void *data);
+
 #endif // BUFFER_H

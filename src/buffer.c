@@ -226,6 +226,7 @@ SCM_DEFINE (scm_nomad_get_prev, "prev-buffer", 0, 0, 0, (), "")
   wait_for_response (request);
   return SCM_UNSPECIFIED;
 }
+
 SCM_DEFINE (scm_nomad_buffer_title, "buffer-title", 1, 0, 0, (SCM buffer),
             "Returns buffer title of BUFFER")
 {
@@ -266,6 +267,20 @@ set_buffer_invoke (void *data)
   return FALSE;
 }
 
+SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
+            "Return an alist of existing buffers.")
+{
+  struct buffer *buf
+      = (struct buffer *)scm_gc_malloc (sizeof (struct buffer), "buffer");
+
+  fo_buf->view = nomad_buffer_get_view (buf);
+  fo_buf->buffer = buf;
+
+  return scm_make_foreign_object_1 (buffer_type, fo_buf);
+
+  return SCM_UNDEFINED;
+}
+
 // FIXME: this should return true or false depending on the success of
 // trying to switch to buffer.
 SCM_DEFINE (scm_nomad_switch_to_buffer, "switch-to-buffer", 1, 0, 0, (SCM id),
@@ -282,6 +297,6 @@ nomad_buffer_register_functions (void *data)
   init_buffer_type ();
   scm_c_export ("buffer-title", "buffer-uri", "make-buffer", "kill-buffer",
                 "current-buffer", "next-buffer", "prev-buffer", "scheme-test",
-                "switch-to-buffer", NULL);
+                "switch-to-buffer", "buffer-alist", NULL);
   return;
 }
