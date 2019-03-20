@@ -44,8 +44,7 @@ SCM_DEFINE (scm_nomad_kill_buffer, "kill-buffer", 0, 0, 0, (),
 SCM_DEFINE (scm_nomad_next_buffer, "next-buffer", 0, 0, 0, (),
             "Switch to next buffer")
 {
-  QMetaObject::invokeMethod (window, "nextBuffer",
-                             Qt::BlockingQueuedConnection);
+  keymap.NextBuffer ();
   return SCM_UNSPECIFIED;
 }
 

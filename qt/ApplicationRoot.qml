@@ -37,6 +37,11 @@ QtObject {
         return newDialog;
     }
 
+    function setNomadDir(dir) {
+        defaultProfile.cachePath = dir + "/cache"
+        defaultProfile.persistentStoragePath = dir + "/storage"
+    }
+
     function load(url) {
         var browserWindow = createWindow(defaultProfile);
         browserWindow.currentWebView.url = url;

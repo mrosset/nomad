@@ -19,22 +19,43 @@ ApplicationWindow {
 
     width: 640
     height: 480
+
     Action {
         shortcut: "Alt+m"
         onTriggered: {
-            terminal.visible = !terminal.visible;
-            if(terminal.visible) {
-                tabs.focus = false;
-                terminal.focus = true;
-                currentWebView.focus = false;
+            if(terminal.state == "" && terminal.focus) {
+                console.log("close")
+                terminal.state = "Close"
             } else {
-                tabs.focus = true;
-                terminal.focus = false;
-                currentWebView.focus = false;
+                console.log("open")
+                terminal.state = ""
             }
-            tabs.updateSize();
         }
     }
+
+    Action {
+        shortcut: "Ctrl+i"
+        onTriggered: {
+            console.log(shortcut)
+            terminal.focus = true
+        }
+    }
+
+    Action {
+        shortcut: "Escape"
+        onTriggered: {
+            if (currentWebView.state == "FullScreen") {
+                browserWindow.visibility = browserWindow.previousVisibility;
+                fullScreenNotification.hide();
+                currentWebView.triggerWebAction(WebEngineView.ExitFullScreen);
+            }
+        }
+    }
+
+    FullScreenNotification {
+        id: fullScreenNotification
+    }
+
     ColumnLayout {
         spacing: 1
         width: parent.width
@@ -44,72 +65,39 @@ ApplicationWindow {
             id: tabs
             Layout.alignment: Qt.AlignTop
             Layout.preferredWidth: parent.width
-            Layout.preferredHeight: parent.height - terminal.height
+            Layout.preferredHeight: parent.height - terminal.height - statusRow.height
             function createEmptyTab(profile) {
                 var tab = addTab("", webView);
-                // We must do this first to make sure that tab.active gets set so that tab.item gets instantiated immediately.
                 tab.active = true;
-                tab.title = Qt.binding(function() { return tabs.focus });
-                statusTitle.text = Qt.binding(function() { return tab.item.title });
+                tab.title = Qt.binding(function() { return currentWebView.focus });
                 statusUrl.text  = Qt.binding(function() { return tab.item.url });
                 tab.item.profile = profile;
                 return tab;
             }
             Component.onCompleted: createEmptyTab(defaultProfile)
-            function updateSize() {
-                if (!terminal.visible) {
-                    this.Layout.preferredHeight = parent.height - statusRow.height;
-                } else {
-                    this.Layout.preferredHeight = parent.height - terminal.height - statusRow.height;
-                }
-            }
             Keys.onPressed: {
                 submitKeymap(event.modifiers, event.key)
-                /* ; event.modifers, event.key) */
-
-                /* if (event.modifiers == Qt.ControlModifier) { */
-                /*     switch(event.key) { */
-                /*     case Qt.Key_N: */
-                /*         scrollv(100) */
-                /*         break */
-                /*     case Qt.Key_U: */
-                /*          goBack() */
-                /*         break */
-                /*     case Qt.Key_M: */
-                /*         goForward() */
-                /*         break */
-                /*     case Qt.Key_P: */
-                /*         scrollv(-100) */
-                /*         break */
-                /*     case Qt.Key_R: */
-                /*         currentWebView.reload() */
-                /*         break */
-                /*     case Qt.Key_B: */
-                /*         nextBuffer() */
-                /*         break */
-                /*     case Qt.Key_X: */
-                /*         killBuffer() */
-                /*         break */
-                /*     } */
-                /* } */
             }
         }
         RowLayout {
             id: statusRow
-            Label {
-                color: "steelblue"
-                id: statusTitle
-                Layout.fillWidth: true
-                Layout.preferredWidth: parent.width / 2
+            Button {
+                id: testButton
+                text: "debug"
+                onClicked: {
+                    killBuffer()
+                }
+                visible: false
             }
-            /* Button { */
-            /*     id: testButton */
-            /*     text: "press" */
-            /*     onClicked: killBuffer() */
-            /* } */
             Label {
                 id: statusUrl
                 color: "steelblue"
+                Layout.fillWidth: true
+            }
+            Text {
+                color: "steelblue"
+                text: "tabs: %1 terminal: %2 browser: %3".arg(tabs.focus).arg(terminal.focus).arg(currentWebView.focus)
+                Layout.alignment: Qt.AlignRight
             }
         }
         QMLTermWidget {
@@ -120,10 +108,44 @@ ApplicationWindow {
             Layout.preferredHeight: parent.height / 4
             font.family: "Monospace"
             font.pointSize: 10
-            colorScheme: "BreezeModified"
+            colorScheme: "cool-retro-term"
+            states: [
+                State {
+                    name: ""
+                    PropertyChanges {
+                        target: terminal
+                        visible: true
+                        focus: true
+                    }
+                    PropertyChanges {
+                        target: tabs
+                        Layout.preferredHeight: browserWindow.height - terminal.height - statusRow.height
+                        focus: false
+                    }
+                    PropertyChanges {
+                        target: currentWebView
+                        focus: false
+                    }
+                },
+                State {
+                    name: "Close"
+                    PropertyChanges {
+                        target: terminal
+                        visible: false
+                        focus: false
+                    }
+                    PropertyChanges {
+                        target: tabs
+                        Layout.preferredHeight: browserWindow.height - statusRow.height
+                        focus: true
+                    }
+                }
+            ]
             session: QMLTermSession{
                 id: mainsession
                 initialWorkingDirectory: "/home/mrosset/src/nomad"
+                shellProgram: "emacs"
+                shellProgramArgs: ["-nw", "-Q", "-l", "/home/mrosset/src/nomad/init.el"]
                 onMatchFound: {
                     console.log("found at: %1 %2 %3 %4".arg(startColumn).arg(startLine).arg(endColumn).arg(endLine));
                 }
@@ -131,7 +153,14 @@ ApplicationWindow {
                     console.log("not found");
                 }
             }
-            Component.onCompleted: start();
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    console.log("click")
+                    terminal.state = ""
+                }
+            }
+            Component.onCompleted: mainsession.startShellProgram()
             QMLTermScrollbar {
                 terminal: terminal
                 width: 20
@@ -142,11 +171,7 @@ ApplicationWindow {
                     anchors.fill: parent
                 }
             }
-            function start() {
-                mainsession.startShellProgram();
-            }
         }
-        Component.onCompleted: terminal.forceActiveFocus();
     }
 
     function scrollv(y) {
@@ -182,8 +207,41 @@ ApplicationWindow {
     Component {
         id: webView
         WebEngineView {
+            id: webEngineView
+            states: [
+                State {
+                    name: "FullScreen"
+                    PropertyChanges {
+                        target: tabs
+                        frameVisible: false
+                        tabsVisible: false
+                        Layout.preferredHeight: parent.height
+                    }
+                    PropertyChanges {
+                        target: statusRow
+                        visible: false
+                    }
+                    PropertyChanges {
+                        target: terminal
+                        visible: false
+                    }
+                }
+            ]
             function setUrl(uri) {
                 url =  uri
+            }
+            onFullScreenRequested: function(request) {
+                if (request.toggleOn) {
+                    webEngineView.state = "FullScreen";
+                    browserWindow.previousVisibility = browserWindow.visibility;
+                    browserWindow.showFullScreen();
+                    fullScreenNotification.show();
+                } else {
+                    webEngineView.state = "";
+                    browserWindow.visibility = browserWindow.previousVisibility;
+                    fullScreenNotification.hide();
+                }
+                request.accept();
             }
         }
     }

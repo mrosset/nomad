@@ -31,12 +31,19 @@ nomad_SOURCES =			\
 	keymap.cpp		\
 	resource.cpp
 
+moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
+
+ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
+
 AM_CPPFLAGS = -Wall -Wno-unused-function -fPIC				\
 	$(GUILE_CFLAGS)							\
 	$(QT_WIDGETS_CFLAGS)						\
 	$(QT_WEB_CFLAGS)						\
 	$(QT_WEB_WIDGETS_CFLAGS)					\
-	-DNOMAD_GUILE_LOAD_COMPILED_PATH=\""$(ccachedir)"\"
+	$(QT_QUICK_CONTROLS_CFLAGS)					\
+	-DNOMAD_GUILE_LOAD_PATH=\""$(moddir)"\"					\
+	-DNOMAD_GUILE_LOAD_COMPILED_PATH=\""$(ccachedir)"\"			\
+	-DNOMAD_DATAROOT_DIR=\""$(datarootdir)/nomad/"\"
 
 nomad_LDADD =			\
 	$(GTK_LIBS)		\
@@ -46,6 +53,7 @@ nomad_LDADD =			\
 	$(GTK_SOURCEVIEW_LIBS)	\
 	$(QT_WIDGETS_LIBS)	\
 	$(QT_TERM_WIDGET_LIB)	\
+	$(QT_QUICK_CONTROLS_LIBS)					\
 	$(QT_WEB_LIBS)
 
 
@@ -55,6 +63,7 @@ BUILT_SOURCES = $(DOT_X_FILES)
 
 test: all
 	./nomad
+
 
 format:
 	clang-format -i *.c *.h

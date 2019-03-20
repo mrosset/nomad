@@ -6,6 +6,8 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlProperty>
+#include <QQuickStyle>
+
 #include <QVariant>
 #include <libguile.h>
 #include <qtwebengineglobal.h>
@@ -18,7 +20,7 @@ Keymap keymap;
 static QUrl
 startupUrl ()
 {
-  return QUrl (QStringLiteral ("https://www.gnu.org/software/guile/"));
+  return QUrl (QStringLiteral ("http://localhost:6060"));
 }
 
 int
@@ -28,6 +30,7 @@ start_app (int argc, char *argv[])
   QCoreApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 
   QApplication app (argc, argv);
+  QQuickStyle::setStyle ("Material");
 
   QtWebEngine::initialize ();
 
@@ -35,6 +38,13 @@ start_app (int argc, char *argv[])
 
   engine.load (QUrl (QStringLiteral ("qrc:/ApplicationRoot.qml")));
   root = engine.rootObjects ().first ();
+
+  // set nomad directory
+  SCM nomad = scm_fluid_ref(scm_c_public_ref ("nomad init", "user-nomad-directory"));
+  QVariant arg = QVariant (scm_to_locale_string(nomad));
+  QMetaObject::invokeMethod (root, "setNomadDir",
+                             Q_ARG (QVariant, arg));
+
   QMetaObject::invokeMethod (root, "load", Q_ARG (QVariant, startupUrl ()));
 
   window = qvariant_cast<QObject *> (QQmlProperty::read (root, "window"));
@@ -44,6 +54,9 @@ start_app (int argc, char *argv[])
                     SLOT (handleKeymap (int, int)));
 
   // C++ signals to UML methods
+  QObject::connect (&keymap, SIGNAL (nextBuffer ()), window,
+                    SLOT (nextBuffer ()));
+
   QObject::connect (&keymap, SIGNAL (scrollv (QVariant)), window,
                     SLOT (scrollv (QVariant)));
 
@@ -103,5 +116,6 @@ inner_main (void *data, int argc, char *argv[])
 int
 main (int argc, char *argv[])
 {
+  setenv ("GUILE_LOAD_COMPILED_PATH", NOMAD_GUILE_LOAD_COMPILED_PATH, 1);
   scm_boot_guile (argc, argv, inner_main, NULL);
 }

@@ -4,15 +4,23 @@
 Keymap::Keymap (QObject *parent) : QObject (parent) {}
 
 void
+Keymap::NextBuffer ()
+{
+  emit nextBuffer ();
+}
+
+void
 Keymap::handleScrollv (QVariant offset)
 {
   emit scrollv (offset);
 }
+
 void
 Keymap::handleGoForward ()
 {
   emit goForward ();
 }
+
 void
 Keymap::handleGoBack ()
 {

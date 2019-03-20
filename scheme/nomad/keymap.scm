@@ -24,7 +24,8 @@
 
 (define modifier-masks '((67108864 . "C")))
 
-(define key-masks '((78 . "n")
+(define key-masks '((66 . "b")
+                    (78 . "n")
                     (80 . "p")
                     (85 . "u")
                     (88 . "x")))

@@ -49,6 +49,10 @@
    geiser-active-implementations '(guile)
    geiser-default-implimentation 'guile))
 
+(use-package which-key
+  :delight
+  :config (which-key-mode 1))
+
 (use-package emacs
   :init
   (setq inhibit-startup-message t)

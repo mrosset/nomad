@@ -16,7 +16,10 @@ signals:
   void goBack ();
   void goForward ();
   void killBuffer ();
+  void nextBuffer ();
+
 public slots:
+  void NextBuffer ();
   void handleScrollv (QVariant offset);
   void handleGoBack ();
   void handleGoForward ();

@@ -3,5 +3,6 @@
   <qresource prefix="/">
     <file>ApplicationRoot.qml</file>
     <file>BrowserWindow.qml</file>
+    <file>FullScreenNotification.qml</file>
   </qresource>
 </RCC>
