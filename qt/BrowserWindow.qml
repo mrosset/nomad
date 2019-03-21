@@ -23,20 +23,18 @@ ApplicationWindow {
     Action {
         shortcut: "Alt+m"
         onTriggered: {
-            if(terminal.state == "") {
-                console.log("close")
-                terminal.state = "Close"
-            } else {
-                console.log("open")
-                terminal.state = ""
+            if (layout.state == "" && terminal.focus) {
+                return layout.state = "Close"
             }
+            currentWebView.focus = false
+            terminal.forceActiveFocus()
+            layout.state = ""
         }
     }
 
     Action {
         shortcut: "Ctrl+i"
         onTriggered: {
-            console.log(shortcut)
             tabs.focus = true
             currentWebView.focus = false
         }
@@ -61,7 +59,7 @@ ApplicationWindow {
         spacing: 1
         width: parent.width
         height: parent.height
-        id: column
+        id: layout
         TabView {
             id: tabs
             Layout.alignment: Qt.AlignTop
@@ -109,50 +107,12 @@ ApplicationWindow {
             Layout.preferredHeight: parent.height / 4
             font.family: "Monospace"
             font.pointSize: 10
-            colorScheme: "cool-retro-term"
-            states: [
-                State {
-                    name: ""
-                    PropertyChanges {
-                        target: terminal
-                        visible: true
-                        focus: true
-                    }
-                    PropertyChanges {
-                        target: tabs
-                        Layout.preferredHeight: browserWindow.height - terminal.height - statusRow.height
-                        focus: false
-                    }
-                    PropertyChanges {
-                        target: currentWebView
-                        focus: false
-                    }
-                },
-                State {
-                    name: "Close"
-                    PropertyChanges {
-                        target: terminal
-                        visible: false
-                        focus: false
-                    }
-                    PropertyChanges {
-                        target: tabs
-                        Layout.preferredHeight: browserWindow.height - statusRow.height
-                        focus: true
-                    }
-                }
-            ]
+            colorScheme: "DarkPastels"
             session: QMLTermSession{
                 id: mainsession
                 initialWorkingDirectory: "/home/mrosset/src/nomad"
-                shellProgram: "emacs"
-                shellProgramArgs: ["-nw", "-Q", "-l", "/home/mrosset/src/nomad/init.el"]
-                onMatchFound: {
-                    console.log("found at: %1 %2 %3 %4".arg(startColumn).arg(startLine).arg(endColumn).arg(endLine));
-                }
-                onNoMatchFound: {
-                    console.log("not found");
-                }
+                shellProgram: "emacsclient"
+                shellProgramArgs: ["-nw", "-e", "(progn (geiser-connect-local 'guile \"/tmp/nomad-socket\")(delete-other-windows))"]
             }
             MouseArea {
                 anchors.fill: parent
@@ -173,6 +133,42 @@ ApplicationWindow {
                 }
             }
         }
+        states: [
+            State {
+                name: ""
+                PropertyChanges {
+                    target: terminal
+                    visible: true
+                    focus: true
+                }
+                PropertyChanges {
+                    target: tabs
+                    Layout.preferredHeight: browserWindow.height - terminal.height - statusRow.height
+                    focus: false
+                }
+                PropertyChanges {
+                    target: currentWebView
+                    focus: false
+                }
+            },
+            State {
+                name: "Close"
+                PropertyChanges {
+                    target: terminal
+                    visible: false
+                    focus: false
+                }
+                PropertyChanges {
+                    target: tabs
+                    Layout.preferredHeight: browserWindow.height - statusRow.height
+                    focus: true
+                }
+                PropertyChanges {
+                    target: currentWebView
+                    focus: false
+                }
+            }
+        ]
     }
 
     function scrollv(y) {
