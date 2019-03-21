@@ -4,6 +4,18 @@
 Keymap::Keymap (QObject *parent) : QObject (parent) {}
 
 void
+Keymap::MakeBuffer (QVariant uri)
+{
+  emit makeBuffer (uri);
+}
+
+QVariant
+Keymap::GetBuffer (QVariant index)
+{
+  return emit getBuffer (index);
+}
+
+void
 Keymap::NextBuffer ()
 {
   emit nextBuffer ();

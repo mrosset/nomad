@@ -38,7 +38,7 @@ SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
           window, "getBuffer", Qt::BlockingQueuedConnection,
           Q_RETURN_ARG (QVariant, var), Q_ARG (QVariant, i));
       QUrl uri = qvariant_cast<QUrl> (var);
-      const char *url = uri.toString ().toLatin1 ().data ();
+      const char *url = uri.toString ().toUtf8 ().constData ();
       SCM pair = scm_cons (scm_from_int (i), scm_from_utf8_string (url));
       list = scm_append (scm_list_2 (list, scm_list_1 (pair)));
     }
@@ -50,10 +50,7 @@ SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 1, 0, (SCM uri),
             "become the current buffer and load URI.")
 {
   QVariant arg = QVariant (scm_to_locale_string (uri));
-
-  QMetaObject::invokeMethod (window, "makeBuffer",
-                             Qt::BlockingQueuedConnection,
-                             Q_ARG (QVariant, arg));
+  keymap.MakeBuffer (arg);
   return SCM_UNSPECIFIED;
 }
 
@@ -71,10 +68,21 @@ SCM_DEFINE (scm_nomad_next_buffer, "next-buffer", 0, 0, 0, (),
   return SCM_UNSPECIFIED;
 }
 
+SCM_DEFINE (scm_nomad_switch_to_buffer, "switch-to-buffer", 0, 1, 0,
+            (SCM index), "Switch to buffer with index")
+
+{
+  QVariant arg = QVariant (scm_to_int (index));
+  QMetaObject::invokeMethod (window, "switchToBuffer",
+                             Qt::BlockingQueuedConnection,
+                             Q_ARG (QVariant, arg));
+  return SCM_UNSPECIFIED;
+}
+
 void
 buffer_register_functions (void *data)
 {
 #include "buffer.x"
   scm_c_export ("make-buffer", "kill-buffer", "next-buffer", "buffer-alist",
-                NULL);
+                "switch-to-buffer", NULL);
 }

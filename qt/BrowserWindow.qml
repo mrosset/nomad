@@ -62,6 +62,8 @@ ApplicationWindow {
         id: layout
         TabView {
             id: tabs
+            frameVisible: false
+            /* tabsVisible: false */
             Layout.alignment: Qt.AlignTop
             Layout.preferredWidth: parent.width
             Layout.preferredHeight: parent.height - terminal.height - statusRow.height
@@ -69,7 +71,6 @@ ApplicationWindow {
                 var tab = addTab("", webView);
                 tab.active = true;
                 tab.title = Qt.binding(function() { return currentWebView.focus });
-                statusUrl.text  = Qt.binding(function() { return tab.item.url });
                 tab.item.profile = profile;
                 return tab;
             }
@@ -92,6 +93,7 @@ ApplicationWindow {
                 id: statusUrl
                 color: "steelblue"
                 Layout.fillWidth: true
+                text: currentWebView.url
             }
             Text {
                 color: "steelblue"
@@ -107,12 +109,13 @@ ApplicationWindow {
             Layout.preferredHeight: parent.height / 4
             font.family: "Monospace"
             font.pointSize: 10
-            colorScheme: "DarkPastels"
+            colorScheme: "cool-retro-term"
             session: QMLTermSession{
                 id: mainsession
+                property string startSexp: "(progn (geiser-connect-local 'guile \"/tmp/nomad-socket\") (delete-other-windows))"
                 initialWorkingDirectory: "/home/mrosset/src/nomad"
-                shellProgram: "emacsclient"
-                shellProgramArgs: ["-nw", "-e", "(progn (geiser-connect-local 'guile \"/tmp/nomad-socket\")(delete-other-windows))"]
+                shellProgram: "emacs"
+                shellProgramArgs: ["-nw", "-Q", "-l", "/home/mrosset/src/nomad/init.el"]
             }
             MouseArea {
                 anchors.fill: parent
@@ -170,44 +173,6 @@ ApplicationWindow {
             }
         ]
     }
-
-    function scrollv(y) {
-        var method = "window.scrollBy(0, %1)".arg(y)
-        currentWebView.runJavaScript(method)
-
-    }
-
-    function makeBuffer(url) {
-        tabs.createEmptyTab(defaultProfile);
-        tabs.currentIndex++
-        currentWebView.url = url;
-    }
-
-    function killBuffer() {
-        if(tabs.count != 1) {
-            tabs.removeTab(tabs.currentIndex)
-        }
-    }
-
-    function nextBuffer() {
-        tabs.currentIndex = tabs.currentIndex < tabs.count - 1 ? tabs.currentIndex + 1: 0
-    }
-
-    function goBack() {
-        currentWebView.goBack();
-    }
-
-    function goForward() {
-        currentWebView.goForward();
-    }
-
-    function totalBuffers( ) {
-        return tabs.count
-    }
-
-    function getBuffer(index) {
-        return tabs.getTab(index).item.url
-     }
 
     Component {
         id: webView
@@ -267,5 +232,46 @@ ApplicationWindow {
                 }
             }
         }
+    }
+    function scrollv(y) {
+        var method = "window.scrollBy(0, %1)".arg(y)
+        currentWebView.runJavaScript(method)
+
+    }
+
+    function makeBuffer(url) {
+        tabs.createEmptyTab(defaultProfile);
+        tabs.currentIndex++
+        currentWebView.url = url;
+    }
+
+    function killBuffer() {
+        if(tabs.count != 1) {
+            tabs.removeTab(tabs.currentIndex)
+        }
+    }
+
+    function nextBuffer() {
+        tabs.currentIndex = tabs.currentIndex < tabs.count - 1 ? tabs.currentIndex + 1: 0
+    }
+
+    function goBack() {
+        currentWebView.goBack();
+    }
+
+    function goForward() {
+        currentWebView.goForward();
+    }
+
+    function totalBuffers( ) {
+        return tabs.count
+    }
+
+    function getBuffer(index) {
+        return tabs.getTab(index).item.url
+    }
+
+    function switchToBuffer(index) {
+        tabs.currentIndex = index
     }
  }

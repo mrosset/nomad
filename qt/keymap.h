@@ -17,8 +17,12 @@ signals:
   void goForward ();
   void killBuffer ();
   void nextBuffer ();
+  void makeBuffer (QVariant uri);
+  QVariant getBuffer (QVariant index);
 
 public slots:
+  void MakeBuffer (QVariant uri);
+  QVariant GetBuffer (QVariant index);
   void NextBuffer ();
   void handleScrollv (QVariant offset);
   void handleGoBack ();

@@ -20,15 +20,11 @@
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-9)
   #:use-module (nomad app)
-  #:export (buffer-with-id pp-buffers))
+  #:export (pp-buffers kill-buffers))
 
-(define (buffer-with-id key)
-  "Returns a buffer from the buffer alist with ID. If a buffer with ID
-is not found returns #f"
-  (let* ((result #f) (pair (assv key (buffer-alist))))
-    (when pair
-      (set! result (cdr pair)))
-    result))
+(define (kill-buffers)
+  (for-each (lambda (arg)
+              (kill-buffer)) (buffer-alist)))
 
 (define (format-buffer buffer)
   "Returns a human readable buffer string in 80 column format"

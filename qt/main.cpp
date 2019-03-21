@@ -20,7 +20,9 @@ Keymap keymap;
 static QUrl
 startupUrl ()
 {
-  return QUrl (QStringLiteral ("http://localhost:6060"));
+  QString uri = QString (scm_to_utf8_string (
+      scm_c_public_ref ("nomad browser", "default-home-page")));
+  return QUrl (uri);
 }
 
 int
@@ -54,6 +56,12 @@ start_app (int argc, char *argv[])
                     SLOT (handleKeymap (int, int)));
 
   // C++ signals to UML methods
+  QObject::connect (&keymap, SIGNAL (makeBuffer (QVariant)), window,
+                    SLOT (makeBuffer (QVariant)));
+
+  QObject::connect (&keymap, SIGNAL (getBuffer (QVariant)), window,
+                    SLOT (getBuffer (QVariant)));
+
   QObject::connect (&keymap, SIGNAL (nextBuffer ()), window,
                     SLOT (nextBuffer ()));
 
