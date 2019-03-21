@@ -27,7 +27,7 @@ nomad_DATA = init.el
 
 dist_doc_DATA = README
 
-test:
+test: check
 	$(MAKE) -C ./qt test
 
 run: install

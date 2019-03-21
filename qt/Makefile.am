@@ -22,9 +22,9 @@ AUTOMAKE_OPTIONS = gnu
 
 bin_PROGRAMS = nomad
 
-nomad_SOURCES =			\
+nomad_SOURCES =		\
 	main.cpp		\
-	app.cpp			\
+	app.cpp		\
 	webview.cpp		\
 	buffer.cpp		\
 	moc_keymap.cpp		\
@@ -35,25 +35,25 @@ moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
 
 ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 
-AM_CPPFLAGS = -Wall -Wno-unused-function -fPIC				\
-	$(GUILE_CFLAGS)							\
-	$(QT_WIDGETS_CFLAGS)						\
-	$(QT_WEB_CFLAGS)						\
-	$(QT_WEB_WIDGETS_CFLAGS)					\
-	$(QT_QUICK_CONTROLS_CFLAGS)					\
-	-DNOMAD_GUILE_LOAD_PATH=\""$(moddir)"\"					\
-	-DNOMAD_GUILE_LOAD_COMPILED_PATH=\""$(ccachedir)"\"			\
+AM_CPPFLAGS = -Wall -Werror -Wno-unused-function -fPIC		\
+	$(GUILE_CFLAGS)					\
+	$(QT_WIDGETS_CFLAGS)					\
+	$(QT_WEB_CFLAGS)					\
+	$(QT_WEB_WIDGETS_CFLAGS)				\
+	$(QT_QUICK_CONTROLS_CFLAGS)				\
+	-DNOMAD_GUILE_LOAD_PATH=\""$(moddir)"\"		\
+	-DNOMAD_GUILE_LOAD_COMPILED_PATH=\""$(ccachedir)"\"	\
 	-DNOMAD_DATAROOT_DIR=\""$(datarootdir)/nomad/"\"
 
-nomad_LDADD =			\
-	$(GTK_LIBS)		\
-	$(GUILE_LIBS)		\
-	$(VTE_LIBS)		\
-	$(WEBKIT_LIBS)		\
-	$(GTK_SOURCEVIEW_LIBS)	\
-	$(QT_WIDGETS_LIBS)	\
-	$(QT_TERM_WIDGET_LIB)	\
-	$(QT_QUICK_CONTROLS_LIBS)					\
+nomad_LDADD =				\
+	$(GTK_LIBS)			\
+	$(GUILE_LIBS)			\
+	$(VTE_LIBS)			\
+	$(WEBKIT_LIBS)			\
+	$(GTK_SOURCEVIEW_LIBS)		\
+	$(QT_WIDGETS_LIBS)		\
+	$(QT_TERM_WIDGET_LIB)		\
+	$(QT_QUICK_CONTROLS_LIBS)	\
 	$(QT_WEB_LIBS)
 
 

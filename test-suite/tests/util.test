@@ -20,12 +20,7 @@
   #:use-module (nomad util)
   #:use-module (test-suite lib))
 
-(define home (getenv "HOME"))
-(define home-dir (string-append home file-name-separator-string))
-
 (with-test-prefix "HOME expansion"
-    (pass-if "procedure ~  expands to $HOME" (string=? ~ home))
-    (pass-if "procedure ~/ expands to $HOME/" (string=? ~/ home-dir)))
-
-~/
-home-dir
+                  (with-fluids ((~ "/tmp/home"))
+                    (pass-if "procedure ~  expands to $HOME" (string=? (fluid-ref ~) "/tmp/home"))
+                    (pass-if "procedure ~/ expands to $HOME/child" (string=? (~/ "test") "/tmp/home/test"))))

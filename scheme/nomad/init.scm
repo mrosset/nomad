@@ -30,10 +30,10 @@
 (define user-init-hook (make-hook))
 
 (define user-init-file
-  (string-append ~/ ".nomad"))
+  (~/ ".nomad"))
 
 (define user-nomad-directory
-  (make-fluid (string-append ~/ ".nomad.d")))
+  (make-fluid (~/ ".nomad.d")))
 
 (define user-cookie-file
   (string-append (fluid-ref user-nomad-directory) // "cookies.db"))

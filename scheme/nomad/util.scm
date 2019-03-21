@@ -22,11 +22,14 @@
 (define (info msg)
   (format #t "INFO: ~a\n" msg))
 
-(define ~ (getenv "HOME"))
+(define ~
+  (make-fluid (getenv "HOME")))
 
 (define // file-name-separator-string)
 
-(define ~/ (string-append ~ //))
+(define (~/ path)
+  "expands $HOME and joins path to the end"
+  (string-append (fluid-ref ~) // path))
 
 (define (catch-eval expr)
   "Evaluates EXP. Return a string representation of results. If an
