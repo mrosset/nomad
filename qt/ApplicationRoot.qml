@@ -19,6 +19,9 @@ QtObject {
         onClosing: destroy()
     }
 
+    property Component browserDialogComponent: BrowserDialog {
+        onClosing: destroy()
+    }
     property WebEngineView currentWebView: window.currentWebView
 
     property BrowserWindow window
