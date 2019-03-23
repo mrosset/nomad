@@ -49,6 +49,7 @@ SOURCES =			\
 	nomad/events.scm	\
 	nomad/init.scm		\
 	nomad/keymap.scm	\
+	nomad/options.scm	\
 	nomad/repl.scm		\
 	nomad/server.scm	\
 	nomad/util.scm		\

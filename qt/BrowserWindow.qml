@@ -197,9 +197,6 @@ ApplicationWindow {
                     }
                 }
             ]
-            function setUrl(uri) {
-                url =  uri
-            }
             onFullScreenRequested: function(request) {
                 if (request.toggleOn) {
                     webEngineView.state = "FullScreen";
@@ -230,6 +227,9 @@ ApplicationWindow {
                     var window = applicationRoot.createWindow(currentWebView.profile);
                     request.openIn(window.currentWebView);
                 }
+            }
+            function setUrl(uri) {
+                url =  uri
             }
         }
     }

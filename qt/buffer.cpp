@@ -28,9 +28,8 @@ SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
             "Return an alist of existing buffers.")
 {
   SCM list = scm_c_eval_string ("(make-list 0)");
-
   int count = invoke_method (window, "totalBuffers").toInt ();
-  // QList<QVariant> buffers = invoke_method (window, "getBuffers").to List ();
+
   for (int i = 0; i < count; i++)
     {
       QVariant var;

@@ -112,13 +112,20 @@ inner_main (void *data, int argc, char *argv[])
   scm_c_use_module ("nomad init");
   scm_c_eval_string ("(init)");
 
+  scm_c_use_module ("nomad options");
+
+  const char *socket = scm_to_utf8_string (
+      scm_c_eval_string ("(option-listen (command-line))"));
+
+  setenv ("NOMAD_SOCKET_FILE", socket, 1);
+  scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"), NULL);
+
   // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
   // documentation for $HOME/.nomad
-  scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"), NULL);
-  scm_c_eval_string ("(server-start-coop)");
+  scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"),
+              scm_from_locale_string (socket));
 
-  // scm_putenv (scm_from_locale_string ("SHELL=/usr/bin/emacs"));
-  exit (start_app (argc, argv));
+  exit (start_app (0, NULL));
 }
 
 int

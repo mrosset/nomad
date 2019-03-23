@@ -59,5 +59,5 @@
   :config
 
   ;; FIXME: don't assume socket file location
-  (geiser-connect-local 'guile "/tmp/nomad-socket")
+  (geiser-connect-local 'guile (getenv "NOMAD_SOCKET_FILE"))
   (delete-other-windows))

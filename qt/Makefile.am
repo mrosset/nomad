@@ -62,8 +62,7 @@ DOT_X_FILES = webview.x buffer.x
 BUILT_SOURCES = $(DOT_X_FILES)
 
 test: all
-	./nomad
-
+	./nomad --listen /tmp/nomad-devel https://www.gnu.org/software/guile
 
 format:
 	clang-format -i *.c *.h

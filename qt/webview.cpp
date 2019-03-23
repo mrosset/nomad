@@ -20,6 +20,8 @@
 #include "app.h"
 #include "keymap.h"
 
+#include <QApplication>
+#include <QClipboard>
 #include <QQmlProperty>
 #include <QVariant>
 #include <cstddef>
@@ -71,6 +73,14 @@ SCM_DEFINE (
   return SCM_UNSPECIFIED;
 }
 
+SCM_DEFINE (scm_nomad_webview_reload, "webview-reload", 0, 0, 0, (),
+            "Reloads the current buffer")
+{
+  QMetaObject::invokeMethod (currentWebView (), "reload",
+                             Qt::BlockingQueuedConnection);
+  return SCM_UNSPECIFIED;
+}
+
 SCM_DEFINE (scm_nomad_scroll_up, "scroll-up", 0, 0, 0, (),
             "Scrolls the current webview up")
 {
@@ -92,11 +102,33 @@ SCM_DEFINE (scm_nomad_debug_webview, "debug-webview-methods", 0, 0, 0, (),
   return SCM_UNDEFINED;
 }
 
+SCM_DEFINE (scm_nomad_copy_current_url, "copy-current-url", 0, 0, 0, (),
+            "prints webview methods")
+{
+  QClipboard *cb = QApplication::clipboard ();
+  const QVariant uri = qvariant_cast<QVariant> (
+      QQmlProperty::read (currentWebView (), "url"));
+
+  cb->setText (uri.toString (), QClipboard::Clipboard);
+  return scm_from_utf8_string (uri.toString ().toUtf8 ().constData ());
+}
+
+SCM_DEFINE (scm_nomad_find, "isearch-forward", 1, 0, 0, (SCM key),
+            "search forward")
+{
+  QString arg = QString (scm_to_utf8_string (key));
+  QMetaObject::invokeMethod (currentWebView (), "findText",
+                             Qt::BlockingQueuedConnection,
+                             Q_ARG (QString, arg));
+  return SCM_UNDEFINED;
+}
+
 void
 webview_register_functions (void *data)
 {
 #include "webview.x"
   scm_c_export ("webview-load-uri", "webview-go-back", "webview-go-forward",
                 "webview-reload", "webview-current-url", "scroll-up",
-                "scroll-down", "debug-webview-methods", NULL);
+                "scroll-down", "debug-webview-methods", "copy-current-url",
+                "isearch-forward", NULL);
 }
