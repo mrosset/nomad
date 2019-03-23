@@ -14,7 +14,7 @@ set -e
 top_builddir=@top_builddir_absolute@
 top_srcdir=@top_srcdir_absolute@
 
-TEST_SUITE_DIR=${top_srcdir}/test-suite
+TEST_SUITE_DIR=${top_srcdir}/scheme/test-suite
 export TEST_SUITE_DIR
 
 if [ x"$1" = x-i ] ; then

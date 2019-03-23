@@ -30,7 +30,7 @@
 
 (pass-if "no listen"(string=? (option-listen test-arg0) "/tmp/nomad-socket"))
 
-(pass-if "no url" (not (option-url test-arg0)))
+(pass-if "no url" (string=? (option-url test-arg0) "https://www.gnu.org/software/guile"))
 
 (pass-if "parse url" (string=?
                          (option-url test-command-line) "https://gnu.org"))
