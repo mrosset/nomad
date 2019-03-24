@@ -46,12 +46,12 @@ PKG_CHECK_MODULES([QT_WIDGETS], [Qt5Widgets])
 PKG_CHECK_MODULES([QT_WEB], [Qt5WebEngine])
 PKG_CHECK_MODULES([QT_WEB_WIDGETS], [Qt5WebEngineWidgets])
 PKG_CHECK_MODULES([QT_QUICK_CONTROLS], [Qt5QuickControls2])
-PKG_CHECK_MODULES([GTK], [gtk+-3.0])
-PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
-PKG_CHECK_MODULES([VTE], [vte-2.91])
-PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
-PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-3.0])
-PKG_CHECK_MODULES(GLIB, [glib-2.0])
+dnl PKG_CHECK_MODULES([GTK], [gtk+-3.0])
+dnl PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
+dnl PKG_CHECK_MODULES([VTE], [vte-2.91])
+dnl PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
+dnl PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-3.0])
+dnl PKG_CHECK_MODULES(GLIB, [glib-2.0])
 
 
 top_builddir_absolute=`pwd`
