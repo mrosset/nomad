@@ -4,6 +4,13 @@
 Keymap::Keymap (QObject *parent) : QObject (parent) {}
 
 void
+Keymap::Kill ()
+{
+  scm_call_1 (scm_c_public_ref ("nomad repl", "server-force-delete"),
+              scm_c_eval_string ("(option-listen (command-line))"));
+}
+
+void
 Keymap::MakeFrame (QVariant uri)
 {
   emit makeFrame (uri);

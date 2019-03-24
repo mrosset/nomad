@@ -22,6 +22,7 @@ signals:
   QVariant getBuffer (QVariant index);
 
 public slots:
+  void Kill ();
   void MakeFrame (QVariant uri);
   void MakeBuffer (QVariant uri);
   QVariant GetBuffer (QVariant index);

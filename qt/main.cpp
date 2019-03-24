@@ -18,14 +18,6 @@ QObject *window = NULL;
 
 Keymap keymap;
 
-static QUrl
-startupUrl ()
-{
-  QString uri = QString (scm_to_utf8_string (
-      scm_c_public_ref ("nomad browser", "default-home-page")));
-  return QUrl (uri);
-}
-
 int
 start_app (int argc, char *argv[])
 {
@@ -56,6 +48,8 @@ start_app (int argc, char *argv[])
   // UML signals to C++ methods
   QObject::connect (window, SIGNAL (submitKeymap (int, int)), &keymap,
                     SLOT (handleKeymap (int, int)));
+
+  QObject::connect (root, SIGNAL (destroyed ()), &keymap, SLOT (Kill ()));
 
   // C++ signals to UML methods
   QObject::connect (&keymap, SIGNAL (makeFrame (QVariant)), window,
