@@ -27,7 +27,7 @@ nomad_SOURCES = \
 		buffer.cpp      \
 		frame.cpp       \
 		keymap.cpp      \
-		gmain.cpp       \
+		main.cpp       \
 		moc_keymap.cpp  \
 		webview.cpp     \
 		resource.cpp
@@ -63,10 +63,10 @@ DOT_X_FILES = webview.x buffer.x frame.x
 
 BUILT_SOURCES = $(DOT_X_FILES)
 
-DEVEL_SOCKET  = /tmp/nomad-
+DEVEL_SOCKET  = /tmp/nomad-devel
 
 test: all
-	./nomad http://youtube.com
+	./nomad --listen $(DEVEL_SOCKET)
 
 format:
 	clang-format -i *.c *.h
