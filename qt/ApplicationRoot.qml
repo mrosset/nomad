@@ -45,7 +45,7 @@ QtObject {
         defaultProfile.persistentStoragePath = dir + "/storage"
     }
 
-    function load(url) {
+    function makeFrame(url) {
         var browserWindow = createWindow(defaultProfile);
         browserWindow.currentWebView.url = url;
     }

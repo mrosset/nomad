@@ -47,6 +47,7 @@ SOURCES =			\
 	nomad/browser.scm	\
 	nomad/buffer.scm	\
 	nomad/events.scm	\
+	nomad/frame.scm		\
 	nomad/init.scm		\
 	nomad/keymap.scm	\
 	nomad/options.scm	\

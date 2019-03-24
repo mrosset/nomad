@@ -1,4 +1,5 @@
 (define-module (nomad options)
+  #:use-module (nomad browser)
   #:use-module (ice-9 getopt-long)
   #:export (option-url
             option-listen
@@ -16,7 +17,7 @@
   (get-option 'listen options "/tmp/nomad-socket"))
 
 (define (option-url options)
-  (let ((url (get-option '() options #f)))
+  (let ((url (get-option '() options default-home-page)))
     (if (null? url)
-        #f
-         (car url))))
+        default-home-page
+        (car url))))

@@ -23,12 +23,13 @@ AUTOMAKE_OPTIONS = gnu
 bin_PROGRAMS = nomad
 
 nomad_SOURCES =		\
-	main.cpp		\
 	app.cpp		\
-	webview.cpp		\
 	buffer.cpp		\
-	moc_keymap.cpp		\
+	frame.cpp		\
 	keymap.cpp		\
+	main.cpp		\
+	moc_keymap.cpp		\
+	webview.cpp		\
 	resource.cpp
 
 moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
@@ -57,12 +58,14 @@ nomad_LDADD =				\
 	$(QT_WEB_LIBS)
 
 
-DOT_X_FILES = webview.x buffer.x
+DOT_X_FILES = webview.x buffer.x frame.x
 
 BUILT_SOURCES = $(DOT_X_FILES)
 
+DEVEL_SOCKET  = /tmp/nomad-
+
 test: all
-	./nomad --listen /tmp/nomad-devel https://www.gnu.org/software/guile
+	./nomad http://youtube.com
 
 format:
 	clang-format -i *.c *.h

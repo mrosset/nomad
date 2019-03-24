@@ -1,5 +1,6 @@
 #include "app.h"
 #include "buffer.h"
+#include "frame.h"
 #include "keymap.h"
 #include "webview.h"
 
@@ -47,7 +48,8 @@ start_app (int argc, char *argv[])
   QVariant arg = QVariant (scm_to_locale_string (nomad));
   QMetaObject::invokeMethod (root, "setNomadDir", Q_ARG (QVariant, arg));
 
-  QMetaObject::invokeMethod (root, "load", Q_ARG (QVariant, startupUrl ()));
+  scm_nomad_make_frame (
+      scm_c_public_ref ("nomad browser", "default-home-page"));
 
   window = qvariant_cast<QObject *> (QQmlProperty::read (root, "window"));
 
@@ -56,6 +58,9 @@ start_app (int argc, char *argv[])
                     SLOT (handleKeymap (int, int)));
 
   // C++ signals to UML methods
+  QObject::connect (&keymap, SIGNAL (makeFrame (QVariant)), window,
+                    SLOT (makeFrame (QVariant)));
+
   QObject::connect (&keymap, SIGNAL (makeBuffer (QVariant)), window,
                     SLOT (makeBuffer (QVariant)));
 
@@ -101,6 +106,9 @@ inner_main (void *data, int argc, char *argv[])
   scm_c_use_module ("nomad buffer");
   scm_c_define_module ("nomad buffer", buffer_register_functions, NULL);
 
+  scm_c_use_module ("nomad frame");
+  scm_c_define_module ("nomad frame", frame_register_functions, NULL);
+
   // scm_c_define_module ("nomad util", nomad_util_register_functions, NULL);
 
   // Use essential modules
@@ -114,18 +122,34 @@ inner_main (void *data, int argc, char *argv[])
 
   scm_c_use_module ("nomad options");
 
-  const char *socket = scm_to_utf8_string (
-      scm_c_eval_string ("(option-listen (command-line))"));
+  SCM socket = scm_c_eval_string ("(option-listen (command-line))");
+  SCM url = scm_c_eval_string ("(option-url (command-line))");
 
-  setenv ("NOMAD_SOCKET_FILE", socket, 1);
+  setenv ("NOMAD_SOCKET_FILE", scm_to_utf8_string (socket), 1);
+
+  // FIXME: run his after GUI has been started
   scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"), NULL);
 
-  // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
-  // documentation for $HOME/.nomad
-  scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"),
-              scm_from_locale_string (socket));
+  SCM exists
+      = scm_call_1 (scm_c_public_ref ("nomad repl", "socket-exists?"), socket);
 
-  exit (start_app (0, NULL));
+  // start a socket server if one does not exist already. this implies
+  // we are the only instance. so start QT a new application as well
+  if (exists == SCM_BOOL_F)
+    {
+      // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
+      // documentation for $HOME/.nomad
+      scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"),
+                  socket);
+      exit (start_app (0, NULL));
+    }
+
+  // reuse existing socket then exit
+  scm_call_2 (scm_c_public_ref ("nomad frame", "make-frame-socket"), url,
+              socket);
+
+  sleep (1);
+  exit (0);
 }
 
 int

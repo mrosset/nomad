@@ -4,6 +4,12 @@
 Keymap::Keymap (QObject *parent) : QObject (parent) {}
 
 void
+Keymap::MakeFrame (QVariant uri)
+{
+  emit makeFrame (uri);
+}
+
+void
 Keymap::MakeBuffer (QVariant uri)
 {
   emit makeBuffer (uri);

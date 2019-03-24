@@ -17,21 +17,26 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad repl)
-  #:use-module (nomad options)
-  #:use-module (system repl server)
-  #:use-module (system repl coop-server)
-  #:use-module (ice-9 threads)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 readline)
+  #:use-module (ice-9 threads)
   #:use-module (nomad app)
+  #:use-module (nomad options)
+  #:use-module (rnrs bytevectors)
+  #:use-module (system repl coop-server)
+  #:use-module (system repl server)
   #:export (
             emacs-command-line
             nc-command-line
             rlwrap-command-line
             repl-command-line
             repl-server
+            socket-exists?
             server-force-delete
             server-start
-            server-start-coop))
+            write-socket
+            server-start-coop
+            client-start))
 
 (define emacs-command-line (list "emacs" "-q" "-nw" "-l" emacs-init-file))
 
@@ -63,6 +68,9 @@ value of socket-file."
     (spawn-server
      (make-unix-domain-server-socket #:path socket-file)))
 
+(define (socket-exists? socket-file)
+  (access? socket-file R_OK))
+
 ;; FIXME: if socket clients are connected, (server-force-delete) will
 ;; throw an excpetion. Which gives us a truncated Backtrace to
 ;; stderr. More then likely the end user wants to kill connected
@@ -74,10 +82,38 @@ client connections first."
   (stop-server-and-clients!)
   (delete-file socket-file))
 
+(define (read-socket port)
+  (do ((line (read-line port) (read-line port)))
+      ((eof-object? line))
+    (display line)
+    (newline)))
+
 (define (client-start socket-file)
-  (let ((s (socket PF_UNIX SOCK_STREAM 0)))
-    (connect s AF_UNIX socket-file)
-    (do ((line (read-line s) (read-line s)))
-        ((eof-object? line))
-      (display line)
-      (newline))))
+  (format #t "connnecting to ~s\n" socket-file)
+  (when (not (access? socket-file W_OK))
+    (display "can't access socket")
+    (exit))
+  (activate-readline)
+  (set-readline-prompt! "scheme@nomad > ")
+    (do ((line (readline) (readline)))
+        ((string=? line "exit"))
+      (format #t "~s\n" line)
+      (write-socket line socket-file)
+      (format #t "~s" (eval-string line))
+      (newline)))
+
+(define (write-socket input socket-file)
+  (let ((port (socket PF_UNIX SOCK_STREAM 0)))
+     (catch #t
+      (lambda ()
+               (connect port AF_UNIX socket-file)
+               (write-line input port))
+      (lambda (key . parameters)
+        (format #t "~s: ~s ~s" key parameters socket-file)))))
+
+
+
+  ;; (let ((s (socket PF_UNIX SOCK_STREAM 0)))
+  ;;   (connect s AF_UNIX socket-file)
+    ;; (set-readline-input-port! (current-input-port))
+    ;; (set-readline-output-port! (curr)

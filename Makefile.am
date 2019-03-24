@@ -30,9 +30,6 @@ dist_doc_DATA = README
 test: check
 	$(MAKE) -C ./qt test
 
-run: install
-	$(prefix)/bin/nomad
-
 format:
 	make -C src format
 
