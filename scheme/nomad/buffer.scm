@@ -20,7 +20,14 @@
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-9)
   #:use-module (nomad app)
-  #:export (pp-buffers kill-buffers))
+  #:use-module (nomad repl)
+  #:export (pp-buffers
+            kill-buffers
+            make-buffer-socket))
+
+(define (make-buffer-socket url socket)
+  (let ((exp (format #f "(make-buffer \"~a\")" url)))
+    (write-socket exp socket)))
 
 (define (kill-buffers)
   (for-each (lambda (arg)

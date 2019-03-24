@@ -26,17 +26,17 @@
   #:use-module (system repl coop-server)
   #:use-module (system repl server)
   #:export (
-            emacs-command-line
-            nc-command-line
-            rlwrap-command-line
-            repl-command-line
-            repl-server
-            socket-exists?
-            server-force-delete
-            server-start
-            write-socket
-            server-start-coop
-            client-start))
+	    emacs-command-line
+	    nc-command-line
+	    rlwrap-command-line
+	    repl-command-line
+	    repl-server
+	    socket-exists?
+	    server-force-delete
+	    server-start
+	    write-socket
+	    server-start-coop
+	    client-start))
 
 (define emacs-command-line (list "emacs" "-q" "-nw" "-l" emacs-init-file))
 
@@ -88,32 +88,37 @@ client connections first."
     (display line)
     (newline)))
 
+(define client-port #f)
+
+(define (read-to-end port)
+  (display "flushing port\n")
+  (do ((line (read-line port) (read-line port)))
+      ((string=? line "Enter `,help' for help."))
+      ;; ((eof-object? line))
+    (display line)
+    (newline)))
+
 (define (client-start socket-file)
-  (format #t "connnecting to ~s\n" socket-file)
   (when (not (access? socket-file W_OK))
-    (display "can't access socket")
+    (display "socket is not readable")
     (exit))
+  (set! client-port (socket PF_UNIX SOCK_STREAM 0))
+  (connect client-port AF_UNIX socket-file)
+  (read-to-end client-port)
   (activate-readline)
-  (set-readline-prompt! "scheme@nomad > ")
+  (set-readline-prompt! "> ")
+  (set-readline-output-port! client-port)
     (do ((line (readline) (readline)))
-        ((string=? line "exit"))
-      (format #t "~s\n" line)
-      (write-socket line socket-file)
-      (format #t "~s" (eval-string line))
+	((string=? line "exit"))
+      (write-line line client-port)
+      (display (read-line client-port))
       (newline)))
 
 (define (write-socket input socket-file)
   (let ((port (socket PF_UNIX SOCK_STREAM 0)))
      (catch #t
       (lambda ()
-               (connect port AF_UNIX socket-file)
-               (write-line input port))
+	       (connect port AF_UNIX socket-file)
+	       (write-line input port))
       (lambda (key . parameters)
-        (format #t "~s: ~s ~s" key parameters socket-file)))))
-
-
-
-  ;; (let ((s (socket PF_UNIX SOCK_STREAM 0)))
-  ;;   (connect s AF_UNIX socket-file)
-    ;; (set-readline-input-port! (current-input-port))
-    ;; (set-readline-output-port! (curr)
+	(format #t "~s: ~s ~s" key parameters socket-file)))))

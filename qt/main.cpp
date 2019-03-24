@@ -75,19 +75,15 @@ start_app (int argc, char *argv[])
   QObject::connect (&keymap, SIGNAL (killBuffer ()), window,
                     SLOT (killBuffer ()));
 
-  // QMetaObject::invokeMethod (window, "submitKeymap", Q_ARG (QString,
-  // "RAWR"));
-
-  // QObject::connect (&keymap, SIGNAL (setTextField (QVariant)), window,
-  //                  SLOT (setTextField (QVariant)));
-
-  // print_methods (currentWebView);
   return app.exec ();
 }
 
 void
 inner_main (void *data, int argc, char *argv[])
 {
+  scm_call_1 (scm_c_public_ref ("nomad util", "add-to-nomad-path"),
+              scm_from_utf8_string ("/home/mrosset/src/nomad/scheme"));
+
   // Define scheme C modules
   // Modules that are used before defining have a scheme file. This
   // allows mixing pure scheme with C scheme.
@@ -138,10 +134,16 @@ inner_main (void *data, int argc, char *argv[])
       exit (start_app (0, NULL));
     }
 
-  // reuse existing socket then exit
-  scm_call_2 (scm_c_public_ref ("nomad frame", "make-frame-socket"), url,
-              socket);
+  // when requesting a client start a terminal REPL
+  if (scm_c_eval_string ("(option-client (command-line))") == SCM_BOOL_T)
+    {
+      scm_call_1 (scm_c_public_ref ("nomad repl", "client-start"), socket);
+      exit (0);
+    }
 
+  // // reuse existing socket then exit
+  scm_call_2 (scm_c_public_ref ("nomad buffer", "make-buffer-socket"), url,
+              socket);
   sleep (1);
   exit (0);
 }
