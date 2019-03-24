@@ -17,7 +17,10 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad util)
-  #:export (catch-eval info ~ // ~/))
+  #:export (catch-eval
+            info
+            add-to-nomad-path
+            ~ // ~/))
 
 (define (info msg)
   (format #t "INFO: ~a\n" msg))
@@ -39,3 +42,6 @@ exception is thrown, return a string representation of the exception."
       (simple-format #f "~s" (eval-string expr)))
     (lambda (key . args)
       (simple-format #f "~s: ~s" key args))))
+
+(define (add-to-nomad-path path)
+  (add-to-load-path path))
