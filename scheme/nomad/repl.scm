@@ -23,6 +23,7 @@
   #:use-module (nomad app)
   #:use-module (nomad options)
   #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 textual-ports)
   #:use-module (system repl coop-server)
   #:use-module (system repl server)
   #:export (
@@ -90,31 +91,46 @@ client connections first."
 
 (define client-port #f)
 
-(define (read-to-end port)
-  (display "flushing port\n")
-  (do ((line (read-line port) (read-line port)))
-      ((string=? line "Enter `,help' for help."))
-      ;; ((eof-object? line))
-    (display line)
-    (newline)))
+(define (read-until-prompt port)
+  "Read from PORT until prompt has been read or the end-of-file was
+reached."
+  (while #t
+    (let ((c (get-char port)))
+      (when (eof-object? c)
+	(break))
+      ;; if char is > and there is a space after, assume this is the
+      ;; prompt and stop
+      (when (and (char=? c #\>) (char=? (lookahead-char port) #\space))
+	(get-char port)
+	(break))
+      (display c))))
 
-(define (client-start socket-file)
-  (when (not (access? socket-file W_OK))
+(define (client-start path)
+  "Starts a client connected to a guile unix socket REPL server"
+  (when (not (access? path W_OK))
     (display "socket is not readable")
     (exit))
-  (set! client-port (socket PF_UNIX SOCK_STREAM 0))
-  (connect client-port AF_UNIX socket-file)
-  (read-to-end client-port)
+  ;; setup readline
   (activate-readline)
   (set-readline-prompt! "> ")
-  (set-readline-output-port! client-port)
-    (do ((line (readline) (readline)))
-	((string=? line "exit"))
-      (write-line line client-port)
-      (display (read-line client-port))
-      (newline)))
+  ;; create port and enter readline loop
+  (let ((port (socket PF_UNIX SOCK_STREAM 0)))
+    (connect port AF_UNIX path)
+    (read-until-prompt port)
+    (newline)
+    (while #t
+      (let ((line (readline)))
+	(write-line line port)
+	(read-until-prompt port)
+	(newline)))))
+	;; connection could be closed here if so break the read loop
+	;; (when (eof-object? (lookahead-char port))
+	;;   (break))))))
 
 (define (write-socket input socket-file)
+  "Write string INPUT to guile unix socket at SOCKET-FILE. The guile
+instance on the socket will evaluate INPUT expression. It is not
+ppossible to return anything from the socket at this point"
   (let ((port (socket PF_UNIX SOCK_STREAM 0)))
      (catch #t
       (lambda ()
