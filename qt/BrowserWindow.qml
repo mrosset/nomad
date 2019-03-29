@@ -77,6 +77,7 @@ ApplicationWindow {
             /* tabsVisible: false */
             Layout.alignment: Qt.AlignTop
             Layout.preferredWidth: parent.width
+            Layout.fillHeight: true
             function createEmptyTab(profile) {
                 var tab = addTab("", webView);
                 tab.active = true;
@@ -160,7 +161,6 @@ ApplicationWindow {
                 }
                 PropertyChanges {
                     target: tabs
-                    Layout.preferredHeight: parent.height - terminal.height - statusRow.height - miniOutput.height
                     focus: false
                 }
                 PropertyChanges {
