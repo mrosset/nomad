@@ -171,6 +171,10 @@ ApplicationWindow {
                     target: miniBuffer
                     visible: false
                 }
+                PropertyChanges {
+                    target: miniOutput
+                    visible: false
+                }
             },
             State {
                 name: "Close"
@@ -181,12 +185,15 @@ ApplicationWindow {
                 }
                 PropertyChanges {
                     target: tabs
-                    Layout.preferredHeight: parent.height - statusRow.height - miniBuffer.height - miniOutput.height
                     focus: true
                 }
                 PropertyChanges {
                     target: miniBuffer
                     visible: true
+                }
+                PropertyChanges {
+                    target: miniOutput
+                    visible: false
                 }
             }
         ]
@@ -227,14 +234,22 @@ ApplicationWindow {
                     }
                 }
                 Action {
-                    shortcut: "Ctrl+n"
+                    shortcut: "Ctrl+g"
+                    onTriggered: {
+                        tabs.focus = true
+                        miniBuffer.text = ""
+                        miniBufferTimer.stop()
+                    }
+                }
+                Action {
+                    shortcut: "Alt+n"
                     onTriggered: {
                         miniOutput.currentIndex++
                         miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
                     }
                 }
                 Action {
-                    shortcut: "Ctrl+p"
+                    shortcut: "Alt+p"
                     onTriggered: {
                         miniOutput.currentIndex--
                         miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
