@@ -301,6 +301,14 @@ ApplicationWindow {
                         target: terminal
                         visible: false
                     }
+                    PropertyChanges {
+                        target: miniBuffer
+                        visible: false
+                    }
+                    PropertyChanges {
+                        target: miniOutput
+                        visible: false
+                    }
                 }
             ]
             onFullScreenRequested: function(request) {
