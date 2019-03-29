@@ -66,6 +66,7 @@ BUILT_SOURCES = $(DOT_X_FILES)
 DEVEL_SOCKET  = /tmp/nomad-devel
 
 test: all
+	-rm $(DEVEL_SOCKET)
 	./nomad --listen $(DEVEL_SOCKET)
 
 format:

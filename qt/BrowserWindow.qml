@@ -68,7 +68,7 @@ ApplicationWindow {
     ColumnLayout {
         spacing: 1
         width: parent.width
-        height: parent.height
+        height: parent.height - miniBuffer.height
         id: layout
         TabView {
             id: tabs
@@ -200,86 +200,107 @@ ApplicationWindow {
         Keymap {
             id: keymap
         }
-        RowLayout {
-            id: miniBufferLayout
-            Label {
-                id: miniBufferLabel
-                text: "M-x"
-                visible: miniBuffer.focus
-            }
 
-            TextInput {
-                id: miniBuffer
-                font.pointSize: 12
-                width: parent.width
-                color: "steelblue"
-                /* Layout.preferredWidth: parent.width */
-                onAccepted: {
-                    console.log(miniOutput.currentIndex)
-                    if (miniOutput.currentIndex >= 0)  {
-                        text = miniBufferModel.get(miniOutput.currentIndex).symbol
-                    }
-                    submitEval(text)
-                    setMiniOutput("")
-                    tabs.focus = true
+    }
+
+    ColumnLayout {
+        id: miniBufferLayout
+        anchors.bottom: parent.bottom
+        width: parent.width
+
+        Rectangle {
+            color: "white"
+            height: miniBuffer.height
+            Layout.fillWidth: true
+            RowLayout {
+                id: miniBufferRowLayout
+                Label {
+                    id: miniBufferLabel
+                    text: "M-x"
+                    visible: miniBuffer.focus
                 }
-                onTextEdited: {
-                    handleCompletion(miniBuffer.text)
-                }
-                onFocusChanged: {
-                    miniBufferModel.clear()
-                    miniOutput.visible = false
-                    if(!miniBuffer.focus) {
-                        miniBufferTimer.start()
-                    }
-                }
-                Action {
-                    shortcut: "Ctrl+g"
-                    onTriggered: {
+                TextInput {
+                    id: miniBuffer
+                    font.pointSize: 12
+                    color: "steelblue"
+                    Layout.fillWidth: true
+                    /* Layout.preferredWidth: parent.width */
+                    onAccepted: {
+                        console.log(miniOutput.currentIndex)
+                        if (miniOutput.currentIndex >= 0)  {
+                            text = miniBufferModel.get(miniOutput.currentIndex).symbol
+                        }
+                        submitEval(text)
+                        setMiniOutput("")
                         tabs.focus = true
-                        miniBuffer.text = ""
-                        miniBufferTimer.stop()
+                    }
+                    onTextEdited: {
+                        handleCompletion(miniBuffer.text)
+                    }
+                    onFocusChanged: {
+                        miniBufferModel.clear()
+                        miniOutput.visible = false
+                        if(!miniBuffer.focus) {
+                            miniBufferTimer.start()
+                        }
+                    }
+                    Action {
+                        shortcut: "Ctrl+g"
+                        onTriggered: {
+                            tabs.focus = true
+                            miniBuffer.text = ""
+                            miniBufferTimer.stop()
+                        }
+                    }
+                    Action {
+                        shortcut: "Alt+n"
+                        onTriggered: {
+                            miniOutput.currentIndex++
+                            miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
+                        }
+                    }
+                    Action {
+                        shortcut: "Alt+p"
+                        onTriggered: {
+                            miniOutput.currentIndex--
+                            miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
+                        }
                     }
                 }
-                Action {
-                    shortcut: "Alt+n"
-                    onTriggered: {
-                        miniOutput.currentIndex++
-                        miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
-                    }
+                Timer {
+                    id: miniBufferTimer
+                    interval: 5000; running: false; repeat: false
+                    onTriggered: miniBuffer.text = ""
                 }
-                Action {
-                    shortcut: "Alt+p"
-                    onTriggered: {
-                        miniOutput.currentIndex--
-                        miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
-                    }
-                }
-            }
-            Timer {
-                id: miniBufferTimer
-                interval: 5000; running: false; repeat: false
-                onTriggered: miniBuffer.text = ""
+
             }
         }
-        ListView {
-            id: miniOutput
+        Rectangle {
+            id: miniOutputRect
+            color: "white"
+            Layout.fillWidth: true
+            height: 100
             visible: false
-            height: 150
-            width: parent.width
-            delegate: Text {
-                width: parent.width
-                text: symbol
+            ListView {
+                id: miniOutput
+                anchors.fill: parent
+                visible: true
+                delegate: Text {
+                    width: parent.width
+                    text: symbol
+                }
+                highlight: Rectangle { color: "lightsteelblue"; }
+                model: miniBufferModel
             }
-            highlight: Rectangle { color: "lightsteelblue"; }
-            model: miniBufferModel
+            onVisibleChanged: {
+                miniOutput.visible = visible
+            }
         }
         ListModel {
             id: miniBufferModel
             ListElement { symbol: "" }
         }
     }
-
     Component {
         id: webView
         WebEngineView {
@@ -387,12 +408,12 @@ ApplicationWindow {
     }
 
     function clearMiniOutput() {
-        miniOutput.visible = false
+        miniOutputRect.visible = false
         miniBufferModel.clear()
     }
 
     function setMiniOutput(output) {
-        miniOutput.visible = true
+        miniOutputRect.visible = true
         for (var i in output) {
             miniBufferModel.append({"symbol": output[i]})
         }
@@ -405,4 +426,4 @@ ApplicationWindow {
     function setUrl(uri) {
         currentWebView.url = uri
     }
- }
+}
