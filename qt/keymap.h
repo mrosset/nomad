@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QEvent>
 #include <QObject>
+#include <libguile.h>
 
 class Keymap : public QObject
 {
@@ -19,19 +20,28 @@ signals:
   void nextBuffer ();
   void makeFrame (QVariant uri);
   void makeBuffer (QVariant uri);
+  void submitEval (QString input);
+  void handleComplete (QString input);
+  void setMiniOutput (QVariant output);
+  void clearMiniOutput ();
+  void setMiniBuffer (QVariant output);
   QVariant getBuffer (QVariant index);
+  void setUrl (QVariant url);
 
 public slots:
+  void Complete (QString input);
+  void Eval (QString input);
   void Kill ();
   void MakeFrame (QVariant uri);
   void MakeBuffer (QVariant uri);
-  QVariant GetBuffer (QVariant index);
+  SCM GetBuffer (QVariant index);
   void NextBuffer ();
   void handleScrollv (QVariant offset);
   void handleGoBack ();
   void handleGoForward ();
   void handleKeymap (int, int);
   void handleKillBuffer ();
+  void SetUrl (QVariant uri);
 };
 
 #endif // KEYMAP_H

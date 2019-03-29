@@ -10,15 +10,29 @@ print_methods (QObject *object)
   for (int i = 0; i < metaObj->methodCount (); ++i)
     {
       QMetaMethod method = metaObj->method (i);
-      qDebug () << method.methodSignature ();
+      int id = method.returnType ();
+      const char *type = QMetaType::typeName (id);
+      qDebug () << type << method.methodSignature ();
     }
+}
+
+SCM
+qstring_to_scm (QString text)
+{
+  return scm_from_utf8_string (text.toUtf8 ().constData ());
+}
+
+QString
+scm_to_qstring (SCM text)
+{
+  return QString (scm_to_utf8_string (text));
 }
 
 QVariant
 invoke_method (QObject *object, const char *method)
 {
   QVariant value;
-  QMetaObject::invokeMethod (object, method, Qt::BlockingQueuedConnection,
+  QMetaObject::invokeMethod (object, method, Qt::DirectConnection,
                              Q_RETURN_ARG (QVariant, value));
   return value;
 };

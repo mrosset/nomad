@@ -18,9 +18,14 @@
 
 (define-module (test-util)
   #:use-module (nomad util)
+  #:use-module (srfi srfi-1)
   #:use-module (test-suite lib))
 
 (with-test-prefix "HOME expansion"
                   (with-fluids ((~ "/tmp/home"))
                     (pass-if "procedure ~  expands to $HOME" (string=? (fluid-ref ~) "/tmp/home"))
                     (pass-if "procedure ~/ expands to $HOME/child" (string=? (~/ "test") "/tmp/home/test"))))
+
+;; (with-test-prefix "Completion"
+;;                   (pass-if "input completion" (list= string=? (input-completion "version")
+;;                                                     '("version-matches?" "version"))))

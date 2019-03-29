@@ -24,6 +24,8 @@ start_app (int argc, char *argv[])
   QCoreApplication::setOrganizationName ("Nomad");
   QCoreApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 
+  qmlRegisterType<Keymap> ("Keymap", 1, 0, "Keymap");
+
   QApplication app (argc, argv);
   QQuickStyle::setStyle ("Material");
 
@@ -48,6 +50,12 @@ start_app (int argc, char *argv[])
   // UML signals to C++ methods
   QObject::connect (window, SIGNAL (submitKeymap (int, int)), &keymap,
                     SLOT (handleKeymap (int, int)));
+
+  QObject::connect (window, SIGNAL (submitEval (QString)), &keymap,
+                    SLOT (Eval (QString)));
+
+  QObject::connect (window, SIGNAL (handleCompletion (QString)), &keymap,
+                    SLOT (Complete (QString)));
 
   QObject::connect (root, SIGNAL (destroyed ()), &keymap, SLOT (Kill ()));
 
@@ -74,6 +82,18 @@ start_app (int argc, char *argv[])
 
   QObject::connect (&keymap, SIGNAL (killBuffer ()), window,
                     SLOT (killBuffer ()));
+
+  QObject::connect (&keymap, SIGNAL (setMiniBuffer (QVariant)), window,
+                    SLOT (setMiniBuffer (QVariant)));
+
+  QObject::connect (&keymap, SIGNAL (setMiniOutput (QVariant)), window,
+                    SLOT (setMiniOutput (QVariant)));
+
+  QObject::connect (&keymap, SIGNAL (clearMiniOutput ()), window,
+                    SLOT (clearMiniOutput ()));
+
+  QObject::connect (&keymap, SIGNAL (setUrl (QVariant)), window,
+                    SLOT (setUrl (QVariant)));
 
   return app.exec ();
 }

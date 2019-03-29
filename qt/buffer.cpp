@@ -33,12 +33,13 @@ SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
   for (int i = 0; i < count; i++)
     {
       QVariant var;
-      QMetaObject::invokeMethod (
-          window, "getBuffer", Qt::BlockingQueuedConnection,
-          Q_RETURN_ARG (QVariant, var), Q_ARG (QVariant, i));
+      QMetaObject::invokeMethod (window, "getBuffer", Qt::DirectConnection,
+                                 Q_RETURN_ARG (QVariant, var),
+                                 Q_ARG (QVariant, i));
       QUrl uri = qvariant_cast<QUrl> (var);
       const char *url = uri.toString ().toUtf8 ().constData ();
       SCM pair = scm_cons (scm_from_int (i), scm_from_utf8_string (url));
+      // SCM pair = scm_cons (scm_from_int (i), keymap.GetBuffer (i));
       list = scm_append (scm_list_2 (list, scm_list_1 (pair)));
     }
   return list;

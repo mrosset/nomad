@@ -44,13 +44,11 @@ SCM_DEFINE (scm_webview_current_url, "webview-current-url", 0, 0, 0, (),
 }
 
 SCM_DEFINE (scm_webview_load_uri, "webview-load-uri", 1, 0, 0, (SCM uri),
-            "Set's the current WebView to uri")
+            "Set's the current WebView to URI")
 {
-  QVariant arg = QVariant (scm_to_locale_string (uri));
+  QVariant arg = QVariant (scm_to_qstring (uri));
 
-  QMetaObject::invokeMethod (currentWebView (), "setUrl",
-                             Qt::BlockingQueuedConnection,
-                             Q_ARG (QVariant, arg));
+  keymap.SetUrl (arg);
   return SCM_UNSPECIFIED;
 }
 
@@ -98,7 +96,7 @@ SCM_DEFINE (scm_nomad_scroll_down, "scroll-down", 0, 0, 0, (),
 SCM_DEFINE (scm_nomad_debug_webview, "debug-webview-methods", 0, 0, 0, (),
             "prints webview methods")
 {
-  print_methods (currentWebView ());
+  print_methods (window);
   return SCM_UNDEFINED;
 }
 

@@ -25,17 +25,18 @@
 (define test-arg0 '("./nomad"))
 (define test-client '("./nomad" "-c"))
 
-(pass-if "option listen"
-	   (string=? (option-listen test-command-line)
-		     "/tmp/test"))
+(with-test-prefix "options"
+		  (pass-if "option listen"
+			   (string=? (option-listen test-command-line)
+				     "/tmp/test"))
 
-(pass-if "option url" (string=?
-		      (option-url test-command-line) "https://gnu.org"))
+		  (pass-if "option url" (string=?
+					 (option-url test-command-line) "https://gnu.org"))
 
-(pass-if "option client" (option-client test-client))
+		  (pass-if "option client" (option-client test-client))
 
-(pass-if "option no client" (not (option-client test-arg0)))
+		  (pass-if "option no client" (not (option-client test-arg0)))
 
-(pass-if "no listen"(string=? (option-listen test-arg0) "/tmp/nomad-socket"))
+		  (pass-if "no listen"(string=? (option-listen test-arg0) "/tmp/nomad-socket"))
 
-(pass-if "no url" (string=? (option-url test-arg0) "https://www.gnu.org/software/guile"))
+		  (pass-if "no url" (string=? (option-url test-arg0) "https://www.gnu.org/software/guile")))

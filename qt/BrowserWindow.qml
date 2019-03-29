@@ -1,10 +1,11 @@
-import QtQuick 2.2
+import QtQuick 2.11
 import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.1
 import QtQuick.Controls 1.2
 import QtQuick.Window 2.1
 import QtWebEngine 1.7
 import QMLTermWidget 1.0
+import Keymap 1.0
 
 ApplicationWindow {
     id: browserWindow
@@ -14,6 +15,8 @@ ApplicationWindow {
     property int previousVisibility: Window.Windowed
 
     signal submitKeymap(int modifers, int key)
+    signal submitEval(string input);
+    signal handleCompletion(string input);
 
     visible: true
 
@@ -23,12 +26,19 @@ ApplicationWindow {
     Action {
         shortcut: "Alt+m"
         onTriggered: {
-            if (layout.state == "" && terminal.focus) {
+            if (layout.state == "Open" && terminal.focus) {
                 return layout.state = "Close"
             }
             currentWebView.focus = false
             terminal.forceActiveFocus()
-            layout.state = ""
+            layout.state = "Open"
+        }
+    }
+
+    Action {
+        shortcut: "Alt+x"
+        onTriggered: {
+            miniBuffer.focus = !miniBuffer.focus
         }
     }
 
@@ -62,11 +72,11 @@ ApplicationWindow {
         id: layout
         TabView {
             id: tabs
+            focus: true
             frameVisible: false
             /* tabsVisible: false */
             Layout.alignment: Qt.AlignTop
             Layout.preferredWidth: parent.width
-            Layout.preferredHeight: parent.height - terminal.height - statusRow.height
             function createEmptyTab(profile) {
                 var tab = addTab("", webView);
                 tab.active = true;
@@ -97,13 +107,13 @@ ApplicationWindow {
             }
             Text {
                 color: "steelblue"
-                text: "tabs: %1 terminal: %2 browser: %3".arg(tabs.focus).arg(terminal.focus).arg(currentWebView.focus)
+                text: "mini: %4 tabs: %1 terminal: %2 browser: %3".arg(tabs.focus).arg(terminal.focus).arg(currentWebView.focus).arg(miniBuffer.focus)
                 Layout.alignment: Qt.AlignRight
             }
         }
         QMLTermWidget {
             id: terminal
-            focus: true
+            visible: true
             Layout.alignment: Qt.AlignBottom
             Layout.preferredWidth: parent.width
             Layout.preferredHeight: parent.height / 4
@@ -116,6 +126,8 @@ ApplicationWindow {
                 initialWorkingDirectory: "/home/mrosset/src/nomad"
                 shellProgram: "emacs"
                 shellProgramArgs: ["-nw", "-Q", "-l", "/home/mrosset/src/nomad/init.el"]
+                /* shellProgram: "nomad" */
+                /* shellProgramArgs: ["-c", "--listen", "/tmp/nomad-devel"] */
             }
             MouseArea {
                 anchors.fill: parent
@@ -136,9 +148,11 @@ ApplicationWindow {
                 }
             }
         }
+        Component.onCompleted: { console.log("state", state)}
+        state: "Close"
         states: [
             State {
-                name: ""
+                name: "Open"
                 PropertyChanges {
                     target: terminal
                     visible: true
@@ -146,12 +160,16 @@ ApplicationWindow {
                 }
                 PropertyChanges {
                     target: tabs
-                    Layout.preferredHeight: browserWindow.height - terminal.height - statusRow.height
+                    Layout.preferredHeight: parent.height - terminal.height - statusRow.height - miniOutput.height
                     focus: false
                 }
                 PropertyChanges {
                     target: currentWebView
                     focus: false
+                }
+                PropertyChanges {
+                    target: miniBuffer
+                    visible: false
                 }
             },
             State {
@@ -163,15 +181,88 @@ ApplicationWindow {
                 }
                 PropertyChanges {
                     target: tabs
-                    Layout.preferredHeight: browserWindow.height - statusRow.height
+                    Layout.preferredHeight: parent.height - statusRow.height - miniBuffer.height - miniOutput.height
                     focus: true
                 }
                 PropertyChanges {
-                    target: currentWebView
-                    focus: false
+                    target: miniBuffer
+                    visible: true
                 }
             }
         ]
+        Keymap {
+            id: keymap
+        }
+        RowLayout {
+            id: miniBufferLayout
+            Label {
+                id: miniBufferLabel
+                text: "M-x"
+                visible: miniBuffer.focus
+            }
+
+            TextInput {
+                id: miniBuffer
+                font.pointSize: 12
+                width: parent.width
+                color: "steelblue"
+                /* Layout.preferredWidth: parent.width */
+                onAccepted: {
+                    console.log(miniOutput.currentIndex)
+                    if (miniOutput.currentIndex >= 0)  {
+                        text = miniBufferModel.get(miniOutput.currentIndex).symbol
+                    }
+                    submitEval(text)
+                    setMiniOutput("")
+                    tabs.focus = true
+                }
+                onTextEdited: {
+                    handleCompletion(miniBuffer.text)
+                }
+                onFocusChanged: {
+                    miniBufferModel.clear()
+                    miniOutput.visible = false
+                    if(!miniBuffer.focus) {
+                        miniBufferTimer.start()
+                    }
+                }
+                Action {
+                    shortcut: "Ctrl+n"
+                    onTriggered: {
+                        miniOutput.currentIndex++
+                        miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
+                    }
+                }
+                Action {
+                    shortcut: "Ctrl+p"
+                    onTriggered: {
+                        miniOutput.currentIndex--
+                        miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
+                    }
+                }
+            }
+            Timer {
+                id: miniBufferTimer
+                interval: 5000; running: false; repeat: false
+                onTriggered: miniBuffer.text = ""
+            }
+        }
+        ListView {
+            id: miniOutput
+            visible: false
+            height: 150
+            width: parent.width
+            delegate: Text {
+                width: parent.width
+                text: symbol
+            }
+            highlight: Rectangle { color: "lightsteelblue"; }
+            model: miniBufferModel
+        }
+        ListModel {
+            id: miniBufferModel
+            ListElement { symbol: "" }
+        }
     }
 
     Component {
@@ -228,9 +319,6 @@ ApplicationWindow {
                     request.openIn(window.currentWebView);
                 }
             }
-            function setUrl(uri) {
-                url =  uri
-            }
         }
     }
     function scrollv(y) {
@@ -271,7 +359,27 @@ ApplicationWindow {
         return tabs.getTab(index).item.url
     }
 
+    function setMiniBuffer(output) {
+        miniBuffer.text = output
+    }
+
+    function clearMiniOutput() {
+        miniOutput.visible = false
+        miniBufferModel.clear()
+    }
+
+    function setMiniOutput(output) {
+        miniOutput.visible = true
+        for (var i in output) {
+            miniBufferModel.append({"symbol": output[i]})
+        }
+    }
+
     function switchToBuffer(index) {
         tabs.currentIndex = index
+    }
+
+    function setUrl(uri) {
+        currentWebView.url = uri
     }
  }

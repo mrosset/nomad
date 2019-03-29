@@ -22,11 +22,17 @@
 #include "keymap.h"
 #include <QGuiApplication>
 #include <QVariant>
+#include <QString>
 
 extern QObject *root;
 extern QObject *window;
 extern Keymap keymap;
 
+SCM qstring_to_scm (QString text);
+
+QString scm_to_qstring(SCM text);
+
 void print_methods (QObject *object);
+
 QVariant invoke_method(QObject*, const char*);
 #endif // APP_H
