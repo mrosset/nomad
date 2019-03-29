@@ -40,7 +40,7 @@ public slots:
   void handleScrollv (QVariant offset);
   void handleGoBack ();
   void handleGoForward ();
-  void handleKeymap (int, int);
+  void handleKeymap (QString keymap, int modifiers, int key);
   void handleKillBuffer ();
   void SetUrl (QVariant uri);
 };

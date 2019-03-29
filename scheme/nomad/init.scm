@@ -46,7 +46,6 @@
 
 (define (init)
   (add-hook! key-press-hook handle-key-press)
-  (add-hook! key-press-hook debug-key-press)
   (add-hook! event-hook debug-event)
   (create-nomad-directory)
   (if (file-exists? user-init-file)

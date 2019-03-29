@@ -48,8 +48,8 @@ start_app (int argc, char *argv[])
   window = qvariant_cast<QObject *> (QQmlProperty::read (root, "window"));
 
   // UML signals to C++ methods
-  QObject::connect (window, SIGNAL (submitKeymap (int, int)), &keymap,
-                    SLOT (handleKeymap (int, int)));
+  QObject::connect (window, SIGNAL (submitKeymap (QString, int, int)), &keymap,
+                    SLOT (handleKeymap (QString, int, int)));
 
   QObject::connect (window, SIGNAL (submitEval (QString)), &keymap,
                     SLOT (Eval (QString)));

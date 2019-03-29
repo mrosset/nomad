@@ -56,12 +56,11 @@ exception is thrown, return a string representation of the exception."
 
 (define-public (input-completion text)
   (let ((completions (map symbol->string (apropos-internal
-                                          (string-append "^" (regexp-quote text))))))
+                                          (regexp-quote text)))))
     (if (null? completions)
         #f
         completions)))
 
-(input-completion "version")
 ;; (input-completion "ver")
 ;; ( "version" 'value)
 

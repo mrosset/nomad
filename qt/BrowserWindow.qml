@@ -14,7 +14,7 @@ ApplicationWindow {
     property Item currentWebView: tabs.count > 0 ? tabs.getTab(tabs.currentIndex).item: null
     property int previousVisibility: Window.Windowed
 
-    signal submitKeymap(int modifers, int key)
+    signal submitKeymap(string keymap, int modifers, int key)
     signal submitEval(string input);
     signal handleCompletion(string input);
 
@@ -87,7 +87,7 @@ ApplicationWindow {
             }
             Component.onCompleted: createEmptyTab(defaultProfile)
             Keys.onPressed: {
-                submitKeymap(event.modifiers, event.key)
+                submitKeymap("emacs-keymap", event.modifiers, event.key)
             }
         }
         RowLayout {

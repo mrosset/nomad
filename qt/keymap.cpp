@@ -112,11 +112,11 @@ Keymap::handleKillBuffer ()
 }
 
 void
-Keymap::handleKeymap (int modifiers, int key)
+Keymap::handleKeymap (QString keymap, int modifiers, int key)
 {
-  emit setMiniBuffer ("");
+  SCM km = scm_c_public_ref ("nomad keymap", keymap.toUtf8 ());
   scm_run_hook (scm_c_public_ref ("nomad keymap", "key-press-hook"),
-                scm_list_2 (scm_from_int (modifiers), scm_from_int (key)));
+                scm_list_3 (km, scm_from_int (modifiers), scm_from_int (key)));
 }
 
 void
