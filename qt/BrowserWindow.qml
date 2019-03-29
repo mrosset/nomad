@@ -66,7 +66,7 @@ ApplicationWindow {
     }
 
     ColumnLayout {
-        spacing: 1
+        spacing: 0
         width: parent.width
         height: parent.height - miniBuffer.height
         id: layout
@@ -207,8 +207,10 @@ ApplicationWindow {
         id: miniBufferLayout
         anchors.bottom: parent.bottom
         width: parent.width
-
+        height: parent.heigth / 4
+        spacing: 0
         Rectangle {
+            id: miniBufferRowRect
             color: "white"
             height: miniBuffer.height
             Layout.fillWidth: true
@@ -222,7 +224,6 @@ ApplicationWindow {
                 TextInput {
                     id: miniBuffer
                     font.pointSize: 12
-                    color: "steelblue"
                     Layout.fillWidth: true
                     /* Layout.preferredWidth: parent.width */
                     onAccepted: {
@@ -239,7 +240,7 @@ ApplicationWindow {
                     }
                     onFocusChanged: {
                         miniBufferModel.clear()
-                        miniOutput.visible = false
+                        miniOutputRect.visible = false
                         if(!miniBuffer.focus) {
                             miniBufferTimer.start()
                         }
@@ -278,13 +279,14 @@ ApplicationWindow {
         Rectangle {
             id: miniOutputRect
             color: "white"
+            /* anchors.top: miniBufferRowRect.bottom */
             Layout.fillWidth: true
-            height: 100
+            Layout.fillHeight: true
+            height: 200
             visible: false
             ListView {
                 id: miniOutput
                 anchors.fill: parent
-                visible: true
                 delegate: Text {
                     width: parent.width
                     text: symbol
