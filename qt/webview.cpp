@@ -108,16 +108,15 @@ SCM_DEFINE (scm_nomad_copy_current_url, "copy-current-url", 0, 0, 0, (),
       QQmlProperty::read (currentWebView (), "url"));
 
   cb->setText (uri.toString (), QClipboard::Clipboard);
-  return scm_from_utf8_string (uri.toString ().toUtf8 ().constData ());
+  return qstring_to_scm (uri.toString ());
 }
 
-SCM_DEFINE (scm_nomad_find, "isearch-forward", 1, 0, 0, (SCM key),
+SCM_DEFINE (scm_nomad_find, "isearch-forward", 1, 0, 0, (SCM text),
             "search forward")
 {
-  QString arg = QString (scm_to_utf8_string (key));
-  QMetaObject::invokeMethod (currentWebView (), "findText",
-                             Qt::BlockingQueuedConnection,
-                             Q_ARG (QString, arg));
+
+  QString arg = scm_to_qstring (text);
+  emit keymap.findText (arg);
   return SCM_UNDEFINED;
 }
 

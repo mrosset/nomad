@@ -20,9 +20,6 @@
 #ifndef APP_H
 #define APP_H
 #include "keymap.h"
-#include <QGuiApplication>
-#include <QVariant>
-#include <QString>
 
 extern QObject *root;
 extern QObject *window;

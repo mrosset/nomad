@@ -27,6 +27,7 @@ signals:
   void setMiniBuffer (QVariant output);
   QVariant getBuffer (QVariant index);
   void setUrl (QVariant url);
+  void findText (QString text);
 
 public slots:
   void Complete (QString input);

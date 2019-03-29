@@ -95,6 +95,9 @@ start_app (int argc, char *argv[])
   QObject::connect (&keymap, SIGNAL (setUrl (QVariant)), window,
                     SLOT (setUrl (QVariant)));
 
+  QObject::connect (&keymap, SIGNAL (findText (QString)), currentWebView (),
+                    SLOT (findText (QString)));
+
   return app.exec ();
 }
 
