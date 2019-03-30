@@ -27,9 +27,10 @@ nomad_SOURCES = \
 		buffer.cpp      \
 		frame.cpp       \
 		keymap.cpp      \
-		main.cpp       \
+		main.cpp	\
 		moc_keymap.cpp  \
 		webview.cpp     \
+		minibuffer.cpp	\
 		resource.cpp
 
 moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
@@ -59,7 +60,7 @@ nomad_LDADD = \
 	      $(QT_WEB_LIBS)
 
 
-DOT_X_FILES = webview.x buffer.x frame.x
+DOT_X_FILES = webview.x buffer.x frame.x minibuffer.x
 
 BUILT_SOURCES = $(DOT_X_FILES)
 

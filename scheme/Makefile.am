@@ -54,4 +54,5 @@ SOURCES =			\
 	nomad/repl.scm		\
 	nomad/server.scm	\
 	nomad/util.scm		\
+	nomad/minibuffer.scm	\
 	nomad/webview.scm

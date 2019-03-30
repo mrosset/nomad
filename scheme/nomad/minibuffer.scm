@@ -1,4 +1,4 @@
-;; webview.scm
+;; minibuffer.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,14 +16,8 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad webview)
-  #:export (webview-mode-map))
+(define-module (nomad minibuffer)
+  #:export (minibuffer-mode-map))
 
-(define webview-mode-map '(("C-b" . (next-buffer))
-		       ("C-u" . (back))
-		       ("C-m" . (forward))
-		       ("C-n" . (scroll-down))
-		       ("C-f" . (hints))
-		       ("C-p" . (scroll-up))
-		       ("C-r" . (reload))
-		       ("C-x" . (kill-buffer))))
+(define minibuffer-mode-map '(("C-n" . (minibuffer-scroll-down))
+			      ("C-p" . (minibuffer-scroll-up))))

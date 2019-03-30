@@ -239,27 +239,8 @@ ApplicationWindow {
                             miniBufferTimer.start()
                         }
                     }
-                    Action {
-                        shortcut: "Ctrl+g"
-                        onTriggered: {
-                            tabs.focus = true
-                            miniBuffer.text = ""
-                            miniBufferTimer.stop()
-                        }
-                    }
-                    Action {
-                        shortcut: "Alt+n"
-                        onTriggered: {
-                            miniOutput.currentIndex++
-                            miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
-                        }
-                    }
-                    Action {
-                        shortcut: "Alt+p"
-                        onTriggered: {
-                            miniOutput.currentIndex--
-                            miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
-                        }
+                    Keys.onPressed: {
+                        submitKeymap("minibuffer-mode-map", event.modifiers, event.key)
                     }
                 }
                 Timer {
@@ -426,5 +407,10 @@ ApplicationWindow {
 
     function setUrl(uri) {
         currentWebView.url = uri
+    }
+
+    function miniBufferSelect(offset) {
+        miniOutput.currentIndex = miniOutput.currentIndex + offset
+        miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
     }
 }

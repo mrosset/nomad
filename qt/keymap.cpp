@@ -114,7 +114,7 @@ Keymap::handleKillBuffer ()
 void
 Keymap::handleKeymap (QString keymap, int modifiers, int key)
 {
-  SCM km = scm_c_public_ref ("nomad keymap", keymap.toUtf8 ());
+  SCM km = scm_variable_ref (scm_c_lookup (keymap.toUtf8 ()));
   scm_run_hook (scm_c_public_ref ("nomad keymap", "key-press-hook"),
                 scm_list_3 (km, scm_from_int (modifiers), scm_from_int (key)));
 }
@@ -123,4 +123,10 @@ void
 Keymap::SetUrl (QVariant url)
 {
   emit setUrl (url);
+}
+
+void
+Keymap::handleMiniBufferSelect (QVariant offset)
+{
+  emit miniBufferSelect (offset);
 }

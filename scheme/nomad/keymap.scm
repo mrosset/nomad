@@ -20,7 +20,7 @@
   #:use-module (nomad browser)
   #:use-module (nomad app)
   #:use-module (ice-9 threads)
-  #:export (key-press-hook debug-key-press webview-mode-map))
+  #:export (key-press-hook debug-key-press))
 
 (define modifier-masks '((67108864 . "C")))
 
@@ -30,15 +30,6 @@
 		    (80 . "p")
 		    (85 . "u")
 		    (88 . "x")))
-
-(define webview-mode-map '(("C-b" . (next-buffer))
-		       ("C-u" . (back))
-		       ("C-m" . (forward))
-		       ("C-n" . (scroll-down))
-		       ("C-f" . (hints))
-		       ("C-p" . (scroll-up))
-		       ("C-r" . (reload))
-		       ("C-x" . (kill-buffer))))
 
 (define key-press-hook (make-hook 3))
 
@@ -62,7 +53,7 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
   (let* ((mod-key (modifier-key->string mod key))
 	 (proc (assoc-ref keymap mod-key)))
     (if (eq? proc #f)
-	(simple-format #f "~s : key not found" key)
+	(simple-format #t "~s : key not found\n" key)
 	(eval proc (interaction-environment)))))
 
 (define (debug-key-press keymap mod key)

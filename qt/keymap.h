@@ -28,6 +28,7 @@ signals:
   QVariant getBuffer (QVariant index);
   void setUrl (QVariant url);
   void findText (QString text);
+  void miniBufferSelect (QVariant offset);
 
 public slots:
   void Complete (QString input);
@@ -43,6 +44,7 @@ public slots:
   void handleKeymap (QString keymap, int modifiers, int key);
   void handleKillBuffer ();
   void SetUrl (QVariant uri);
+  void handleMiniBufferSelect (QVariant offset);
 };
 
 #endif // KEYMAP_H

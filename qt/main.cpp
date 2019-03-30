@@ -2,6 +2,7 @@
 #include "buffer.h"
 #include "frame.h"
 #include "keymap.h"
+#include "minibuffer.h"
 #include "webview.h"
 
 #include <QApplication>
@@ -98,6 +99,9 @@ start_app (int argc, char *argv[])
   QObject::connect (&keymap, SIGNAL (findText (QString)), currentWebView (),
                     SLOT (findText (QString)));
 
+  QObject::connect (&keymap, SIGNAL (miniBufferSelect (QVariant)), window,
+                    SLOT (miniBufferSelect (QVariant)));
+
   return app.exec ();
 }
 
@@ -112,6 +116,10 @@ inner_main (void *data, int argc, char *argv[])
   // allows mixing pure scheme with C scheme.
   scm_c_use_module ("nomad webview");
   scm_c_define_module ("nomad webview", webview_register_functions, NULL);
+
+  scm_c_use_module ("nomad minibuffer");
+  scm_c_define_module ("nomad minibuffer", minibuffer_register_functions,
+                       NULL);
 
   // scm_c_define_module ("nomad window", nomad_window_register_functions,
   // NULL);
