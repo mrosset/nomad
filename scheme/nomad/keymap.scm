@@ -20,7 +20,7 @@
   #:use-module (nomad browser)
   #:use-module (nomad app)
   #:use-module (ice-9 threads)
-  #:export (key-press-hook debug-key-press emacs-keymap))
+  #:export (key-press-hook debug-key-press webview-mode-map))
 
 (define modifier-masks '((67108864 . "C")))
 
@@ -31,7 +31,7 @@
 		    (85 . "u")
 		    (88 . "x")))
 
-(define emacs-keymap '(("C-b" . (next-buffer))
+(define webview-mode-map '(("C-b" . (next-buffer))
 		       ("C-u" . (back))
 		       ("C-m" . (forward))
 		       ("C-n" . (scroll-down))
@@ -39,8 +39,6 @@
 		       ("C-p" . (scroll-up))
 		       ("C-r" . (reload))
 		       ("C-x" . (kill-buffer))))
-
-(define default-keymap emacs-keymap)
 
 (define key-press-hook (make-hook 3))
 

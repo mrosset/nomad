@@ -74,8 +74,7 @@ ApplicationWindow {
             id: tabs
             focus: true
             frameVisible: false
-            /* tabsVisible: false */
-            Layout.alignment: Qt.AlignTop
+            tabsVisible: true
             Layout.preferredWidth: parent.width
             Layout.fillHeight: true
             function createEmptyTab(profile) {
@@ -87,7 +86,7 @@ ApplicationWindow {
             }
             Component.onCompleted: createEmptyTab(defaultProfile)
             Keys.onPressed: {
-                submitKeymap("emacs-keymap", event.modifiers, event.key)
+                submitKeymap("webview-mode-map", event.modifiers, event.key)
             }
         }
         RowLayout {
@@ -103,8 +102,8 @@ ApplicationWindow {
             Label {
                 id: statusUrl
                 color: "steelblue"
+                text: currentWebView.title
                 Layout.fillWidth: true
-                text: currentWebView.url
             }
             Text {
                 color: "steelblue"
@@ -197,10 +196,6 @@ ApplicationWindow {
                 }
             }
         ]
-        Keymap {
-            id: keymap
-        }
-
     }
 
     ColumnLayout {
@@ -225,7 +220,6 @@ ApplicationWindow {
                     id: miniBuffer
                     font.pointSize: 12
                     Layout.fillWidth: true
-                    /* Layout.preferredWidth: parent.width */
                     onAccepted: {
                         console.log(miniOutput.currentIndex)
                         if (miniOutput.currentIndex >= 0)  {
@@ -302,6 +296,11 @@ ApplicationWindow {
             id: miniBufferModel
             ListElement { symbol: "" }
         }
+    }
+
+    // Components
+    Keymap {
+        id: keymap
     }
     Component {
         id: webView
