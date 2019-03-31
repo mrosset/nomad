@@ -19,35 +19,9 @@ QObject *window = NULL;
 
 Keymap keymap;
 
-int
-start_app (int argc, char *argv[])
+static void
+window_signals (QObject *window)
 {
-  QCoreApplication::setOrganizationName ("Nomad");
-  QCoreApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
-
-  qmlRegisterType<Keymap> ("Keymap", 1, 0, "Keymap");
-
-  QApplication app (argc, argv);
-  QQuickStyle::setStyle ("Material");
-
-  QtWebEngine::initialize ();
-
-  QQmlApplicationEngine engine;
-
-  engine.load (QUrl (QStringLiteral ("qrc:/ApplicationRoot.qml")));
-  root = engine.rootObjects ().first ();
-
-  // set nomad directory
-  SCM nomad = scm_fluid_ref (
-      scm_c_public_ref ("nomad init", "user-nomad-directory"));
-  QVariant arg = QVariant (scm_to_locale_string (nomad));
-  QMetaObject::invokeMethod (root, "setNomadDir", Q_ARG (QVariant, arg));
-
-  scm_nomad_make_frame (
-      scm_c_public_ref ("nomad browser", "default-home-page"));
-
-  window = qvariant_cast<QObject *> (QQmlProperty::read (root, "window"));
-
   // UML signals to C++ methods
   QObject::connect (window, SIGNAL (submitKeymap (QString, int, int)), &keymap,
                     SLOT (handleKeymap (QString, int, int)));
@@ -57,8 +31,6 @@ start_app (int argc, char *argv[])
 
   QObject::connect (window, SIGNAL (handleCompletion (QString)), &keymap,
                     SLOT (Complete (QString)));
-
-  QObject::connect (root, SIGNAL (destroyed ()), &keymap, SLOT (Kill ()));
 
   // C++ signals to UML methods
   QObject::connect (&keymap, SIGNAL (makeFrame (QVariant)), window,
@@ -96,11 +68,52 @@ start_app (int argc, char *argv[])
   QObject::connect (&keymap, SIGNAL (setUrl (QVariant)), window,
                     SLOT (setUrl (QVariant)));
 
-  QObject::connect (&keymap, SIGNAL (findText (QString)), currentWebView (),
-                    SLOT (findText (QString)));
-
   QObject::connect (&keymap, SIGNAL (miniBufferSelect (QVariant)), window,
                     SLOT (miniBufferSelect (QVariant)));
+}
+
+static void
+root_signals (QObject *root)
+{
+  // UML signals to C++ methods
+  QObject::connect (root, SIGNAL (destroyed ()), &keymap, SLOT (Kill ()));
+}
+
+int
+start_app (int argc, char *argv[])
+{
+  QCoreApplication::setOrganizationName ("Nomad");
+  QCoreApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
+
+  qmlRegisterType<Keymap> ("Keymap", 1, 0, "Keymap");
+
+  QApplication app (argc, argv);
+  QQuickStyle::setStyle ("Material");
+
+  QtWebEngine::initialize ();
+
+  QQmlApplicationEngine engine;
+
+  engine.load (QUrl (QStringLiteral ("qrc:/ApplicationRoot.qml")));
+  root = engine.rootObjects ().first ();
+
+  // set nomad directory
+  SCM nomad = scm_fluid_ref (
+      scm_c_public_ref ("nomad init", "user-nomad-directory"));
+  QVariant arg = QVariant (scm_to_locale_string (nomad));
+  QMetaObject::invokeMethod (root, "setNomadDir", Q_ARG (QVariant, arg));
+
+  scm_nomad_make_frame (
+      scm_c_public_ref ("nomad browser", "default-home-page"));
+
+  window = qvariant_cast<QObject *> (QQmlProperty::read (root, "window"));
+
+  window_signals (window);
+  root_signals (root);
+
+  // C++ signals to UML methods
+  QObject::connect (&keymap, SIGNAL (findText (QString)), currentWebView (),
+                    SLOT (findText (QString)));
 
   return app.exec ();
 }

@@ -36,7 +36,6 @@ public slots:
   void Kill ();
   void MakeFrame (QVariant uri);
   void MakeBuffer (QVariant uri);
-  SCM GetBuffer (QVariant index);
   void NextBuffer ();
   void handleScrollv (QVariant offset);
   void handleGoBack ();

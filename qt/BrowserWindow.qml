@@ -13,7 +13,6 @@ ApplicationWindow {
     property QtObject applicationRoot
     property Item currentWebView: tabs.count > 0 ? tabs.getTab(tabs.currentIndex).item: null
     property int previousVisibility: Window.Windowed
-
     signal submitKeymap(string keymap, int modifers, int key)
     signal submitEval(string input);
     signal handleCompletion(string input);
@@ -43,13 +42,11 @@ ApplicationWindow {
     }
 
     Action {
-        shortcut: "Ctrl+i"
+        shortcut: "Ctrl+g"
         onTriggered: {
-            tabs.focus = true
-            currentWebView.focus = false
+            keyboardQuit()
         }
     }
-
     Action {
         shortcut: "Escape"
         onTriggered: {
@@ -218,6 +215,7 @@ ApplicationWindow {
                 }
                 TextInput {
                     id: miniBuffer
+                    objectName: "miniBuffer"
                     font.pointSize: 12
                     Layout.fillWidth: true
                     onAccepted: {
@@ -241,6 +239,10 @@ ApplicationWindow {
                     }
                     Keys.onPressed: {
                         submitKeymap("minibuffer-mode-map", event.modifiers, event.key)
+                    }
+                    function select(offset) {
+                        miniOutput.currentIndex = miniOutput.currentIndex + offset
+                        miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
                     }
                 }
                 Timer {
@@ -405,12 +407,12 @@ ApplicationWindow {
         tabs.currentIndex = index
     }
 
-    function setUrl(uri) {
-        currentWebView.url = uri
+    function keyboardQuit() {
+        currentWebView.focus = false
+        tabs.focus = true
     }
 
-    function miniBufferSelect(offset) {
-        miniOutput.currentIndex = miniOutput.currentIndex + offset
-        miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
+    function setUrl(uri) {
+        currentWebView.url = uri
     }
 }

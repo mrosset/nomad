@@ -71,16 +71,6 @@ Keymap::MakeBuffer (QVariant uri)
   emit makeBuffer (uri);
 }
 
-SCM
-Keymap::GetBuffer (QVariant index)
-{
-  QVariant var = getBuffer (index);
-  qInfo () << var;
-  // QUrl uri = qvariant_cast<QUrl> (var);
-  // const char *url = uri.toString ().toUtf8 ().constData ();
-  return scm_from_utf8_string ("foo");
-}
-
 void
 Keymap::NextBuffer ()
 {
