@@ -66,7 +66,7 @@ ApplicationWindow {
         spacing: 0
         width: parent.width
         height: parent.height - miniBuffer.height
-        id: layout
+        id: webViewLayout
         TabView {
             id: tabs
             focus: true
@@ -293,10 +293,19 @@ ApplicationWindow {
                 State {
                     name: "FullScreen"
                     PropertyChanges {
+                        target: miniBufferLayout
+                        visible: false
+                    }
+                    PropertyChanges {
+                        target: webViewLayout
+                        height: window.height
+                    }
+                    PropertyChanges {
                         target: tabs
                         frameVisible: false
                         tabsVisible: false
                         Layout.preferredHeight: parent.height
+                        height: window.height
                     }
                     PropertyChanges {
                         target: statusRow
