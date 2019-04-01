@@ -199,8 +199,13 @@ ApplicationWindow {
         id: miniBufferLayout
         anchors.bottom: parent.bottom
         width: parent.width
-        height: parent.heigth / 4
         spacing: 0
+        Rectangle {
+            height: 1
+            Layout.fillWidth: true
+            color: "steelblue"
+            visible: miniOutput.visible
+        }
         Rectangle {
             id: miniBufferRowRect
             color: "white"
@@ -252,6 +257,12 @@ ApplicationWindow {
                 }
 
             }
+        }
+        Rectangle {
+            height: 1
+            Layout.fillWidth: true
+            color: "steelblue"
+            visible: miniOutput.visible
         }
         Rectangle {
             id: miniOutputRect
