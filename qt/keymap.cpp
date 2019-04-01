@@ -114,9 +114,3 @@ Keymap::SetUrl (QVariant url)
 {
   emit setUrl (url);
 }
-
-void
-Keymap::handleMiniBufferSelect (QVariant offset)
-{
-  emit miniBufferSelect (offset);
-}
