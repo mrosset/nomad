@@ -25,12 +25,12 @@ ApplicationWindow {
     Action {
         shortcut: "Alt+m"
         onTriggered: {
-            if (layout.state == "Open" && terminal.focus) {
-                return layout.state = "Close"
+            if (webViewLayout.state == "Open" && terminal.focus) {
+                return webViewLayout.state = "Close"
             }
             currentWebView.focus = false
             terminal.forceActiveFocus()
-            layout.state = "Open"
+            webViewLayout.state = "Open"
         }
     }
 
@@ -158,17 +158,14 @@ ApplicationWindow {
                 PropertyChanges {
                     target: tabs
                     focus: false
+                    height: window.height
                 }
                 PropertyChanges {
                     target: currentWebView
                     focus: false
                 }
-                PropertyChanges {
-                    target: miniBuffer
-                    visible: false
-                }
-                PropertyChanges {
-                    target: miniOutput
+                PropertyChanges{
+                    target: miniBufferLayout
                     visible: false
                 }
             },
