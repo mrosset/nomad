@@ -242,18 +242,6 @@ ApplicationWindow {
                     Keys.onPressed: {
                         submitKeymap("minibuffer-mode-map", event.modifiers, event.key)
                     }
-                    function selectUp() {
-                        if (miniOutput.currentIndex == 0 ) {
-                            return
-                        }
-                        miniOutput.currentIndex--
-                    }
-                    function selectDown() {
-                        if (miniOutput.currentIndex == miniBufferModel.count - 1) {
-                            return
-                        }
-                        miniOutput.currentIndex++
-                    }
                 }
                 Timer {
                     id: miniBufferTimer
@@ -272,13 +260,13 @@ ApplicationWindow {
         Rectangle {
             id: miniOutputRect
             color: "white"
-            /* anchors.top: miniBufferRowRect.bottom */
             Layout.fillWidth: true
             Layout.fillHeight: true
             height: 200
             visible: false
             ListView {
                 id: miniOutput
+                objectName: "miniOutput"
                 anchors.fill: parent
                 delegate: Text {
                     width: parent.width
@@ -286,6 +274,20 @@ ApplicationWindow {
                 }
                 highlight: Rectangle { color: "lightsteelblue"; }
                 model: miniBufferModel
+                function selectUp() {
+                    if (miniOutput.currentIndex == 0 ) {
+                        return
+                    }
+                    miniOutput.currentIndex--
+                    miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
+                }
+                function selectDown() {
+                    if (miniOutput.currentIndex == miniBufferModel.count - 1) {
+                        return
+                    }
+                    miniOutput.currentIndex++
+                    miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
+                }
             }
             onVisibleChanged: {
                 miniOutput.visible = visible

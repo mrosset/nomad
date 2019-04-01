@@ -27,7 +27,7 @@
 SCM_DEFINE (scm_minibuffer_scroll_down, "minibuffer-scroll-down", 0, 0, 0, (),
             "Set's the current WebView to URI")
 {
-  QObject *mb = window->findChild<QObject *> ("miniBuffer");
+  QObject *mb = window->findChild<QObject *> ("miniOutput");
   QMetaObject::invokeMethod (mb, "selectDown", Qt::DirectConnection);
   return SCM_UNDEFINED;
 }
@@ -35,7 +35,7 @@ SCM_DEFINE (scm_minibuffer_scroll_down, "minibuffer-scroll-down", 0, 0, 0, (),
 SCM_DEFINE (scm_minibuffer_scroll_up, "minibuffer-scroll-up", 0, 0, 0, (),
             "Set's the current WebView to URI")
 {
-  QObject *mb = window->findChild<QObject *> ("miniBuffer");
+  QObject *mb = window->findChild<QObject *> ("miniOutput");
   QMetaObject::invokeMethod (mb, "selectUp", Qt::DirectConnection);
   return SCM_UNDEFINED;
 }
