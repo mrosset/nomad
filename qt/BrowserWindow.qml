@@ -245,9 +245,17 @@ ApplicationWindow {
                     Keys.onPressed: {
                         submitKeymap("minibuffer-mode-map", event.modifiers, event.key)
                     }
-                    function select(offset) {
-                        miniOutput.currentIndex = miniOutput.currentIndex + offset
-                        miniBuffer.text = miniBufferModel.get(miniOutput.currentIndex).symbol
+                    function selectUp() {
+                        if (miniOutput.currentIndex == 0 ) {
+                            return
+                        }
+                        miniOutput.currentIndex--
+                    }
+                    function selectDown() {
+                        if (miniOutput.currentIndex == miniBufferModel.count - 1) {
+                            return
+                        }
+                        miniOutput.currentIndex++
                     }
                 }
                 Timer {
