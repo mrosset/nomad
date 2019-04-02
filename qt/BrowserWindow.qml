@@ -263,7 +263,6 @@ ApplicationWindow {
                     }
                     onFocusChanged: {
                         miniBufferModel.clear()
-                        miniOutputRect.visible = focus
                         if(!focus) {
                             miniBufferTimer.start()
                         }
