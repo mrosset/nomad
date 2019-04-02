@@ -307,6 +307,13 @@ ApplicationWindow {
         id: webView
         WebEngineView {
             id: webEngineView
+            userScripts: [
+                WebEngineScript{
+                    injectionPoint: WebEngineScript.Deferred
+                    sourceUrl: "qrc:/hints.js"
+                    worldId: WebEngineScript.MainWorld
+                }
+            ]
             states: [
                 State {
                     name: "FullScreen"

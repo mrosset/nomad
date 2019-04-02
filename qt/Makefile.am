@@ -73,7 +73,7 @@ test: all
 format:
 	clang-format -i *.c *.h
 
-resource.cpp: $(wildcard *.qml) resources.qrc
+resource.cpp: $(wildcard *.qml) hints.js resources.qrc
 	@echo "  RCC" $@;
 	@rcc resources.qrc -o $@
 
