@@ -17,12 +17,8 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad util)
-  #:use-module (ice-9 session)
-  #:use-module (ice-9 regex)
-  #:export (catch-eval
-            info
+  #:export (info
             add-to-nomad-path
-            input-eval
             ~ // ~/))
 
 (define (info msg)
@@ -37,38 +33,9 @@
   "expands $HOME and joins path to the end"
   (string-append (fluid-ref ~) // path))
 
-(define (catch-eval expr)
-  "Evaluates EXP. Return a string representation of results. If an
-exception is thrown, return a string representation of the exception."
-  (catch #t
-    (lambda ()
-      (simple-format #f "~s" (eval-string expr)))
-    (lambda (key . args)
-      (simple-format #f "~s: ~s" key args))))
-
 (define (add-to-nomad-path path)
   (add-to-load-path path))
-
 
 (define-public (completion-join lst)
   "Joins completion list into a flat string separated by spaces"
   (string-append lst))
-
-(define-public (input-completion text)
-  (let ((completions (map symbol->string (apropos-internal
-                                          (regexp-quote text)))))
-    (if (null? completions)
-        #f
-        completions)))
-
-;; (input-completion "ver")
-;; ( "version" 'value)
-
-(define (input-eval input)
-  (let* ((result #nil) (error #nil))
-    (catch #t
-      (lambda ()
-        (set! result (format #f "~a" (eval-string input))))
-      (lambda (key . parameters)
-            (set! error (format #f "Uncaught throw to '~a: ~a\n" key parameters))))
-    (values result error)))

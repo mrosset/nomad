@@ -264,10 +264,12 @@ ApplicationWindow {
                     }
                     onFocusChanged: {
                         miniBufferModel.clear()
-                        miniOutputRect.visible = false
-                        if(!miniBuffer.focus) {
+                        miniOutputRect.visible = focus
+                        if(!focus) {
                             miniBufferTimer.start()
                         }
+                        if(focus)
+                            handleCompletion("")
                     }
                     Keys.onPressed: {
                         submitKeymap("minibuffer-mode-map", event.modifiers, event.key)
@@ -416,7 +418,6 @@ ApplicationWindow {
     function scrollv(y) {
         var method = "window.scrollBy(0, %1)".arg(y)
         currentWebView.runJavaScript(method)
-
     }
 
     function makeBuffer(url) {
