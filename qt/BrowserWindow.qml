@@ -234,60 +234,6 @@ ApplicationWindow {
             visible: miniOutput.visible
         }
         Rectangle {
-            id: miniBufferRowRect
-            color: "white"
-            height: miniBuffer.height
-            Layout.fillWidth: true
-            RowLayout {
-                id: miniBufferRowLayout
-                Label {
-                    id: miniBufferLabel
-                    text: "M-x"
-                    visible: miniBuffer.focus
-                }
-                TextInput {
-                    id: miniBuffer
-                    objectName: "miniBuffer"
-                    font.pointSize: 12
-                    Layout.fillWidth: true
-                    onAccepted: {
-                        if (miniOutput.currentIndex >= 0)  {
-                            text = miniBufferModel.get(miniOutput.currentIndex).symbol
-                        }
-                        submitEval(text)
-                        setMiniOutput("")
-                        tabs.focus = true
-                    }
-                    onTextEdited: {
-                        handleCompletion(miniBuffer.text)
-                    }
-                    onFocusChanged: {
-                        miniBufferModel.clear()
-                        if(!focus) {
-                            miniBufferTimer.start()
-                        }
-                        if(focus)
-                            handleCompletion("")
-                    }
-                    Keys.onPressed: {
-                        submitKeymap("minibuffer-mode-map", event.modifiers, event.key)
-                    }
-                }
-                Timer {
-                    id: miniBufferTimer
-                    interval: 5000; running: false; repeat: false
-                    onTriggered: miniBuffer.text = ""
-                }
-
-            }
-        }
-        Rectangle {
-            height: 1
-            Layout.fillWidth: true
-            color: "steelblue"
-            visible: miniOutput.visible
-        }
-        Rectangle {
             id: miniOutputRect
             color: "white"
             Layout.fillWidth: true
@@ -326,6 +272,61 @@ ApplicationWindow {
         ListModel {
             id: miniBufferModel
             ListElement { symbol: "" }
+        }
+        Rectangle {
+            height: 1
+            Layout.fillWidth: true
+            color: "steelblue"
+            visible: true
+        }
+        Rectangle {
+            id: miniBufferRowRect
+            color: "white"
+            height: miniBuffer.height
+            Layout.fillWidth: true
+            RowLayout {
+                id: miniBufferRowLayout
+                Label {
+                    id: miniBufferLabel
+                    text: "M-x"
+                    visible: miniBuffer.focus
+                }
+                TextInput {
+                    id: miniBuffer
+                    objectName: "miniBuffer"
+                    font.pointSize: 12
+                    Layout.fillWidth: true
+                    onAccepted: {
+                        if (miniOutput.currentIndex >= 0)  {
+                            text = miniBufferModel.get(miniOutput.currentIndex).symbol
+                        }
+                        submitEval(text)
+                        setMiniOutput("")
+                        tabs.focus = true
+                    }
+                    onTextEdited: {
+                        handleCompletion(miniBuffer.text)
+                    }
+                    onFocusChanged: {
+                        miniBufferModel.clear()
+                        if(!focus) {
+                            miniOutputRect.visible = false
+                            miniBufferTimer.start()
+                        }
+                        if(focus)
+                            handleCompletion("")
+                    }
+                    Keys.onPressed: {
+                        submitKeymap("minibuffer-mode-map", event.modifiers, event.key)
+                    }
+                }
+                Timer {
+                    id: miniBufferTimer
+                    interval: 5000; running: false; repeat: false
+                    onTriggered: miniBuffer.text = ""
+                }
+
+            }
         }
     }
 
@@ -455,7 +456,6 @@ ApplicationWindow {
     }
 
     function clearMiniOutput() {
-        miniOutputRect.visible = false
         miniBufferModel.clear()
     }
 
