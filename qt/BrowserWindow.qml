@@ -33,14 +33,18 @@ ApplicationWindow {
             webViewLayout.state = "Open"
         }
     }
-
     Action {
         shortcut: "Alt+x"
         onTriggered: {
             miniBuffer.focus = !miniBuffer.focus
         }
     }
-
+    Action {
+        shortcut: "Ctrl+Shift+d"
+        onTriggered: {
+            develView.visible = !devToolsView.visible
+        }
+    }
     Action {
         shortcut: "Ctrl+g"
         onTriggered: {
@@ -92,6 +96,24 @@ ApplicationWindow {
             Component.onCompleted: createEmptyTab(defaultProfile)
             Keys.onPressed: {
                 submitKeymap("webview-mode-map", event.modifiers, event.key)
+            }
+        }
+        Rectangle {
+            id: develView
+            Layout.preferredHeight: parent.height / 4
+            Layout.fillWidth: true;
+            visible: false
+            WebEngineView {
+                id: devToolsView
+                visible: true
+                height: visible ? 400 : 0
+                inspectedView: visible && currentWebView
+                anchors.fill: parent
+                onNewViewRequested: function(request) {
+                    var tab = tabs.createEmptyTab(currentWebView.profile);
+                    tabs.currentIndex = tabs.count - 1;
+                    request.openIn(tab.item);
+                }
             }
         }
         RowLayout {
