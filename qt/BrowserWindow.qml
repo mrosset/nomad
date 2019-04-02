@@ -48,6 +48,14 @@ ApplicationWindow {
         }
     }
     Action {
+        shortcut: "Ctrl+f"
+        onTriggered: {
+            tabs.focus = false
+            currentWebView.forceActiveFocus();
+            currentWebView.runJavaScript("hintMode();")
+        }
+    }
+    Action {
         shortcut: "Escape"
         onTriggered: {
             if (currentWebView.state == "FullScreen") {
