@@ -251,7 +251,6 @@ ApplicationWindow {
                     font.pointSize: 12
                     Layout.fillWidth: true
                     onAccepted: {
-                        console.log(miniOutput.currentIndex)
                         if (miniOutput.currentIndex >= 0)  {
                             text = miniBufferModel.get(miniOutput.currentIndex).symbol
                         }

@@ -53,7 +53,7 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
   (let* ((mod-key (modifier-key->string mod key))
 	 (proc (assoc-ref keymap mod-key)))
     (if (eq? proc #f)
-	(simple-format #t "~s : key not found\n" key)
+	(simple-format #f "~s : key not found\n" key)
 	(eval proc (interaction-environment)))))
 
 (define (debug-key-press keymap mod key)

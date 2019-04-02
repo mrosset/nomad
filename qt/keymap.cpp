@@ -9,7 +9,6 @@ Keymap::Keymap (QObject *parent) : QObject (parent) {}
 void
 Keymap::Eval (QString input)
 {
-  qInfo () << "eval:" << input;
   input = input.prepend ("(").append (")");
   SCM exp = qstring_to_scm (input);
   SCM values
