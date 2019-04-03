@@ -73,7 +73,6 @@ ApplicationWindow {
     FullScreenNotification {
         id: fullScreenNotification
     }
-
     ColumnLayout {
         spacing: 0
         width: parent.width
@@ -107,7 +106,7 @@ ApplicationWindow {
                 id: devToolsView
                 visible: true
                 height: visible ? 400 : 0
-                inspectedView: visible && currentWebView
+                inspectedView: currentWebView
                 anchors.fill: parent
                 onNewViewRequested: function(request) {
                     var tab = tabs.createEmptyTab(currentWebView.profile);
@@ -132,9 +131,21 @@ ApplicationWindow {
                 text: currentWebView.title
                 Layout.fillWidth: true
             }
+            ProgressBar {
+                id: progress
+                Layout.fillWidth: true
+                maximumValue: 100
+                value: currentWebView.loadProgress
+                visible: value < maximumValue ? true: false
+            }
             Text {
                 color: "steelblue"
-                text: "mini: %4 tabs: %1 terminal: %2 browser: %3".arg(tabs.focus).arg(terminal.focus).arg(currentWebView.focus).arg(miniBuffer.focus)
+                text: "%1%".arg(currentWebView.loadProgress)
+            }
+            Text {
+                visible: false
+                color: "steelblue"
+                text: "progress: %5 mini: %4 tabs: %1 terminal: %2 browser: %3".arg(tabs.focus).arg(terminal.focus).arg(currentWebView.focus).arg(miniBuffer.focus).arg(progress.value)
                 Layout.alignment: Qt.AlignRight
             }
         }
@@ -159,7 +170,6 @@ ApplicationWindow {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    console.log("click")
                     terminal.state = ""
                 }
             }
@@ -284,6 +294,7 @@ ApplicationWindow {
             color: "white"
             height: miniBuffer.height
             Layout.fillWidth: true
+
             RowLayout {
                 id: miniBufferRowLayout
                 Label {
@@ -323,7 +334,10 @@ ApplicationWindow {
                 Timer {
                     id: miniBufferTimer
                     interval: 5000; running: false; repeat: false
-                    onTriggered: miniBuffer.text = ""
+                    onTriggered: {
+                        if(!miniBuffer.focus)
+                            miniBuffer.text = ""
+                    }
                 }
 
             }
