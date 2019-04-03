@@ -17,24 +17,36 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad eval)
-  #:export (define-command command-alist))
+  #:export (
+	    define-alias
+	    define-command))
 
-(define command-alist '())
+
+(define-public command-alist '())
+
+(define-public (add-to-command-alist key proc)
+  (set-procedure-property! proc 'command #t)
+  (set! command-alist (assoc-set! command-alist key proc)))
 
 (define-syntax define-command
   (syntax-rules ()
     ((define-command (proc) doc body)
      (begin
-     (define-public (proc) doc body)
-       (set-procedure-property! proc 'command #t)
-       (set! command-alist (assoc-set! command-alist (procedure-name proc) proc)))
+       (define-public (proc) doc body)
+       (add-to-command-alist (procedure-name proc) proc))
      )
     ((define-command (proc . args) doc body)
      (begin
-     (define-public (proc . args) doc body)
-       (set-procedure-property! proc 'command #t)
-       (set! command-alist (assoc-set! command-alist (procedure-name proc) proc)))
+       (define-public (proc . args) doc body)
+       (add-to-command-alist (procedure-name proc) proc))
      )))
+
+(define-syntax define-alias
+  (syntax-rules ()
+    ((define-alias alias proc)
+     (begin
+       (add-to-command-alist (quote alias) proc)
+       (define-public alias proc)))))
 
 (define-public (command? proc)
   (if (procedure? proc)

@@ -16,11 +16,20 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (test-util)
-  #:use-module (nomad util)
+(define-module (test-eval)
+  #:use-module (nomad eval)
+  #:use-module (nomad minibuffer)
+  #:use-module (srfi srfi-1)
   #:use-module (test-suite lib))
 
-(with-test-prefix "HOME expansion"
-                  (with-fluids ((~ "/tmp/home"))
-                    (pass-if "procedure ~  expands to $HOME" (string=? (fluid-ref ~) "/tmp/home"))
-                    (pass-if "procedure ~/ expands to $HOME/child" (string=? (~/ "test") "/tmp/home/test"))))
+(define-command (alpha-one bar) "" bar)
+(define-command (alpha-two bar) "" bar)
+
+(with-test-prefix "nomad eval"
+                  (pass-if "input completion" (list= string=? (input-completion "alpha")
+                                                     '("alpha-two" "alpha-one")))
+
+                  (pass-if "is command" (command? alpha-one))
+                  (pass-if "add to command list" (begin
+                                                   (add-to-command-alist 'version version)
+                                                   (eq? (assoc-ref command-alist 'version) version))))

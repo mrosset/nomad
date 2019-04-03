@@ -162,10 +162,9 @@ inner_main (void *data, int argc, char *argv[])
 
   // Use essential modules
   scm_c_use_module ("nomad util");
-  // scm_c_use_module ("nomad window");
+  scm_c_use_module ("nomad eval");
   scm_c_use_module ("nomad browser");
   scm_c_use_module ("nomad repl");
-
   scm_c_use_module ("nomad init");
   scm_c_eval_string ("(init)");
 

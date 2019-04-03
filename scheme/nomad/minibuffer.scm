@@ -20,19 +20,17 @@
   #:use-module (nomad eval)
   #:use-module (ice-9 session)
   #:use-module (ice-9 regex)
-  #:use-module (oop goops)
   #:export (minibuffer-mode-map))
 
 (define minibuffer-mode-map '(("C-n" . (minibuffer-scroll-down))
 			      ("C-p" . (minibuffer-scroll-up))))
 
 (define-public (input-completion text)
-  (let* ((symbols (apropos-internal (regexp-quote text)))
-	 (completions '()))
-    (for-each (lambda (s)
-		(when (assoc-ref command-alist s)
-		  (set! completions (append completions (list (symbol->string s))))))
-	      symbols)
-    (if (null? completions)
-	#f
-	completions)))
+  "Returns a list of command symbols matching 'TEXT"
+  (let ((completion '()))
+    (map (lambda (p)
+	   (let ((key (symbol->string (car p))))
+	     (when (string-match text key)
+	       (set! completion (append completion (list key))))))
+	 command-alist)
+    completion))
