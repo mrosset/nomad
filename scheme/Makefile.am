@@ -30,17 +30,10 @@ CLEANFILES = $(GOBJECTS)
 guile_install_go_files = install-nobase_ccacheDATA
 $(guile_install_go_files): install-nobase_modDATA
 
-AM_V_GUILEC = $(AM_V_GUILEC_$(V))
-AM_V_GUILEC_ = $(AM_V_GUILEC_$(AM_DEFAULT_VERBOSITY))
-AM_V_GUILEC_0 = @echo "  GUILEC" $@;
-
 SUFFIXES = .scm .go
 
 .scm.go:
-	$(AM_V_GUILEC) GUILE_AUTO_COMPILE=0			\
-	$(GUILD) compile --target="$(host)" $(GUILE_WARNINGS)	\
-	  -L "$(abs_srcdir)" -L "$(abs_builddir)"		\
-	  -o "$@" "$<"
+	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILE_TOOLS) compile $(GUILE_WARNINGS) -o "$@" "$<"
 
 SOURCES =			\
 	nomad/app.scm		\
