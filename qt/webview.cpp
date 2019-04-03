@@ -75,7 +75,7 @@ SCM_DEFINE (scm_nomad_webview_reload, "webview-reload", 0, 0, 0, (),
             "Reloads the current buffer")
 {
   QMetaObject::invokeMethod (currentWebView (), "reload",
-                             Qt::BlockingQueuedConnection);
+                             Qt::DirectConnection);
   return SCM_UNSPECIFIED;
 }
 

@@ -136,9 +136,6 @@ start_app (int argc, char *argv[])
 void
 inner_main (void *data, int argc, char *argv[])
 {
-  scm_call_1 (scm_c_public_ref ("nomad util", "add-to-nomad-path"),
-              scm_from_utf8_string ("/home/mrosset/src/nomad/scheme"));
-
   // Define scheme C modules
   // Modules that are used before defining have a scheme file. This
   // allows mixing pure scheme with C scheme.
