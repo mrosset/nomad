@@ -24,7 +24,7 @@ AC_CONFIG_MACRO_DIRS([m4])
 
 
 # automake
-AM_INIT_AUTOMAKE([-Wall gnu silent-rules serial-tests color-tests])
+AM_INIT_AUTOMAKE([-Wall gnu silent-rules color-tests])
 AM_SILENT_RULES([yes])
 
 # programs
@@ -60,9 +60,6 @@ AC_SUBST(top_builddir_absolute)
 top_srcdir_absolute=`(cd $srcdir && pwd)`
 AC_SUBST(top_srcdir_absolute)
 
-AC_DEFUN([GUILE_CONFIG_SCRIPT],[AC_CONFIG_FILES([$1],[chmod +x $1])])
-GUILE_CONFIG_SCRIPT([check-guile])
-
 AC_PATH_PROG(GUILE_SNARF, guile-snarf, no)
 AC_SUBST(GUILE_SNARF)
 
@@ -89,5 +86,7 @@ Makefile
 qt/Makefile
 scheme/Makefile
 ])
+
+AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 
 AC_OUTPUT

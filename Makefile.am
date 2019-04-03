@@ -35,8 +35,6 @@ format:
 
 rebuild: clean all
 
-TESTS = check-guile
-
 CLEANFILES =		\
 	check-guile.log \
 	check-guile.trs \

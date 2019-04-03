@@ -28,6 +28,7 @@
 /src/nomad
 /src/resources.c
 /stamp-h1
+/pre-inst-env
 
 # multiple
 .deps
@@ -36,6 +37,7 @@ Makefile
 Makefile.in
 
 # wildcards
+*.trs
 *.go
 *.la
 *.lo
@@ -44,5 +46,3 @@ Makefile.in
 *.log
 /config.h
 /config.h.in
-/check-guile
-/src/test
