@@ -17,25 +17,22 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad minibuffer)
+  #:use-module (nomad eval)
   #:use-module (ice-9 session)
   #:use-module (ice-9 regex)
+  #:use-module (oop goops)
   #:export (minibuffer-mode-map))
 
 (define minibuffer-mode-map '(("C-n" . (minibuffer-scroll-down))
 			      ("C-p" . (minibuffer-scroll-up))))
 
 (define-public (input-completion text)
-  (let ((completions (map symbol->string (apropos-internal
-					  (regexp-quote text)))))
+  (let* ((symbols (apropos-internal (regexp-quote text)))
+	 (completions '()))
+    (for-each (lambda (s)
+		(when (assoc-ref command-alist s)
+		  (set! completions (append completions (list (symbol->string s))))))
+	      symbols)
     (if (null? completions)
 	#f
 	completions)))
-
-(define-public (input-eval input)
-  (let* ((result #nil) (error #nil))
-    (catch #t
-      (lambda ()
-	(set! result (format #f "~a" (eval-string input))))
-      (lambda (key . parameters)
-	    (set! error (format #f "Uncaught throw to '~a: ~a\n" key parameters))))
-    (values result error)))

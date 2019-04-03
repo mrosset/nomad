@@ -46,13 +46,14 @@ SOURCES =			\
 	nomad/app.scm		\
 	nomad/browser.scm	\
 	nomad/buffer.scm	\
+	nomad/eval.scm		\
 	nomad/events.scm	\
 	nomad/frame.scm		\
 	nomad/init.scm		\
 	nomad/keymap.scm	\
+	nomad/minibuffer.scm	\
 	nomad/options.scm	\
 	nomad/repl.scm		\
 	nomad/server.scm	\
 	nomad/util.scm		\
-	nomad/minibuffer.scm	\
 	nomad/webview.scm

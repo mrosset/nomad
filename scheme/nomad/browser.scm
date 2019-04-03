@@ -20,16 +20,10 @@
   #:use-module (nomad events)
   #:use-module (nomad buffer)
   #:use-module (nomad webview)
-  #:export (back
-            browse
-            current-url
+  #:use-module (nomad eval)
+  #:export (current-url
             default-home-page
-            forward
-            home
-            make-query
             prefix-url
-            query
-            reload
             search-provider-format))
 
 (define search-provider-format "https://duckduckgo.com/?q=~a")
@@ -44,30 +38,32 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
        (set! url (string-append "https://" url)))
   url)
 
-(define (browse url)
+(define-command (browse url)
   "Browse to URI. URI is prefixed with https:// if no protocol is
 specified. Returns the final URL passed to webkit"
     (webview-load-uri (prefix-url url)))
 
-(define (forward)
+(define-command (forward)
+  "Go forward in browser history"
   (webview-go-forward))
 
-(define (home)
+(define-command (home)
+  "Load default home page"
   (webview-load-uri default-home-page))
 
-(define (reload)
+(define-command (reload)
+  "Reload current URI"
   (webview-reload))
 
-(define (back)
-  "go back in history"
+(define-command (back)
   (run-hook event-hook "(back)")
   (webview-go-back))
 
-(define (make-query arg)
+(define-command (make-query arg)
   "Makes a new buffer and queries ARG using 'search-provider-format"
   (make-buffer (simple-format #f search-provider-format arg)))
 
-(define (query arg)
+(define-command (query arg)
   "Queries ARG using 'search-provider-format"
   (let ((uri (simple-format #f search-provider-format arg)))
     (browse uri)))

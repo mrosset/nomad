@@ -11,8 +11,7 @@ Keymap::Eval (QString input)
 {
   input = input.prepend ("(").append (")");
   SCM exp = qstring_to_scm (input);
-  SCM values
-      = scm_call_1 (scm_c_public_ref ("nomad minibuffer", "input-eval"), exp);
+  SCM values = scm_call_1 (scm_c_public_ref ("nomad eval", "input-eval"), exp);
   SCM result = scm_c_value_ref (values, 0);
   SCM err = scm_c_value_ref (values, 1);
 
@@ -37,6 +36,7 @@ Keymap::Complete (QString input)
       scm_c_public_ref ("nomad minibuffer", "input-completion"), text);
 
   emit clearMiniOutput ();
+
   // return if nothing found
   if (scm_not (found) == SCM_BOOL_T)
     {
