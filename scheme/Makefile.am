@@ -51,8 +51,9 @@ SOURCES =			\
 	nomad/util.scm		\
 	nomad/webview.scm
 
-TESTS =                                         \
-  tests/eval.scm
+TESTS =				\
+	tests/browser.scm	\
+	tests/eval.scm
 
 TEST_EXTENSIONS = .scm
 

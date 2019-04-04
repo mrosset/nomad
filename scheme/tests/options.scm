@@ -1,4 +1,4 @@
-;; browser.test -*- scheme -*-
+;; options.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,27 +16,28 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (test-options)
+(define-module (tests options)
   #:use-module (nomad options)
   #:use-module (ice-9 getopt-long)
-  #:use-module (test-suite lib))
+  #:use-module (srfi srfi-64))
 
 (define test-command-line '("./nomad" "https://gnu.org" "--listen" "/tmp/test"))
 (define test-arg0 '("./nomad"))
 (define test-client '("./nomad" "-c"))
 
-(with-test-prefix "options"
-		  (pass-if "option listen"
-			   (string=? (option-listen test-command-line)
-				     "/tmp/test"))
+(test-begin "options")
 
-		  (pass-if "option url" (string=?
-					 (option-url test-command-line) "https://gnu.org"))
+(test-equal "option listen" (option-listen test-command-line) "/tmp/test")
 
-		  (pass-if "option client" (option-client test-client))
+(test-equal "option url"
+  (option-url test-command-line) "https://gnu.org")
 
-		  (pass-if "option no client" (not (option-client test-arg0)))
+(test-assert "option client" (option-client test-client))
 
-		  (pass-if "no listen"(string=? (option-listen test-arg0) "/tmp/nomad-socket"))
+(test-assert"option no client" (not (option-client test-arg0)))
 
-		  (pass-if "no url" (string=? (option-url test-arg0) "https://www.gnu.org/software/guile")))
+(test-equal "no listen" (option-listen test-arg0) "/tmp/nomad-socket")
+
+(test-equal "no url" (option-url test-arg0) "https://www.gnu.org/software/guile")
+
+(test-end)
