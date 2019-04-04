@@ -13,6 +13,7 @@
   (input-completion "alpha") '("alpha-two" "alpha-one"))
 
 (test-assert "is command" (command? alpha-one))
+
 (test-assert "add to command list" (begin
 				     (add-to-command-alist 'version version)
 				     (eq? (assoc-ref command-alist 'version) version)))

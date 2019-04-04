@@ -41,6 +41,7 @@ public slots:
   void handleGoForward ();
   void handleKeymap (QString keymap, int modifiers, int key);
   void handleKillBuffer ();
+  void handleMessage (QString msg);
   void SetUrl (QVariant uri);
 };
 

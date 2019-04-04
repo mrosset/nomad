@@ -40,10 +40,16 @@ SCM_DEFINE (scm_minibuffer_scroll_up, "minibuffer-scroll-up", 0, 0, 0, (),
   return SCM_UNDEFINED;
 }
 
+SCM_DEFINE (scm_minibuffer_message, "message", 1, 0, 0, (SCM msg), "")
+{
+  keymap.setMiniBuffer (scm_to_qstring (msg));
+  return SCM_UNDEFINED;
+}
+
 void
 minibuffer_register_functions (void *data)
 {
-
 #include "minibuffer.x"
-  scm_c_export ("minibuffer-scroll-down", "minibuffer-scroll-up", NULL);
+  scm_c_export ("minibuffer-scroll-down", "minibuffer-scroll-up", "message",
+                NULL);
 }

@@ -114,3 +114,9 @@ Keymap::SetUrl (QVariant url)
 {
   emit setUrl (url);
 }
+
+void
+Keymap::handleMessage (QString msg)
+{
+  emit setMiniBuffer (QVariant (msg));
+}
