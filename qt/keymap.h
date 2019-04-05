@@ -32,6 +32,7 @@ signals:
   void evalWithArgs (QString symbol, QString arg0);
 
 public slots:
+  void historyComplete (QString input);
   void Complete (QString input);
   void Eval (QString input);
   void Kill ();

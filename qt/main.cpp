@@ -51,6 +51,9 @@ window_signals (QObject *window)
   QObject::connect (window, SIGNAL (handleCompletion (QString)), &keymap,
                     SLOT (Complete (QString)));
 
+  QObject::connect (window, SIGNAL (historyCompletion (QString)), &keymap,
+                    SLOT (historyComplete (QString)));
+
   QObject::connect (window, SIGNAL (evalWithArgs (QString, QString)), &keymap,
                     SLOT (Complete (QString, QString)));
 
@@ -215,6 +218,7 @@ inner_main (void *data, int argc, char *argv[])
 int
 main (int argc, char *argv[])
 {
+  // FIXME: is there a better way to do this?
   setenv ("GUILE_LOAD_COMPILED_PATH", NOMAD_GUILE_LOAD_COMPILED_PATH, 1);
   scm_boot_guile (argc, argv, inner_main, NULL);
 }

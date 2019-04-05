@@ -18,6 +18,7 @@ ApplicationWindow {
     signal submitEval(string input);
     signal evalWithArgs(string symbol, string arg0);
     signal handleCompletion(string input);
+    signal historyCompletion(string input);
 
     visible: true
 
@@ -166,7 +167,7 @@ ApplicationWindow {
                 text: "%1%".arg(currentWebView.loadProgress)
             }
             Text {
-                visible: false
+                visible: true
                 color: "steelblue"
                 text: "progress: %5 mini: %4 tabs: %1 terminal: %2 browser: %3".arg(tabs.focus).arg(terminal.focus).arg(currentWebView.focus).arg(miniBuffer.focus).arg(progress.value)
                 Layout.alignment: Qt.AlignRight
@@ -342,6 +343,7 @@ ApplicationWindow {
                                     tabs.focus = true
                                 }
                                 onTextEdited: {
+                                    historyCompletion(miniBuffer.text)
                                 }
                             }
                         },
@@ -538,11 +540,10 @@ ApplicationWindow {
     }
 
     function keyboardQuit() {
-        currentWebView.focus = true
-        tabs.focus = true
-        /* currentWebView.focus = false */
         miniBuffer.clear()
-
+        currentWebView.focus = false
+        miniBuffer.state = ""
+        tabs.focus = true
     }
 
     function setUrl(uri) {

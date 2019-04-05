@@ -17,9 +17,10 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad minibuffer)
-  #:use-module (nomad eval)
-  #:use-module (ice-9 session)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 session)
+  #:use-module (nomad eval)
+  #:use-module (nomad init)
   #:export (minibuffer-mode-map))
 
 (define minibuffer-mode-map '(("C-n" . (minibuffer-scroll-down))
@@ -33,4 +34,13 @@
 	     (when (string-match text key)
 	       (set! completion (append completion (list key))))))
 	 command-alist)
+    completion))
+
+(define-public (history-completion text)
+  "Returns a list of matches in history list"
+  (let ((completion '()))
+    (map (lambda (s)
+	   (when (string-match text s)
+	     (set! completion (append completion (list s)))))
+	 history)
     completion))

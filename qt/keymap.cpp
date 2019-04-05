@@ -30,7 +30,6 @@ call_proc_args (void *data)
     {
       SCM proc = scm_car (obj);
       SCM arg = scm_car (scm_cdr (obj));
-      qInfo () << scm_to_human (proc) << scm_to_human (arg);
       scm_call_1 (proc, arg);
     }
   return SCM_UNSPECIFIED;
@@ -72,7 +71,6 @@ Keymap::Eval (QString command)
 void
 Keymap::EvalWithArgs (QString command, QString arg0)
 {
-  qInfo () << "eval: command:" << command << "arg0:" << arg0;
   SCM symbol = scm_string_to_symbol (qstring_to_scm (command));
   SCM lst = scm_variable_ref ((scm_c_lookup ("command-alist")));
   SCM pargs = scm_list_2 (scm_assoc_ref (lst, symbol), qstring_to_scm (arg0));
@@ -83,13 +81,32 @@ Keymap::EvalWithArgs (QString command, QString arg0)
 }
 
 void
+Keymap::historyComplete (QString input)
+{
+  SCM text = qstring_to_scm (input);
+  SCM found = scm_call_1 (
+      scm_c_public_ref ("nomad minibuffer", "history-completion"), text);
+
+  // return if nothing found
+  if (scm_not (found) == SCM_BOOL_T)
+    {
+      return;
+    }
+
+  QList<QString> ql;
+  for (int i = 0; i < scm_to_int (scm_length (found)); i++)
+    {
+      QString qs = scm_to_qstring (scm_list_ref (found, scm_from_int (i)));
+      ql.append (qs);
+    }
+  emit setMiniOutput (QVariant (ql));
+}
+
+void
 Keymap::Complete (QString input)
 {
-  SCM text;
-  SCM found;
-
-  text = qstring_to_scm (input);
-  found = scm_call_1 (
+  SCM text = qstring_to_scm (input);
+  SCM found = scm_call_1 (
       scm_c_public_ref ("nomad minibuffer", "input-completion"), text);
 
   emit clearMiniOutput ();
@@ -112,8 +129,7 @@ Keymap::Complete (QString input)
 void
 Keymap::Kill ()
 {
-  scm_call_1 (scm_c_public_ref ("nomad repl", "server-force-delete"),
-              scm_c_eval_string ("(option-listen (command-line))"));
+  scm_call_0 (scm_c_public_ref ("nomad init", "shutdown"));
 }
 
 void

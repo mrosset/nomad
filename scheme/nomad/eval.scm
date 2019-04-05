@@ -18,6 +18,7 @@
 
 (define-module (nomad eval)
   #:use-module (ice-9 session)
+  #:use-module (nomad events)
   #:export (
 	    define-alias
 	    define-command))
@@ -27,6 +28,8 @@
 (define-public (add-to-command-alist key proc)
   (set-procedure-property! proc 'command #t)
   (set! command-alist (assoc-set! command-alist key proc)))
+
+(define-public command-hook (make-hook 1))
 
 (define-syntax define-command
   (syntax-rules ()
@@ -38,10 +41,11 @@
 	 body)
        (add-to-command-alist (procedure-name proc) proc))
      )
-    ((define-command (proc . args) doc body)
+    ((define-command (proc arg) doc body)
      (begin
-       (define-public (proc . args)
+       (define-public (proc arg)
 	 doc
+	 (run-hook command-hook arg)
 	 (run-hook event-hook (format #f "~s" proc))
 	 body)
        (add-to-command-alist (procedure-name proc) proc))

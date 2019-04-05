@@ -23,7 +23,6 @@
   #:use-module (nomad repl)
   #:use-module (nomad eval)
   #:export (pp-buffers
-            kill-buffers
             make-buffer-socket))
 
 (define (make-buffer-socket url socket)

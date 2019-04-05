@@ -68,7 +68,7 @@ DEVEL_SOCKET  = /tmp/nomad-devel
 
 test: all
 	-rm $(DEVEL_SOCKET)
-	./nomad --listen $(DEVEL_SOCKET)
+	../pre-inst-env ./nomad --listen $(DEVEL_SOCKET)
 
 format:
 	clang-format -i *.c *.h
