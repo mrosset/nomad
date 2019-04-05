@@ -143,6 +143,7 @@ ApplicationWindow {
             id: statusRow
             Button {
                 id: testButton
+                objectName: "testButton"
                 text: "debug"
                 onClicked: {
                     setMiniBuffer(miniBufferModel.count)
@@ -167,6 +168,8 @@ ApplicationWindow {
                 text: "%1%".arg(currentWebView.loadProgress)
             }
             Text {
+                id: statusFocus
+                objectName: "statusFocus"
                 visible: true
                 color: "steelblue"
                 text: "progress: %5 mini: %4 tabs: %1 terminal: %2 browser: %3".arg(tabs.focus).arg(terminal.focus).arg(currentWebView.focus).arg(miniBuffer.focus).arg(progress.value)
@@ -554,6 +557,7 @@ ApplicationWindow {
         miniBufferModel.clear()
         miniBuffer.prompt = arg + " ?"
         miniBuffer.symbol = cmd
+        historyCompletion("")
         miniBuffer.state = "prompt"
     }
 }

@@ -22,6 +22,7 @@
 #include "frame.h"
 #include "keymap.h"
 #include "minibuffer.h"
+#include "qml.h"
 #include "webview.h"
 
 #include <QApplication>
@@ -167,14 +168,17 @@ inner_main (void *data, int argc, char *argv[])
   scm_c_use_module ("nomad frame");
   scm_c_define_module ("nomad frame", frame_register_functions, NULL);
 
+  scm_c_define_module ("nomad qml", qml_register_functions, NULL);
+
   // scm_c_define_module ("nomad util", nomad_util_register_functions, NULL);
 
   // Use essential modules
-  scm_c_use_module ("nomad util");
-  scm_c_use_module ("nomad eval");
   scm_c_use_module ("nomad browser");
-  scm_c_use_module ("nomad repl");
+  scm_c_use_module ("nomad eval");
   scm_c_use_module ("nomad init");
+  scm_c_use_module ("nomad qml");
+  scm_c_use_module ("nomad repl");
+  scm_c_use_module ("nomad util");
   scm_c_eval_string ("(init)");
 
   scm_c_use_module ("nomad options");

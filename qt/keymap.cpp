@@ -87,6 +87,8 @@ Keymap::historyComplete (QString input)
   SCM found = scm_call_1 (
       scm_c_public_ref ("nomad minibuffer", "history-completion"), text);
 
+  emit clearMiniOutput ();
+
   // return if nothing found
   if (scm_not (found) == SCM_BOOL_T)
     {
