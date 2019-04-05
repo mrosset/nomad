@@ -16,6 +16,14 @@ print_methods (QObject *object)
     }
 }
 
+QString
+scm_to_human (SCM in)
+{
+  SCM fmt = scm_call_2 (scm_c_public_ref ("guile", "format"),
+                        scm_from_utf8_string ("~a"), in);
+  return scm_to_qstring (fmt);
+}
+
 SCM
 qstring_to_scm (QString text)
 {

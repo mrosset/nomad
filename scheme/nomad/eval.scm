@@ -17,10 +17,10 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad eval)
+  #:use-module (ice-9 session)
   #:export (
 	    define-alias
 	    define-command))
-
 
 (define-public command-alist '())
 
@@ -32,12 +32,18 @@
   (syntax-rules ()
     ((define-command (proc) doc body)
      (begin
-       (define-public (proc) doc body)
+       (define-public (proc)
+	 doc
+	 (run-hook event-hook (format #f "~s" proc))
+	 body)
        (add-to-command-alist (procedure-name proc) proc))
      )
     ((define-command (proc . args) doc body)
      (begin
-       (define-public (proc . args) doc body)
+       (define-public (proc . args)
+	 doc
+	 (run-hook event-hook (format #f "~s" proc))
+	 body)
        (add-to-command-alist (procedure-name proc) proc))
      )))
 
@@ -47,6 +53,14 @@
      (begin
        (add-to-command-alist (quote alias) proc)
        (define-public alias proc)))))
+
+(define-public (command-ref key)
+  "Returns the associated proc by key from command-alist"
+  (assoc-ref command-alist key))
+
+(define-public (command-args key)
+  "Return a list of required arguments for procedure by `key'"
+  (assoc-ref  (procedure-arguments (command-ref key)) 'required))
 
 (define-public (command? proc)
   (if (procedure? proc)

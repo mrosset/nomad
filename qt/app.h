@@ -29,6 +29,8 @@ SCM qstring_to_scm (QString text);
 
 QString scm_to_qstring(SCM text);
 
+QString scm_to_human (SCM in);
+
 void print_methods (QObject *object);
 
 QVariant invoke_method(QObject*, const char*);

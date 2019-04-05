@@ -2,6 +2,7 @@ import QtQuick 2.11
 import QtQuick.Layouts 1.11
 import QtQuick.Dialogs 1.1
 import QtQuick.Controls 1.2
+import QtQuick.Controls.Styles 1.2
 import QtQuick.Window 2.1
 import QtWebEngine 1.7
 import QMLTermWidget 1.0
@@ -15,6 +16,7 @@ ApplicationWindow {
     property int previousVisibility: Window.Windowed
     signal submitKeymap(string keymap, int modifers, int key)
     signal submitEval(string input);
+    signal evalWithArgs(string symbol, string arg0);
     signal handleCompletion(string input);
 
     visible: true
@@ -29,7 +31,6 @@ ApplicationWindow {
                 return webViewLayout.state = "Close"
             }
             currentWebView.focus = false
-            terminal.forceActiveFocus()
             webViewLayout.state = "Open"
         }
     }
@@ -85,16 +86,38 @@ ApplicationWindow {
             tabsVisible: true
             Layout.preferredWidth: parent.width
             Layout.fillHeight: true
-            function createEmptyTab(profile) {
-                var tab = addTab("", webView);
-                tab.active = true;
-                tab.title = Qt.binding(function() { return currentWebView.focus });
-                tab.item.profile = profile;
-                return tab;
+            style: TabViewStyle {
+                tabsMovable: true
+                tab: Item {
+                    implicitWidth: text.width + 6
+                    implicitHeight: text.height + 6
+                    /* Image { */
+                    /*     id: appIcon */
+                    /*     sourceSize: Qt.size(32, 32) */
+                    /*     /\* source: webView.icon != "" ? webView.icon : "fallbackFavicon.png"; *\/ */
+                    /*     source: currentWebView.icon */
+                    /* } */
+                    /* color: index === tabs.currentIndex ? "steelblue": "white" */
+                    Text {
+                        id: text
+                        text: index
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        color: index === tabs.currentIndex ? "steelblue": "black"
+                    }
+                }
+
+                frame: Rectangle { color: "steelblue" }
             }
             Component.onCompleted: createEmptyTab(defaultProfile)
             Keys.onPressed: {
                 submitKeymap("webview-mode-map", event.modifiers, event.key)
+            }
+            function createEmptyTab(profile) {
+                var tab = addTab("", webView);
+                tab.active = true;
+                /* tab.title = Qt.binding(function() { return currentWebView.focus }); */
+                tab.item.profile = profile;
+                return tab;
             }
         }
         Rectangle {
@@ -104,9 +127,9 @@ ApplicationWindow {
             visible: false
             WebEngineView {
                 id: devToolsView
-                visible: true
+                visible: false
                 height: visible ? 400 : 0
-                inspectedView: currentWebView
+                inspectedView: visible && tabs.currentIndex < tabs.count ? tabs.getTab(tabs.currentIndex).item : null
                 anchors.fill: parent
                 onNewViewRequested: function(request) {
                     var tab = tabs.createEmptyTab(currentWebView.profile);
@@ -121,7 +144,7 @@ ApplicationWindow {
                 id: testButton
                 text: "debug"
                 onClicked: {
-                    killBuffer()
+                    setMiniBuffer(miniBufferModel.count)
                 }
                 visible: false
             }
@@ -185,7 +208,6 @@ ApplicationWindow {
                 }
             }
         }
-        Component.onCompleted: { console.log("state", state)}
         state: "Close"
         states: [
             State {
@@ -247,7 +269,6 @@ ApplicationWindow {
             id: miniOutputRect
             color: "white"
             Layout.fillWidth: true
-            Layout.fillHeight: true
             height: 200
             visible: false
             ListView {
@@ -294,12 +315,11 @@ ApplicationWindow {
             color: "white"
             height: miniBuffer.height
             Layout.fillWidth: true
-
             RowLayout {
                 id: miniBufferRowLayout
                 Label {
                     id: miniBufferLabel
-                    text: "M-x"
+                    text: miniBuffer.prompt
                     visible: miniBuffer.focus
                 }
                 TextInput {
@@ -307,13 +327,46 @@ ApplicationWindow {
                     objectName: "miniBuffer"
                     font.pointSize: 12
                     Layout.fillWidth: true
+                    property string prompt: "M-x"
+                    property string symbol: null
+                    states: [
+                        State {
+                            name: "prompt"
+                            PropertyChanges {
+                                target: miniBuffer
+                                focus: true
+                                text: ""
+                                onAccepted: {
+                                    evalWithArgs(symbol, text)
+                                    miniBuffer.state = ""
+                                    tabs.focus = true
+                                }
+                                onTextEdited: {
+                                }
+                            }
+                        },
+                        State {
+                            name: ""
+                            PropertyChanges {
+                                target: miniBuffer
+                                prompt: "M-x"
+                                text: ""
+                            }
+                            PropertyChanges {
+                                target: miniBufferLabel
+                                text: miniBuffer.prompt
+                            }
+                            PropertyChanges {
+                                target: tabs
+                                focus: true
+                            }
+                        }
+                    ]
                     onAccepted: {
                         if (miniOutput.currentIndex >= 0)  {
                             text = miniBufferModel.get(miniOutput.currentIndex).symbol
                         }
                         submitEval(text)
-                        setMiniOutput("")
-                        tabs.focus = true
                     }
                     onTextEdited: {
                         handleCompletion(miniBuffer.text)
@@ -339,7 +392,6 @@ ApplicationWindow {
                             miniBuffer.text = ""
                     }
                 }
-
             }
         }
     }
@@ -467,6 +519,7 @@ ApplicationWindow {
 
     function setMiniBuffer(output) {
         miniBuffer.text = output
+        miniBuffer.focus = false
     }
 
     function clearMiniOutput() {
@@ -485,11 +538,21 @@ ApplicationWindow {
     }
 
     function keyboardQuit() {
-        currentWebView.focus = false
+        currentWebView.focus = true
         tabs.focus = true
+        /* currentWebView.focus = false */
+        miniBuffer.clear()
+
     }
 
     function setUrl(uri) {
         currentWebView.url = uri
+    }
+
+    function promptInput(cmd, arg) {
+        miniBufferModel.clear()
+        miniBuffer.prompt = arg + " ?"
+        miniBuffer.symbol = cmd
+        miniBuffer.state = "prompt"
     }
 }

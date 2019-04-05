@@ -56,16 +56,16 @@ specified. Returns the final URL passed to webkit"
   (webview-reload))
 
 (define-command (back)
-  (run-hook event-hook "(back)")
+  "Browse backwards in history"
   (webview-go-back))
 
-(define-command (make-query arg)
+(define-command (make-query q)
   "Makes a new buffer and queries ARG using 'search-provider-format"
-  (make-buffer (simple-format #f search-provider-format arg)))
+  (make-buffer (simple-format #f search-provider-format q)))
 
-(define-command (query arg)
+(define-command (query q)
   "Queries ARG using 'search-provider-format"
-  (let ((uri (simple-format #f search-provider-format arg)))
+  (let ((uri (simple-format #f search-provider-format q)))
     (browse uri)))
 
 (define (current-url)

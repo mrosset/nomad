@@ -83,6 +83,7 @@ void
 buffer_register_functions (void *data)
 {
 #include "buffer.x"
+
   scm_c_export ("make-buffer", "kill-buffer", "next-buffer", "buffer-alist",
                 "switch-to-buffer", NULL);
 }

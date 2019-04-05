@@ -28,6 +28,8 @@ signals:
   QVariant getBuffer (QVariant index);
   void setUrl (QVariant url);
   void findText (QString text);
+  void promptInput (QVariant cmd, QVariant arg);
+  void evalWithArgs (QString symbol, QString arg0);
 
 public slots:
   void Complete (QString input);
@@ -43,6 +45,7 @@ public slots:
   void handleKillBuffer ();
   void handleMessage (QString msg);
   void SetUrl (QVariant uri);
+  void EvalWithArgs (QString symbol, QString arg0);
 };
 
 #endif // KEYMAP_H

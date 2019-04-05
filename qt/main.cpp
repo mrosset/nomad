@@ -51,6 +51,12 @@ window_signals (QObject *window)
   QObject::connect (window, SIGNAL (handleCompletion (QString)), &keymap,
                     SLOT (Complete (QString)));
 
+  QObject::connect (window, SIGNAL (evalWithArgs (QString, QString)), &keymap,
+                    SLOT (Complete (QString, QString)));
+
+  QObject::connect (window, SIGNAL (evalWithArgs (QString, QString)), &keymap,
+                    SLOT (EvalWithArgs (QString, QString)));
+
   // C++ signals to UML methods
   QObject::connect (&keymap, SIGNAL (makeFrame (QVariant)), window,
                     SLOT (makeFrame (QVariant)));
@@ -86,6 +92,9 @@ window_signals (QObject *window)
 
   QObject::connect (&keymap, SIGNAL (setUrl (QVariant)), window,
                     SLOT (setUrl (QVariant)));
+
+  QObject::connect (&keymap, SIGNAL (promptInput (QVariant, QVariant)), window,
+                    SLOT (promptInput (QVariant, QVariant)));
 }
 
 static void

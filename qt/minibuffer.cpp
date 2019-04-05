@@ -21,7 +21,6 @@
 
 #include <QObject>
 #include <QQmlProperty>
-#include <cstddef>
 #include <libguile.h>
 
 SCM_DEFINE (scm_minibuffer_scroll_down, "minibuffer-scroll-down", 0, 0, 0, (),

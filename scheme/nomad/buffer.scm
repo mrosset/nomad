@@ -21,6 +21,7 @@
   #:use-module (srfi srfi-9)
   #:use-module (nomad app)
   #:use-module (nomad repl)
+  #:use-module (nomad eval)
   #:export (pp-buffers
             kill-buffers
             make-buffer-socket))
@@ -29,7 +30,8 @@
   (let ((exp (format #f "(make-buffer \"~a\")" url)))
     (write-socket exp socket)))
 
-(define (kill-buffers)
+(define-command (kill-some-buffers)
+  "Kill all buffers but one"
   (for-each (lambda (arg)
               (kill-buffer)) (buffer-alist)))
 
