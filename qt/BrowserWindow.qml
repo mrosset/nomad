@@ -127,7 +127,7 @@ ApplicationWindow {
             visible: false
             WebEngineView {
                 id: devToolsView
-                visible: false
+                visible: true
                 height: visible ? 400 : 0
                 inspectedView: visible && tabs.currentIndex < tabs.count ? tabs.getTab(tabs.currentIndex).item : null
                 anchors.fill: parent
