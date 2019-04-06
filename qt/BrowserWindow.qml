@@ -170,7 +170,7 @@ ApplicationWindow {
             Text {
                 id: statusFocus
                 objectName: "statusFocus"
-                visible: true
+                visible: false
                 color: "steelblue"
                 text: "progress: %5 mini: %4 tabs: %1 terminal: %2 browser: %3".arg(tabs.focus).arg(terminal.focus).arg(currentWebView.focus).arg(miniBuffer.focus).arg(progress.value)
                 Layout.alignment: Qt.AlignRight

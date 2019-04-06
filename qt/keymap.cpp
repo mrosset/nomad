@@ -47,9 +47,17 @@ void
 Keymap::Eval (QString command)
 {
   SCM key = scm_string_to_symbol (qstring_to_scm (command));
-  SCM args = scm_call_1 (scm_c_public_ref ("nomad eval", "command-args"), key);
+  SCM args;
   SCM proc = scm_call_1 (scm_c_public_ref ("nomad eval", "command-ref"), key);
 
+  // If proc is false. then command not found return undefined
+  if (scm_is_false (proc))
+    {
+      emit setMiniBuffer (QVariant (scm_to_human (SCM_UNSPECIFIED)));
+      return;
+    }
+
+  args = scm_call_1 (scm_c_public_ref ("nomad eval", "command-args"), key);
   // If procedure does not take any arguments. Call the procedure and
   // set the minibuffer to either value returned from the procedure or
   // the exception
