@@ -2,10 +2,11 @@
 <RCC version="1.0">
   <qresource prefix="/">
     <file>ApplicationRoot.qml</file>
-    <file>BrowserWindow.qml</file>
     <file>BrowserDialog.qml</file>
+    <file>BrowserWindow.qml</file>
     <file>FullScreenNotification.qml</file>
-    <file>hints.js</file>
+    <file>Terminal.qml</file>
     <file>backend.js</file>
+    <file>hints.js</file>
   </qresource>
 </RCC>
