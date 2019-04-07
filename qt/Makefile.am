@@ -74,7 +74,7 @@ test: all
 format:
 	clang-format -i *.c *.h
 
-resource.cpp: $(wildcard *.qml) hints.js resources.qrc
+resource.cpp: $(wildcard *.qml) hints.js backend.js resources.qrc
 	@echo "  RCC" $@;
 	@rcc resources.qrc -o $@
 

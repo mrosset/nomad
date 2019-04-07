@@ -6,5 +6,6 @@
     <file>BrowserDialog.qml</file>
     <file>FullScreenNotification.qml</file>
     <file>hints.js</file>
+    <file>backend.js</file>
   </qresource>
 </RCC>
