@@ -107,6 +107,7 @@ function execSelect(elem) {
                 elem.setSelectionRange(elem.value.length, elem.value.length);
         }
         removeHints();
+        keymap.kbquit();
 }
 function setHints() {
         setHintRules();

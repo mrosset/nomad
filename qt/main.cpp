@@ -29,7 +29,6 @@
 #include <QQmlApplicationEngine>
 #include <QQmlProperty>
 #include <QQuickStyle>
-
 #include <QVariant>
 #include <libguile.h>
 #include <qtwebengineglobal.h>
@@ -195,7 +194,7 @@ inner_main (void *data, int argc, char *argv[])
       = scm_call_1 (scm_c_public_ref ("nomad repl", "socket-exists?"), socket);
 
   // start a socket server if one does not exist already. this implies
-  // we are the only instance. so start QT a new application as well
+  // we are the only instance. then start QT application
   if (exists == SCM_BOOL_F)
     {
       // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add

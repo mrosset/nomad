@@ -11,7 +11,7 @@ call_proc (void *data)
 {
   SCM proc = (SCM) (data);
 
-  // if obj is a procedure then it has not arguments, just call it directly
+  // if obj is a procedure then it takes no arguments, just call it directly
   if (scm_procedure_p (proc))
     {
       SCM result = scm_call_0 (proc);

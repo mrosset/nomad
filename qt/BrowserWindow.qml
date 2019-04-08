@@ -5,6 +5,7 @@ import QtQuick.Controls 1.2
 import QtQuick.Controls.Styles 1.2
 import QtQuick.Window 2.1
 import QtWebEngine 1.7
+import QtWebChannel 1.0
 import Keymap 1.0
 
 ApplicationWindow {
@@ -20,7 +21,6 @@ ApplicationWindow {
     signal historyCompletion(string input);
 
     visible: true
-
     width: 640
     height: 480
 
@@ -30,13 +30,13 @@ ApplicationWindow {
             if (webViewLayout.state == "Open" && terminal.focus) {
                 return webViewLayout.state = "Close"
             }
-            currentWebView.focus = false
             webViewLayout.state = "Open"
         }
     }
     Action {
         shortcut: "Alt+x"
         onTriggered: {
+            webViewLayout.state = "Close"
             miniBuffer.focus = !miniBuffer.focus
         }
     }
@@ -145,7 +145,7 @@ ApplicationWindow {
                 objectName: "testButton"
                 text: "debug"
                 onClicked: {
-                    setMiniBuffer(miniBufferModel.count)
+                    keymap.someSignal("test")
                 }
                 visible: false
             }
@@ -169,7 +169,7 @@ ApplicationWindow {
             Text {
                 id: statusFocus
                 objectName: "statusFocus"
-                visible: false
+                visible: true
                 color: "steelblue"
                 text: "progress: %5 mini: %4 tabs: %1 terminal: %2 browser: %3".arg(tabs.focus).arg(terminal.focus).arg(currentWebView.focus).arg(miniBuffer.focus).arg(progress.value)
                 Layout.alignment: Qt.AlignRight
@@ -334,9 +334,6 @@ ApplicationWindow {
                         }
                     ]
                     onAccepted: {
-                        if (miniOutput.currentIndex >= 0)  {
-                            text = miniBufferModel.get(miniOutput.currentIndex).symbol
-                        }
                         submitEval(text)
                     }
                     onTextEdited: {
@@ -370,18 +367,47 @@ ApplicationWindow {
     // Components
     Keymap {
         id: keymap
+        WebChannel.id: "keymap"
+        signal someSignal(string message);
+        function kbquit() {
+            console.log("quit keyboard")
+            keyboardQuit()
+        }
+    }
+    WebChannel {
+        id: channel
+        registeredObjects: [keymap]
     }
     Component {
         id: webView
         WebEngineView {
             id: webEngineView
+            webChannel: channel
+            activeFocusOnPress : false
+            settings.focusOnNavigationEnabled : false
             userScripts: [
                 WebEngineScript{
+                    injectionPoint: WebEngineScript.DocumentReady
+                    sourceUrl: "qrc:///qtwebchannel/qwebchannel.js"
+                    worldId: WebEngineScript.MainWorld
+                },
+                WebEngineScript{
+                    injectionPoint: WebEngineScript.DocumentReady
+                    sourceUrl: "qrc:///backend.js"
+                    worldId: WebEngineScript.MainWorld
+                },
+                WebEngineScript{
                     injectionPoint: WebEngineScript.Deferred
-                    sourceUrl: "qrc:/hints.js"
+                    sourceUrl: "qrc:///hints.js"
                     worldId: WebEngineScript.MainWorld
                 }
             ]
+            onFocusChanged: {
+                if(focus) {
+                    focus: false
+                    tabs.focus = true
+                }
+            }
             states: [
                 State {
                     name: "FullScreen"
