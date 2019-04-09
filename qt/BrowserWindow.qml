@@ -334,6 +334,7 @@ ApplicationWindow {
                         }
                     ]
                     onAccepted: {
+                        text = miniBufferModel.get(miniOutput.currentIndex).symbol
                         submitEval(text)
                     }
                     onTextEdited: {
@@ -383,8 +384,6 @@ ApplicationWindow {
         WebEngineView {
             id: webEngineView
             webChannel: channel
-            activeFocusOnPress : false
-            settings.focusOnNavigationEnabled : false
             userScripts: [
                 WebEngineScript{
                     injectionPoint: WebEngineScript.DocumentReady
