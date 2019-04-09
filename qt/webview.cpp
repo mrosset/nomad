@@ -1,5 +1,5 @@
 /*
- * webview.c
+ * webview.cpp
  * Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
  *
  * This file is part of Nomad
@@ -18,6 +18,7 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "app.h"
+#include "eval.h"
 #include "keymap.h"
 
 #include <QApplication>
@@ -100,8 +101,8 @@ SCM_DEFINE (scm_nomad_debug_webview, "debug-webview-methods", 0, 0, 0, (),
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE (scm_nomad_copy_current_url, "copy-current-url", 0, 0, 0, (),
-            "prints webview methods")
+SCM_DEFINE_PUBLIC (scm_nomad_copy_current_url, "copy-current-url", 0, 0, 0, (),
+                   "copy the current url to clipboard")
 {
   QClipboard *cb = QApplication::clipboard ();
   const QVariant uri = qvariant_cast<QVariant> (
@@ -126,6 +127,7 @@ webview_register_functions (void *data)
 #include "webview.x"
   scm_c_export ("webview-load-uri", "webview-go-back", "webview-go-forward",
                 "webview-reload", "webview-current-url", "scroll-up",
-                "scroll-down", "debug-webview-methods", "copy-current-url",
-                "isearch-forward", NULL);
+                "scroll-down", "debug-webview-methods", "isearch-forward",
+                NULL);
+  scm_c_make_command ("copy-current-url");
 }

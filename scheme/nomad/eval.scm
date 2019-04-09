@@ -31,6 +31,11 @@
 
 (define-public command-hook (make-hook 1))
 
+(define-public (make-command key)
+  "Evaluates key to procedure and adds to command-alist"
+  (let ((proc (eval key (interaction-environment))))
+    (add-to-command-alist key proc)))
+
 (define-syntax define-command
   (syntax-rules ()
     ((define-command (proc) doc body)
