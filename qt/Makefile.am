@@ -25,6 +25,7 @@ bin_PROGRAMS = nomad
 nomad_SOURCES = \
 		app.cpp         \
 		buffer.cpp      \
+		eval.cpp	\
 		frame.cpp       \
 		keymap.cpp      \
 		main.cpp	\

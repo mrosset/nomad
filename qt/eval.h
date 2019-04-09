@@ -17,5 +17,10 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef EVAL_H
+#define EVAL_H
 
-void scm_c_make_command(const char *key);
+#include <libguile.h>
+SCM scm_c_make_command(const char *key);
+
+#endif // EVAL_H
