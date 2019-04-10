@@ -307,6 +307,7 @@ ApplicationWindow {
                                 focus: true
                                 text: ""
                                 onAccepted: {
+                                    text = miniBufferModel.get(miniOutput.currentIndex).symbol
                                     evalWithArgs(symbol, text)
                                     miniBuffer.state = ""
                                     tabs.focus = true
