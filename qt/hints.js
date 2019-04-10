@@ -199,7 +199,6 @@ function get_key(evt){
             ctrl = evt.ctrlKey ? 'C-' : '',
             meta = (evt.metaKey || evt.altKey) ? 'M-' : '',
         shift = evt.shiftKey ? 'S-' : '';
-        console.log("key", key)
         if (evt.shiftKey){
                 if (/^[a-z]$/.test(key))
                         return ctrl+meta+key.toUpperCase();

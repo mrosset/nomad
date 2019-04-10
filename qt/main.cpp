@@ -55,15 +55,9 @@ window_signals (QObject *window)
                     SLOT (historyComplete (QString)));
 
   QObject::connect (window, SIGNAL (evalWithArgs (QString, QString)), &keymap,
-                    SLOT (Complete (QString, QString)));
-
-  QObject::connect (window, SIGNAL (evalWithArgs (QString, QString)), &keymap,
                     SLOT (EvalWithArgs (QString, QString)));
 
   // C++ signals to UML methods
-  QObject::connect (&keymap, SIGNAL (makeFrame (QVariant)), window,
-                    SLOT (makeFrame (QVariant)));
-
   QObject::connect (&keymap, SIGNAL (makeBuffer (QVariant)), window,
                     SLOT (makeBuffer (QVariant)));
 
