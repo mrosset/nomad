@@ -19,8 +19,7 @@
 (define-module (nomad eval)
   #:use-module (ice-9 session)
   #:use-module (nomad events)
-  #:export (
-	    define-alias
+  #:export (define-alias
 	    define-command))
 
 (define-public command-alist '())

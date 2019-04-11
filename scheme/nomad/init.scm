@@ -24,6 +24,7 @@
   #:use-module (nomad buffer)
   #:use-module (nomad repl)
   #:use-module (nomad options)
+  #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-1)
   #:export (init
             user-cookie-file
@@ -54,7 +55,7 @@
 
 (define-public (nomad-write-history)
   (let ((port (open-output-file (fluid-ref history-file))))
-    (write history port)
+    (pretty-print history port)
     (close-port port)))
 
 (define-public (add-to-history text)
@@ -74,16 +75,18 @@
                              //
                              "session.scm")))
 
-(define-public (read-session)
+(define-command (read-session)
+  "Read session from file"
   (let* ((port (open-input-file (fluid-ref session-file)))
          (buffers (read port)))
     (close-port port)
     (for-each (lambda (url) (make-buffer (cdr url))) buffers)))
 
-(define-public (write-session)
+(define-command (write-session)
+  "Write session to file"
   (let* ((port (open-output-file (fluid-ref session-file)))
          (buffers (buffer-alist)))
-    (write buffers port)
+    (pretty-print buffers port)
     (close-port port)))
 
 (define user-cookie-file
@@ -99,7 +102,7 @@
   "Cleans up after guile and serialize persistent objects"
   (format #t "writing history....\n")
   (nomad-write-history)
-  (format #t "shuting down repl...\n")
+  (format #t "shutting down repl...\n")
   (server-force-delete (option-listen (command-line))))
 
 (define (init)
@@ -107,5 +110,5 @@
   (add-hook! event-hook debug-event)
   (create-nomad-directory)
   (read-history)
-  (if (file-exists? user-init-file)
+  (when (file-exists? user-init-file)
       (load user-init-file)))
