@@ -191,6 +191,7 @@ function initKeyBind(e){
                 addKeyBind( 'C-f', 'hintMode()', e );
                 addKeyBind( 'C-F', 'hintMode(true)', e );
                 addKeyBind( 'C-c', 'removeHints()', e );
+                addKeyBind( 'C-g', 'keymap.kbquit()', e );
         }
 }
 
