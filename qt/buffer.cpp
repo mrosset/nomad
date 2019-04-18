@@ -18,6 +18,7 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "app.h"
+#include "eval.h"
 
 #include <QUrl>
 #include <QVariant>
@@ -39,7 +40,6 @@ SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
       QUrl uri = qvariant_cast<QUrl> (var);
       const char *url = uri.toString ().toUtf8 ().constData ();
       SCM pair = scm_cons (scm_from_int (i), scm_from_utf8_string (url));
-      // SCM pair = scm_cons (scm_from_int (i), keymap.GetBuffer (i));
       list = scm_append (scm_list_2 (list, scm_list_1 (pair)));
     }
   return list;
@@ -83,7 +83,7 @@ void
 buffer_register_functions (void *data)
 {
 #include "buffer.x"
-
   scm_c_export ("make-buffer", "kill-buffer", "next-buffer", "buffer-alist",
                 "switch-to-buffer", NULL);
+  scm_c_make_command ("make-buffer");
 }

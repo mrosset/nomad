@@ -39,15 +39,14 @@ moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
 
 ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 
-AM_CPPFLAGS = \
-	      -Wall -Werror -Wno-unused-function -fPIC            \
-	      $(GUILE_CFLAGS)                                     \
-	      $(QT_WIDGETS_CFLAGS)                                \
-	      $(QT_WEB_CFLAGS)                                    \
-	      $(QT_WEB_WIDGETS_CFLAGS)                            \
-	      $(QT_QUICK_CONTROLS_CFLAGS)                         \
-	      -DNOMAD_GUILE_LOAD_PATH=\""$(moddir)"\"             \
-	      -DNOMAD_GUILE_LOAD_COMPILED_PATH=\""$(ccachedir)"\" \
+nomad_CPPFLAGS = -Wall -Werror -Wno-unused-function -fPIC		\
+	      $(GUILE_CFLAGS)						\
+	      $(QT_WIDGETS_CFLAGS)					\
+	      $(QT_WEB_CFLAGS)						\
+	      $(QT_WEB_WIDGETS_CFLAGS)					\
+	      $(QT_QUICK_CONTROLS_CFLAGS)				\
+	      -DNOMAD_GUILE_LOAD_PATH=\""$(moddir)"\"			\
+	      -DNOMAD_GUILE_LOAD_COMPILED_PATH=\""$(ccachedir)"\"	\
 	      -DNOMAD_DATAROOT_DIR=\""$(datarootdir)/nomad/"\"
 
 nomad_LDADD = \
@@ -83,7 +82,7 @@ SUFFIXES = .x
 
 .cpp.x:
 	@echo "  SNARF" $@;
-	@CC=gcc $(GUILE_SNARF) -o $@ $< $(AM_CPPFLAGS)
+	@CC=gcc $(GUILE_SNARF) -o $@ $< $(nomad_CPPFLAGS)
 
 moc_%.cpp: %.h
 	@echo "  MOC" $@;
