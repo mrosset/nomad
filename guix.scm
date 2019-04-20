@@ -1,6 +1,6 @@
-(define-public guile-nomad
+(define-public nomad
   (package
-    (name "guile-nomad")
+    (name "nomad")
     (version "34e6c58977cfe472b96442b4de07a6caf189f74d")
     ;; feature-qt branch
     (source (origin
