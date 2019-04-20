@@ -1,3 +1,19 @@
+(use-modules
+ (guix packages)
+ (guix git-download)
+ (guix download)
+ (guix build-system gnu)
+ (gnu packages qt)
+ (gnu packages pkg-config)
+ (gnu packages guile)
+ (gnu packages glib)
+ (gnu packages gettext)
+ (gnu packages autotools)
+ ((guix licenses)
+  #:prefix license:)
+ )
+
+
 (define-public nomad
   (package
     (name "nomad")
