@@ -24,7 +24,10 @@
 
 (define modifier-masks '((67108864 . "C")))
 
+(define-public ctrl-x-map '(("C-k" . (kill-buffer))))
+
 (define key-masks '((66 . "b")
+		    (75 . "k")
 		    (77 . "m")
 		    (78 . "n")
 		    (80 . "p")

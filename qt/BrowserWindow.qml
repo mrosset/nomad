@@ -14,6 +14,7 @@ ApplicationWindow {
     property QtObject applicationRoot
     property Item currentWebView: tabs.count > 0 ? tabs.getTab(tabs.currentIndex).item: null
     property int previousVisibility: Window.Windowed
+
     signal submitKeymap(string keymap, int modifers, int key)
     signal submitEval(string input);
     signal evalWithArgs(string symbol, string arg0);
@@ -38,6 +39,12 @@ ApplicationWindow {
         onTriggered: {
             webViewLayout.state = "Close"
             miniBuffer.focus = !miniBuffer.focus
+        }
+    }
+    Action {
+        shortcut: "Ctrl+x"
+        onTriggered: {
+            miniPopup.visible = !miniPopup.visible
         }
     }
     Action {
@@ -147,7 +154,7 @@ ApplicationWindow {
                 onClicked: {
                     keymap.someSignal("test")
                 }
-                visible: false
+                visible: true
             }
             Label {
                 id: statusUrl
@@ -230,10 +237,14 @@ ApplicationWindow {
         width: parent.width
         spacing: 0
         Rectangle {
+            id: miniSeperator
             height: 1
             Layout.fillWidth: true
             color: "steelblue"
             visible: miniOutput.visible
+        }
+        MiniPopup{
+            id: miniPopup
         }
         Rectangle {
             id: miniOutputRect
@@ -541,6 +552,7 @@ ApplicationWindow {
         currentWebView.focus = false
         miniBuffer.state = ""
         tabs.focus = true
+        miniPopup.visible = false
     }
 
     function setUrl(uri) {

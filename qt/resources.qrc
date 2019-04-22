@@ -6,6 +6,7 @@
     <file>BrowserWindow.qml</file>
     <file>FullScreenNotification.qml</file>
     <file>Terminal.qml</file>
+    <file>MiniPopup.qml</file>
     <file>backend.js</file>
     <file>hints.js</file>
   </qresource>
