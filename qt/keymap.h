@@ -50,8 +50,10 @@ signals:
   void findText (QString text);
   void promptInput (QVariant cmd, QVariant arg);
   void evalWithArgs (QString symbol, QString arg0);
+  void updateMap (QVariant bind, QVariant proc);
 
 public slots:
+  void UpdateMap (QString map);
   void historyComplete (QString input);
   void Complete (QString input);
   void Eval (QString input);

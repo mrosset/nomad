@@ -203,3 +203,18 @@ Keymap::handleMessage (QString msg)
 {
   emit setMiniBuffer (QVariant (msg));
 }
+
+void
+Keymap::UpdateMap (QString map)
+{
+  SCM xmap = scm_variable_ref (scm_c_lookup (map.toUtf8 ()));
+  // SCM pname = scm_c_private_ref ("ice-9 session", "procedure-name");
+  for (int i = 0; i < scm_to_int (scm_length (xmap)); i++)
+    {
+      SCM ref = scm_list_ref (xmap, scm_from_int (i));
+      QString bind = scm_to_qstring (scm_car (ref));
+      QString proc
+          = scm_to_qstring (scm_symbol_to_string (scm_car (scm_cdr (ref))));
+      emit updateMap (bind, proc);
+    }
+}

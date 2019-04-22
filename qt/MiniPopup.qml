@@ -7,6 +7,7 @@ Rectangle {
     Layout.fillWidth: true
     color: "white"
     ListView {
+	objectName: "miniPopup"
 	anchors.fill: parent
 	model: miniPopupModel
 	delegate:
@@ -20,19 +21,22 @@ Rectangle {
 		text: symbol
 	    }
 	}
+	function handleUpdateMap(bind, proc) {
+	    miniPopupModel.append({"bind": bind, "symbol": proc})
+	}
     }
     onFocusChanged: {
 	visible = focus
+	miniPopupModel.clear()
     }
     onVisibleChanged: {
 	miniSeperator.visible = visible
 	focus = visible
-	if(visible) {
-	    miniPopupModel.append({"bind": "C-c", "symbol": "(kill-buffer)"})
-	}
+	updateMap("ctrl-x-map");
     }
     Keys.onPressed: {
 	submitKeymap("ctrl-x-map", event.modifiers, event.key)
+	keyboardQuit();
     }
     ListModel {
 	id: miniPopupModel

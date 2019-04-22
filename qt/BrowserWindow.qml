@@ -20,6 +20,7 @@ ApplicationWindow {
     signal evalWithArgs(string symbol, string arg0);
     signal handleCompletion(string input);
     signal historyCompletion(string input);
+    signal updateMap(string map);
 
     visible: true
     width: 640

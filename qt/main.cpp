@@ -57,6 +57,9 @@ window_signals (QObject *window)
   QObject::connect (window, SIGNAL (evalWithArgs (QString, QString)), &keymap,
                     SLOT (EvalWithArgs (QString, QString)));
 
+  QObject::connect (window, SIGNAL (updateMap (QString)), &keymap,
+                    SLOT (UpdateMap (QString)));
+
   // C++ signals to UML methods
   QObject::connect (&keymap, SIGNAL (makeBuffer (QVariant)), window,
                     SLOT (makeBuffer (QVariant)));
@@ -101,6 +104,14 @@ root_signals (QObject *root)
   QObject::connect (root, SIGNAL (destroyed ()), &keymap, SLOT (Kill ()));
 }
 
+static void
+aux_signals ()
+{
+  QObject *miniPopup = window->findChild<QObject *> ("miniPopup");
+  QObject::connect (&keymap, SIGNAL (updateMap (QVariant, QVariant)),
+                    miniPopup, SLOT (handleUpdateMap (QVariant, QVariant)));
+}
+
 int
 start_app (int argc, char *argv[])
 {
@@ -131,7 +142,7 @@ start_app (int argc, char *argv[])
 
   window_signals (window);
   root_signals (root);
-
+  aux_signals ();
   // C++ signals to UML methods
   QObject::connect (&keymap, SIGNAL (findText (QString)), currentWebView (),
                     SLOT (findText (QString)));
