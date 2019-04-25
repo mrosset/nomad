@@ -11,8 +11,26 @@
  (gnu packages autotools)
  ((guix licenses)
   #:prefix license:)
+ (guix utils)
  )
 
+(define-public qt-with-web-engine
+  (package
+    (inherit qt)
+    (name "qt-with-web-engine")
+    (version "5.11.3")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "http://download.qt.io/official_releases/qt/"
+                (version-major+minor version)
+                "/" version
+                "/single/qt-everywhere-src-"
+                version ".tar.xz"))
+              (sha256
+               (base32
+                "0kgzy32s1fr22fxxfhcyncfryb3qxrznlr737r4y5khk4xj1g545"))))))
 
 (define-public nomad
   (package
@@ -38,6 +56,7 @@
        ("gettext-minimal" ,gettext-minimal)
        ("guile-2.2" ,guile-2.2)
        ("qtbase" ,qtbase)
+       ("qt-with-web-engine" ,qt-with-web-engine)
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qttools" ,qttools) ;; qtbase5-dev-tools
 
