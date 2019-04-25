@@ -1,7 +1,0 @@
-language: cpp
-
-git:
-  depth: 1
-
-script:
-  - ./configure && make && make check
