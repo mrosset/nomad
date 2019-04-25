@@ -24,7 +24,8 @@
 
 (define modifier-masks '((67108864 . "C")))
 
-(define-public ctrl-x-map '(("C-k" . (kill-buffer))))
+(define-public ctrl-x-map '(("k" . (kill-buffer))
+			    ("b" . (next-buffer))))
 
 (define key-masks '((66 . "b")
 		    (75 . "k")
@@ -50,7 +51,7 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
 	 (key-string (assoc-ref key-masks key)))
     (if mod-string
 	(simple-format #f "~a-~a" mod-string key-string)
-	#f)))
+	key-string)))
 
 (define-public (handle-key-press keymap mod key)
   (let* ((mod-key (modifier-key->string mod key))

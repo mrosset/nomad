@@ -32,6 +32,12 @@ Rectangle {
     onVisibleChanged: {
 	miniSeperator.visible = visible
 	focus = visible
+	miniBufferLabel.visible = visible
+	if(visible) {
+	    miniBuffer.prompt = "C-x"
+	} else {
+	    miniBuffer.prompt = "M-x"
+	}
 	updateMap("ctrl-x-map");
     }
     Keys.onPressed: {
