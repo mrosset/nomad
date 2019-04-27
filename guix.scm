@@ -73,7 +73,7 @@
        ;; ("qml-module-qtwebengine",qml-module-qtwebengine)
        ;; ("qml-module-qtquick-layouts",qml-module-qtquick-layouts)
        ;; ("libqtermwidget5-0",libqtermwidget5-0)
-       ;; ("qtwayland" ,qtwayland)?? ^libqtermwidget
+       ("qtwayland" ,qtwayland) ;;?? ^libqtermwidget
        ))
     (home-page "https://github.com/mrosset/nomad")
     (synopsis "An extensible web browser using Gnu Guile and QT.")
