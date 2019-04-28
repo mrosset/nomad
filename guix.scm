@@ -12,6 +12,16 @@
  ((guix licenses)
   #:prefix license:)
  (guix utils)
+ (gnu packages cups)
+ (gnu packages icu4c)
+ (gnu packages re2c)
+ (gnu packages bison)
+ (gnu packages flex)
+ (gnu packages gperf)
+ (gnu packages pciutils)
+ (gnu packages ruby)
+ (gnu packages ninja)
+ (gnu packages nss)
  )
 
 (define-public qt-with-web-engine
@@ -31,6 +41,92 @@
               (sha256
                (base32
                 "0kgzy32s1fr22fxxfhcyncfryb3qxrznlr737r4y5khk4xj1g545"))))))
+
+(define-public qtwebengine
+  (package (inherit qtsvg)
+    (name "qtwebengine")
+    (version "5.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://download.qt.io/official_releases/qt/"
+                       (substring version 0 4)
+                       "/" version "/submodules/"
+                       (string-append name "-everywhere-src-" version)
+                       ".tar.xz"))
+       (sha256
+        (base32
+         "14ylx8s7pck2gx0ki9dksqh8cs6rcz63lly83f463gn1c1p1saq8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(
+       ("perl" ,perl)
+       ("python-2" ,python-2)
+       ("pkg-config" ,pkg-config)
+       ("flex" ,flex)
+       ("bison" ,bison)
+       ("ruby" ,ruby)
+       ("ninja" ,ninja)
+       ))
+    (inputs
+     `(
+       ;; qtbase
+       ("qtbase" ,qtbase)
+
+       ;; Missing module: qml quick
+       ("qtdeclarative" ,qtdeclarative)
+
+       ("libxcb" ,libxcb)
+       ("xcb-util" ,xcb-util)
+       ;; only if more xcb-* depends are required, add them
+       ("libxkbcommon" ,libxkbcommon)
+       ("libx11" ,libx11)
+       ("libxrender" ,libxrender)
+       ("libxi" ,libxi)
+       ;; OpenGL
+       ("mesa" ,mesa)
+       ;; Qt Quick 2; missing
+
+       ;; Accessibility
+       ;; ("python-atspi" ,python-atspi)
+       ;; ("dbus" ,dbus)
+
+       ;; Qt webkit; Optional?
+       ;; ("qtwebkit" ,qtwebkit)
+
+       ;; qt web engine
+       ("libgcrypt" ,libgcrypt)
+       ("pciutils" ,pciutils)
+       ("nss" ,nss)
+       ("libxtst" ,libxtst)
+       ("gperf" ,gperf)
+       ("cups-minimal" ,cups-minimal)
+       ("pulseaudio" ,pulseaudio)
+       ("libgudev" ,libgudev)
+       ;; systemd-devel? no systemd on guix
+       ("libcap" ,libcap)
+       ("alsa-lib" ,alsa-lib)
+       ("dbus" ,dbus)
+       ("libxrandr" ,libxrandr)
+       ("libxcomposite" ,libxcomposite)
+       ("libxcursor" ,libxcursor)
+       ("fontconfig" ,fontconfig)
+       ("atk" ,atk)
+       ;; qt multimedia
+       ("qtmultimedia" ,qtmultimedia)
+       ;; qdoc documentation generator tool
+
+       ;; warning: A compatible version of re2c (>= 0.11.3) was not
+       ;; found; changes to src/*.in.cc will not affect your build.
+       ("re2c" ,re2c)
+       ))
+    (home-page "https://www.qt.io")
+    (synopsis "Qt5WebEngine")
+    (description "Qt5WebEngine for nomad. Provides support for web
+applications using the Chromium browser project.")
+    (license
+     (package-license qt))))
 
 (define-public nomad
   (package
@@ -56,7 +152,7 @@
        ("gettext-minimal" ,gettext-minimal)
        ("guile-2.2" ,guile-2.2)
        ("qtbase" ,qtbase)
-       ("qt-with-web-engine" ,qt-with-web-engine)
+       ("qtwebengine" ,qtwebengine)
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qttools" ,qttools) ;; qtbase5-dev-tools
 
