@@ -39,7 +39,7 @@ moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
 
 ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 
-nomad_CPPFLAGS = -Wall -Werror -Wno-unused-function -fPIC		\
+nomad_CPPFLAGS = -std=gnu++11 -Wall -Werror -Wno-unused-function -fPIC		\
 	      $(GUILE_CFLAGS)						\
 	      $(QT_WIDGETS_CFLAGS)					\
 	      $(QT_WEB_CFLAGS)						\
