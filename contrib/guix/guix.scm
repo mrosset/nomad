@@ -51,7 +51,6 @@
 	       (base32
 		"0kgzy32s1fr22fxxfhcyncfryb3qxrznlr737r4y5khk4xj1g545"))))))
 
-
 (define-public qtwebengine
   (package
     (name "qtwebengine")
@@ -215,20 +214,10 @@ applications using the Chromium browser project.")
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("gettext-minimal" ,gettext-minimal)
-       ("guile-2.2" ,guile-2.2)
-       ("guile-readline" ,guile-readline)
-       ("qtdeclarative" ,qtdeclarative)
        ("qtbase" ,qtbase)
-       ("qtwebengine" ,qtwebengine)
        ("qtwebchannel", qtwebchannel)
        ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qttools" ,qttools) ;; qtbase5-dev-tools
-
-       ;; Current Status: "./configure" phase: Error
-       ;; checking for Qt5Widgets... yes
-       ;; checking for Qt5WebEngine... no
-       ;; configure: error: Package requirements (Qt5WebEngine) were not met:
-       ;; No package 'Qt5WebEngine' found
+       ("qttools" ,qttools)
 
        ;; ("qtquickcontrols" ,qtquickcontrols)
        ;; ("qtwebengine5",qtwebengine5) ;; possibly missing from guix?
@@ -243,11 +232,11 @@ applications using the Chromium browser project.")
      `(
        ("guile-2.2" ,guile-2.2)
        ("guile-readline" ,guile-readline)
-       ("qtbase" ,qtbase)
        ("qtwebengine" ,qtwebengine)
        ("qtdeclarative" ,qtdeclarative)
        ("qtquickcontrols" ,qtquickcontrols)
-       ("qtwebchannel" ,qtwebchannel)))
+       ("qtwebchannel" ,qtwebchannel)
+       ))
     (home-page "https://github.com/mrosset/nomad")
     (synopsis "An extensible web browser using Gnu Guile and QT.")
     (description "An extensible web browser.")
