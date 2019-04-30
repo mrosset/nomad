@@ -193,53 +193,54 @@ applications using the Chromium browser project.")
      (package-license qt))))
 
 (define-public nomad
-  (package
-    (name "nomad")
-    (version "56bc7e94ed43091d641752d7b1e4af6e373913cc")
-    ;; feature-qt branch
-    (source (origin
-	      (method git-fetch)
-	      (uri (git-reference
-		    (url "https://github.com/mrosset/nomad")
-		    (commit version)))
-	      (file-name (git-file-name name version))
-	      (sha256
-	       (base32
-		"12xrpi1qxj3150ch6i15vxi8i5gb66q279f4aa4jsryaissyckh2"))))
-    (build-system gnu-build-system)
-    (inputs
-     `(
-       ("pkg-config" ,pkg-config)
-       ("glib" ,glib)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("gettext-minimal" ,gettext-minimal)
-       ("qtbase" ,qtbase)
-       ("qtwebchannel", qtwebchannel)
-       ("qtquickcontrols2" ,qtquickcontrols2)
-       ("qttools" ,qttools)
+  ;; feature-qt branch
+  (let ((commit "56bc7e94ed43091d641752d7b1e4af6e373913cc"))
+    (package
+      (name "nomad")
+      (version (git-version "0.0.4-alpha" "118" commit))
+      (source (origin
+	        (method git-fetch)
+	        (uri (git-reference
+		      (url "https://github.com/mrosset/nomad")
+		      (commit commit)))
+	        (file-name (git-file-name name version))
+	        (sha256
+	         (base32
+		  "12xrpi1qxj3150ch6i15vxi8i5gb66q279f4aa4jsryaissyckh2"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(
+         ("pkg-config" ,pkg-config)
+         ("glib" ,glib)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("gettext-minimal" ,gettext-minimal)
+         ("qtbase" ,qtbase)
+         ("qtwebchannel", qtwebchannel)
+         ("qtquickcontrols2" ,qtquickcontrols2)
+         ("qttools" ,qttools)
 
-       ;; ("qtquickcontrols" ,qtquickcontrols)
-       ;; ("qtwebengine5",qtwebengine5) ;; possibly missing from guix?
-       ;; ("qml-module-qtquick2",qml-module-qtquick2)
-       ;; maybe qtquickcontrols also
-       ;; ("qml-module-qtwebengine",qml-module-qtwebengine)
-       ;; ("qml-module-qtquick-layouts",qml-module-qtquick-layouts)
-       ;; ("libqtermwidget5-0",libqtermwidget5-0)
-       ;; ("qtwayland" ,qtwayland)?? ^libqtermwidget
-       ))
-    (propagated-inputs
-     `(
-       ("guile-2.2" ,guile-2.2)
-       ("guile-readline" ,guile-readline)
-       ("qtwebengine" ,qtwebengine)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtquickcontrols" ,qtquickcontrols)
-       ("qtwebchannel" ,qtwebchannel)
-       ))
-    (home-page "https://github.com/mrosset/nomad")
-    (synopsis "An extensible web browser using Gnu Guile and QT.")
-    (description "An extensible web browser.")
-    (license license:gpl3+)))
+         ;; ("qtquickcontrols" ,qtquickcontrols)
+         ;; ("qtwebengine5",qtwebengine5) ;; possibly missing from guix?
+         ;; ("qml-module-qtquick2",qml-module-qtquick2)
+         ;; maybe qtquickcontrols also
+         ;; ("qml-module-qtwebengine",qml-module-qtwebengine)
+         ;; ("qml-module-qtquick-layouts",qml-module-qtquick-layouts)
+         ;; ("libqtermwidget5-0",libqtermwidget5-0)
+         ;; ("qtwayland" ,qtwayland)?? ^libqtermwidget
+         ))
+      (propagated-inputs
+       `(
+         ("guile-2.2" ,guile-2.2)
+         ("guile-readline" ,guile-readline)
+         ("qtwebengine" ,qtwebengine)
+         ("qtdeclarative" ,qtdeclarative)
+         ("qtquickcontrols" ,qtquickcontrols)
+         ("qtwebchannel" ,qtwebchannel)
+         ))
+      (home-page "https://github.com/mrosset/nomad")
+      (synopsis "An extensible web browser using Gnu Guile and QT.")
+      (description "An extensible web browser.")
+      (license license:gpl3+))))
 
 nomad
