@@ -26,6 +26,7 @@
 #include "webview.h"
 
 #include <QApplication>
+#include <QLibraryInfo>
 #include <QQmlApplicationEngine>
 #include <QQmlProperty>
 #include <QQuickStyle>
@@ -115,6 +116,10 @@ aux_signals ()
 int
 start_app (int argc, char *argv[])
 {
+  qDebug () << "DataPath" << QLibraryInfo::location (QLibraryInfo::DataPath);
+  qDebug () << "TranslationsPath"
+            << QLibraryInfo::location (QLibraryInfo::DataPath);
+
   QCoreApplication::setOrganizationName ("Nomad");
   QCoreApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 
