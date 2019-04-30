@@ -1,0 +1,18 @@
+#!/bin/bash
+
+export GUILE_LOAD_PATH="$HOME/.guix-profile/share/guile/site/2.2${GUILE_LOAD_PATH:+:}$GUILE_LOAD_PATH"
+export GUILE_LOAD_COMPILED_PATH="$HOME/.guix-profile/lib/guile/2.2/site-ccache${GUILE_LOAD_COMPILED_PATH:+:}$GUILE_LOAD_COMPILED_PATH"
+export QTWEBENGINEPROCESS_PATH=/gnu/store/a7pbqhdafrkxb7zr0dclcscikp9xmxyi-qtwebengine-5.11.3/lib/qt5/libexec/QtWebEngineProcess
+
+guix package --substitute-urls="http://216.250.119.249:8181 https://ci.guix.info" -f guix.scm
+
+guix package -i      \
+     guile           \
+     guile-readline  \
+     qtbase          \
+     qtdeclarative   \
+     qtquickcontrols \
+     qtwebchannel
+
+rm /tmp/nomad-socket
+nomad

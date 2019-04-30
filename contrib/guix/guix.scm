@@ -196,7 +196,7 @@ applications using the Chromium browser project.")
 (define-public nomad
   (package
     (name "nomad")
-    (version "8b01a15d131a68a6945e2f9f5bc56b7eec26ea2d")
+    (version "56bc7e94ed43091d641752d7b1e4af6e373913cc")
     ;; feature-qt branch
     (source (origin
 	      (method git-fetch)
@@ -206,7 +206,7 @@ applications using the Chromium browser project.")
 	      (file-name (git-file-name name version))
 	      (sha256
 	       (base32
-		"03szz9vz8mci8ay3j5jysd3dmjl4jg1s26mnar1zvi1dlm4dfnpc"))))
+		"12xrpi1qxj3150ch6i15vxi8i5gb66q279f4aa4jsryaissyckh2"))))
     (build-system gnu-build-system)
     (inputs
      `(
