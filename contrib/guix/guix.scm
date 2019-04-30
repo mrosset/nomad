@@ -220,6 +220,7 @@ applications using the Chromium browser project.")
        ("qtdeclarative" ,qtdeclarative)
        ("qtbase" ,qtbase)
        ("qtwebengine" ,qtwebengine)
+       ("qtwebchannel", qtwebchannel)
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qttools" ,qttools) ;; qtbase5-dev-tools
 
