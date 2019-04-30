@@ -183,9 +183,6 @@ ApplicationWindow {
                 Layout.alignment: Qt.AlignRight
             }
         }
-        Terminal {
-            id: terminal
-        }
         state: "Close"
         states: [
             State {
