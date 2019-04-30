@@ -238,6 +238,37 @@ applications using the Chromium browser project.")
          ("qtquickcontrols" ,qtquickcontrols)
          ("qtwebchannel" ,qtwebchannel)
          ))
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'install 'symlink-stuff
+                      (lambda* (#:key inputs outputs
+                                #:allow-other-keys)
+                        (let* ((out (assoc-ref outputs "out"))
+                               (qtwebengine (assoc-ref inputs
+                                                       "qtwebengine"))
+                               (qtwebengine-locales (string-append
+                                                     qtwebengine
+                                                     "/share/qt5/translations/qtwebengine_locales"))
+                               (qtwebengine-resources (string-append
+                                                 qtwebengine
+                                                 "/share/qt5/resources/"))
+                               (qtwebengine-libexec (string-append
+                                                     qtwebengine "/lib/qt5/libexec/QtWebEngineProcess"))
+                               (qt-resource/ (lambda (x) (string-append
+                                              qtwebengine-resources
+                                              x)))
+                               (out-bin/ (lambda (x) (string-append out "/bin/"
+                                                               x)))
+                               (link-resource (lambda (x) (symlink (qt-resource/ x)
+                                                        (out-bin/ x)))))
+                          (symlink qtwebengine-locales (out-bin/
+                                                        "qtwebengine_locales"))
+                          ;; (symlink qtwebengine-libexec (out-bin/ "QtWebEngineProcess"))
+                          (link-resource "icudtl.dat")
+                          (link-resource "qtwebengine_resources.pak")
+                          (link-resource "qtwebengine_resources_200p.pak")
+                          (link-resource "qtwebengine_resources_100p.pak"))
+                        #t)))))
       (home-page "https://github.com/mrosset/nomad")
       (synopsis "An extensible web browser using Gnu Guile and QT.")
       (description "An extensible web browser.")
