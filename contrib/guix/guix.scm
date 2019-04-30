@@ -239,6 +239,15 @@ applications using the Chromium browser project.")
        ;; ("libqtermwidget5-0",libqtermwidget5-0)
        ;; ("qtwayland" ,qtwayland)?? ^libqtermwidget
        ))
+    (propagated-inputs
+     `(
+       ("guile-2.2" ,guile-2.2)
+       ("guile-readline" ,guile-readline)
+       ("qtbase" ,qtbase)
+       ("qtwebengine" ,qtwebengine)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtwebchannel" ,qtwebchannel)))
     (home-page "https://github.com/mrosset/nomad")
     (synopsis "An extensible web browser using Gnu Guile and QT.")
     (description "An extensible web browser.")
