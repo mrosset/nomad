@@ -26,6 +26,7 @@
 #include "webview.h"
 
 #include <QApplication>
+#include <QDir>
 #include <QLibraryInfo>
 #include <QQmlApplicationEngine>
 #include <QQmlProperty>
@@ -116,6 +117,7 @@ aux_signals ()
 int
 start_app (int argc, char *argv[])
 {
+  qDebug () << "ApplicationPath" << QCoreApplication::applicationDirPath() + QDir::separator() + "qt.conf";
   qDebug () << "DataPath" << QLibraryInfo::location (QLibraryInfo::DataPath);
   qDebug () << "TranslationsPath"
             << QLibraryInfo::location (QLibraryInfo::DataPath);
