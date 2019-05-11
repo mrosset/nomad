@@ -31,25 +31,10 @@
  (gnu packages bison)
  (gnu packages ruby)
  (gnu packages ninja)
- (gnu packages xdisorg))
-
-(define-public qt-with-web-engine
-  (package
-    (inherit qt)
-    (name "qt-with-web-engine")
-    (version "5.11.3")
-    (source (origin
-	      (method url-fetch)
-	      (uri
-	       (string-append
-		"http://download.qt.io/official_releases/qt/"
-		(version-major+minor version)
-		"/" version
-		"/single/qt-everywhere-src-"
-		version ".tar.xz"))
-	      (sha256
-	       (base32
-		"0kgzy32s1fr22fxxfhcyncfryb3qxrznlr737r4y5khk4xj1g545"))))))
+ (gnu packages xdisorg)
+ (gnu packages compression)
+ (gnu packages vulkan)
+ (guix build-system trivial))
 
 (define-public qtwebengine
   (package
@@ -80,30 +65,16 @@
        ))
     (inputs
      `(
-       ;; qtbase
        ("qtbase" ,qtbase)
-
-       ;; Missing module: qml quick
        ("qtdeclarative" ,qtdeclarative)
-
        ("libxcb" ,libxcb)
        ("xcb-util" ,xcb-util)
-       ;; only if more xcb-* depends are required, add them
        ("libxkbcommon" ,libxkbcommon)
        ("libx11" ,libx11)
        ("libxrender" ,libxrender)
        ("libxi" ,libxi)
        ;; OpenGL
        ("mesa" ,mesa)
-       ;; Qt Quick 2; missing
-
-       ;; Accessibility
-       ;; ("python-atspi" ,python-atspi)
-       ;; ("dbus" ,dbus)
-
-       ;; Qt webkit; Optional?
-       ;; ("qtwebkit" ,qtwebkit)
-
        ;; qt web engine
        ("libgcrypt" ,libgcrypt)
        ("pciutils" ,pciutils)
@@ -123,12 +94,7 @@
        ("fontconfig" ,fontconfig)
        ("qtwebchannel" ,qtwebchannel)
        ("atk" ,atk)
-       ;; qt multimedia
        ("qtmultimedia" ,qtmultimedia)
-       ;; qdoc documentation generator tool
-
-       ;; warning: A compatible version of re2c (>= 0.11.3) was not
-       ;; found; changes to src/*.in.cc will not affect your build.
        ("re2c" ,re2c)
        ))
     (arguments
@@ -161,7 +127,7 @@ Tests=tests
 Plugins=lib/qt5/plugins
 Imports=lib/qt5/imports
 Qml2Imports=lib/qt5/qml
-Translations=share/qt5/translations
+Translations=lib/qt5/libexec
 Settings=etc/xdg
 Examples=share/doc/qt5/examples
 HostPrefix=~a
@@ -183,92 +149,162 @@ HostData=lib/qt5
 	   (lambda _
 	     ;; make Qt render "offscreen", required for tests
 	     (setenv "QT_QPA_PLATFORM" "offscreen")
-	     #t)))))
-
-    (home-page "https://www.qt.io")
-    (synopsis "Qt5WebEngine")
-    (description "Qt5WebEngine for nomad. Provides support for web
+	     #t))
+	 (add-after 'install 'copy-icu
+	   (lambda* (#:key inputs outputs
+			   #:allow-other-keys)
+	     (let* ((out (assoc-ref outputs "out"))
+		    (resources (string-append out "/share/qt5/resources/"))
+		    (libexec (string-append out "/lib/qt5/libexec/"))
+		    (copy-resource (lambda(x)
+				     (copy-file (string-append resources x)
+						(string-append libexec x)))))
+	       (copy-resource "icudtl.dat")
+	       (copy-resource "qtwebengine_resources.pak")
+	       (copy-resource "qtwebengine_resources_200p.pak")
+	       (copy-resource "qtwebengine_resources_100p.pak")
+	       (copy-resource "qtwebengine_devtools_resources.pak"))
+	     #t))
+)))
+       (home-page "https://www.qt.io")
+       (synopsis "Qt5WebEngine")
+       (description "Qt5WebEngine for nomad. Provides support for web
 applications using the Chromium browser project.")
-    (license
-     (package-license qt))))
+       (license
+	(package-license qt))))
+
+(define-public qt-with-webengine
+  (package
+    (name "qt-with-webengine")
+    (version (package-version qtbase))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+		   (use-modules (ice-9 match)
+				(guix build union))
+		   (match %build-inputs
+		     (((names . directories) ...)
+		      (union-build (assoc-ref %outputs "out")
+				   directories)
+		      #t))
+		   (let ((out (assoc-ref %outputs "out")))
+		   (with-output-to-file (string-append out "/bin/qt.conf")
+		 (lambda ()
+		   (format #t "[Paths]
+Prefix=~a
+ArchData=lib/qt5
+Data=share/qt5
+Documentation=share/doc/qt5
+Headers=include/qt5
+Libraries=lib
+LibraryExecutables=lib/qt5/libexec
+Binaries=bin
+Tests=tests
+Plugins=lib/qt5/plugins
+Imports=lib/qt5/imports
+Qml2Imports=lib/qt5/qml
+Translations=lib/qt5/libexec
+Settings=etc/xdg
+Examples=share/doc/qt5/examples
+HostPrefix=~a
+HostData=lib/qt5
+HostBinaries=bin
+HostLibraries=lib
+" out out))))
+)))
+    (inputs `(("qtbase", qtbase)
+	      ("qtwebengine" ,qtwebengine)
+	      ("qttools", qttools)
+	      ("zlib", zlib)))
+    (synopsis "Union qtbase and webengine")
+    (description
+     "Union of qtbase and webengine")
+    (home-page (package-home-page qtbase))
+    (license (package-license qtbase))))
 
 (define-public nomad
   ;; feature-qt branch
-  (let ((commit "56bc7e94ed43091d641752d7b1e4af6e373913cc"))
+  (let ((commit "bc2807a16dbc17a766d3f920d51ad9a57dbfec0f"))
     (package
       (name "nomad")
       (version (git-version "0.0.4-alpha" "118" commit))
       (source (origin
-	        (method git-fetch)
-	        (uri (git-reference
+		(method git-fetch)
+		(uri (git-reference
 		      (url "https://github.com/mrosset/nomad")
 		      (commit commit)))
-	        (file-name (git-file-name name version))
-	        (sha256
-	         (base32
-		  "12xrpi1qxj3150ch6i15vxi8i5gb66q279f4aa4jsryaissyckh2"))))
+		(file-name (git-file-name name version))
+		(sha256
+		 (base32
+		  "0sdglj66b9n6l3hrywb5xwmg0cjk0pjljiw3y08npkr46jrjvrpb"))))
       (build-system gnu-build-system)
       (inputs
        `(
-         ("pkg-config" ,pkg-config)
-         ("glib" ,glib)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("gettext-minimal" ,gettext-minimal)
-         ("qtbase" ,qtbase)
-         ("qtwebchannel", qtwebchannel)
-         ("qtquickcontrols2" ,qtquickcontrols2)
-         ("qttools" ,qttools)
+	 ("pkg-config" ,pkg-config)
+	 ("glib" ,glib)
+	 ("autoconf" ,autoconf)
+	 ("automake" ,automake)
+	 ("gettext-minimal" ,gettext-minimal)
+	 ("qtbase" ,qtbase)
+	 ("qtwebchannel", qtwebchannel)
+	 ("qtquickcontrols2" ,qtquickcontrols2)
+	 ("qttools" ,qttools)
 
-         ;; ("qtquickcontrols" ,qtquickcontrols)
-         ;; ("qtwebengine5",qtwebengine5) ;; possibly missing from guix?
-         ;; ("qml-module-qtquick2",qml-module-qtquick2)
-         ;; maybe qtquickcontrols also
-         ;; ("qml-module-qtwebengine",qml-module-qtwebengine)
-         ;; ("qml-module-qtquick-layouts",qml-module-qtquick-layouts)
-         ;; ("libqtermwidget5-0",libqtermwidget5-0)
-         ;; ("qtwayland" ,qtwayland)?? ^libqtermwidget
-         ))
+	 ;; ("qtquickcontrols" ,qtquickcontrols)
+	 ;; ("qtwebengine5",qtwebengine5) ;; possibly missing from guix?
+	 ;; ("qml-module-qtquick2",qml-module-qtquick2)
+	 ;; maybe qtquickcontrols also
+	 ;; ("qml-module-qtwebengine",qml-module-qtwebengine)
+	 ;; ("qml-module-qtquick-layouts",qml-module-qtquick-layouts)
+	 ;; ("libqtermwidget5-0",libqtermwidget5-0)
+	 ;; ("qtwayland" ,qtwayland)?? ^libqtermwidget
+	 ))
       (propagated-inputs
        `(
-         ("guile-2.2" ,guile-2.2)
-         ("guile-readline" ,guile-readline)
-         ("qtwebengine" ,qtwebengine)
-         ("qtdeclarative" ,qtdeclarative)
-         ("qtquickcontrols" ,qtquickcontrols)
-         ("qtwebchannel" ,qtwebchannel)
-         ))
+	 ("guile" ,guile-2.2)
+	 ("guile-readline" ,guile-readline)
+	 ("qtwebengine" ,qtwebengine)
+	 ("qtdeclarative" ,qtdeclarative)
+	 ("qtquickcontrols" ,qtquickcontrols)
+	 ("qtwebchannel" ,qtwebchannel)
+	 ("mesa" , mesa)
+	 ))
       (arguments
        `(#:phases (modify-phases %standard-phases
-                    (add-after 'install 'symlink-stuff
-                      (lambda* (#:key inputs outputs
-                                #:allow-other-keys)
-                        (let* ((out (assoc-ref outputs "out"))
-                               (qtwebengine (assoc-ref inputs
-                                                       "qtwebengine"))
-                               (qtwebengine-locales (string-append
-                                                     qtwebengine
-                                                     "/share/qt5/translations/qtwebengine_locales"))
-                               (qtwebengine-resources (string-append
-                                                 qtwebengine
-                                                 "/share/qt5/resources/"))
-                               (qtwebengine-libexec (string-append
-                                                     qtwebengine "/lib/qt5/libexec/QtWebEngineProcess"))
-                               (qt-resource/ (lambda (x) (string-append
-                                              qtwebengine-resources
-                                              x)))
-                               (out-bin/ (lambda (x) (string-append out "/bin/"
-                                                               x)))
-                               (link-resource (lambda (x) (symlink (qt-resource/ x)
-                                                        (out-bin/ x)))))
-                          (symlink qtwebengine-locales (out-bin/
-                                                        "qtwebengine_locales"))
-                          ;; (symlink qtwebengine-libexec (out-bin/ "QtWebEngineProcess"))
-                          (link-resource "icudtl.dat")
-                          (link-resource "qtwebengine_resources.pak")
-                          (link-resource "qtwebengine_resources_200p.pak")
-                          (link-resource "qtwebengine_resources_100p.pak"))
-                        #t)))))
+		    (add-after 'install 'symlink-stuff
+		      (lambda* (#:key inputs outputs
+				#:allow-other-keys)
+			(let* ((out (assoc-ref outputs "out"))
+			       (qtwebengine (assoc-ref inputs
+						       "qtwebengine"))
+			       (qtwebengine-locales (string-append
+						     qtwebengine
+						     "/share/qt5/translations/qtwebengine_locales"))
+			       (qtwebengine-resources (string-append
+						 qtwebengine
+						 "/share/qt5/resources/"))
+			       (qtwebengine-libexec (string-append
+						     qtwebengine "/lib/qt5/libexec/QtWebEngineProcess"))
+			       (qt-resource/ (lambda (x) (string-append
+					      qtwebengine-resources
+					      x)))
+			       (out-bin/ (lambda (x) (string-append out "/bin/"
+							       x)))
+			       (link-resource (lambda (x) (symlink (qt-resource/ x)
+								   (out-bin/ x))))
+			       (copy-resource (lambda (x)
+						(copy-file (qt-resource/ x) (out-bin/ x)))))
+			  ;; (symlink qtwebengine-locales (out-bin/
+			  ;;				"qtwebengine_locales"))
+			  (link-resource "icudtl.dat")
+			  (link-resource "qtwebengine_resources.pak")
+			  (link-resource "qtwebengine_resources_200p.pak")
+			  (link-resource "qtwebengine_resources_100p.pak")
+			  (link-resource "qtwebengine_devtools_resources.pak"))
+			#t))
+		    )))
       (home-page "https://github.com/mrosset/nomad")
       (synopsis "An extensible web browser using Gnu Guile and QT.")
       (description "An extensible web browser.")
