@@ -85,7 +85,7 @@
        ("gperf" ,gperf)
        ("cups-minimal" ,cups-minimal)
        ("pulseaudio" ,pulseaudio)
-       ;; ("udev" ,eudev)
+       ("udev" ,eudev)
        ;; systemd-devel? no systemd on guix
        ("libcap" ,libcap)
        ("alsa-lib" ,alsa-lib)
