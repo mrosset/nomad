@@ -1,3 +1,5 @@
+(define-module (gnu packages nomad))
+
 (use-modules
  (guix packages)
  (guix git-download)
@@ -83,7 +85,7 @@
        ("gperf" ,gperf)
        ("cups-minimal" ,cups-minimal)
        ("pulseaudio" ,pulseaudio)
-       ("libgudev" ,libgudev)
+       ;; ("udev" ,eudev)
        ;; systemd-devel? no systemd on guix
        ("libcap" ,libcap)
        ("alsa-lib" ,alsa-lib)
@@ -251,15 +253,9 @@ HostLibraries=lib
 	 ("qtwebchannel", qtwebchannel)
 	 ("qtquickcontrols2" ,qtquickcontrols2)
 	 ("qttools" ,qttools)
-
-	 ;; ("qtquickcontrols" ,qtquickcontrols)
-	 ;; ("qtwebengine5",qtwebengine5) ;; possibly missing from guix?
-	 ;; ("qml-module-qtquick2",qml-module-qtquick2)
-	 ;; maybe qtquickcontrols also
-	 ;; ("qml-module-qtwebengine",qml-module-qtwebengine)
-	 ;; ("qml-module-qtquick-layouts",qml-module-qtquick-layouts)
-	 ;; ("libqtermwidget5-0",libqtermwidget5-0)
-	 ;; ("qtwayland" ,qtwayland)?? ^libqtermwidget
+	 ("nss" ,nss)
+	 ("mesa" , mesa)
+	 ("udev", eudev)
 	 ))
       (propagated-inputs
        `(
@@ -269,7 +265,6 @@ HostLibraries=lib
 	 ("qtdeclarative" ,qtdeclarative)
 	 ("qtquickcontrols" ,qtquickcontrols)
 	 ("qtwebchannel" ,qtwebchannel)
-	 ("mesa" , mesa)
 	 ))
       (arguments
        `(#:phases (modify-phases %standard-phases
@@ -281,33 +276,46 @@ HostLibraries=lib
 						       "qtwebengine"))
 			       (qtwebengine-locales (string-append
 						     qtwebengine
-						     "/share/qt5/translations/qtwebengine_locales"))
+						     "/lib/qt5/libexec/qtwebengine_locales"))
 			       (qtwebengine-resources (string-append
-						 qtwebengine
-						 "/share/qt5/resources/"))
+						       qtwebengine
+						       "/share/qt5/resources/"))
 			       (qtwebengine-libexec (string-append
 						     qtwebengine "/lib/qt5/libexec/QtWebEngineProcess"))
 			       (qt-resource/ (lambda (x) (string-append
-					      qtwebengine-resources
-					      x)))
+							  qtwebengine-resources
+							  x)))
 			       (out-bin/ (lambda (x) (string-append out "/bin/"
-							       x)))
+								    x)))
 			       (link-resource (lambda (x) (symlink (qt-resource/ x)
 								   (out-bin/ x))))
 			       (copy-resource (lambda (x)
 						(copy-file (qt-resource/ x) (out-bin/ x)))))
-			  ;; (symlink qtwebengine-locales (out-bin/
-			  ;;				"qtwebengine_locales"))
+			  (symlink qtwebengine-locales (out-bin/
+							"qtwebengine_locales"))
 			  (link-resource "icudtl.dat")
 			  (link-resource "qtwebengine_resources.pak")
 			  (link-resource "qtwebengine_resources_200p.pak")
 			  (link-resource "qtwebengine_resources_100p.pak")
 			  (link-resource "qtwebengine_devtools_resources.pak"))
 			#t))
-		    )))
+		    (add-after 'install-binaries 'wrap-binaries
+		      (lambda* (#:key outputs inputs #:allow-other-keys)
+			;; Curl and libvorbis need to be wrapped so that we get
+			;; sound and networking.
+			(let* ((out  (assoc-ref outputs "out"))
+			       (exe  (string-append out "/bin/nomad"))
+			       (lib  (string-append out "/lib"))
+			       (mesa (assoc-ref inputs "mesa"))
+			       (nss  (assoc-ref inputs "nss"))
+			       (udev (assoc-ref inputs "udev")))
+			  (wrap-program exe
+			    ;; TODO: Get these in RUNPATH.
+			    `("LD_LIBRARY_PATH" ":" prefix
+			      (,(string-append lib ":" nss "/lib/nss:" mesa "/lib:"
+					       udev "/lib"))))
+			  #t))))))
       (home-page "https://github.com/mrosset/nomad")
       (synopsis "An extensible web browser using Gnu Guile and QT.")
       (description "An extensible web browser.")
       (license license:gpl3+))))
-
-nomad
