@@ -1,0 +1,124 @@
+* Installation
+** With Guix
+   Nomad is not yet available in the official Guix, but we still try to
+   provide substitutes to make installation easier.
+   - Clone the Nomad source repository and checkout the current
+     development branch.
+     #+begin_src shell
+     git clone https://git.savannah.gnu.org/git/nomad.git
+     cd nomad
+     git checkout feature-qt
+     #+end_src
+   - Make sure Guix can find the nomad package, declared in
+     `guix/gnu/packages/nomad.scm`.
+     #+begin_src shell
+     export GUIX_PACKAGE_PATH="$PWD/guix:$GUIX_PACKAGE_PATH"
+     #+end_src
+   - If you'd like to to download pre-built binaries from the build
+     server, you can authorize guix to use Nomad's build server.
+     #+begin_src shell
+     guix archive --authorize < contrib/guix/216.250.119.249.pub
+     #+end_src
+   - Then install Nomad while instructing guix to use substitutes from
+     both, the official, and the Nomad build server.
+     #+begin_src shell
+     guix package -i nomad --substitute-urls="https://ci.guix.info \
+     http://216.250.119.249:8181"
+     #+end_src
+   - If subsitutes are still not available you may have to use an older
+     version of guix and retry.
+     #+begin_src shell
+     guix pull --commit=152030ffdf548527d32458c5f3fbc98700aa7e69
+     #+end_src
+* Run Nomad
+** From the command line
+   - Nomad doesn't yet support the full set of command line
+     options. However, It can be run from a shell by typing
+     #+begin_src shell
+      nomad
+     #+end_src
+   - If you want nomad to connect to an existing guile REPL use the
+     following command line flag.
+     #+begin_src shell
+     nomad -c
+     #+end_src
+** Keybinds
+   - Nomad intends to support Emacs-like keybinds because it's design
+     was inspired from Emacs. However there is no limitation on what
+     Keybindings Nomad can support. Nomad has the concept of key-maps
+     just like Emacs and users should be able to define their own
+     keymaps.
+   - At the top level you might want to use `M-x` (Meta/Alt X) to use the execute
+     command menu and `C-x` (Ctrl X) for Ibuffer.
+   - In a Webview buffer the `webview-mode-map` is active which
+     contains the following keybinds.
+   |------------+---------------|
+   | Key stroke | Command       |
+   |------------+---------------|
+   | "C-b"      | (next-buffer) |
+   | "C-u"      | (back)        |
+   | "C-m"      | (forward)     |
+   | "C-n"      | (scroll-down) |
+   | "C-f"      | (hints)       |
+   | "C-p"      | (scroll-up)   |
+   | "C-r"      | (reload)      |
+   | "C-x"      | (kill-buffer) |
+   |------------+---------------|
+   - In Nomad's Ibuffer menu the `ctrl-x-map` is active which has
+     these keybindings.
+   |------------+---------------|
+   | Key stroke | Command       |
+   |------------+---------------|
+   | "b"        | (next-buffer) |
+   | "k"        | (kill-buffer) |
+   |------------+---------------|
+
+* Extend Nomad
+  - You can customize nomad by writing your configurations to
+    `~/.nomad`, which is just a scheme file!
+  - Examples
+    -  (set! search-provider-format "https://google.ca/search?q=~a")
+    -  (define-command (help) "Browse to the Nomad README." 
+       (browse "file:///nomad/README.org"))
+* Nomad-hacker's setup
+  - Startup Emacs and install Geiser
+  - M-x geiser-connect-local RET /tmp/nomad-socket RET
+  - Try
+    (forward)
+    (back)
+    (browse "https://gnu.org/software/guile")
+
+* Build from source
+  - In Ubuntu 18.10, the the following snippet will install all required
+    dependencies.
+    #+begin_src shell
+    sudo apt install -y \
+    guile-2.2-dev \
+    qtbase5-dev \
+    qtwebengine5-dev \
+    qtquickcontrols2-5-dev \
+    qtbase5-dev-tools \
+    qml-module-qtquick2 \
+    qml-module-qtquick-controls \
+    qml-module-qtwebengine \
+    qml-module-qtquick-layouts \
+    libqtermwidget5-0-dev \
+    #+end_src
+
+  - Using Guix, the following snippet will install all required
+    dependencies in a temporary shell.
+    #+begin_src shell
+    export GUIX_PACKAGE_PATH="$NOMAD_SOURCE/guix:$GUIX_PACKAGE_PATH"
+    guix environment nomad
+    #+end_src
+
+  - Then build the package with
+    #+begin_src shell
+    autoreconf -vif
+    ./configure
+    make
+    #+end_src
+* FAQ
+** Nomad doesn't start
+   - you might have to delete the socket file `/tmp/nomad-socket`
+
