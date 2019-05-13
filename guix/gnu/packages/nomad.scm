@@ -303,17 +303,19 @@ HostLibraries=lib
 		      (lambda* (#:key outputs inputs #:allow-other-keys)
 			;; Curl and libvorbis need to be wrapped so that we get
 			;; sound and networking.
-			(let* ((out  (assoc-ref outputs "out"))
-			       (exe  (string-append out "/bin/nomad"))
-			       (lib  (string-append out "/lib"))
-			       (mesa (assoc-ref inputs "mesa"))
-			       (nss  (assoc-ref inputs "nss"))
-			       (udev (assoc-ref inputs "udev")))
+			(let* ((out       (assoc-ref outputs "out"))
+			       (exe       (string-append out "/bin/nomad"))
+			       (lib       (string-append out "/lib"))
+			       (mesa      (assoc-ref inputs "mesa"))
+			       (nss       (assoc-ref inputs "nss"))
+			       (udev      (assoc-ref inputs "udev"))
+			       (qtwebengine (assoc-ref inputs "qtwebengine")))
 			  (wrap-program exe
 			    ;; TODO: Get these in RUNPATH.
 			    `("LD_LIBRARY_PATH" ":" prefix
 			      (,(string-append lib ":" nss "/lib/nss:" mesa "/lib:"
-					       udev "/lib"))))
+					       udev "/lib")))
+			    `("QTWEBENGINEPROCESS_PATH" ":" prefix (,(string-append qtwebengine "/lib/qt5/libexec/QtWebEngineProcess"))))
 			  #t))))))
       (home-page "https://github.com/mrosset/nomad")
       (synopsis "An extensible web browser using Gnu Guile and QT.")
