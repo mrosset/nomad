@@ -301,8 +301,6 @@ HostLibraries=lib
 			#t))
 		    (add-after 'install-binaries 'wrap-binaries
 		      (lambda* (#:key outputs inputs #:allow-other-keys)
-			;; Curl and libvorbis need to be wrapped so that we get
-			;; sound and networking.
 			(let* ((out       (assoc-ref outputs "out"))
 			       (exe       (string-append out "/bin/nomad"))
 			       (lib       (string-append out "/lib"))
