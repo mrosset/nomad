@@ -12,6 +12,8 @@ export GUILE_LOAD_COMPILED_PATH GUILE_LOAD_PATH GUILE_AUTO_COMPILE
 PATH="$abs_top_builddir/qt:$PATH"
 export PATH
 
+# FIXME: this will not work when building out of source tree
+
 # when in a guix environment, setup guix specific variables
 if [[ -n $GUIX_ENVIRONMENT ]]; then
     export QTDIR="$GUIX_ENVIRONMENT"
