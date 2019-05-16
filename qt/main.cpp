@@ -97,6 +97,9 @@ window_signals (QObject *window)
 
   QObject::connect (&keymap, SIGNAL (promptInput (QVariant, QVariant)), window,
                     SLOT (promptInput (QVariant, QVariant)));
+
+  QObject::connect (&keymap, SIGNAL (loadHTML (QVariant)), window,
+                    SLOT (loadHTML (QVariant)));
 }
 
 static void

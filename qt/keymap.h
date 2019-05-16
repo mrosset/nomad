@@ -51,6 +51,7 @@ signals:
   void promptInput (QVariant cmd, QVariant arg);
   void evalWithArgs (QString symbol, QString arg0);
   void updateMap (QVariant bind, QVariant proc);
+  void loadHTML (QVariant string);
 
 public slots:
   void UpdateMap (QString map);
@@ -69,6 +70,7 @@ public slots:
   void handleMessage (QString msg);
   void SetUrl (QVariant uri);
   void EvalWithArgs (QString symbol, QString arg0);
+  void LoadHTML (QVariant string);
 };
 
 #endif // KEYMAP_H

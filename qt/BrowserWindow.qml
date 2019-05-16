@@ -565,4 +565,7 @@ ApplicationWindow {
         historyCompletion("")
         miniBuffer.state = "prompt"
     }
+        function loadHTML(string) {
+        currentWebView.loadHtml(string , "qrc:/")
+    }
 }
