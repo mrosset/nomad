@@ -87,6 +87,11 @@
     (forward)
     (back)
     (browse "https://gnu.org/software/guile")
+  - Nomad's extensions are defined in `scheme/`, if you need to create
+    a new module for nomad, you can define it under
+    `scheme/nomad/<module>`.
+  - Once you have tested it locally, you can submit a pull request to
+    the Nomad source [[https://github.com/o-nly/nomad.git][repository]].
 
 * Build from source
   - In Ubuntu 18.10, the the following snippet will install all required
