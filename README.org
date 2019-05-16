@@ -120,13 +120,32 @@
     ./configure
     make
     #+end_src
-* Run from source
-  - To run a local build of nomad, without actually installing it. For
-    example, if you are hacking on the nomad Cpp source code and want
-    to test your changes after you've compiled it.
-    #+begin_src shell
-    ./pre-inst-env ./qt/nomad
-    #+end_src
+
+* Hack Nomad in QML
+  - Nomad is hackable in Scheme. But you can also hack Nomad in
+    Cpp/QML. In general, the aim of Nomad is to present you the user
+    with enough programming capabilities that you don't have to resort
+    to this step, but you may still wish to change some internal
+    plumbing in Nomad, and we encourage you in this endeavour.
+
+  - One design principles we can use as a of rule of thumb is for every
+    feature provided by Nomad in the standard library or in the
+    application, user should be able to provide their replacement for
+    it. Nomad aims, also provide and expose to scheme and the user the
+    ability to create and modify UI elements at runtime.
+
+** Run Nomad before you've installed Nomad
+   - If you want to customise Nomad's inner workings, you may first want to
+     build Nomad from source. (See above)
+   - Once you've built Nomad without errors, you may want to run Nomad
+     from the local build.
+   #+begin_src bash
+   ./pre-inst-env ./qt/nomad
+   #+end_src
+
+** An example `webview-load-string`
+
+
 * FAQ
 ** Nomad doesn't start
    - you might have to delete the socket file `/tmp/nomad-socket`
