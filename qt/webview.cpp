@@ -56,7 +56,7 @@ SCM_DEFINE (scm_webview_load_uri, "webview-load-uri", 1, 0, 0, (SCM uri),
 SCM_DEFINE (scm_webview_load_string, "webview-load-string", 1, 0, 0, (SCM string),
             "Set's the current WebView to string HTML.")
 {
-  QVariant arg = QVariant (scm_to_qstring (html));
+  QVariant arg = QVariant (scm_to_qstring (string));
   // QMetaObject::invokeMethod(currentWebView(), "loadHtml",
   //         Qt::DirectConnection, Q_ARG(QString, (scm_to_qstring (html))));
 
