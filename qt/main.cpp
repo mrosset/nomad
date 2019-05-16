@@ -100,6 +100,9 @@ window_signals (QObject *window)
 
   QObject::connect (&keymap, SIGNAL (updateMap (QVariant, QVariant)), window,
                     SLOT (handleUpdateMap (QVariant, QVariant)));
+
+  QObject::connect (&keymap, SIGNAL (loadHTML (QVariant)), window,
+                    SLOT (loadHTML (QVariant)));
 }
 
 static void

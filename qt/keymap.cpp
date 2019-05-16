@@ -218,3 +218,9 @@ Keymap::UpdateMap (QString map)
       emit updateMap (bind, proc);
     }
 }
+
+void
+Keymap::LoadHTML (QVariant string)
+{
+  emit loadHTML (string);
+}
