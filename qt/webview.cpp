@@ -53,20 +53,15 @@ SCM_DEFINE (scm_webview_load_uri, "webview-load-uri", 1, 0, 0, (SCM uri),
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE (
-    scm_webview_go_back, "webview-go-back", 0, 0, 0, (),
-    "Request WebView to go back in history. If WebView can not be found or "
-    "there is no back history then it return #f. Otherwise it returns #t.")
+SCM_DEFINE (scm_webview_go_back, "webview-go-back", 0, 0, 0, (),
+            "Request WebView to go back in history.")
 {
   keymap.handleGoBack ();
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE (
-    scm_nomad_webkit_go_foward, "webview-go-forward", 0, 0, 0, (),
-    "Internal request WebView to go forward in history. If WebView can not "
-    "be found or there is no forward history then it returns #f. Otherwise it "
-    "returns #t. TODO: maybe provide a callback for load-change signal.")
+SCM_DEFINE (scm_nomad_webkit_go_foward, "webview-go-forward", 0, 0, 0, (),
+            "Internal request WebView to go forward in history.")
 {
   keymap.handleGoForward ();
   return SCM_UNSPECIFIED;
