@@ -53,6 +53,15 @@ SCM_DEFINE (scm_webview_load_uri, "webview-load-uri", 1, 0, 0, (SCM uri),
   return SCM_UNSPECIFIED;
 }
 
+SCM_DEFINE (scm_webview_load_string, "webview-load-string", 1, 0, 0, (SCM html),
+            "Set's the current WebView to string HTML.")
+{
+  QMetaObject::invokeMethod(currentWebView(), "loadHtml",
+	  Qt::DirectConnection, Q_ARG(QString, "sqr"));
+
+  return SCM_UNSPECIFIED;
+}
+
 SCM_DEFINE (
     scm_webview_go_back, "webview-go-back", 0, 0, 0, (),
     "Request WebView to go back in history. If WebView can not be found or "
@@ -127,7 +136,7 @@ webview_register_functions (void *data)
 #include "webview.x"
   scm_c_export ("webview-load-uri", "webview-go-back", "webview-go-forward",
                 "webview-reload", "webview-current-url", "scroll-up",
-                "scroll-down", "debug-webview-methods", "isearch-forward",
+                "scroll-down", "debug-webview-methods", "isearch-forward", "webview-load-string",
                 NULL);
   scm_c_make_command ("copy-current-url");
 }
