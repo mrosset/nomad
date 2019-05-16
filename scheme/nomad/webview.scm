@@ -17,7 +17,8 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad webview)
-  #:export (webview-mode-map))
+  #:export (webview-mode-map)
+  #:export (webview-load-string))
 
 (define webview-mode-map '(("C-b" . (next-buffer))
 		       ("C-u" . (back))
