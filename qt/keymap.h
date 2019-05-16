@@ -51,6 +51,7 @@ signals:
   void promptInput (QVariant cmd, QVariant arg);
   void evalWithArgs (QString symbol, QString arg0);
   void updateMap (QVariant bind, QVariant proc);
+  void LoadString (QVariant string);
 
 public slots:
   void UpdateMap (QString map);

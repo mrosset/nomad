@@ -566,6 +566,6 @@ ApplicationWindow {
         miniBuffer.state = "prompt"
     }
         function LoadString(string) {
-        currentWebView.loadHtml = string
+        currentWebView.loadHtml(string , "qrc:/")
     }
 }
