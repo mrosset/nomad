@@ -124,13 +124,69 @@
     ./configure
     make
     #+end_src
-* Run from source
-  - To run a local build of nomad, without actually installing it. For
-    example, if you are hacking on the nomad Cpp source code and want
-    to test your changes after you've compiled it.
-    #+begin_src shell
-    ./pre-inst-env ./qt/nomad
-    #+end_src
+
+** Run Nomad before you've installed Nomad
+   - Once you've built Nomad without errors, to run Nomad from the
+     local build.
+   #+begin_src bash
+   ./pre-inst-env ./qt/nomad
+   #+end_src
+
+* Hack Nomad in QML
+  - Nomad is hackable in Scheme. But you can also hack Nomad in
+    Cpp/QML. In general, the aim of Nomad is to present you the user
+    with enough programming capabilities that you don't have to resort
+    to this step, but you may still wish to change some internal
+    plumbing in Nomad or expose new functionality to Scheme, and we
+    encourage you in this endeavour.
+  - One design principles we can use as a of rule of thumb is, for
+    every feature provided by Nomad in the standard library or in the
+    application, user should be able to provide their replacement.
+  - You can find features available in WebEngineView at
+     [[https://doc.qt.io/qt-5/qml-qtwebengine-webengineview.html#Feature-prop][QtWebEngineView Features]].
+
+** To implement a Method from Qtwebengine
+   - You can add a procedure in Nomad Cpp modules that will become
+     accessible from Scheme with `SCM_DEFINE` from the Guile's C
+     library `libguile`.
+     #+begin_src c++
+       #include <libguile.h>
+     #+end_src
+   - The `currentWebView` is an instance of Qt WebEngineView, it can
+     support a function called `loadHtml`, which loads HTML into the
+     WebView. But, we can also use it to load any type of data!
+   - To make this facility available to Scheme, we'd like to define a
+     procedure called `webview-load-string`, that can wrap up this
+     functionality and make it available at Nomad's runtime.
+   - The following `webview-load-string` procedure is one of the ways
+     you can do it. Webview-load-string is converting it's argument, a
+     Scheme object into a Qt object which can be understood by
+     Qtwebengine.
+     #+begin_src c++
+       SCM_DEFINE (scm_webview_load_string, "webview-load-string", 1, 0, 0, (SCM html),
+                 "Set's the current WebView to string HTML.")
+       {
+         QMetaObject::invokeMethod(currentWebView(), "loadHtml",
+           Qt::DirectConnection, Q_ARG(QString, (scm_to_qstring (html))));
+
+         return SCM_UNSPECIFIED;
+       }
+     #+end_src
+   - Then, we invoke the loadHtml Method on this argument.. Although,
+     this approach may work, the results can be less than robust.
+   - It's good practice to give your function an unabbreivated and
+     descriptive name and a documentation string explaining how to use
+     the procedure.
+   - To export this procedure use:
+     #+begin_src c++
+      scm_c_export ("webview-load-string");
+     #+end_src
+   - Then you can compile Nomad and add this to your `$HOME/.nomad`
+     #+begin_src scheme
+     (define-command (say-hello) (webview-load-string "Hello World"))
+     #+end_src
+   - And in a running instance of Nomad, M-x say-hello.
+
 * FAQ
 ** Nomad doesn't start
    - you might have to delete the socket file `/tmp/nomad-socket`
