@@ -565,4 +565,7 @@ ApplicationWindow {
         historyCompletion("")
         miniBuffer.state = "prompt"
     }
+        function LoadString(string) {
+        currentWebView.loadHtml = string
+    }
 }
