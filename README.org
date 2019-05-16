@@ -120,6 +120,13 @@
     ./configure
     make
     #+end_src
+* Run from source
+  - To run a local build of nomad, without actually installing it. For
+    example, if you are hacking on the nomad Cpp source code and want
+    to test your changes after you've compiled it.
+    #+begin_src shell
+    ./pre-inst-env ./qt/nomad
+    #+end_src
 * FAQ
 ** Nomad doesn't start
    - you might have to delete the socket file `/tmp/nomad-socket`
