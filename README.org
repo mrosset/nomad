@@ -78,7 +78,7 @@
     `~/.nomad`, which is just a scheme file!
   - Examples
     -  (set! search-provider-format "https://google.ca/search?q=~a")
-    -  (define-command (help) "Browse to the Nomad README." 
+    -  (define-command (help) "Browse to the Nomad README."
        (browse "file:///nomad/README.org"))
 * Nomad-hacker's setup
   - Startup Emacs and install Geiser
@@ -102,6 +102,7 @@
     qml-module-qtquick2 \
     qml-module-qtquick-controls \
     qml-module-qtwebengine \
+    qml-module-qtwebchannel \
     qml-module-qtquick-layouts \
     libqtermwidget5-0-dev \
     #+end_src
