@@ -91,10 +91,11 @@
 * Build from source
   - In Ubuntu 18.10, the the following snippet will install all required
     dependencies.
-    #+begin_src shell
+    #+begin_src shell :results silent
     sudo apt install -y \
     guile-2.2-dev \
     qtbase5-dev \
+    qtchooser \
     qtwebengine5-dev \
     qtquickcontrols2-5-dev \
     qtbase5-dev-tools \
