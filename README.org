@@ -17,13 +17,13 @@
    - If you'd like to to download pre-built binaries from the build
      server, you can authorize guix to use Nomad's build server.
      #+begin_src shell
-     guix archive --authorize < contrib/guix/216.250.119.249.pub
+     guix archive --authorize < contrib/guix/gx.bufio.org.pub
      #+end_src
    - Then install Nomad while instructing guix to use substitutes from
      both, the official, and the Nomad build server.
      #+begin_src shell
      guix package -i nomad --substitute-urls="https://ci.guix.info \
-     http://216.250.119.249:8181"
+     https://gx.bufio.org"
      #+end_src
    - If subsitutes are still not available you may have to use an older
      version of guix and retry.
