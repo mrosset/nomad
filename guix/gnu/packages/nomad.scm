@@ -175,57 +175,6 @@ applications using the Chromium browser project.")
        (license
 	(package-license qt))))
 
-(define-public qt-with-webengine
-  (package
-    (name "qt-with-webengine")
-    (version (package-version qtbase))
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments
-     '(#:modules ((guix build union))
-       #:builder (begin
-		   (use-modules (ice-9 match)
-				(guix build union))
-		   (match %build-inputs
-		     (((names . directories) ...)
-		      (union-build (assoc-ref %outputs "out")
-				   directories)
-		      #t))
-		   (let ((out (assoc-ref %outputs "out")))
-		   (with-output-to-file (string-append out "/bin/qt.conf")
-		 (lambda ()
-		   (format #t "[Paths]
-Prefix=~a
-ArchData=lib/qt5
-Data=share/qt5
-Documentation=share/doc/qt5
-Headers=include/qt5
-Libraries=lib
-LibraryExecutables=lib/qt5/libexec
-Binaries=bin
-Tests=tests
-Plugins=lib/qt5/plugins
-Imports=lib/qt5/imports
-Qml2Imports=lib/qt5/qml
-Translations=lib/qt5/libexec
-Settings=etc/xdg
-Examples=share/doc/qt5/examples
-HostPrefix=~a
-HostData=lib/qt5
-HostBinaries=bin
-HostLibraries=lib
-" out out))))
-)))
-    (inputs `(("qtbase", qtbase)
-	      ("qtwebengine" ,qtwebengine)
-	      ("qttools", qttools)
-	      ("zlib", zlib)))
-    (synopsis "Union qtbase and webengine")
-    (description
-     "Union of qtbase and webengine")
-    (home-page (package-home-page qtbase))
-    (license (package-license qtbase))))
-
 (define-public nomad
   ;; feature-qt branch
   (let ((commit "bc2807a16dbc17a766d3f920d51ad9a57dbfec0f"))
@@ -301,8 +250,6 @@ HostLibraries=lib
 			#t))
 		    (add-after 'install-binaries 'wrap-binaries
 		      (lambda* (#:key outputs inputs #:allow-other-keys)
-			;; Curl and libvorbis need to be wrapped so that we get
-			;; sound and networking.
 			(let* ((out       (assoc-ref outputs "out"))
 			       (exe       (string-append out "/bin/nomad"))
 			       (lib       (string-append out "/lib"))

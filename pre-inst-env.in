@@ -2,6 +2,7 @@
 
 abs_top_srcdir="`cd "@abs_top_srcdir@/scheme/" > /dev/null; pwd`"
 abs_top_builddir="`cd "@abs_top_builddir@/scheme/" > /dev/null; pwd`"
+abs_top_qtdir="`cd "@abs_top_srcdir@/qt/" > /dev/null; pwd`"
 
 GUILE_AUTO_COMPILE=0
 GUILE_LOAD_COMPILED_PATH="$abs_top_builddir${GUILE_LOAD_COMPILED_PATH:+:}$GUILE_LOAD_COMPILED_PATH"
@@ -10,5 +11,24 @@ export GUILE_LOAD_COMPILED_PATH GUILE_LOAD_PATH GUILE_AUTO_COMPILE
 
 PATH="$abs_top_builddir/qt:$PATH"
 export PATH
+
+# FIXME: this will not work when building out of source tree
+
+# when in a guix environment, setup guix specific variables
+if [[ -n $GUIX_ENVIRONMENT ]]; then
+    export QTDIR="$GUIX_ENVIRONMENT"
+    export QTWEBENGINEPROCESS_PATH="$GUIX_ENVIRONMENT/lib/qt5/libexec/QtWebEngineProcess"
+    export LD_LIBRARY_PATH="$GUIX_ENVIRONMENT/lib:$GUIX_ENVIRONMENT/lib/nss"
+
+    # make qt.conf prefix to arg0 directory
+    cat <<EOF > "qt/qt.conf"
+[PATHS]
+Prefix = .
+EOF
+
+    # link input qtwebengine ICU and locale data
+    ln -sf "$GUIX_ENVIRONMENT/lib/qt5/libexec/qtwebengine_locales" "$abs_top_qtdir/qtwebengine_locales"
+    ln -sf  "$GUIX_ENVIRONMENT/lib/qt5/libexec" "$abs_top_qtdir/resources"
+fi
 
 exec "$@"
