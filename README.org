@@ -148,9 +148,37 @@
    ./pre-inst-env ./qt/nomad
    #+end_src
 
-** An example `webview-load-string`
+** To implement a function from Qtwebengine
+   - You can add a procedure that will become accessible from Scheme
+     with SCM_DEFINE from the Guile's C library libguile. It's good
+     practice to give your function an unabbreivated and descriptive
+     name and a documentation string explaining how to use the
+     procedure.
+   - To use libguile in your program you have to include it's headers.
+     #+begin_src c++
+       #include <libguile.h>
+     #+end_src
+   - Then we can use SCM_DEFINE to create a fresh Scheme procedure.
+     #+begin_src c++
+       SCM_DEFINE (scm_webview_load_string, "webview-load-string", 1, 0, 0, (SCM html),
+                 "Set's the current WebView to string HTML.")
+       {
+         QMetaObject::invokeMethod(currentWebView(), "loadHtml",
+           Qt::DirectConnection, Q_ARG(QString, (scm_to_qstring (html))));
 
-
+         return SCM_UNSPECIFIED;
+       }
+     #+end_src
+   - `currentWebView` supports a function called `loadHtml`, our
+     procedure `webview-load-string` is converting the scheme object
+     `html` into a `QString` that Qtwebengine can understand. Then, we
+     invoke the loadHtml procedure on this argument..
+   - Although this approach may work, the results can be less than
+     robust.
+   - To export the procedure use:
+     #+begin_src c++
+      scm_c_export ("webview-load-string");
+     #+end_src
 * FAQ
 ** Nomad doesn't start
    - you might have to delete the socket file `/tmp/nomad-socket`
