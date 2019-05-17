@@ -87,9 +87,8 @@
     (forward)
     (back)
     (browse "https://gnu.org/software/guile")
-  - Nomad's extensions are defined in `scheme/`, if you need to create
-    a new module for nomad, you can define it under
-    `scheme/nomad/<module>`.
+  - Nomad's extensions are defined in `$NOMAD_SOURCE/scheme/`, create
+    new module for nomad as `scheme/nomad/<module-name>`.
   - Once you have tested it locally, you can submit a pull request to
     the Nomad source [[https://github.com/o-nly/nomad.git][repository]].
 
