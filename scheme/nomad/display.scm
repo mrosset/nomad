@@ -19,7 +19,9 @@
 
 (define-module (nomad display))
 
-(use-modules (pict))
+(use-modules (pict)
+             (sxml simple)
+             (nomad webview))
 ;;; pict in nomad
 (define-public (pict->string record)
   (with-output-to-string
@@ -31,7 +33,11 @@
 (define (display-pict p) (webview-load-string (pict->string p)))
 
 ;; generalize webview-load-string to display scheme values
+(define-macro (buffer-display value)
+  `(and (make-buffer "out")
+        (webview-load-string (with-output-to-string (lambda _ (display ,value))))))
+
 (define-macro (nomad-display value)
   `(webview-load-string (with-output-to-string (lambda _ (display ,value)))))
 
-(export-syntax nomad-display)
+(export-syntax buffer-display nomad-display)
