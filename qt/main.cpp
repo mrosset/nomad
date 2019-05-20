@@ -237,6 +237,13 @@ int
 main (int argc, char *argv[])
 {
   // FIXME: is there a better way to do this?
-  setenv ("GUILE_LOAD_COMPILED_PATH", NOMAD_GUILE_LOAD_COMPILED_PATH, 1);
+  // append prefix ccache to environment ccache
+  QString ccache = QString (getenv ("GUILE_LOAD_COMPILED_PATH"));
+  const char *env_ccache = QString (NOMAD_GUILE_LOAD_COMPILED_PATH)
+                               .append (":")
+                               .append (ccache)
+                               .toUtf8 ()
+                               .constData ();
+  setenv ("GUILE_LOAD_COMPILED_PATH", env_ccache, 1);
   scm_boot_guile (argc, argv, inner_main, NULL);
 }
