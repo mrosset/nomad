@@ -39,14 +39,6 @@
 	    server-start-coop
 	    client-start))
 
-(define emacs-command-line (list "emacs" "-q" "-nw" "-l" emacs-init-file))
-
-;; (define nc-command-line (list "nc" "-U" socket-file))
-
-;; (define rlwrap-command-line (append (list "rlwrap") nc-command-line))
-
-;; (define repl-command-line nc-command-line)
-
 (define repl-server #f)
 
 (define (poll-server)
