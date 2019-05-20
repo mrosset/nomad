@@ -115,14 +115,11 @@ reached."
 	(write-line line port)
 	(read-until-prompt port)
 	(newline)))))
-	;; connection could be closed here if so break the read loop
-	;; (when (eof-object? (lookahead-char port))
-	;;   (break))))))
 
 (define (write-socket input socket-file)
   "Write string INPUT to guile unix socket at SOCKET-FILE. The guile
 instance on the socket will evaluate INPUT expression. It is not
-ppossible to return anything from the socket at this point"
+possible to return anything from the socket at this point"
   (let ((port (socket PF_UNIX SOCK_STREAM 0)))
      (catch #t
       (lambda ()
