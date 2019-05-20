@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 abs_top_srcdir="`cd "@abs_top_srcdir@/scheme/" > /dev/null; pwd`"
 abs_top_builddir="`cd "@abs_top_builddir@/scheme/" > /dev/null; pwd`"
@@ -19,16 +19,9 @@ if [[ -n $GUIX_ENVIRONMENT ]]; then
     export QTDIR="$GUIX_ENVIRONMENT"
     export QTWEBENGINEPROCESS_PATH="$GUIX_ENVIRONMENT/lib/qt5/libexec/QtWebEngineProcess"
     export LD_LIBRARY_PATH="$GUIX_ENVIRONMENT/lib:$GUIX_ENVIRONMENT/lib/nss"
-
-    # make qt.conf prefix to arg0 directory
-    cat <<EOF > "qt/qt.conf"
-[PATHS]
-Prefix = .
-EOF
-
-    # link input qtwebengine ICU and locale data
-    ln -sf "$GUIX_ENVIRONMENT/lib/qt5/libexec/qtwebengine_locales" "$abs_top_qtdir/qtwebengine_locales"
-    ln -sf  "$GUIX_ENVIRONMENT/lib/qt5/libexec" "$abs_top_qtdir/resources"
+    if [ ! -h "$abs_top_qtdir/resources" ]; then
+        ln -s $GUIX_ENVIRONMENT/lib/qt5/libexec "$abs_top_qtdir/resources"
+    fi
 fi
 
 exec "$@"
