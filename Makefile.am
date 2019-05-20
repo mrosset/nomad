@@ -45,3 +45,6 @@ CLEANFILES =		\
 	test-suite.log
 
 DISTCLEANFILES = check-guile.log
+
+attach:
+	$(MAKE) -C docker attach
