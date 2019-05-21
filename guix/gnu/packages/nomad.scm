@@ -129,6 +129,7 @@ Tests=tests
 Plugins=lib/qt5/plugins
 Imports=lib/qt5/imports
 Qml2Imports=lib/qt5/qml
+Translations=share/qt5/translations
 Translations=lib/qt5/libexec
 Settings=etc/xdg
 Examples=share/doc/qt5/examples
