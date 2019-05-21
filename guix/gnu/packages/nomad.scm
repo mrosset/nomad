@@ -118,28 +118,6 @@
 		 (lambda ()
 		   (format #t "[Paths]
 Prefix=~a
-ArchData=lib/qt5
-Data=share/qt5
-Documentation=share/doc/qt5
-Headers=include/qt5
-Libraries=lib
-LibraryExecutables=lib/qt5/libexec
-Binaries=bin
-Tests=tests
-Plugins=lib/qt5/plugins
-Imports=lib/qt5/imports
-Qml2Imports=lib/qt5/qml
-Translations=lib/qt5/libexec
-Settings=etc/xdg
-Examples=share/doc/qt5/examples
-HostPrefix=~a
-HostData=lib/qt5
-HostBinaries=bin
-HostLibraries=lib
-
-[EffectiveSourcePaths]
-HostPrefix=~a
-HostData=lib/qt5
 " out out qtbase)))
 	       #t)))
 	 (replace 'configure
@@ -151,21 +129,6 @@ HostData=lib/qt5
 	   (lambda _
 	     ;; make Qt render "offscreen", required for tests
 	     (setenv "QT_QPA_PLATFORM" "offscreen")
-	     #t))
-	 (add-after 'install 'copy-icu
-	   (lambda* (#:key inputs outputs
-			   #:allow-other-keys)
-	     (let* ((out (assoc-ref outputs "out"))
-		    (resources (string-append out "/share/qt5/resources/"))
-		    (libexec (string-append out "/lib/qt5/libexec/"))
-		    (copy-resource (lambda(x)
-				     (copy-file (string-append resources x)
-						(string-append libexec x)))))
-	       (copy-resource "icudtl.dat")
-	       (copy-resource "qtwebengine_resources.pak")
-	       (copy-resource "qtwebengine_resources_200p.pak")
-	       (copy-resource "qtwebengine_resources_100p.pak")
-	       (copy-resource "qtwebengine_devtools_resources.pak"))
 	     #t))
 )))
        (home-page "https://www.qt.io")
