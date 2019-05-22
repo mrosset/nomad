@@ -20,7 +20,7 @@ if [[ -n $GUIX_ENVIRONMENT ]]; then
     export QTWEBENGINEPROCESS_PATH="$GUIX_ENVIRONMENT/lib/qt5/libexec/QtWebEngineProcess"
     export LD_LIBRARY_PATH="$GUIX_ENVIRONMENT/lib:$GUIX_ENVIRONMENT/lib/nss"
     if [ ! -h "$abs_top_qtdir/resources" ]; then
-        ln -s $GUIX_ENVIRONMENT/lib/qt5/libexec "$abs_top_qtdir/resources"
+        ln -s $GUIX_ENVIRONMENT/share/qt5/resources "$abs_top_qtdir/resources"
     fi
 fi
 
