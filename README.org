@@ -90,7 +90,7 @@
   - Nomad's extensions are defined in `$NOMAD_SOURCE/scheme/`, create
     new module for nomad as `scheme/nomad/<module-name>`.
   - Once you have tested it locally, you can submit a pull request to
-    the Nomad source [[https://github.com/o-nly/nomad.git][repository]].
+    the Nomad source [[https://github.com/mrosset/nomad][repository]].
 
 * Build from source
   - In Ubuntu 18.10, the the following snippet will install all required
@@ -190,4 +190,3 @@
 * FAQ
 ** Nomad doesn't start
    - you might have to delete the socket file `/tmp/nomad-socket`
-
