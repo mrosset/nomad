@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 abs_top_srcdir="`cd "@abs_top_srcdir@/scheme/" > /dev/null; pwd`"
 abs_top_builddir="`cd "@abs_top_builddir@/scheme/" > /dev/null; pwd`"
