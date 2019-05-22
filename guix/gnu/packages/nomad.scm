@@ -15,6 +15,7 @@
  (gnu packages gettext)
  (gnu packages guile)
  (gnu packages xorg)
+ (gnu packages image)
  (gnu packages gl)
  (gnu packages gnupg)
  (gnu packages pciutils)
@@ -32,6 +33,7 @@
  (gnu packages flex)
  (gnu packages bison)
  (gnu packages ruby)
+ (gnu packages video)
  (gnu packages ninja)
  (gnu packages xdisorg)
  (gnu packages compression)
@@ -75,10 +77,14 @@
        ("libx11" ,libx11)
        ("libxrender" ,libxrender)
        ("libxi" ,libxi)
+       ("harfbuzz", harfbuzz)
+       ("libwebp" ,libwebp)
+       ("ffmpeg", ffmpeg)
        ;; OpenGL
        ("mesa" ,mesa)
        ;; qt web engine
        ("libgcrypt" ,libgcrypt)
+       ("libjpeg", libjpeg-turbo)
        ("pciutils" ,pciutils)
        ("nss" ,nss)
        ("libxtst" ,libxtst)
@@ -97,8 +103,7 @@
        ("qtwebchannel" ,qtwebchannel)
        ("atk" ,atk)
        ("qtmultimedia" ,qtmultimedia)
-       ("re2c" ,re2c)
-       ))
+       ("re2c" ,re2c)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -163,7 +168,7 @@ HostData=lib/qt5
 	 )))
        (home-page "https://www.qt.io")
        (synopsis "Qt5WebEngine")
-       (description "Qt5WebEngine for nomad. Provides support for web
+       (description "Qt5WebEngine provides support for web
 applications using the Chromium browser project.")
        (license
 	(package-license qt))))
