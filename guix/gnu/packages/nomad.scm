@@ -41,7 +41,7 @@
 (define-public qtwebengine
   (package
     (name "qtwebengine")
-    (version "5.11.3")
+    (version (package-version qtbase))
     (source
      (origin
        (method url-fetch)
@@ -129,7 +129,7 @@ Tests=tests
 Plugins=lib/qt5/plugins
 Imports=lib/qt5/imports
 Qml2Imports=lib/qt5/qml
-Translations=lib/qt5/libexec
+Translations=share/qt5/translations
 Settings=etc/xdg
 Examples=share/doc/qt5/examples
 HostPrefix=~a
@@ -152,22 +152,15 @@ HostData=lib/qt5
 	     ;; make Qt render "offscreen", required for tests
 	     (setenv "QT_QPA_PLATFORM" "offscreen")
 	     #t))
-	 (add-after 'install 'copy-icu
-	   (lambda* (#:key inputs outputs
-			   #:allow-other-keys)
-	     (let* ((out (assoc-ref outputs "out"))
-		    (resources (string-append out "/share/qt5/resources/"))
-		    (libexec (string-append out "/lib/qt5/libexec/"))
-		    (copy-resource (lambda(x)
-				     (copy-file (string-append resources x)
-						(string-append libexec x)))))
-	       (copy-resource "icudtl.dat")
-	       (copy-resource "qtwebengine_resources.pak")
-	       (copy-resource "qtwebengine_resources_200p.pak")
-	       (copy-resource "qtwebengine_resources_100p.pak")
-	       (copy-resource "qtwebengine_devtools_resources.pak"))
-	     #t))
-)))
+	 (add-after 'install-binaries 'install-qt.conf
+		    (lambda* (#:key inputs outputs #:allow-other-keys)
+		      (let* ((out (assoc-ref outputs "out"))
+			     (tmpdir (string-append (getenv "TMPDIR")))
+			     (in.conf (string-append tmpdir "/qt.conf"))
+			     (out.conf (string-append out "/lib/qt5/libexec/qt.conf")))
+			(copy-file in.conf out.conf))
+		      #t))
+	 )))
        (home-page "https://www.qt.io")
        (synopsis "Qt5WebEngine")
        (description "Qt5WebEngine for nomad. Provides support for web
@@ -217,37 +210,6 @@ applications using the Chromium browser project.")
 	 ))
       (arguments
        `(#:phases (modify-phases %standard-phases
-		    (add-after 'install 'symlink-stuff
-		      (lambda* (#:key inputs outputs
-				#:allow-other-keys)
-			(let* ((out (assoc-ref outputs "out"))
-			       (qtwebengine (assoc-ref inputs
-						       "qtwebengine"))
-			       (qtwebengine-locales (string-append
-						     qtwebengine
-						     "/lib/qt5/libexec/qtwebengine_locales"))
-			       (qtwebengine-resources (string-append
-						       qtwebengine
-						       "/share/qt5/resources/"))
-			       (qtwebengine-libexec (string-append
-						     qtwebengine "/lib/qt5/libexec/QtWebEngineProcess"))
-			       (qt-resource/ (lambda (x) (string-append
-							  qtwebengine-resources
-							  x)))
-			       (out-bin/ (lambda (x) (string-append out "/bin/"
-								    x)))
-			       (link-resource (lambda (x) (symlink (qt-resource/ x)
-								   (out-bin/ x))))
-			       (copy-resource (lambda (x)
-						(copy-file (qt-resource/ x) (out-bin/ x)))))
-			  (symlink qtwebengine-locales (out-bin/
-							"qtwebengine_locales"))
-			  (link-resource "icudtl.dat")
-			  (link-resource "qtwebengine_resources.pak")
-			  (link-resource "qtwebengine_resources_200p.pak")
-			  (link-resource "qtwebengine_resources_100p.pak")
-			  (link-resource "qtwebengine_devtools_resources.pak"))
-			#t))
 		    (add-after 'install-binaries 'wrap-binaries
 		      (lambda* (#:key outputs inputs #:allow-other-keys)
 			(let* ((out       (assoc-ref outputs "out"))
@@ -256,13 +218,38 @@ applications using the Chromium browser project.")
 			       (mesa      (assoc-ref inputs "mesa"))
 			       (nss       (assoc-ref inputs "nss"))
 			       (udev      (assoc-ref inputs "udev"))
-			       (qtwebengine (assoc-ref inputs "qtwebengine")))
+			       (qtbase    (assoc-ref inputs "qtbase"))
+			       (qtwebengine (assoc-ref inputs "qtwebengine"))
+			       (qt.conf   (string-append out "/bin/qt.conf")))
 			  (wrap-program exe
 			    ;; TODO: Get these in RUNPATH.
 			    `("LD_LIBRARY_PATH" ":" prefix
 			      (,(string-append lib ":" nss "/lib/nss:" mesa "/lib:"
 					       udev "/lib")))
 			    `("QTWEBENGINEPROCESS_PATH" ":" prefix (,(string-append qtwebengine "/lib/qt5/libexec/QtWebEngineProcess"))))
+			  (with-output-to-file qt.conf
+			    (lambda ()
+			      (format #t "[Paths]
+Prefix=~a
+ArchData=lib/qt5
+Data=share/qt5
+Documentation=share/doc/qt5
+Headers=include/qt5
+Libraries=lib
+LibraryExecutables=lib/qt5/libexec
+Binaries=bin
+Tests=tests
+Plugins=~a/lib/qt5/plugins
+Imports=lib/qt5/imports
+Qml2Imports=lib/qt5/qml
+Translations=share/qt5/translations
+Settings=etc/xdg
+Examples=share/doc/qt5/examples
+HostPrefix=~a
+HostData=lib/qt5
+HostBinaries=bin
+HostLibraries=lib
+" qtwebengine qtbase qtwebengine)))
 			  #t))))))
       (home-page "https://github.com/mrosset/nomad")
       (synopsis "An extensible web browser using Gnu Guile and QT.")
