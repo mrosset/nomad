@@ -68,5 +68,6 @@ specified. Returns the final URL passed to webkit"
   (let ((uri (simple-format #f search-provider-format q)))
     (browse uri)))
 
-(define (current-url)
+(define-command (current-url)
+  "Returns the current url"
   (webview-current-url))
