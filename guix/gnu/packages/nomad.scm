@@ -13,6 +13,7 @@
  (gnu packages glib)
  (gnu packages autotools)
  (gnu packages gettext)
+ (gnu packages emacs-xyz)
  (gnu packages guile)
  (gnu packages gl)
  (gnu packages nss)
@@ -35,6 +36,10 @@
 		 (base32
 		  "144kr50w9kdlgamv3rjny70f7hk40cfq5f0n0fws4lls56x3w41a"))))
       (build-system gnu-build-system)
+      (native-inputs
+       `(
+	 ("emacs-htmlize", emacs-htmlize)
+	 ))
       (inputs
        `(
 	 ("pkg-config" ,pkg-config)
