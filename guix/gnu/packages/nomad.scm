@@ -21,7 +21,7 @@
 
 (define-public nomad
   ;; feature-qt branch
-  (let ((commit "bc2807a16dbc17a766d3f920d51ad9a57dbfec0f"))
+  (let ((commit "b372b3b984dc241760b578e8e3b40b5be6e2a0f2"))
     (package
       (name "nomad")
       (version (git-version "0.0.4-alpha" "118" commit))
@@ -33,7 +33,7 @@
 		(file-name (git-file-name name version))
 		(sha256
 		 (base32
-		  "0sdglj66b9n6l3hrywb5xwmg0cjk0pjljiw3y08npkr46jrjvrpb"))))
+		  "144kr50w9kdlgamv3rjny70f7hk40cfq5f0n0fws4lls56x3w41a"))))
       (build-system gnu-build-system)
       (inputs
        `(
