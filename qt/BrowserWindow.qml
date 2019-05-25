@@ -14,6 +14,7 @@ ApplicationWindow {
     property QtObject applicationRoot
     property Item currentWebView: tabs.count > 0 ? tabs.getTab(tabs.currentIndex).item: null
     property int previousVisibility: Window.Windowed
+    property QtObject currentPopup: null
 
     signal submitKeymap(string keymap, int modifers, int key)
     signal submitEval(string input);
@@ -26,6 +27,39 @@ ApplicationWindow {
     width: 640
     height: 480
 
+    function handleUpdateMap(bind, proc) {
+        currentPopup.handleUpdateMap(bind, proc)
+    }
+    function showPopUp(keymap, prompt) {
+        if (currentPopup != null) {
+            currentPopup.destroy()
+            return;
+        }
+        var component = Qt.createComponent("MiniPopup.qml")
+        if( component.status != Component.Ready )
+        {
+            if( component.status == Component.Error )
+                console.debug("Error:"+ component.errorString() )
+            return
+        }
+        currentPopup = component.createObject(popUpContainer)
+        currentPopup.keymap = keymap
+        miniBuffer.prompt = prompt
+        updateMap(keymap)
+    }
+
+    Action {
+        shortcut: "Ctrl+h"
+        onTriggered: {
+            showPopUp("ctrl-x-map", "C-h");
+        }
+    }
+    Action {
+        shortcut: "Ctrl+x"
+        onTriggered: {
+            showPopUp("ctrl-x-map", "C-x");
+        }
+    }
     Action {
         shortcut: "Alt+m"
         onTriggered: {
@@ -38,14 +72,7 @@ ApplicationWindow {
     Action {
         shortcut: "Alt+x"
         onTriggered: {
-            webViewLayout.state = "Close"
             miniBuffer.focus = !miniBuffer.focus
-        }
-    }
-    Action {
-        shortcut: "Ctrl+x"
-        onTriggered: {
-            miniPopup.visible = !miniPopup.visible
         }
     }
     Action {
@@ -241,8 +268,11 @@ ApplicationWindow {
             color: "steelblue"
             visible: miniOutput.visible
         }
-        MiniPopup{
-            id: miniPopup
+        Rectangle {
+            id: popUpContainer
+            height: 200
+            visible: false
+            Layout.fillWidth: true
         }
         Rectangle {
             id: miniOutputRect
@@ -551,7 +581,10 @@ ApplicationWindow {
         currentWebView.focus = false
         miniBuffer.state = ""
         tabs.focus = true
-        miniPopup.visible = false
+        popUpContainer.visible = false;
+        if(currentPopup != null) {
+            currentPopup.destroy();
+        }
     }
 
     function setUrl(uri) {

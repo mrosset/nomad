@@ -1,11 +1,16 @@
 import QtQuick 2.11
 import QtQuick.Layouts 1.11
+import QtQuick.Controls 1.2
 
 Rectangle {
+    visible: true
     height: 200
-    visible: false
-    Layout.fillWidth: true
-    color: "white"
+    width: parent.width
+    property string keymap: null
+    Component.onCompleted: {
+	parent.visible = true
+	focus = true
+    }
     ListView {
 	objectName: "miniPopup"
 	anchors.fill: parent
@@ -21,27 +26,19 @@ Rectangle {
 		text: symbol
 	    }
 	}
-	function handleUpdateMap(bind, proc) {
-	    miniPopupModel.append({"bind": bind, "symbol": proc})
-	}
+    }
+    function handleUpdateMap(bind, proc) {
+	miniPopupModel.append({"bind": bind, "symbol": proc})
     }
     onFocusChanged: {
-	visible = focus
 	miniPopupModel.clear()
     }
     onVisibleChanged: {
 	miniSeperator.visible = visible
-	focus = visible
 	miniBufferLabel.visible = visible
-	if(visible) {
-	    miniBuffer.prompt = "C-x"
-	} else {
-	    miniBuffer.prompt = "M-x"
-	}
-	updateMap("ctrl-x-map");
     }
     Keys.onPressed: {
-	submitKeymap("ctrl-x-map", event.modifiers, event.key)
+	submitKeymap(keymap, event.modifiers, event.key)
 	keyboardQuit();
     }
     ListModel {
