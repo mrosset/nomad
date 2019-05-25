@@ -33,7 +33,6 @@ ApplicationWindow {
     function showPopUp(keymap, prompt) {
         if (currentPopup != null) {
             currentPopup.destroy()
-            return;
         }
         var component = Qt.createComponent("MiniPopup.qml")
         if( component.status != Component.Ready )
@@ -51,7 +50,7 @@ ApplicationWindow {
     Action {
         shortcut: "Ctrl+h"
         onTriggered: {
-            showPopUp("ctrl-x-map", "C-h");
+            showPopUp("ctrl-h-map", "C-h");
         }
     }
     Action {
@@ -307,6 +306,7 @@ ApplicationWindow {
             }
             onVisibleChanged: {
                 miniOutput.visible = visible
+                miniSeperator.visible = visible
             }
         }
         ListModel {
