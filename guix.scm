@@ -255,3 +255,4 @@ HostLibraries=lib
       (synopsis "An extensible web browser using Gnu Guile and QT.")
       (description "An extensible web browser.")
       (license license:gpl3+))))
+nomad
