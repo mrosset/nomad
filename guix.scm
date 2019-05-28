@@ -171,67 +171,66 @@ applications using the Chromium browser project.")
 
 (define-public nomad
   ;; feature-qt branch
-  (let ((commit "bc2807a16dbc17a766d3f920d51ad9a57dbfec0f"))
-    (package
-      (name "nomad")
-      (version (git-version "0.0.4-alpha" "118" commit))
-      (source (origin
-		(method git-fetch)
-		(uri (git-reference
-		      (url "https://github.com/mrosset/nomad")
-		      (commit commit)))
-		(file-name (git-file-name name version))
-		(sha256
-		 (base32
-		  "0sdglj66b9n6l3hrywb5xwmg0cjk0pjljiw3y08npkr46jrjvrpb"))))
-      (build-system gnu-build-system)
-      (inputs
-       `(
-	 ("pkg-config" ,pkg-config)
-	 ("glib" ,glib)
-	 ("autoconf" ,autoconf)
-	 ("automake" ,automake)
-	 ("gettext-minimal" ,gettext-minimal)
-	 ("qtbase" ,qtbase)
-	 ("qtwebchannel", qtwebchannel)
-	 ("qtquickcontrols2" ,qtquickcontrols2)
-	 ("qttools" ,qttools)
-	 ("nss" ,nss)
-	 ("mesa" , mesa)
-	 ("udev", eudev)
-         ("texinfo" ,texinfo)
-	 ))
-      (propagated-inputs
-       `(
-	 ("guile" ,guile-2.2)
-	 ("guile-readline" ,guile-readline)
-	 ("qtwebengine" ,qtwebengine)
-	 ("qtdeclarative" ,qtdeclarative)
-	 ("qtquickcontrols" ,qtquickcontrols)
-	 ("qtwebchannel" ,qtwebchannel)
-	 ))
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-		    (add-after 'install-binaries 'wrap-binaries
-		      (lambda* (#:key outputs inputs #:allow-other-keys)
-			(let* ((out       (assoc-ref outputs "out"))
-			       (exe       (string-append out "/bin/nomad"))
-			       (lib       (string-append out "/lib"))
-			       (mesa      (assoc-ref inputs "mesa"))
-			       (nss       (assoc-ref inputs "nss"))
-			       (udev      (assoc-ref inputs "udev"))
-			       (qtbase    (assoc-ref inputs "qtbase"))
-			       (qtwebengine (assoc-ref inputs "qtwebengine"))
-			       (qt.conf   (string-append out "/bin/qt.conf")))
-			  (wrap-program exe
-			    ;; TODO: Get these in RUNPATH.
-			    `("LD_LIBRARY_PATH" ":" prefix
-			      (,(string-append lib ":" nss "/lib/nss:" mesa "/lib:"
-					       udev "/lib")))
-			    `("QTWEBENGINEPROCESS_PATH" ":" prefix (,(string-append qtwebengine "/lib/qt5/libexec/QtWebEngineProcess"))))
-			  (with-output-to-file qt.conf
-			    (lambda ()
-			      (format #t "[Paths]
+  (package
+    (name "nomad")
+    (version "0.0.4-172-alpha")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "http://git.nly.info.tm:9001/nomad.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0iwb75cnxhsbbl8rqh7wh7665jimrwnlaibvp6afic203i8pw57d"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(
+       ("pkg-config" ,pkg-config)
+       ("glib" ,glib)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext-minimal" ,gettext-minimal)
+       ("qtbase" ,qtbase)
+       ("qtwebchannel", qtwebchannel)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qttools" ,qttools)
+       ("nss" ,nss)
+       ("mesa" , mesa)
+       ("udev", eudev)
+       ("texinfo" ,texinfo)
+       ))
+    (propagated-inputs
+     `(
+       ("guile" ,guile-2.2)
+       ("guile-readline" ,guile-readline)
+       ("qtwebengine" ,qtwebengine)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtwebchannel" ,qtwebchannel)
+       ))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'install-binaries 'wrap-binaries
+                    (lambda* (#:key outputs inputs #:allow-other-keys)
+                      (let* ((out       (assoc-ref outputs "out"))
+                             (exe       (string-append out "/bin/nomad"))
+                             (lib       (string-append out "/lib"))
+                             (mesa      (assoc-ref inputs "mesa"))
+                             (nss       (assoc-ref inputs "nss"))
+                             (udev      (assoc-ref inputs "udev"))
+                             (qtbase    (assoc-ref inputs "qtbase"))
+                             (qtwebengine (assoc-ref inputs "qtwebengine"))
+                             (qt.conf   (string-append out "/bin/qt.conf")))
+                        (wrap-program exe
+                          ;; TODO: Get these in RUNPATH.
+                          `("LD_LIBRARY_PATH" ":" prefix
+                            (,(string-append lib ":" nss "/lib/nss:" mesa "/lib:"
+                                             udev "/lib")))
+                          `("QTWEBENGINEPROCESS_PATH" ":" prefix (,(string-append qtwebengine "/lib/qt5/libexec/QtWebEngineProcess"))))
+                        (with-output-to-file qt.conf
+                          (lambda ()
+                            (format #t "[Paths]
 Prefix=~a
 ArchData=lib/qt5
 Data=share/qt5
@@ -252,9 +251,9 @@ HostData=lib/qt5
 HostBinaries=bin
 HostLibraries=lib
 " qtwebengine qtbase qtwebengine)))
-			  #t))))))
-      (home-page "https://github.com/mrosset/nomad")
-      (synopsis "An extensible web browser using Gnu Guile and QT.")
-      (description "An extensible web browser.")
-      (license license:gpl3+))))
+                        #t))))))
+    (home-page "https://github.com/mrosset/nomad")
+    (synopsis "An extensible web browser using Gnu Guile and QT.")
+    (description "An extensible web browser.")
+    (license license:gpl3+)))
 nomad
