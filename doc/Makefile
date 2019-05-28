@@ -1,4 +1,4 @@
-outs = nomad.html nomad.txt nomad.texi nomad.info
+outs = nomad.html nomad.txt nomad.texi nomad.info nomad
 
 all: $(outs)
 
@@ -12,8 +12,11 @@ nomad.texi: nomad.org
 nomad.info: nomad.texi
 	makeinfo nomad.texi
 
-nomad.html: nomad.texi
+nomad: nomad.texi
 	makeinfo nomad.texi --html
+
+nomad.html: nomad.texi
+	makeinfo nomad.texi --html --no-split
 
 nomad.txt: nomad.org
 	makeinfo nomad.texi --plaintext > nomad.txt
