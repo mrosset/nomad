@@ -22,6 +22,7 @@
  (gnu packages gperf)
  (gnu packages cups)
  (gnu packages pulseaudio)
+ (gnu packages texinfo)
  (gnu packages gnome)
  (gnu packages linux)
  (gnu packages fontutils)
@@ -198,6 +199,7 @@ applications using the Chromium browser project.")
 	 ("nss" ,nss)
 	 ("mesa" , mesa)
 	 ("udev", eudev)
+         ("texinfo" ,texinfo)
 	 ))
       (propagated-inputs
        `(
