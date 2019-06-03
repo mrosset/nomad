@@ -18,19 +18,19 @@
 
 (define-public nomad
   ;; feature-qt branch
-  (let ((commit "b372b3b984dc241760b578e8e3b40b5be6e2a0f2"))
+  (let ((commit "33f1e8805904814a15337faec99551a7506f5f1d"))
     (package
       (name "nomad")
       (version (git-version "0.0.4-alpha" "118" commit))
       (source (origin
 		(method git-fetch)
 		(uri (git-reference
-		      (url "https://github.com/mrosset/nomad")
+		      (url "https://git.savannah.gnu.org/git/nomad.git")
 		      (commit commit)))
 		(file-name (git-file-name name version))
 		(sha256
 		 (base32
-		  "144kr50w9kdlgamv3rjny70f7hk40cfq5f0n0fws4lls56x3w41a"))))
+		  "1l5bcbpd4zrhpishpflx0phd1wj8lfk28ds91m5lwjyhja7hm6vz"))))
       (build-system gnu-build-system)
       (native-inputs
        `(
@@ -39,18 +39,21 @@
 	 ))
       (inputs
        `(
-	 ("pkg-config" ,pkg-config)
-	 ("gtksourceview" ,gtksourceview)
+	 ("autoconf" ,autoconf)
+	 ("automake" ,automake)
 	 ("glib" ,glib)
 	 ("glib-networking" ,glib-networking)
 	 ("gtk" ,gtk+)
-	 ("autoconf" ,autoconf)
-	 ("automake" ,automake)
+	 ("gtksourceview" ,gtksourceview)
+	 ("guile" ,guile-2.2)
+	 ("guile-readline" ,guile-readline)
+	 ("pkg-config" ,pkg-config)
 	 ("vte" ,vte)
 	 ("webkitgtk" ,webkitgtk)
 	 ))
       (propagated-inputs
-       `(("guile" ,guile-2.2)))
+       `(("guile" ,guile-2.2)
+	 ("glib-networking" ,glib-networking)))
       (home-page "https://savannah.nongnu.org/projects/nomad/")
       (synopsis "An extensible web browser using GNU Guile")
       (description "An extensible web browser.")
