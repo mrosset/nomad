@@ -21,7 +21,7 @@
 #include "app.h"
 #include "request.h"
 
-SCM_DEFINE (scm_nomad_webkit_load_uri, "web-view-load-uri", 1, 0, 0, (SCM uri),
+SCM_DEFINE (scm_nomad_webkit_load_uri, "webview-load-uri", 1, 0, 0, (SCM uri),
             "TODO: document this procedure.")
 {
   char *c_uri;
@@ -104,7 +104,7 @@ web_view_back_invoke (void *data)
 }
 
 SCM_DEFINE (
-    scm_nomad_webkit_go_back, "web-view-go-back", 0, 0, 0, (),
+    scm_nomad_webkit_go_back, "webview-go-back", 0, 0, 0, (),
     "Request WebKitView to go back in history. If WebView can not be found or "
     "there is no back history then it return #f. Otherwise it returns #t.")
 {
@@ -118,7 +118,7 @@ SCM_DEFINE (
 
 // FIXME: invoke on main thread
 SCM_DEFINE (
-    scm_nomad_webkit_go_foward, "web-view-go-forward", 0, 0, 0, (),
+    scm_nomad_webkit_go_foward, "webview-go-forward", 0, 0, 0, (),
     "Internal request WebKitView to go forward in history. If WebView can not "
     "be found or there is no forward history then it returns #f. Otherwise it "
     "returns #t. TODO: maybe provide a callback for load-change signal.")
@@ -140,7 +140,7 @@ SCM_DEFINE (
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_nomad_webkit_reload, "web-view-reload", 0, 1, 0, (SCM nocache),
+SCM_DEFINE (scm_nomad_webkit_reload, "webview-reload", 0, 1, 0, (SCM nocache),
             "Internally reloads WebKitView, if nocache is #t then bypass "
             "WebKit cache. This procedure should almost never be called "
             "directly. TODO: detail higher level procedures for reloading "
@@ -166,7 +166,7 @@ SCM_DEFINE (scm_nomad_webkit_reload, "web-view-reload", 0, 1, 0, (SCM nocache),
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_nomad_get_current_url, "web-view-current-url", 0, 0, 0, (),
+SCM_DEFINE (scm_nomad_get_current_url, "webview-current-url", 0, 0, 0, (),
             "Return's the WebView's current URL. This calls webkit's \
 webkit_web_view_get_uri. Note: this function can potentially return a   \
 URI that is not a URL. Since the API is directed towards end users,     \
@@ -198,7 +198,7 @@ void
 nomad_webkit_register_functions (void *data)
 {
 #include "webkit.x"
-  scm_c_export ("web-view-load-uri", "web-view-go-back", "web-view-go-forward",
-                "web-view-reload", "web-view-current-url", "scroll-up",
+  scm_c_export ("webview-load-uri", "webview-go-back", "webview-go-forward",
+                "webview-reload", "webview-current-url", "scroll-up",
                 "scroll-down", NULL);
 }

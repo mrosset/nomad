@@ -33,6 +33,9 @@ AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
 
+# libtool
+LT_INIT
+
 # Guile
 GUILE_PKG([2.2 2.0])
 GUILE_PROGS
@@ -72,9 +75,17 @@ if test "$GUILD" = "no"; then
    AC_MSG_ERROR([program guild is required])
 fi
 
+AC_PATH_PROG(GLIB_COMPILE_R, glib-compile-resources, no)
+AC_SUBST(GLIB_COMPILE_R)
+
+if test "$GLIB_COMPILE_R" = "no"; then
+   AC_MSG_ERROR([program glib-compile-resources is required])
+fi
+
 AC_CONFIG_FILES([
 Makefile
-qt/Makefile
+src/Makefile
+ext/Makefile
 scheme/Makefile
 ])
 

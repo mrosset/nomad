@@ -19,7 +19,7 @@
 (define-module (nomad browser)
   #:use-module (nomad events)
   #:use-module (nomad buffer)
-  #:use-module (nomad webview)
+  #:use-module (nomad webkit)
   #:use-module (nomad eval)
   #:export (current-url
             default-home-page

@@ -30,6 +30,9 @@
 static void
 startup (GApplication *app, gpointer data)
 {
+
+  SCM socket;
+
   // Define scheme C modules
   // Modules that are used before defining have a scheme file. This
   // allows mixing pure scheme with C scheme.
@@ -47,19 +50,27 @@ startup (GApplication *app, gpointer data)
   scm_c_use_module ("nomad util");
   scm_c_use_module ("nomad window");
   scm_c_use_module ("nomad browser");
+  scm_c_use_module ("nomad options");
   scm_c_use_module ("nomad repl");
 
   // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
   // documentation for $HOME/.nomad
   scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"),
                   NULL);
-  scm_c_eval_string ("(server-start-coop)");
+
+  socket = scm_c_eval_string ("(option-listen (command-line))");
+  setenv ("NOMAD_SOCKET_FILE", scm_to_utf8_string (socket), 1);
+  scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"),
+                  socket);
 }
 
 static void
 shutdown (GApplication *app, gpointer data)
 {
-  scm_c_eval_string ("(server-force-delete)");
+  SCM socket;
+  socket = scm_c_eval_string ("(option-listen (command-line))");
+  scm_call_1 (scm_c_public_ref ("nomad repl", "server-force-delete"),
+                  socket);
 }
 
 void
