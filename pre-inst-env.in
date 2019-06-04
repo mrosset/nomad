@@ -15,13 +15,15 @@ export PATH
 # FIXME: this will not work when building out of source tree
 
 # when in a guix environment, setup guix specific variables
-if [[ -n $GUIX_ENVIRONMENT ]]; then
+if [ -n $GUIX_ENVIRONMENT ]; then
     export QTDIR="$GUIX_ENVIRONMENT"
     export QTWEBENGINEPROCESS_PATH="$GUIX_ENVIRONMENT/lib/qt5/libexec/QtWebEngineProcess"
+    export QML2_IMPORT_PATH="$GUIX_ENVIRONMENT/lib/qml:$QML2_IMPORT_PATH"
     export LD_LIBRARY_PATH="$GUIX_ENVIRONMENT/lib:$GUIX_ENVIRONMENT/lib/nss"
     if [ ! -h "$abs_top_qtdir/resources" ]; then
-        ln -s $GUIX_ENVIRONMENT/share/qt5/resources "$abs_top_qtdir/resources"
+        ln -s "$GUIX_ENVIRONMENT/share/qt5/resources" "$abs_top_qtdir/resources"
     fi
+    export PATH="$GUIX_ENVIRONMENT/lib/libexec:$PATH"
 fi
 
 exec "$@"
