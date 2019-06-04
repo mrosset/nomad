@@ -59,7 +59,6 @@
        `(
 	 ("guile" ,guile-2.2)
 	 ("guile-readline" ,guile-readline)
-	 ("qtwebengine" ,qtwebengine)
 	 ("qtdeclarative" ,qtdeclarative)
 	 ("qtquickcontrols" ,qtquickcontrols)
 	 ("qtwebchannel" ,qtwebchannel)

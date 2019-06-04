@@ -4,7 +4,6 @@ import QtQuick.Dialogs 1.1
 import QtQuick.Controls 1.2
 import QtQuick.Controls.Styles 1.2
 import QtQuick.Window 2.1
-import QtWebEngine 1.7
 import QtWebChannel 1.0
 import Keymap 1.0
 
@@ -142,7 +141,7 @@ ApplicationWindow {
 
                 frame: Rectangle { color: "steelblue" }
             }
-            Component.onCompleted: createEmptyTab(defaultProfile)
+            Component.onCompleted: createEmptyTab()
             Keys.onPressed: {
                 submitKeymap("webview-mode-map", event.modifiers, event.key)
             }
@@ -150,28 +149,10 @@ ApplicationWindow {
                 var tab = addTab("", webView);
                 tab.active = true;
                 /* tab.title = Qt.binding(function() { return currentWebView.focus }); */
-                tab.item.profile = profile;
                 return tab;
             }
         }
-        Rectangle {
-            id: develView
-            Layout.preferredHeight: parent.height / 4
-            Layout.fillWidth: true;
-            visible: false
-            WebEngineView {
-                id: devToolsView
-                visible: true
-                height: visible ? 400 : 0
-                inspectedView: visible && tabs.currentIndex < tabs.count ? tabs.getTab(tabs.currentIndex).item : null
-                anchors.fill: parent
-                onNewViewRequested: function(request) {
-                    var tab = tabs.createEmptyTab(currentWebView.profile);
-                    tabs.currentIndex = tabs.count - 1;
-                    request.openIn(tab.item);
-                }
-            }
-        }
+        /* DevelView{} */
         RowLayout {
             id: statusRow
             Button {
@@ -372,7 +353,7 @@ ApplicationWindow {
     }
     Component {
         id: webView
-        WebView{}
+        WebKit{}
     }
     function scrollv(y) {
         var method = "window.scrollBy(0, %1)".arg(y)

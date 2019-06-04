@@ -41,8 +41,6 @@ GUILE_FLAGS
 # pkg-config modules
 dnl PKG_CHECK_MODULES([GUILE], [guile-2.2])
 PKG_CHECK_MODULES([QT_WIDGETS], [Qt5Widgets])
-PKG_CHECK_MODULES([QT_WEB], [Qt5WebEngine])
-PKG_CHECK_MODULES([QT_WEB_WIDGETS], [Qt5WebEngineWidgets])
 PKG_CHECK_MODULES([QT_QUICK_CONTROLS], [Qt5QuickControls2])
 
 AC_PATH_PROG(GUILE_SNARF, guile-snarf, no)

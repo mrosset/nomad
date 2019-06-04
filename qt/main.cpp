@@ -33,7 +33,6 @@
 #include <QQuickStyle>
 #include <QVariant>
 #include <libguile.h>
-#include <qtwebengineglobal.h>
 
 QObject *root = NULL;
 QObject *window = NULL;
@@ -127,8 +126,6 @@ start_app (int argc, char *argv[])
             << QLibraryInfo::location (QLibraryInfo::DataPath);
 
   QQuickStyle::setStyle ("Material");
-
-  QtWebEngine::initialize ();
 
   QQmlApplicationEngine engine;
   engine.load (QUrl (QStringLiteral ("qrc:/ApplicationRoot.qml")));
