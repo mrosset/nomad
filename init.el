@@ -49,11 +49,15 @@
    geiser-active-implementations '(guile)
    geiser-default-implimentation 'guile))
 
+(use-package which-key
+  :delight
+  :config (which-key-mode 1))
+
 (use-package emacs
   :init
   (setq inhibit-startup-message t)
   :config
 
   ;; FIXME: don't assume socket file location
-  (geiser-connect-local 'guile "/tmp/nomad-socket")
+  (geiser-connect-local 'guile (getenv "NOMAD_SOCKET_FILE"))
   (delete-other-windows))

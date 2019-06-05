@@ -17,17 +17,28 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad buffer)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-9)
   #:use-module (nomad app)
-  #:export (buffer-with-id pp-buffers))
+  #:use-module (nomad repl)
+  #:use-module (nomad eval))
 
-(define (buffer-with-id key)
+(define-public (buffer-with-id key)
   "Returns a buffer from the buffer alist with ID. If a buffer with ID
 is not found returns #f"
   (let* ((result #f) (pair (assv key (buffer-alist))))
     (when pair
       (set! result (cdr pair)))
     result))
+
+(define-public (make-buffer-socket url socket)
+  (let ((exp (format #f "(make-buffer \"~a\")" url)))
+    (write-socket exp socket)))
+
+(define-command (kill-some-buffers)
+  "Kill all buffers but one"
+  (for-each (lambda (arg)
+              (kill-buffer)) (buffer-alist)))
 
 (define (format-buffer buffer)
   "Returns a human readable buffer string in 80 column format"
@@ -36,7 +47,7 @@ is not found returns #f"
           (buffer-title (cdr buffer))
           (buffer-uri (cdr buffer))))
 
-(define (pp-buffers)
+(define-public (pp-buffers)
   "Pretty prints buffers-alist."
   (for-each (lambda (x)
               (format #t "~a" (format-buffer x))) (buffer-alist)))

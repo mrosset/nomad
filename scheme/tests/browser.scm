@@ -1,4 +1,4 @@
-;; util.scm -*- scheme -*-
+;; browser.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,16 +16,16 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (test-util)
-  #:use-module (nomad util)
-  #:use-module (test-suite lib))
+(define-module (tests browser)
+  #:use-module (nomad browser)
+  #:use-module (srfi srfi-64))
 
-(define home (getenv "HOME"))
-(define home-dir (string-append home file-name-separator-string))
+(test-begin "browser")
 
-(with-test-prefix "HOME expansion"
-    (pass-if "procedure ~  expands to $HOME" (string=? ~ home))
-    (pass-if "procedure ~/ expands to $HOME/" (string=? ~/ home-dir)))
+(test-equal "https prefix url" (prefix-url "127.0.0.1") "https://127.0.0.1")
 
-~/
-home-dir
+(test-equal "don't prefix http" (prefix-url "http://127.0.0.1") "http://127.0.0.1")
+
+(test-equal "don't prefix https" (prefix-url "https://127.0.0.1") "https://127.0.0.1")
+
+(test-end)

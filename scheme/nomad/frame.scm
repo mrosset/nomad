@@ -1,4 +1,4 @@
-;; browser.test -*- scheme -*-
+;; frame.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,13 +16,11 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (test-browser)
-  #:use-module (nomad browser)
-  #:use-module (test-suite lib))
+(define-module (nomad frame)
+  #:use-module (nomad repl)
+  #:export (make-frame-socket))
 
-(with-test-prefix "browser module"
-  (pass-if "https prefix url" (string=? (prefix-url "127.0.0.1") "https://127.0.0.1"))
-  (pass-if "dont prefix http url"
-    (string=? (prefix-url "http://127.0.0.1") "http://127.0.0.1"))
-  (pass-if "dont prefix https url"
-    (string=? (prefix-url "https://127.0.0.1") "https://127.0.0.1")))
+
+(define (make-frame-socket url socket)
+  (let ((exp (format #f "(make-frame \"~a\")" url)))
+    (write-socket exp socket)))

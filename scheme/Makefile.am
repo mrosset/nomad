@@ -30,26 +30,41 @@ CLEANFILES = $(GOBJECTS)
 guile_install_go_files = install-nobase_ccacheDATA
 $(guile_install_go_files): install-nobase_modDATA
 
-AM_V_GUILEC = $(AM_V_GUILEC_$(V))
-AM_V_GUILEC_ = $(AM_V_GUILEC_$(AM_DEFAULT_VERBOSITY))
-AM_V_GUILEC_0 = @echo "  GUILEC" $@;
-
 SUFFIXES = .scm .go
 
 .scm.go:
-	$(AM_V_GUILEC) GUILE_AUTO_COMPILE=0			\
-	$(GUILD) compile --target="$(host)" $(GUILE_WARNINGS)	\
-	  -L "$(abs_srcdir)" -L "$(abs_builddir)"		\
-	  -o "$@" "$<"
+	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILE_TOOLS) compile $(GUILE_WARNINGS) -o "$@" "$<"
 
 SOURCES =			\
 	nomad/app.scm		\
 	nomad/browser.scm	\
 	nomad/buffer.scm	\
+	nomad/eval.scm		\
 	nomad/events.scm	\
+	nomad/frame.scm		\
 	nomad/init.scm		\
 	nomad/keymap.scm	\
+	nomad/minibuffer.scm	\
+	nomad/options.scm	\
 	nomad/repl.scm		\
 	nomad/server.scm	\
 	nomad/util.scm		\
 	nomad/webkit.scm
+
+
+TESTS =				\
+	tests/browser.scm	\
+	tests/eval.scm
+
+TEST_EXTENSIONS = .scm
+
+SCM_LOG_DRIVER =                                \
+  $(top_builddir)/pre-inst-env                  \
+  $(GUILE) --no-auto-compile -e main            \
+      $(top_srcdir)/build-aux/test-driver.scm
+
+# Tell 'build-aux/test-driver.scm' to display only source file names,
+# not indivdual test names.
+AM_SCM_LOG_DRIVER_FLAGS = --brief=yes
+
+AM_SCM_LOG_FLAGS = --no-auto-compile -L "$(top_srcdir)"

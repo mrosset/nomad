@@ -20,17 +20,20 @@
   #:use-module (nomad events)
   #:use-module (nomad buffer)
   #:use-module (nomad webkit)
-  #:export (back
-            browse
-            current-url
+  #:use-module (nomad eval)
+  #:export (current-url
             default-home-page
-            forward
-            home
-            make-query
             prefix-url
-            query
-            reload
             search-provider-format))
+
+(define-public webview-mode-map '(("C-b" . (next-buffer))
+                                  ("C-u" . (back))
+                                  ("C-m" . (forward))
+                                  ("C-n" . (scroll-down))
+                                  ("C-f" . (hints))
+                                  ("C-p" . (scroll-up))
+                                  ("C-r" . (reload))
+                                  ("C-x" . (kill-buffer))))
 
 (define search-provider-format "https://duckduckgo.com/?q=~a")
 (define default-home-page "https://www.gnu.org/software/guile")
@@ -44,33 +47,36 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
        (set! url (string-append "https://" url)))
   url)
 
-(define (browse url)
+(define-command (browse url)
   "Browse to URI. URI is prefixed with https:// if no protocol is
 specified. Returns the final URL passed to webkit"
-    (web-view-load-uri (prefix-url url)))
+    (webview-load-uri (prefix-url url)))
 
-(define (forward)
-  (web-view-go-forward))
+(define-command (forward)
+  "Go forward in browser history"
+  (webview-go-forward))
 
-(define (home)
-  (web-view-load-uri default-home-page))
+(define-command (home)
+  "Load default home page"
+  (webview-load-uri default-home-page))
 
-(define (reload)
-  (web-view-reload))
+(define-command (reload)
+  "Reload current URI"
+  (webview-reload))
 
-(define (back)
-  "go back in history"
-  (run-hook event-hook "(back)")
-  (web-view-go-back))
+(define-command (back)
+  "Browse backwards in history"
+  (webview-go-back))
 
-(define (make-query arg)
+(define-command (make-query q)
   "Makes a new buffer and queries ARG using 'search-provider-format"
-  (make-buffer (simple-format #f search-provider-format arg)))
+  (make-buffer (simple-format #f search-provider-format q)))
 
-(define (query arg)
+(define-command (query q)
   "Queries ARG using 'search-provider-format"
-  (let ((uri (simple-format #f search-provider-format arg)))
+  (let ((uri (simple-format #f search-provider-format q)))
     (browse uri)))
 
-(define (current-url)
-  (web-view-current-url))
+(define-command (current-url)
+  "Returns the current url"
+  (webview-current-url))

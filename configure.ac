@@ -22,14 +22,16 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIRS([m4])
 
-
 # automake
-AM_INIT_AUTOMAKE([-Wall gnu silent-rules serial-tests color-tests])
+AM_INIT_AUTOMAKE([-Wall gnu silent-rules color-tests])
 AM_SILENT_RULES([yes])
 
 # programs
-AC_PROG_CC
+AC_PROG_CXX
 AM_PROG_AR
+AC_PROG_LN_S
+AC_PROG_INSTALL
+AC_PROG_MKDIR_P
 
 # libtool
 LT_INIT
@@ -86,5 +88,7 @@ src/Makefile
 ext/Makefile
 scheme/Makefile
 ])
+
+AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 
 AC_OUTPUT

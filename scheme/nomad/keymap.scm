@@ -20,44 +20,44 @@
   #:use-module (nomad browser)
   #:use-module (nomad app)
   #:use-module (ice-9 threads)
-  #:export (key-press-hook handle-key-press debug-key-press))
+  #:export (key-press-hook debug-key-press))
 
-(define modifier-masks '((4 . "C")))
-(define emacs-keymap '(
-                       ("C-b" . (next-buffer))
-                       ("C-u" . (back))
-                       ("C-m" . (forward))
-                       ("C-n" . (scroll-down))
-                       ("C-f" . (hints))
-                       ("C-p" . (scroll-up))
-                       ("C-r" . (reload))
-                       ("C-x" . (kill-buffer))))
+(define modifier-masks '((20 . "C")))
 
-(define default-keymap emacs-keymap)
+(define-public ctrl-x-map '(("k" . (kill-buffer))
+			    ("b" . (next-buffer))))
 
-(define key-press-hook (make-hook 2))
+(define-public ctrl-h-map '(("k" . (kill-buffer))
+			    ("b" . (next-buffer))))
 
-(define (handle-pair input pair)
-  (let* ((key (car pair)) (proc (cdr pair)))
-    (when (string= input key)
-      (eval proc (interaction-environment)))))
+(define key-masks '((66 . "b")
+		    (75 . "k")
+		    (77 . "m")
+		    (78 . "n")
+		    (80 . "p")
+		    (85 . "u")
+		    (88 . "x")))
+
+(define key-press-hook (make-hook 3))
 
 (define (modifier-key->string mod key)
   "Returns a string formatted as key-map key. This looks up the
 modifiers bit and returns its string representation, and then formats
 it together with the key string. So given the arguments 4 c it would
 return \"C-c\". When the modifer is not found in the modifer-masks it returns #f"
-  (let ((mod-string (assoc-ref modifier-masks mod)))
+  (let* ((mod-string (assoc-ref modifier-masks mod))
+	 (key-string (assoc-ref key-masks key)))
     (if mod-string
-        (simple-format #f "~a-~a" mod-string key)
-        #f)))
+	(simple-format #f "~a-~a" mod-string key)
+	key)))
 
-(define (handle-key-press mod key)
+(define-public (handle-key-press keymap mod key)
   (let* ((mod-key (modifier-key->string mod key))
-         (proc (assoc-ref default-keymap mod-key)))
+	 (proc (assoc-ref keymap mod-key)))
     (if (eq? proc #f)
-        (simple-format #f "~s : key not found" key)
-        (eval proc (interaction-environment)))))
+	(simple-format #f "~s : key not found\n" key)
+	(eval proc (interaction-environment)))))
 
-(define (debug-key-press mod key)
-  (simple-format #t "thread: ~s mod: ~s key: ~s\n" (current-thread)  mod key))
+(define (debug-key-press keymap mod key)
+  (simple-format #t "thread: ~s mod: ~s key: ~s map: ~s\n"
+		 (current-thread)  mod key (modifier-key->string mod key)))

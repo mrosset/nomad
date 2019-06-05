@@ -16,7 +16,7 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIRS = src ext scheme
+SUBDIRS = scheme ext src
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -27,15 +27,18 @@ nomad_DATA = init.el
 
 dist_doc_DATA = README
 
-run: install
-	$(prefix)/bin/nomad
+test: check
+	$(MAKE) -C ./src
+	./pre-inst-env ./src/nomad
+
+guix-test:
+	-rm /tmp/nomad-socket
+	bash ./contrib/guix/install
 
 format:
 	make -C src format
 
 rebuild: clean all
-
-TESTS = check-guile
 
 CLEANFILES =		\
 	check-guile.log \
@@ -43,3 +46,6 @@ CLEANFILES =		\
 	test-suite.log
 
 DISTCLEANFILES = check-guile.log
+
+attach:
+	$(MAKE) -C docker attach

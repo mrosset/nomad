@@ -16,26 +16,10 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad util)
-  #:export (info
-            add-to-nomad-path
-            ~ // ~/))
+(define-module (tests util)
+  #:use-module (nomad util)
+  #:use-module (srfi srfi-64))
 
-(define (info msg)
-  (format #t "INFO: ~a\n" msg))
-
-(define ~
-  (make-fluid (getenv "HOME")))
-
-(define // file-name-separator-string)
-
-(define (~/ path)
-  "expands $HOME and joins path to the end"
-  (string-append (fluid-ref ~) // path))
-
-(define (add-to-nomad-path path)
-  (add-to-load-path path))
-
-(define-public (completion-join lst)
-  "Joins completion list into a flat string separated by spaces"
-  (string-append lst))
+(with-fluids ((~ "/tmp/home"))
+  (test-equal "procedure ~  expands to $HOME" (fluid-ref ~) "/tmp/home")
+  (test-equal "procedure ~/ expands to $HOME/child" (~/ "test") "/tmp/home/test"))
