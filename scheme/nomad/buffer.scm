@@ -42,12 +42,15 @@ is not found returns #f"
 
 (define (format-buffer buffer)
   "Returns a human readable buffer string in 80 column format"
-  (format #f "id: ~80:@y title: ~80:@y uri: ~80:@y\n"
+  ;; (format #f "id: ~80:@y title: ~80:@y uri: ~80:@y\n"
+  (format #f "~a\t ~a"
           (car buffer)
-          (buffer-title (cdr buffer))
           (buffer-uri (cdr buffer))))
+
+(define-public (buffers)
+  (with-output-to-string pp-buffers))
 
 (define-public (pp-buffers)
   "Pretty prints buffers-alist."
   (for-each (lambda (x)
-              (format #t "~a" (format-buffer x))) (buffer-alist)))
+              (format #t "~a\n" (format-buffer x))) (buffer-alist)))
