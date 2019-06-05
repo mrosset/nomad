@@ -18,6 +18,7 @@
 
 (define-module (nomad buffer)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-9)
   #:use-module (nomad app)
   #:use-module (nomad repl)
@@ -40,15 +41,25 @@ is not found returns #f"
   (for-each (lambda (arg)
               (kill-buffer)) (buffer-alist)))
 
+(define-public (buffers->list)
+  "Returns a list of uri's for all buffers"
+  (let ((lst '()))
+    (for-each (lambda (x)
+                (set! lst (cons* (buffer-uri (cdr x)) lst)))
+              (buffer-alist))
+    lst))
+
 (define (format-buffer buffer)
   "Returns a human readable buffer string in 80 column format"
-  ;; (format #f "id: ~80:@y title: ~80:@y uri: ~80:@y\n"
-  (format #f "~a\t ~a"
+  (format #f "id: ~80:@y title: ~80:@y uri: ~80:@y"
           (car buffer)
+          (buffer-title (cdr buffer))
           (buffer-uri (cdr buffer))))
 
 (define-public (buffers)
-  (with-output-to-string pp-buffers))
+  "Returns a string of all buffers pretty printed"
+  (with-output-to-string (lambda()
+                           (format #t "~a" (pretty-print (buffers->list))))))
 
 (define-public (pp-buffers)
   "Pretty prints buffers-alist."
