@@ -308,7 +308,7 @@ nomad_app_window_init (NomadAppWindow *self)
   gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->read_line),
                             GTK_TEXT_BUFFER (priv->text_buffer));
 
-  gtk_widget_hide (priv->read_line);
+  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (priv->notebook), FALSE);
 
   // Signals
   g_signal_connect (priv->read_line, "key-press-event",
