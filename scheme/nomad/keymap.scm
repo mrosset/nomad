@@ -22,7 +22,7 @@
   #:use-module (ice-9 threads)
   #:export (key-press-hook debug-key-press))
 
-(define modifier-masks '((67108864 . "C")))
+(define modifier-masks '((20 . "C")))
 
 (define-public ctrl-x-map '(("k" . (kill-buffer))
 			    ("b" . (next-buffer))))
@@ -40,11 +40,6 @@
 
 (define key-press-hook (make-hook 3))
 
-(define (handle-pair input pair)
-  (let* ((key (car pair)) (proc (cdr pair)))
-    (when (string= input key)
-      (eval proc (interaction-environment)))))
-
 (define (modifier-key->string mod key)
   "Returns a string formatted as key-map key. This looks up the
 modifiers bit and returns its string representation, and then formats
@@ -53,8 +48,8 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
   (let* ((mod-string (assoc-ref modifier-masks mod))
 	 (key-string (assoc-ref key-masks key)))
     (if mod-string
-	(simple-format #f "~a-~a" mod-string key-string)
-	key-string)))
+	(simple-format #f "~a-~a" mod-string key)
+	key)))
 
 (define-public (handle-key-press keymap mod key)
   (let* ((mod-key (modifier-key->string mod key))
@@ -64,4 +59,5 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
 	(eval proc (interaction-environment)))))
 
 (define (debug-key-press keymap mod key)
-  (simple-format #t "thread: ~s mod: ~s key: ~s\n" (current-thread)  mod key))
+  (simple-format #t "thread: ~s mod: ~s key: ~s map: ~s\n"
+		 (current-thread)  mod key (modifier-key->string mod key)))

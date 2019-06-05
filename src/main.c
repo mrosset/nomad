@@ -18,14 +18,14 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <gtk/gtk.h>
-#include <libguile.h>
-#include <libguile/hooks.h>
 #include "app.h"
 #include "buffer.h"
 #include "util.h"
 #include "webkit.h"
 #include "window.h"
+#include <gtk/gtk.h>
+#include <libguile.h>
+#include <libguile/hooks.h>
 
 static void
 startup (GApplication *app, gpointer data)
@@ -55,13 +55,11 @@ startup (GApplication *app, gpointer data)
 
   // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
   // documentation for $HOME/.nomad
-  scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"),
-                  NULL);
+  scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"), NULL);
 
   socket = scm_c_eval_string ("(option-listen (command-line))");
   setenv ("NOMAD_SOCKET_FILE", scm_to_utf8_string (socket), 1);
-  scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"),
-                  socket);
+  scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"), socket);
 }
 
 static void
@@ -69,8 +67,7 @@ shutdown (GApplication *app, gpointer data)
 {
   SCM socket;
   socket = scm_c_eval_string ("(option-listen (command-line))");
-  scm_call_1 (scm_c_public_ref ("nomad repl", "server-force-delete"),
-                  socket);
+  scm_call_1 (scm_c_public_ref ("nomad repl", "server-force-delete"), socket);
 }
 
 void
