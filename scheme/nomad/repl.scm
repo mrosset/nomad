@@ -43,9 +43,11 @@
 
 (define nc-command-line (list "nc" "-U" socket-file))
 
+(define bash-command-line (list "bash" "--login"))
+
 (define rlwrap-command-line (append (list "rlwrap") nc-command-line))
 
-(define repl-command-line emacs-command-line)
+(define repl-command-line bash-command-line)
 
 (define repl-server #f)
 
