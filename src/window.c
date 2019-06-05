@@ -323,6 +323,8 @@ nomad_app_window_init (NomadAppWindow *self)
   g_signal_connect (VTE_TERMINAL (priv->vte), "child-exited",
                     G_CALLBACK (fork_vte_child), NULL);
 
+  gtk_widget_hide (self->priv->vte);
+
   // Cookies
   cookie_manager = webkit_web_context_get_cookie_manager (
       webkit_web_context_get_default ());
