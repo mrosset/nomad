@@ -18,7 +18,7 @@
 
 (define-public nomad
   ;; feature-qt branch
-  (let ((commit "33f1e8805904814a15337faec99551a7506f5f1d"))
+  (let ((commit "0e109d36013253571f57a0c8cfc27a33615b0da5"))
     (package
       (name "nomad")
       (version (git-version "0.0.4-alpha" "118" commit))
@@ -30,7 +30,7 @@
 		(file-name (git-file-name name version))
 		(sha256
 		 (base32
-		  "1l5bcbpd4zrhpishpflx0phd1wj8lfk28ds91m5lwjyhja7hm6vz"))))
+		  "1pl4xf9p6hhwnh4rgb1if86fw2ax7dh8dd7hqjafk5p26mgwbwhx"))))
       (build-system gnu-build-system)
       (native-inputs
        `(
@@ -53,6 +53,7 @@
 	 ))
       (propagated-inputs
        `(("guile" ,guile-2.2)
+	 ("gesettings-desktop-schemas" ,gsettings-desktop-schemas)
 	 ("glib-networking" ,glib-networking)))
       (home-page "https://savannah.nongnu.org/projects/nomad/")
       (synopsis "An extensible web browser using GNU Guile")
