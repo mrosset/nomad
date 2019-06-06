@@ -91,7 +91,7 @@ inner_main (void *data, int argc, char **argv)
   scm_c_use_module ("nomad init");
   scm_c_eval_string ("(init)");
 
-  exit (g_application_run (G_APPLICATION (app), argc, argv));
+  exit (g_application_run (G_APPLICATION (app), 0, NULL));
 }
 
 int
