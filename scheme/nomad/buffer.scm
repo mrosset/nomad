@@ -43,11 +43,7 @@ is not found returns #f"
 
 (define-public (buffers->list)
   "Returns a list of uri's for all buffers"
-  (let ((lst '()))
-    (for-each (lambda (x)
-                (set! lst (cons* (buffer-uri (cdr x)) lst)))
-              (buffer-alist))
-    lst))
+    (map (lambda (x) (buffer-uri (cdr x))) (buffer-alist)))
 
 (define (format-buffer buffer)
   "Returns a human readable buffer string in 80 column format"
