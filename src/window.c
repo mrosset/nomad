@@ -247,7 +247,7 @@ text_buffer_new ()
 
   buf = gtk_source_buffer_new (NULL);
   sm = gtk_source_style_scheme_manager_new ();
-  ss = gtk_source_style_scheme_manager_get_scheme (sm, "solarized-light");
+  ss = gtk_source_style_scheme_manager_get_scheme (sm, "classic");
   lm = gtk_source_language_manager_new ();
   sl = gtk_source_language_manager_get_language (lm, "scheme");
 
