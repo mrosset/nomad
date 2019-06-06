@@ -28,8 +28,7 @@ nomad_DATA = init.el
 dist_doc_DATA = README
 
 test: check
-	$(MAKE) -C ./src
-	./pre-inst-env ./src/nomad
+	$(MAKE) -C ./src test
 
 guix-test:
 	-rm /tmp/nomad-socket
