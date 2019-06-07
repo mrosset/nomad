@@ -31,8 +31,6 @@ static void
 startup (GApplication *app, gpointer data)
 {
 
-  SCM socket;
-
   // Define scheme C modules
   // Modules that are used before defining have a scheme file. This
   // allows mixing pure scheme with C scheme.
@@ -41,25 +39,16 @@ startup (GApplication *app, gpointer data)
 
   scm_c_define_module ("nomad window", nomad_window_register_functions, NULL);
 
-  scm_c_use_module ("nomad buffer");
-  scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
-
   scm_c_define_module ("nomad util", nomad_util_register_functions, NULL);
 
   // Use essential modules
   scm_c_use_module ("nomad util");
   scm_c_use_module ("nomad window");
   scm_c_use_module ("nomad browser");
-  scm_c_use_module ("nomad options");
-  scm_c_use_module ("nomad repl");
 
   // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
   // documentation for $HOME/.nomad
   scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"), NULL);
-
-  socket = scm_c_eval_string ("(option-listen (command-line))");
-  setenv ("NOMAD_SOCKET_FILE", scm_to_utf8_string (socket), 1);
-  scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"), socket);
 }
 
 static void
@@ -73,14 +62,21 @@ shutdown (GApplication *app, gpointer data)
 void
 inner_main (void *data, int argc, char **argv)
 {
+
+  SCM socket, exists, url;
+
+  // Use minimal amount of modules before application starts
+  scm_c_use_module ("nomad init");
+  scm_c_use_module ("nomad options");
+  scm_c_use_module ("nomad repl");
+  scm_c_use_module ("nomad app");
+  scm_c_define_module ("nomad app", nomad_app_register_functions, app);
+
   app = nomad_app_new ();
 
   // App signals
   g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
   g_signal_connect (app, "shutdown", G_CALLBACK (shutdown), NULL);
-
-  scm_c_use_module ("nomad app");
-  scm_c_define_module ("nomad app", nomad_app_register_functions, app);
 
   // Set emacs-init-file to datadir installed file
   scm_variable_set_x (scm_c_lookup ("emacs-init-file"),
@@ -88,8 +84,36 @@ inner_main (void *data, int argc, char **argv)
 
   // We need to call init for so things like GDK_SCALE are used by our
   // GApplication
-  scm_c_use_module ("nomad init");
   scm_c_eval_string ("(init)");
+
+  scm_c_use_module ("nomad buffer");
+  scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
+
+  socket = scm_c_eval_string ("(option-listen (command-line))");
+  exists = scm_call_1 (scm_c_private_ref ("nomad repl", "socket-exists?"),
+                       socket);
+  url = scm_c_eval_string ("(option-url (command-line))");
+
+  // When requesting a client start a terminal REPL
+  if (scm_c_eval_string ("(option-client (command-line))") == SCM_BOOL_T)
+    {
+      scm_call_1 (scm_c_public_ref ("nomad repl", "client-start"), socket);
+      return;
+    }
+
+  // If a socket server exists already. Then reuse the existing nomad
+  // instance
+  if (exists == SCM_BOOL_T)
+    {
+      scm_call_2 (scm_c_public_ref ("nomad buffer", "make-buffer-socket"), url,
+                  socket);
+      sleep (1);
+      return;
+    }
+
+  // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
+  // documentation for $HOME/.nomad
+  scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"), socket);
 
   exit (g_application_run (G_APPLICATION (app), 0, NULL));
 }

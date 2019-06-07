@@ -126,14 +126,14 @@ reached."
         (read-until-prompt port)
         (newline)))))
 
-(define (write-socket input socket-file)
+(define-public (write-socket input socket-file)
   "Write string INPUT to guile unix socket at SOCKET-FILE. The guile
 instance on the socket will evaluate INPUT expression. It is not
 possible to return anything from the socket at this point"
   (let ((port (socket PF_UNIX SOCK_STREAM 0)))
-     (catch #t
+    (catch #t
       (lambda ()
-               (connect port AF_UNIX socket-file)
-               (write-line input port))
+        (connect port AF_UNIX socket-file)
+        (write-line input port))
       (lambda (key . parameters)
         (format #t "~s: ~s ~s" key parameters socket-file)))))

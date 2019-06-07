@@ -87,3 +87,7 @@ DEVEL_SOCKET  = /tmp/nomad-devel
 test: all
 	-rm $(DEVEL_SOCKET)
 	../pre-inst-env ./nomad --listen $(DEVEL_SOCKET)
+
+test-url: all
+	echo "test url"
+	../pre-inst-env ./nomad --listen $(DEVEL_SOCKET) "https://bufio.org"
