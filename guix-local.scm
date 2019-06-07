@@ -28,17 +28,18 @@
 ;; allows for testing development builds of nomad without effecting
 ;; stable end user release build or git history.
 (define nomad-local
-  (package (inherit nomad)
-	   (name "nomad")
-	   (version "guix-testing")
-	   (source (origin
-		     (method git-fetch)
-		     (uri (git-reference
-			   (url "https://git.savannah.gnu.org/git/nomad.git")
-			   (commit "be85a285863be7e1e44f5f216b23a64a103ea38f")))
-		     (file-name (git-file-name name version))
-		     (sha256
-		      (base32
-		       "05wgph1pmbj5rg6qrqyzmvc6czlkl8i9rz43kyp1r721xc2g1z2w"))))))
+  (let ((commit "0b93645c4ec4479ab775b9ea25b0e9b645dca633"))
+    (package (inherit nomad)
+	     (name "nomad")
+	     (version (git-version "guix" "testing" commit))
+	     (source (origin
+		       (method git-fetch)
+		       (uri (git-reference
+			     (url "https://git.savannah.gnu.org/git/nomad.git")
+			     (commit "0b93645c4ec4479ab775b9ea25b0e9b645dca633")))
+		       (file-name (git-file-name name version))
+		       (sha256
+			(base32
+			 "1g1jyvwdmq17p0i9qavrk45caicfsmcwm51hcbshdg5mci2lvqqp")))))))
 
 nomad-local
