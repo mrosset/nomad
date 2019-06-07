@@ -35,7 +35,7 @@
 		     (method git-fetch)
 		     (uri (git-reference
 			   (url "https://git.savannah.gnu.org/git/nomad.git")
-			   (commit version)))
+			   (commit "be85a285863be7e1e44f5f216b23a64a103ea38f")))
 		     (file-name (git-file-name name version))
 		     (sha256
 		      (base32

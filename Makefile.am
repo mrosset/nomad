@@ -30,9 +30,8 @@ dist_doc_DATA = README
 test: check
 	$(MAKE) -C ./src test
 
-guix-test:
-	-rm /tmp/nomad-socket
-	bash ./contrib/guix/install
+test-local-guix:
+	guix build -f ./guix-local.scm
 
 format:
 	make -C src format
