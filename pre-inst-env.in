@@ -2,7 +2,6 @@
 
 abs_top_srcdir="`cd "@abs_top_srcdir@/scheme/" > /dev/null; pwd`"
 abs_top_builddir="`cd "@abs_top_builddir@/scheme/" > /dev/null; pwd`"
-abs_top_qtdir="`cd "@abs_top_srcdir@/qt/" > /dev/null; pwd`"
 
 GUILE_AUTO_COMPILE=0
 GUILE_LOAD_COMPILED_PATH="$abs_top_builddir${GUILE_LOAD_COMPILED_PATH:+:}$GUILE_LOAD_COMPILED_PATH"
@@ -11,19 +10,5 @@ export GUILE_LOAD_COMPILED_PATH GUILE_LOAD_PATH GUILE_AUTO_COMPILE
 
 PATH="$abs_top_builddir/qt:$PATH"
 export PATH
-
-# FIXME: this will not work when building out of source tree
-
-# when in a guix environment, setup guix specific variables
-if [ -n $GUIX_ENVIRONMENT ]; then
-    export QTDIR="$GUIX_ENVIRONMENT"
-    export QTWEBENGINEPROCESS_PATH="$GUIX_ENVIRONMENT/lib/qt5/libexec/QtWebEngineProcess"
-    export QML2_IMPORT_PATH="$GUIX_ENVIRONMENT/lib/qml:$QML2_IMPORT_PATH"
-    export LD_LIBRARY_PATH="$GUIX_ENVIRONMENT/lib:$GUIX_ENVIRONMENT/lib/nss"
-    if [ ! -h "$abs_top_qtdir/resources" ]; then
-        ln -s "$GUIX_ENVIRONMENT/share/qt5/resources" "$abs_top_qtdir/resources"
-    fi
-    export PATH="$GUIX_ENVIRONMENT/lib/libexec:$PATH"
-fi
 
 exec "$@"

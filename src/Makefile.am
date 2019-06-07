@@ -81,3 +81,9 @@ SUFFIXES = .x
 .c.x:
 	@echo "  SNARF" $@;
 	@$(GUILE_SNARF) -o $@ $< $(snarfcppopts) $(AM_FLAGS)
+
+DEVEL_SOCKET  = /tmp/nomad-devel
+
+test: all
+	-rm $(DEVEL_SOCKET)
+	../pre-inst-env ./nomad --listen $(DEVEL_SOCKET)

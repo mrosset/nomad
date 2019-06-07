@@ -16,7 +16,7 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIRS = scheme qt
+SUBDIRS = scheme ext src
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -28,7 +28,7 @@ nomad_DATA = init.el
 dist_doc_DATA = README
 
 test: check
-	$(MAKE) -C ./qt test
+	$(MAKE) -C ./src test
 
 guix-test:
 	-rm /tmp/nomad-socket

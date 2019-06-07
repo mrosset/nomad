@@ -18,14 +18,21 @@
 
 (define-module (nomad buffer)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-9)
   #:use-module (nomad app)
   #:use-module (nomad repl)
-  #:use-module (nomad eval)
-  #:export (pp-buffers
-            make-buffer-socket))
+  #:use-module (nomad eval))
 
-(define (make-buffer-socket url socket)
+(define-public (buffer-with-id key)
+  "Returns a buffer from the buffer alist with ID. If a buffer with ID
+is not found returns #f"
+  (let* ((result #f) (pair (assv key (buffer-alist))))
+    (when pair
+      (set! result (cdr pair)))
+    result))
+
+(define-public (make-buffer-socket url socket)
   (let ((exp (format #f "(make-buffer \"~a\")" url)))
     (write-socket exp socket)))
 
@@ -34,13 +41,23 @@
   (for-each (lambda (arg)
               (kill-buffer)) (buffer-alist)))
 
+(define-public (buffers->list)
+  "Returns a list of uri's for all buffers"
+    (map (lambda (x) (buffer-uri (cdr x))) (buffer-alist)))
+
 (define (format-buffer buffer)
   "Returns a human readable buffer string in 80 column format"
-  (format #f "id: ~80:@y uri: ~80:@y\n"
+  (format #f "id: ~80:@y title: ~80:@y uri: ~80:@y"
           (car buffer)
-          (cdr buffer)))
+          (buffer-title (cdr buffer))
+          (buffer-uri (cdr buffer))))
+
+(define-public (buffers)
+  "Returns a string of all buffers pretty printed"
+  (with-output-to-string (lambda()
+                           (format #t "~a" (pretty-print (buffers->list))))))
 
 (define (pp-buffers)
   "Pretty prints buffers-alist."
   (for-each (lambda (x)
-              (format #t "~a" (format-buffer x))) (buffer-alist)))
+              (format #t "~a\n" (format-buffer x))) (buffer-alist)))

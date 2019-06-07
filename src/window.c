@@ -140,8 +140,11 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
   if ((event->state & modifiers) == GDK_CONTROL_MASK)
     {
       scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
-      scm_run_hook (scm_hook, scm_list_2 (scm_from_int (event->state),
-                                          scm_from_locale_string (key_name)));
+      scm_run_hook (
+          scm_hook,
+          scm_list_3 (scm_variable_ref (scm_c_lookup ("webview-mode-map")),
+                      scm_from_int (event->state),
+                      scm_from_locale_string (key_name)));
       return TRUE;
     }
   return FALSE;
@@ -190,23 +193,20 @@ gboolean
 read_line_focus_out_event_cb (GtkWidget *widget, GdkEvent *event,
                               gpointer user_data)
 {
-  // g_timeout_add (3500, clear_read_line_buffer, (gpointer)widget);
+  g_timeout_add (3500, clear_read_line_buffer, (gpointer)widget);
   return FALSE;
 }
 
 void
 read_line_eval (GtkWidget *widget, gpointer user_data)
 {
-
-  SCM value;
-  gchar *message;
+  SCM results;
+  SCM msg;
   GtkTextBuffer *buf;
   GtkTextIter start, end;
   gchar *input;
-  NomadAppWindowPrivate *priv;
 
   scm_dynwind_begin (0);
-  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
 
   gtk_text_buffer_get_start_iter (buf, &start);
@@ -214,23 +214,24 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
 
   input = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
 
-  value = scm_call_1 (scm_c_public_ref ("nomad util", "catch-eval"),
-                      scm_take_locale_string (input));
+  results = scm_call_1 (scm_c_public_ref ("nomad eval", "input-eval"),
+                        scm_from_locale_string (input));
 
-  if (!scm_is_string (value))
+  if (scm_is_string (scm_c_value_ref (results, 1)))
     {
-      value = scm_from_utf8_string ("unhandled value: not a string");
-      g_critical ("unhandled value: not a string");
+      msg = scm_c_value_ref (results, 1);
+    }
+  else
+    {
+      msg = scm_c_value_ref (results, 0);
     }
 
-  message = scm_to_locale_string (value);
-
-  gtk_text_buffer_set_text (GTK_TEXT_BUFFER (buf), message, -1);
+  gtk_text_buffer_set_text (GTK_TEXT_BUFFER (buf), scm_to_locale_string (msg),
+                            -1);
 
   nomad_buffer_grab_view (
-      nomad_app_window_get_buffer (NOMAD_APP_WINDOW (priv)));
+      nomad_app_window_get_buffer (NOMAD_APP_WINDOW (user_data)));
 
-  scm_dynwind_free (message);
   scm_dynwind_end ();
 }
 
@@ -246,7 +247,7 @@ text_buffer_new ()
 
   buf = gtk_source_buffer_new (NULL);
   sm = gtk_source_style_scheme_manager_new ();
-  ss = gtk_source_style_scheme_manager_get_scheme (sm, "solarized-light");
+  ss = gtk_source_style_scheme_manager_get_scheme (sm, "classic");
   lm = gtk_source_language_manager_new ();
   sl = gtk_source_language_manager_get_language (lm, "scheme");
 
@@ -307,13 +308,22 @@ nomad_app_window_init (NomadAppWindow *self)
   gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->read_line),
                             GTK_TEXT_BUFFER (priv->text_buffer));
 
-  gtk_widget_hide (priv->read_line);
+  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (priv->notebook), FALSE);
 
   // Signals
   g_signal_connect (priv->read_line, "key-press-event",
                     G_CALLBACK (text_buffer_key_press_cb), (gpointer)self);
+
+  g_signal_connect (priv->read_line, "focus-out-event",
+                    G_CALLBACK (read_line_focus_out_event_cb), (gpointer)self);
+
+  g_signal_connect (priv->read_line, "focus-in-event",
+                    G_CALLBACK (read_line_focus_in_event_cb), (gpointer)self);
+
   g_signal_connect (VTE_TERMINAL (priv->vte), "child-exited",
                     G_CALLBACK (fork_vte_child), NULL);
+
+  gtk_widget_hide (self->priv->vte);
 
   // Cookies
   cookie_manager = webkit_web_context_get_cookie_manager (

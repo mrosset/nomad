@@ -41,7 +41,6 @@
      (begin
        (define-public (proc)
 	 doc
-	 (run-hook event-hook (format #f "~s" proc))
 	 body)
        (add-to-command-alist (procedure-name proc) proc))
      )
@@ -50,7 +49,6 @@
        (define-public (proc arg)
 	 doc
 	 (run-hook command-hook arg)
-	 (run-hook event-hook (format #f "~s" proc))
 	 body)
        (add-to-command-alist (procedure-name proc) proc))
      )))

@@ -49,7 +49,8 @@ SOURCES =			\
 	nomad/repl.scm		\
 	nomad/server.scm	\
 	nomad/util.scm		\
-	nomad/webview.scm
+	nomad/webkit.scm
+
 
 TESTS =				\
 	tests/browser.scm	\

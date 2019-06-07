@@ -33,15 +33,33 @@ AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
 
+# libtool
+LT_INIT
+
 # Guile
 GUILE_PKG([2.2 2.0])
 GUILE_PROGS
-GUILE_FLAGS
+dnl GUILE_FLAGS
+GUILE_SITE_DIR
 
 # pkg-config modules
-dnl PKG_CHECK_MODULES([GUILE], [guile-2.2])
-PKG_CHECK_MODULES([QT_WIDGETS], [Qt5Widgets])
-PKG_CHECK_MODULES([QT_QUICK_CONTROLS], [Qt5QuickControls2])
+PKG_CHECK_MODULES([GUILE], [guile-2.2])
+PKG_CHECK_MODULES([GTK], [gtk+-3.0])
+PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
+PKG_CHECK_MODULES([VTE], [vte-2.91])
+PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
+PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-4])
+PKG_CHECK_MODULES(GLIB, [glib-2.0])
+
+
+top_builddir_absolute=`pwd`
+AC_SUBST(top_builddir_absolute)
+
+top_srcdir_absolute=`(cd $srcdir && pwd)`
+AC_SUBST(top_srcdir_absolute)
+
+AC_DEFUN([GUILE_CONFIG_SCRIPT],[AC_CONFIG_FILES([$1],[chmod +x $1])])
+GUILE_CONFIG_SCRIPT([check-guile])
 
 AC_PATH_PROG(GUILE_SNARF, guile-snarf, no)
 AC_SUBST(GUILE_SNARF)
@@ -57,9 +75,17 @@ if test "$GUILD" = "no"; then
    AC_MSG_ERROR([program guild is required])
 fi
 
+AC_PATH_PROG(GLIB_COMPILE_R, glib-compile-resources, no)
+AC_SUBST(GLIB_COMPILE_R)
+
+if test "$GLIB_COMPILE_R" = "no"; then
+   AC_MSG_ERROR([program glib-compile-resources is required])
+fi
+
 AC_CONFIG_FILES([
 Makefile
-qt/Makefile
+src/Makefile
+ext/Makefile
 scheme/Makefile
 ])
 

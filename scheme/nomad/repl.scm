@@ -27,17 +27,27 @@
   #:use-module (system repl coop-server)
   #:use-module (system repl server)
   #:export (
-	    emacs-command-line
-	    nc-command-line
-	    rlwrap-command-line
-	    repl-command-line
-	    repl-server
-	    socket-exists?
-	    server-force-delete
-	    server-start
-	    write-socket
-	    server-start-coop
-	    client-start))
+            emacs-command-line
+            nc-command-line
+            rlwrap-command-line
+            repl-command-line
+            repl-server
+            server-force-delete
+            server-start
+            server-start-coop
+            socket-file))
+
+(define socket-file "/tmp/nomad-socket")
+
+(define emacs-command-line (list "emacs" "-q" "-nw" "-l" emacs-init-file))
+
+(define nc-command-line (list "nc" "-U" socket-file))
+
+(define bash-command-line (list "bash" "--login"))
+
+(define rlwrap-command-line (append (list "rlwrap") nc-command-line))
+
+(define repl-command-line bash-command-line)
 
 (define repl-server #f)
 
@@ -89,12 +99,12 @@ reached."
   (while #t
     (let ((c (get-char port)))
       (when (eof-object? c)
-	(break))
+        (break))
       ;; if char is > and there is a space after, assume this is the
       ;; prompt and stop
       (when (and (char=? c #\>) (char=? (lookahead-char port) #\space))
-	(get-char port)
-	(break))
+        (get-char port)
+        (break))
       (display c))))
 
 (define (client-start path)
@@ -112,9 +122,9 @@ reached."
     (newline)
     (while #t
       (let ((line (readline)))
-	(write-line line port)
-	(read-until-prompt port)
-	(newline)))))
+        (write-line line port)
+        (read-until-prompt port)
+        (newline)))))
 
 (define (write-socket input socket-file)
   "Write string INPUT to guile unix socket at SOCKET-FILE. The guile
@@ -123,7 +133,7 @@ possible to return anything from the socket at this point"
   (let ((port (socket PF_UNIX SOCK_STREAM 0)))
      (catch #t
       (lambda ()
-	       (connect port AF_UNIX socket-file)
-	       (write-line input port))
+               (connect port AF_UNIX socket-file)
+               (write-line input port))
       (lambda (key . parameters)
-	(format #t "~s: ~s ~s" key parameters socket-file)))))
+        (format #t "~s: ~s ~s" key parameters socket-file)))))

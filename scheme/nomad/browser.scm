@@ -19,12 +19,21 @@
 (define-module (nomad browser)
   #:use-module (nomad events)
   #:use-module (nomad buffer)
-  #:use-module (nomad webview)
+  #:use-module (nomad webkit)
   #:use-module (nomad eval)
   #:export (current-url
             default-home-page
             prefix-url
             search-provider-format))
+
+(define-public webview-mode-map '(("C-b" . (next-buffer))
+                                  ("C-u" . (back))
+                                  ("C-m" . (forward))
+                                  ("C-n" . (scroll-down))
+                                  ("C-f" . (hints))
+                                  ("C-p" . (scroll-up))
+                                  ("C-r" . (reload))
+                                  ("C-x" . (kill-buffer))))
 
 (define search-provider-format "https://duckduckgo.com/?q=~a")
 (define default-home-page "https://www.gnu.org/software/guile")

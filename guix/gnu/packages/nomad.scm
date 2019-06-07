@@ -8,77 +8,56 @@
  ((guix licenses)
   #:prefix license:)
  (guix utils)
- (gnu packages qt)
  (gnu packages pkg-config)
  (gnu packages glib)
  (gnu packages autotools)
- (gnu packages gettext)
- (gnu packages emacs-xyz)
+ (gnu packages gtk)
  (gnu packages guile)
- (gnu packages gl)
- (gnu packages nss)
- (gnu packages linux)
- (guix build-system trivial))
+ (gnu packages gnome)
+ (gnu packages webkit))
 
 (define-public nomad
-  (let ((commit "e8607c0e428faf0fa78fce651ee4ac0f17979c61"))
+  ;; feature-qt branch
+  (let ((commit "0e109d36013253571f57a0c8cfc27a33615b0da5"))
     (package
       (name "nomad")
       (version (git-version "0.0.4-alpha" "118" commit))
       (source (origin
 		(method git-fetch)
 		(uri (git-reference
-		      (url "https://github.com/mrosset/nomad")
+		      (url "https://git.savannah.gnu.org/git/nomad.git")
 		      (commit commit)))
 		(file-name (git-file-name name version))
 		(sha256
 		 (base32
-		  "1j4q0dj3h0micz8982vhzmis9nbmr4ylcnfqxhq7l8x5jphr1cjy"))))
+		  "1pl4xf9p6hhwnh4rgb1if86fw2ax7dh8dd7hqjafk5p26mgwbwhx"))))
       (build-system gnu-build-system)
       (native-inputs
        `(
-	 ("emacs-htmlize", emacs-htmlize)
+	 ("libtool" ,libtool)
+	 ("glib:bin" ,glib "bin")
 	 ))
       (inputs
        `(
-	 ("pkg-config" ,pkg-config)
-	 ("glib" ,glib)
 	 ("autoconf" ,autoconf)
 	 ("automake" ,automake)
-	 ("gettext-minimal" ,gettext-minimal)
-	 ("qtbase" ,qtbase)
-	 ("qtwebchannel", qtwebchannel)
-	 ("qtquickcontrols2" ,qtquickcontrols2)
-	 ("qttools" ,qttools)
-	 ))
-      (propagated-inputs
-       `(
+	 ("glib" ,glib)
+	 ("glib-networking" ,glib-networking)
+	 ("gtk" ,gtk+)
+	 ("gtksourceview" ,gtksourceview)
 	 ("guile" ,guile-2.2)
 	 ("guile-readline" ,guile-readline)
-	 ("qtwebkit" ,qtwebkit)
-	 ("qtdeclarative" ,qtdeclarative)
-	 ("qtquickcontrols" ,qtquickcontrols)
-	 ("qtwebchannel" ,qtwebchannel)
+	 ("pkg-config" ,pkg-config)
+	 ("vte" ,vte)
+	 ("webkitgtk" ,webkitgtk)
 	 ))
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-		    (add-after 'install-binaries 'wrap-binaries
-		      (lambda* (#:key outputs inputs #:allow-other-keys)
-			(let* ((out        (assoc-ref outputs "out"))
-			       (qtwebkit   (assoc-ref inputs "qtwebkit"))
-			       (netprocess (string-append qtwebkit "/lib/libexec/QtWebNetworkProcess"))
-			       (webprocess (string-append qtwebkit "/lib/libexec/QtWebProcess"))
-			       (bin        (string-append out "/bin"))
-			       (exe        (string-append out "/bin/nomad")))
-			  (symlink netprocess (string-append bin "/QtWebNetworkProcess"))
-			  (symlink webprocess (string-append bin "/QtWebProcess"))
-			  (wrap-program exe
-			    ;; FIXME: qtwebkit packages uses /lib/qml
-			    ;; instead of /lib/qt5/qml
-			    `("QML2_IMPORT_PATH" ":" prefix
-			      (,(string-append qtwebkit "/lib/qml:"))))
-			  #t))))))
-      (home-page "https://github.com/mrosset/nomad")
-      (synopsis "An extensible web browser using GNU Guile.")
+      (propagated-inputs
+       `(("guile" ,guile-2.2)
+	 ("gesettings-desktop-schemas" ,gsettings-desktop-schemas)
+	 ("glib-networking" ,glib-networking)))
+      (home-page "https://savannah.nongnu.org/projects/nomad/")
+      (synopsis "An extensible web browser using GNU Guile")
       (description "An extensible web browser.")
       (license license:gpl3+))))
+
+nomad
