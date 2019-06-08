@@ -57,7 +57,7 @@ is not found returns #f"
   (with-output-to-string (lambda()
                            (format #t "~a" (pretty-print (buffers->list))))))
 
-(define (pp-buffers)
+(define-public (pp-buffers)
   "Pretty prints buffers-alist."
   (for-each (lambda (x)
               (format #t "~a\n" (format-buffer x))) (buffer-alist)))

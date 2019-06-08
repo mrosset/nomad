@@ -31,6 +31,8 @@ static void
 startup (GApplication *app, gpointer data)
 {
 
+  SCM socket = scm_c_eval_string ("(option-listen (command-line))");
+
   // Define scheme C modules
   // Modules that are used before defining have a scheme file. This
   // allows mixing pure scheme with C scheme.
@@ -49,6 +51,8 @@ startup (GApplication *app, gpointer data)
   // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
   // documentation for $HOME/.nomad
   scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"), NULL);
+
+  scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"), socket);
 }
 
 static void
@@ -69,8 +73,12 @@ inner_main (void *data, int argc, char **argv)
   scm_c_use_module ("nomad init");
   scm_c_use_module ("nomad options");
   scm_c_use_module ("nomad repl");
+
   scm_c_use_module ("nomad app");
   scm_c_define_module ("nomad app", nomad_app_register_functions, app);
+
+  scm_c_use_module ("nomad buffer");
+  scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
 
   app = nomad_app_new ();
 
@@ -86,9 +94,6 @@ inner_main (void *data, int argc, char **argv)
   // GApplication
   scm_c_eval_string ("(init)");
 
-  scm_c_use_module ("nomad buffer");
-  scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
-
   socket = scm_c_eval_string ("(option-listen (command-line))");
   exists = scm_call_1 (scm_c_private_ref ("nomad repl", "socket-exists?"),
                        socket);
@@ -97,7 +102,7 @@ inner_main (void *data, int argc, char **argv)
   // When requesting a client start a terminal REPL
   if (scm_c_eval_string ("(option-client (command-line))") == SCM_BOOL_T)
     {
-      scm_call_1 (scm_c_public_ref ("nomad repl", "client-start"), socket);
+      scm_call_1 (scm_c_private_ref ("nomad repl", "client-start"), socket);
       return;
     }
 
@@ -110,11 +115,6 @@ inner_main (void *data, int argc, char **argv)
       sleep (1);
       return;
     }
-
-  // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
-  // documentation for $HOME/.nomad
-  scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"), socket);
-
   exit (g_application_run (G_APPLICATION (app), 0, NULL));
 }
 
