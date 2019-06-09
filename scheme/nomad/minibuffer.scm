@@ -27,7 +27,18 @@
 (define current-line 0)
 
 (define minibuffer-mode-map '(("C-n" . (next-line))
-			      ("C-p" . (prevous-line))))
+			      ("C-p" . (previous-line))))
+
+(define-public (next-line)
+  (let ((row (+ current-line 1)))
+    (select-line row)
+    (set! current-line row)))
+
+(define-public (previous-line)
+  (let ((row (- current-line 1)))
+    (when (not (= current-line 0))
+      (select-line row)
+      (set! current-line row))))
 
 (define-public (input-completion text)
   "Returns a list of command symbols matching 'TEXT"

@@ -79,7 +79,7 @@ keyboard_quit (gpointer widget)
 
   gtk_widget_hide (priv->mini_popup);
   gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
-  /* gtk_widget_grab_focus (widget); */
+
   nomad_buffer_grab_view (
       nomad_app_window_get_buffer (NOMAD_APP_WINDOW (widget)));
 }
@@ -167,7 +167,7 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
   if ((event->state & modifiers) == GDK_CONTROL_MASK
       && event->keyval == GDK_KEY_g)
     {
-      /* keyboard_quit (widget); */
+      keyboard_quit (widget);
       return TRUE;
     }
 
@@ -247,12 +247,6 @@ read_line_focus_out_event_cb (GtkWidget *widget, GdkEvent *event,
 
   g_timeout_add (3500, clear_read_line_buffer, (gpointer)widget);
   return FALSE;
-}
-
-gboolean
-on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
-{
-  return TRUE;
 }
 
 void
@@ -357,6 +351,8 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
   NomadAppWindowPrivate *priv;
   SCM found;
   SCM search;
+  int select_index
+      = scm_to_int (scm_variable_ref (scm_c_lookup ("current-line")));
   gchar *input = NULL;
 
   priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
@@ -396,7 +392,8 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
       row = GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
       gtk_container_add (GTK_CONTAINER (row), label);
       gtk_list_box_insert (box, GTK_WIDGET (row), 0);
-      gtk_list_box_select_row (box, GTK_LIST_BOX_ROW (row));
+      gtk_list_box_select_row (
+          box, gtk_list_box_get_row_at_index (box, select_index));
       gtk_widget_show (GTK_WIDGET (row));
       gtk_widget_show (GTK_WIDGET (label));
     }
@@ -408,8 +405,6 @@ static void
 nomad_app_window_init (NomadAppWindow *self)
 {
   /* GtkWidget *entry; */
-  GtkWidget *label;
-  GtkWidget *vbox;
   NomadAppWindowPrivate *priv;
   NomadBuffer *buf;
   SCM home_page;
@@ -460,31 +455,6 @@ nomad_app_window_init (NomadAppWindow *self)
                     G_CALLBACK (fork_vte_child), NULL);
 
   gtk_widget_hide (self->priv->vte);
-
-  /* Test minipopup */
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 10);
-  gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), vbox);
-  gtk_overlay_set_overlay_pass_through (GTK_OVERLAY (priv->overlay), vbox,
-                                        TRUE);
-  gtk_widget_set_halign (vbox, GTK_ALIGN_CENTER);
-  gtk_widget_set_valign (vbox, GTK_ALIGN_CENTER);
-
-  label = gtk_label_new (
-      "<span foreground='blue' weight='ultrabold' font='40'>Numbers</span>");
-  gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
-  gtk_widget_set_margin_top (label, 8);
-  gtk_widget_set_margin_bottom (label, 50);
-  gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
-  gtk_widget_show (label);
-  /* vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 10); */
-  /* gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), vbox); */
-  /* gtk_widget_set_halign (vbox, GTK_ALIGN_CENTER); */
-  /* gtk_widget_set_valign (vbox, GTK_ALIGN_CENTER); */
-  /* gtk_entry_set_placeholder_text (GTK_ENTRY (entry), "Your Lucky Number");
-   */
-  /* gtk_widget_set_margin_top (entry, 50); */
-  /* gtk_widget_set_margin_bottom (entry, 8); */
-  /* gtk_box_pack_start (GTK_BOX (vbox), entry); */
 
   // Cookies
   cookie_manager = webkit_web_context_get_cookie_manager (

@@ -57,7 +57,7 @@ scroll_up_invoke (void *data)
 }
 
 SCM_DEFINE (scm_nomad_scroll_up, "scroll-up", 0, 0, 0, (),
-            "Internal procedure to the scroll WebView up")
+            "Internal procedure to scroll WebView up")
 {
   g_main_context_invoke (NULL, scroll_up_invoke, NULL);
   return SCM_UNDEFINED;
