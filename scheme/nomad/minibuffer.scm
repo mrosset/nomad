@@ -21,10 +21,13 @@
   #:use-module (ice-9 session)
   #:use-module (nomad eval)
   #:use-module (nomad init)
-  #:export (minibuffer-mode-map))
+  #:export (minibuffer-mode-map
+	    current-line))
 
-(define minibuffer-mode-map '(("C-n" . (minibuffer-scroll-down))
-			      ("C-p" . (minibuffer-scroll-up))))
+(define current-line 0)
+
+(define minibuffer-mode-map '(("C-n" . (next-line))
+			      ("C-p" . (prevous-line))))
 
 (define-public (input-completion text)
   "Returns a list of command symbols matching 'TEXT"

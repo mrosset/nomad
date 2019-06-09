@@ -20,6 +20,7 @@
 
 #include "app.h"
 #include "buffer.h"
+#include "minibuffer.h"
 #include "util.h"
 #include "webkit.h"
 #include "window.h"
@@ -41,12 +42,16 @@ startup (GApplication *app, gpointer data)
 
   scm_c_define_module ("nomad window", nomad_window_register_functions, NULL);
 
+  scm_c_use_module ("nomad minibuffer");
+  scm_c_define_module ("nomad minibuffer", nomad_minibuffer_register_functions,
+                       NULL);
+
   scm_c_define_module ("nomad util", nomad_util_register_functions, NULL);
 
   // Use essential modules
   scm_c_use_module ("nomad util");
-  scm_c_use_module ("nomad window");
   scm_c_use_module ("nomad browser");
+  scm_c_use_module ("nomad window");
 
   // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
   // documentation for $HOME/.nomad

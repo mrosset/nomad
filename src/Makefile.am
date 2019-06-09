@@ -33,6 +33,7 @@ nomad_SOURCES =		\
 	buffer.c	\
 	buffer.h	\
 	main.c		\
+	minibuffer.c	\
 	request.c	\
 	request.h	\
 	util.c		\
@@ -47,6 +48,7 @@ moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
 ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 
 AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
+	-Wno-deprecated-declarations						\
 	$(GTK_FLAGS)								\
 	$(GUILE_CFLAGS)								\
 	$(VTE_CFLAGS)								\
@@ -63,7 +65,7 @@ AM_LDFLAGS = -export-dynamic
 nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(VTE_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
 
 
-DOT_X_FILES = app.x buffer.x webkit.x window.x util.x
+DOT_X_FILES = app.x buffer.x webkit.x window.x util.x minibuffer.x
 
 BUILT_SOURCES = $(DOT_X_FILES) resources.c
 

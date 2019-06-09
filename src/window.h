@@ -35,6 +35,7 @@ NomadAppWindow *nomad_app_window_new (NomadApp *app);
 WebKitWebView *nomad_app_window_get_webview (NomadAppWindow *win);
 GtkNotebook *nomad_window_get_notebook (NomadAppWindow *win);
 NomadBuffer *nomad_app_window_get_buffer (NomadAppWindow *win);
+GtkWidget *nomad_app_window_get_minipopup (NomadAppWindow *win);
 void nomad_app_window_add_buffer (NomadAppWindow *win, NomadBuffer *buf);
 void nomad_app_window_remove_buffer (NomadAppWindow *win);
 void nomad_app_window_add_vte (NomadAppWindow *win);

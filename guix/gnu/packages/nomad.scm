@@ -17,8 +17,7 @@
  (gnu packages webkit))
 
 (define-public nomad
-  ;; feature-qt branch
-  (let ((commit "0e109d36013253571f57a0c8cfc27a33615b0da5"))
+  (let ((commit "0b93645c4ec4479ab775b9ea25b0e9b645dca633"))
     (package
       (name "nomad")
       (version (git-version "0.0.4-alpha" "118" commit))
@@ -30,7 +29,7 @@
 		(file-name (git-file-name name version))
 		(sha256
 		 (base32
-		  "1pl4xf9p6hhwnh4rgb1if86fw2ax7dh8dd7hqjafk5p26mgwbwhx"))))
+		  "1g1jyvwdmq17p0i9qavrk45caicfsmcwm51hcbshdg5mci2lvqqp"))))
       (build-system gnu-build-system)
       (native-inputs
        `(
@@ -42,7 +41,6 @@
 	 ("autoconf" ,autoconf)
 	 ("automake" ,automake)
 	 ("glib" ,glib)
-	 ("glib-networking" ,glib-networking)
 	 ("gtk" ,gtk+)
 	 ("gtksourceview" ,gtksourceview)
 	 ("guile" ,guile-2.2)
@@ -59,5 +57,3 @@
       (synopsis "An extensible web browser using GNU Guile")
       (description "An extensible web browser.")
       (license license:gpl3+))))
-
-nomad

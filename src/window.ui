@@ -33,90 +33,142 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
       <placeholder/>
     </child>
     <child>
-      <object class="GtkBox" id="box">
+      <object class="GtkOverlay" id="overlay">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkPaned" id="pane">
+          <object class="GtkBox" id="box">
+            <property name="width_request">100</property>
+            <property name="height_request">80</property>
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
+            <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
-            <property name="position">807</property>
-            <signal name="size-allocate" handler="pane_size_allocate_cb" swapped="no"/>
             <child>
-              <object class="GtkNotebook" id="notebook">
+              <object class="GtkPaned" id="pane">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="show_border">False</property>
-                <property name="enable_popup">True</property>
+                <property name="orientation">vertical</property>
+                <property name="position">807</property>
+                <property name="position_set">True</property>
+                <signal name="size-allocate" handler="pane_size_allocate_cb" swapped="no"/>
                 <child>
-                  <placeholder/>
-                </child>
-                <child type="tab">
-                  <placeholder/>
+                  <object class="GtkNotebook" id="notebook">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="show_border">False</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child type="tab">
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child type="tab">
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child type="tab">
+                      <placeholder/>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="resize">False</property>
+                    <property name="shrink">True</property>
+                  </packing>
                 </child>
                 <child>
-                  <placeholder/>
-                </child>
-                <child type="tab">
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child type="tab">
-                  <placeholder/>
+                  <object class="VteTerminal" id="vte">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscroll_policy">natural</property>
+                    <property name="vscroll_policy">natural</property>
+                    <property name="allow_hyperlink">True</property>
+                    <property name="encoding">UTF-8</property>
+                    <property name="pointer_autohide">True</property>
+                    <property name="scroll_on_keystroke">True</property>
+                    <property name="scroll_on_output">False</property>
+                  </object>
+                  <packing>
+                    <property name="resize">True</property>
+                    <property name="shrink">True</property>
+                  </packing>
                 </child>
               </object>
               <packing>
-                <property name="resize">False</property>
-                <property name="shrink">True</property>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <object class="VteTerminal" id="vte">
+              <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hscroll_policy">natural</property>
-                <property name="vscroll_policy">natural</property>
-                <property name="allow_hyperlink">True</property>
-                <property name="encoding">UTF-8</property>
-                <property name="pointer_autohide">True</property>
-                <property name="scroll_on_keystroke">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="mini_buffer_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <attributes>
+                      <attribute name="weight" value="semibold"/>
+                      <attribute name="foreground" value="#34346565a4a4"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSourceView" id="read_line">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="valign">baseline</property>
+                    <property name="margin_top">1</property>
+                    <property name="margin_bottom">1</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">False</property>
+                    <property name="left_margin">5</property>
+                    <property name="right_margin">2</property>
+                    <property name="input_hints">GTK_INPUT_HINT_WORD_COMPLETION | GTK_INPUT_HINT_NONE</property>
+                    <property name="monospace">True</property>
+                    <property name="smart_backspace">True</property>
+                    <signal name="focus-in-event" handler="read_line_focus_in_event_cb" swapped="no"/>
+                    <signal name="focus-out-event" handler="read_line_focus_out_event_cb" swapped="no"/>
+                    <signal name="key-press-event" handler="read_line_key_press_event_cb" object="NomadAppWindow" swapped="no"/>
+                    <signal name="key-release-event" handler="read_line_key_release_event_cb" object="NomadAppWindow" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </object>
               <packing>
-                <property name="resize">True</property>
-                <property name="shrink">True</property>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkListBox" id="mini_popup">
+                <property name="height_request">200</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkSourceView" id="read_line">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="valign">baseline</property>
-            <property name="margin_top">1</property>
-            <property name="margin_bottom">1</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">False</property>
-            <property name="left_margin">5</property>
-            <property name="right_margin">2</property>
-            <property name="input_hints">GTK_INPUT_HINT_WORD_COMPLETION | GTK_INPUT_HINT_NONE</property>
-            <property name="monospace">True</property>
-            <!-- <property name="background_pattern">grid</property> -->
-            <signal name="focus-in-event" handler="read_line_focus_in_event_cb" swapped="no"/>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="index">-1</property>
           </packing>
         </child>
       </object>

@@ -41,8 +41,11 @@ struct _NomadAppWindowPrivate
   GtkWidget *notebook;
   GtkWidget *pane;
   GtkWidget *read_line;
+  GtkWidget *mini_buffer_label;
   GtkWidget *text_buffer;
+  GtkWidget *mini_popup;
   GtkWidget *vte;
+  GtkWidget *overlay;
   /* NomadBuffer *buffer; */
   WebKitWebView *web_view;
 };
@@ -55,6 +58,32 @@ struct _NomadAppWindow
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadAppWindow, nomad_app_window,
                             GTK_TYPE_APPLICATION_WINDOW)
+
+gboolean
+clear_read_line_buffer (gpointer user_data)
+{
+  GtkTextBuffer *buf;
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (user_data));
+  gtk_text_buffer_set_text (buf, "", -1);
+
+  return FALSE;
+}
+
+static void
+keyboard_quit (gpointer widget)
+{
+  NomadAppWindowPrivate *priv;
+
+  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
+
+  gtk_widget_hide (priv->mini_popup);
+  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
+  /* gtk_widget_grab_focus (widget); */
+  nomad_buffer_grab_view (
+      nomad_app_window_get_buffer (NOMAD_APP_WINDOW (widget)));
+}
+
 static void
 fork_vte_child (VteTerminal *vte, gint status, gpointer data)
 {
@@ -121,6 +150,7 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
           && !gtk_widget_has_focus (priv->vte))
         {
           gtk_widget_grab_focus (priv->read_line);
+          gtk_widget_show (priv->mini_popup);
         }
 
       return FALSE;
@@ -133,12 +163,32 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
       return FALSE;
     }
 
+  // If C-g then do keyboard quit
+  if ((event->state & modifiers) == GDK_CONTROL_MASK
+      && event->keyval == GDK_KEY_g)
+    {
+      /* keyboard_quit (widget); */
+      return TRUE;
+    }
+
+  if (gtk_widget_has_focus (priv->read_line))
+    {
+      g_print ("minibuffer-mode-map\n");
+      scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
+      scm_run_hook (
+          scm_hook,
+          scm_list_3 (scm_variable_ref (scm_c_lookup ("minibuffer-mode-map")),
+                      scm_from_int (event->state),
+                      scm_from_locale_string (key_name)));
+      return TRUE;
+    }
   // If event has state then its a modified keypress eg. `C-c' which means we
   // can't handle prefixes, quite yet.  since we can easily capture this state,
   // we'll use this a starting point for our keybindings. We'll call our Scheme
   // key-press-hook. from here the nomad keymap module will do the work.
   if ((event->state & modifiers) == GDK_CONTROL_MASK)
     {
+      g_print ("webview-mode-map: %d\n", event->state);
       scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
       scm_run_hook (
           scm_hook,
@@ -170,20 +220,13 @@ pane_size_allocate_cb (GtkWidget *widget, gpointer data)
 }
 
 gboolean
-clear_read_line_buffer (gpointer user_data)
-{
-  GtkTextBuffer *buf;
-
-  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (user_data));
-  gtk_text_buffer_set_text (buf, "", -1);
-
-  return FALSE;
-}
-
-gboolean
 read_line_focus_in_event_cb (GtkWidget *widget, GdkEvent *event,
                              gpointer user_data)
 {
+  NomadAppWindowPrivate *priv;
+  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
+
+  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "M-x ");
   clear_read_line_buffer (widget);
 
   return FALSE;
@@ -193,8 +236,23 @@ gboolean
 read_line_focus_out_event_cb (GtkWidget *widget, GdkEvent *event,
                               gpointer user_data)
 {
+  NomadAppWindowPrivate *priv;
+  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
+  if (gtk_widget_is_focus (priv->mini_popup))
+    {
+      return TRUE;
+    }
+  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
+  gtk_widget_hide (priv->mini_popup);
+
   g_timeout_add (3500, clear_read_line_buffer, (gpointer)widget);
   return FALSE;
+}
+
+gboolean
+on_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
+{
+  return TRUE;
 }
 
 void
@@ -238,33 +296,109 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
 GtkSourceBuffer *
 text_buffer_new ()
 {
-
   GtkSourceLanguageManager *lm;
   GtkSourceLanguage *sl;
-  GtkSourceStyleSchemeManager *sm;
-  GtkSourceStyleScheme *ss;
+  /* GtkSourceStyleSchemeManager *sm; */
+  /* GtkSourceStyleScheme *ss; */
   GtkSourceBuffer *buf;
 
   buf = gtk_source_buffer_new (NULL);
-  sm = gtk_source_style_scheme_manager_new ();
-  ss = gtk_source_style_scheme_manager_get_scheme (sm, "classic");
+  /* sm = gtk_source_style_scheme_manager_new (); */
+  /* ss = gtk_source_style_scheme_manager_get_scheme (sm, "classic"); */
   lm = gtk_source_language_manager_new ();
   sl = gtk_source_language_manager_get_language (lm, "scheme");
 
   gtk_source_buffer_set_language (buf, sl);
-  gtk_source_buffer_set_style_scheme (buf, ss);
-
+  /* gtk_source_buffer_set_style_scheme (buf, ss); */
   return buf;
 }
 
-gboolean
-text_buffer_key_press_cb (GtkWidget *view, GdkEventKey *event,
-                          gpointer user_data)
+static void
+mini_popup_clear (GtkWidget *widget)
 {
+  GList *children, *iter;
+  children = gtk_container_get_children (GTK_CONTAINER (widget));
+  for (iter = children; iter != NULL; iter = g_list_next (iter))
+    gtk_widget_destroy (GTK_WIDGET (iter->data));
+  g_list_free (children);
+}
+
+gboolean
+read_line_key_press_event_cb (GtkWidget *widget, GdkEventKey *event,
+                              gpointer user_data)
+{
+  /* GdkModifierType modifiers; */
+  /* NomadAppWindowPrivate *priv; */
+
+  /* priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW
+   * (user_data)); */
+
+  /* modifiers = gtk_accelerator_get_default_mod_mask (); */
+
+  // If C-n next line
+  /* if ((event->state & modifiers) == GDK_CONTROL_MASK */
+  /*     && event->keyval == GDK_KEY_n) */
+  if (event->keyval == GDK_KEY_n)
+    {
+      scm_c_eval_string ("(next-line)");
+      g_print ("next-line");
+      return TRUE;
+    }
+
+  return FALSE;
+}
+
+gboolean
+read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
+                                gpointer user_data)
+{
+  GtkTextBuffer *buf = NULL;
+  GtkTextIter start, end;
+  NomadAppWindowPrivate *priv;
+  SCM found;
+  SCM search;
+  gchar *input = NULL;
+
+  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
+
+  mini_popup_clear (priv->mini_popup);
   if (event->keyval == GDK_KEY_Return)
     {
-      read_line_eval (view, user_data);
+      keyboard_quit (user_data);
+      read_line_eval (widget, user_data);
       return TRUE;
+    }
+
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
+
+  gtk_text_buffer_get_start_iter (buf, &start);
+  gtk_text_buffer_get_end_iter (buf, &end);
+
+  input = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
+
+  search = scm_from_locale_string (input);
+
+  found = scm_call_1 (
+      scm_c_public_ref ("nomad minibuffer", "input-completion"), search);
+
+  for (int i = 0; i < scm_to_int (scm_length (found)); i++)
+    {
+      GtkWidget *label;
+      GtkListBoxRow *row;
+      GtkListBox *box = GTK_LIST_BOX (priv->mini_popup);
+
+      // label
+      label = gtk_label_new (
+          scm_to_locale_string (scm_list_ref (found, scm_from_int (i))));
+      gtk_widget_set_halign (label, GTK_ALIGN_START);
+
+      // row
+      row = GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
+      gtk_container_add (GTK_CONTAINER (row), label);
+      gtk_list_box_insert (box, GTK_WIDGET (row), 0);
+      gtk_list_box_select_row (box, GTK_LIST_BOX_ROW (row));
+      gtk_widget_show (GTK_WIDGET (row));
+      gtk_widget_show (GTK_WIDGET (label));
     }
 
   return FALSE;
@@ -273,12 +407,15 @@ text_buffer_key_press_cb (GtkWidget *view, GdkEventKey *event,
 static void
 nomad_app_window_init (NomadAppWindow *self)
 {
+  /* GtkWidget *entry; */
+  GtkWidget *label;
+  GtkWidget *vbox;
   NomadAppWindowPrivate *priv;
-  WebKitCookieManager *cookie_manager;
-  char *c_user_cookie_file;
   NomadBuffer *buf;
-  char *c_home_page;
   SCM home_page;
+  WebKitCookieManager *cookie_manager;
+  char *c_home_page;
+  char *c_user_cookie_file;
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -311,19 +448,43 @@ nomad_app_window_init (NomadAppWindow *self)
   gtk_notebook_set_show_tabs (GTK_NOTEBOOK (priv->notebook), FALSE);
 
   // Signals
-  g_signal_connect (priv->read_line, "key-press-event",
-                    G_CALLBACK (text_buffer_key_press_cb), (gpointer)self);
+  /* g_signal_connect (priv->read_line, "focus-out-event", */
+  /*                   G_CALLBACK (read_line_focus_out_event_cb),
+   * (gpointer)self); */
 
-  g_signal_connect (priv->read_line, "focus-out-event",
-                    G_CALLBACK (read_line_focus_out_event_cb), (gpointer)self);
-
-  g_signal_connect (priv->read_line, "focus-in-event",
-                    G_CALLBACK (read_line_focus_in_event_cb), (gpointer)self);
+  /* g_signal_connect (priv->read_line, "focus-in-event", */
+  /*                   G_CALLBACK (read_line_focus_in_event_cb),
+   * (gpointer)self); */
 
   g_signal_connect (VTE_TERMINAL (priv->vte), "child-exited",
                     G_CALLBACK (fork_vte_child), NULL);
 
   gtk_widget_hide (self->priv->vte);
+
+  /* Test minipopup */
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 10);
+  gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), vbox);
+  gtk_overlay_set_overlay_pass_through (GTK_OVERLAY (priv->overlay), vbox,
+                                        TRUE);
+  gtk_widget_set_halign (vbox, GTK_ALIGN_CENTER);
+  gtk_widget_set_valign (vbox, GTK_ALIGN_CENTER);
+
+  label = gtk_label_new (
+      "<span foreground='blue' weight='ultrabold' font='40'>Numbers</span>");
+  gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
+  gtk_widget_set_margin_top (label, 8);
+  gtk_widget_set_margin_bottom (label, 50);
+  gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
+  gtk_widget_show (label);
+  /* vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 10); */
+  /* gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), vbox); */
+  /* gtk_widget_set_halign (vbox, GTK_ALIGN_CENTER); */
+  /* gtk_widget_set_valign (vbox, GTK_ALIGN_CENTER); */
+  /* gtk_entry_set_placeholder_text (GTK_ENTRY (entry), "Your Lucky Number");
+   */
+  /* gtk_widget_set_margin_top (entry, 50); */
+  /* gtk_widget_set_margin_bottom (entry, 8); */
+  /* gtk_box_pack_start (GTK_BOX (vbox), entry); */
 
   // Cookies
   cookie_manager = webkit_web_context_get_cookie_manager (
@@ -378,6 +539,12 @@ void
 nomad_app_window_hide_vte (NomadAppWindow *self)
 {
   gtk_widget_hide (self->priv->vte);
+}
+
+GtkWidget *
+nomad_app_window_get_minipopup (NomadAppWindow *self)
+{
+  return self->priv->mini_popup;
 }
 
 NomadBuffer *
@@ -444,6 +611,12 @@ nomad_app_window_class_init (NomadAppWindowClass *class)
                                                 NomadAppWindow, read_line);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, notebook);
+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
+                                                NomadAppWindow, overlay);
+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
+                                                NomadAppWindow, mini_popup);
+  gtk_widget_class_bind_template_child_private (
+      GTK_WIDGET_CLASS (class), NomadAppWindow, mini_buffer_label);
 }
 
 NomadAppWindow *
