@@ -22,7 +22,8 @@
   #:use-module (ice-9 threads)
   #:export (key-press-hook debug-key-press))
 
-(define modifier-masks '((20 . "C")))
+(define modifier-masks '((20 . "C")
+			 (33554452 . "C")))
 
 (define-public ctrl-x-map '(("k" . (kill-buffer))
 			    ("b" . (next-buffer))))
