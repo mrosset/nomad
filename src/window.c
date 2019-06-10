@@ -59,6 +59,17 @@ struct _NomadAppWindow
 G_DEFINE_TYPE_WITH_PRIVATE (NomadAppWindow, nomad_app_window,
                             GTK_TYPE_APPLICATION_WINDOW)
 
+// Declarations
+gboolean read_line_key_press_event_cb (GtkWidget *widget, GdkEventKey *event,
+                                       gpointer user_data);
+
+gboolean read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
+                                         gpointer user_data);
+
+gboolean read_line_prompt_release_event_cb (GtkWidget *widget,
+                                            GdkEventKey *event,
+                                            gpointer user_data);
+
 static gboolean
 clear_read_line_buffer (gpointer user_data)
 {
@@ -77,11 +88,11 @@ keyboard_quit (gpointer widget)
 
   priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
 
-  gtk_widget_hide (priv->mini_popup);
-  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
-
   nomad_buffer_grab_view (
       nomad_app_window_get_buffer (NOMAD_APP_WINDOW (widget)));
+
+  gtk_widget_hide (priv->mini_popup);
+  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
 }
 
 static void
@@ -297,15 +308,83 @@ mini_popup_clear (GtkWidget *widget)
   for (iter = children; iter != NULL; iter = g_list_next (iter))
     gtk_widget_destroy (GTK_WIDGET (iter->data));
   g_list_free (children);
+  scm_c_eval_string ("(set! selected 0)");
+}
+
+gboolean
+read_line_prompt_release_event_cb (GtkWidget *window, GdkEventKey *event,
+                                   gpointer user_data)
+{
+  SCM result, format, proc;
+  NomadAppWindowPrivate *priv;
+  GtkTextBuffer *buf;
+  GtkTextIter start, end;
+  gchar *arg = NULL;
+
+  proc = (SCM)user_data;
+  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (window));
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->read_line));
+
+  gtk_text_buffer_get_start_iter (buf, &start);
+  gtk_text_buffer_get_end_iter (buf, &end);
+
+  arg = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
+
+  if (event->keyval == GDK_KEY_Return)
+    {
+      result = scm_call_1 (proc, scm_from_locale_string (arg));
+      format = scm_call_3 (scm_c_public_ref ("guile", "format"), SCM_BOOL_F,
+                           scm_from_utf8_string ("~a"), result);
+      gtk_text_buffer_set_text (buf, scm_to_locale_string (format), -1);
+
+      g_signal_handlers_disconnect_by_func (
+          window, read_line_prompt_release_event_cb, user_data);
+
+      // reconnect key release signal
+      g_signal_connect (priv->read_line, "key-release-event",
+                        G_CALLBACK (read_line_key_release_event_cb),
+                        (gpointer)window);
+
+      g_signal_connect (priv->read_line, "key-press-event",
+                        G_CALLBACK (read_line_key_press_event_cb),
+                        (gpointer)window);
+
+      keyboard_quit (window);
+      return FALSE;
+    }
+  return FALSE;
 }
 
 static void
-minibuffer_eval_command (GtkWidget *widget, GtkListBoxRow *row)
+prompt_minibuffer_arg (NomadAppWindow *win, SCM proc, SCM args)
+{
+  NomadAppWindowPrivate *priv;
+  priv = nomad_app_window_get_instance_private (win);
+
+  // disconnect key release signal
+  g_signal_handlers_disconnect_by_func (
+      priv->read_line, read_line_key_release_event_cb, (gpointer)win);
+
+  g_signal_handlers_disconnect_by_func (
+      priv->read_line, read_line_key_press_event_cb, (gpointer)win);
+
+  // connect prompt signal
+  g_signal_connect (GTK_WIDGET (win), "key-release-event",
+                    G_CALLBACK (read_line_prompt_release_event_cb),
+                    (gpointer)proc);
+
+  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "?");
+  gtk_widget_grab_focus (priv->read_line);
+}
+
+static void
+minibuffer_eval_command (GtkWidget *widget, NomadAppWindow *window,
+                         GtkListBoxRow *row)
 {
   GList *children;
   const gchar *c_symbol;
   GtkTextBuffer *buf;
-  SCM key, proc, result, format;
+  SCM args, key, proc, result, format;
 
   // text buffer
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
@@ -314,11 +393,21 @@ minibuffer_eval_command (GtkWidget *widget, GtkListBoxRow *row)
   c_symbol = gtk_label_get_text (GTK_LABEL (g_list_nth_data (children, 0)));
   key = scm_string_to_symbol (scm_from_locale_string (c_symbol));
   proc = scm_call_1 (scm_c_public_ref ("nomad eval", "command-ref"), key);
+  args = scm_call_1 (scm_c_public_ref ("nomad eval", "command-args"), key);
 
-  result = scm_call_0 (proc);
-  format = scm_call_3 (scm_c_public_ref ("guile", "format"), SCM_BOOL_F,
-                       scm_from_utf8_string ("~a"), result);
-  gtk_text_buffer_set_text (buf, scm_to_locale_string (format), -1);
+  // If procedure does not take any arguments. Call the procedure and
+  // set the minibuffer to either value returned from the procedure or
+  // the exception
+  if (scm_is_null (args))
+    {
+      result = scm_call_0 (proc);
+      format = scm_call_3 (scm_c_public_ref ("guile", "format"), SCM_BOOL_F,
+                           scm_from_utf8_string ("~a"), result);
+      gtk_text_buffer_set_text (buf, scm_to_locale_string (format), -1);
+      keyboard_quit (window);
+      return;
+    }
+  prompt_minibuffer_arg (window, proc, args);
 }
 
 static void
@@ -410,9 +499,11 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
 
   if (event->keyval == GDK_KEY_Return)
     {
-      minibuffer_eval_command (widget, current_row);
-      keyboard_quit (user_data);
-      return TRUE;
+      gtk_widget_hide (priv->mini_popup);
+      clear_read_line_buffer (priv->read_line);
+      minibuffer_eval_command (widget, NOMAD_APP_WINDOW (user_data),
+                               current_row);
+      return FALSE;
     }
 
   gtk_text_buffer_get_start_iter (buf, &start);

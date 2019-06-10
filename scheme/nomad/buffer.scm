@@ -47,17 +47,18 @@ is not found returns #f"
 
 (define (format-buffer buffer)
   "Returns a human readable buffer string in 80 column format"
-  (format #f "id: ~80:@y title: ~80:@y uri: ~80:@y"
+  (format #f "id: ~80:@y\t uri: ~80:@y"
           (car buffer)
-          (buffer-title (cdr buffer))
           (buffer-uri (cdr buffer))))
 
 (define-command (buffers)
   "Returns a string of all buffers pretty printed"
-  (with-output-to-string (lambda()
+  (with-output-to-string (lambda _
                            (format #t "~a" (pretty-print (buffers->list))))))
 
-(define-public (pp-buffers)
+(define-command (pp-buffers)
   "Pretty prints buffers-alist."
-  (for-each (lambda (x)
-              (format #t "~a\n" (format-buffer x))) (buffer-alist)))
+  (with-output-to-string
+    (lambda _
+      (for-each (lambda (x)
+                  (format #t "~a\n" (format-buffer x))) (buffer-alist)))))
