@@ -28,7 +28,7 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
     <property name="title" translatable="yes">Nomad</property>
     <property name="default_width">800</property>
     <property name="default_height">640</property>
-    <signal name="key-press-event" handler="key_press_cb" swapped="no"/>
+    <signal name="map-event" handler="nomad_app_window_map_event_cb" swapped="no"/>
     <child type="titlebar">
       <placeholder/>
     </child>
@@ -55,6 +55,7 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
                   <object class="GtkNotebook" id="notebook">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="show_tabs">False</property>
                     <property name="show_border">False</property>
                     <child>
                       <placeholder/>
@@ -137,10 +138,6 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
                     <property name="input_hints">GTK_INPUT_HINT_WORD_COMPLETION | GTK_INPUT_HINT_NONE</property>
                     <property name="monospace">True</property>
                     <property name="smart_backspace">True</property>
-                    <signal name="focus-in-event" handler="read_line_focus_in_event_cb" swapped="no"/>
-                    <signal name="focus-out-event" handler="read_line_focus_out_event_cb" swapped="no"/>
-                    <signal name="key-press-event" handler="read_line_key_press_event_cb" object="NomadAppWindow" swapped="no"/>
-                    <signal name="key-release-event" handler="read_line_key_release_event_cb" object="NomadAppWindow" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>

@@ -52,7 +52,7 @@ is not found returns #f"
           (buffer-title (cdr buffer))
           (buffer-uri (cdr buffer))))
 
-(define-public (buffers)
+(define-command (buffers)
   "Returns a string of all buffers pretty printed"
   (with-output-to-string (lambda()
                            (format #t "~a" (pretty-print (buffers->list))))))

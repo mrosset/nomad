@@ -59,7 +59,7 @@ struct _NomadAppWindow
 G_DEFINE_TYPE_WITH_PRIVATE (NomadAppWindow, nomad_app_window,
                             GTK_TYPE_APPLICATION_WINDOW)
 
-gboolean
+static gboolean
 clear_read_line_buffer (gpointer user_data)
 {
   GtkTextBuffer *buf;
@@ -106,20 +106,28 @@ fork_vte_child (VteTerminal *vte, gint status, gpointer data)
   gtk_widget_grab_focus (GTK_WIDGET (vte));
 }
 
+void
+nomad_app_window_map_event_cb (GtkWidget *widget, gpointer user_data)
+{
+  keyboard_quit (widget);
+}
+
 gboolean
-key_press_cb (GtkWidget *widget, GdkEventKey *event)
+window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
 {
   GdkModifierType modifiers;
   NomadAppWindowPrivate *priv;
   GtkWidget *vte;
-  SCM scm_hook;
-
-  const gchar *key_name;
 
   priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
   vte = priv->vte;
   modifiers = gtk_accelerator_get_default_mod_mask ();
-  key_name = gdk_keyval_name (event->keyval);
+
+  // Clear the read line of anyone output if it does not have focus
+  if (!gtk_widget_has_focus (priv->read_line))
+    {
+      clear_read_line_buffer (priv->read_line);
+    }
 
   // Handles M-m
   if (event->keyval == GDK_KEY_m
@@ -153,7 +161,7 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
           gtk_widget_show (priv->mini_popup);
         }
 
-      return FALSE;
+      return TRUE;
     }
 
   // If the vte has focus return FALSE, so children can handle key
@@ -171,32 +179,6 @@ key_press_cb (GtkWidget *widget, GdkEventKey *event)
       return TRUE;
     }
 
-  if (gtk_widget_has_focus (priv->read_line))
-    {
-      g_print ("minibuffer-mode-map\n");
-      scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
-      scm_run_hook (
-          scm_hook,
-          scm_list_3 (scm_variable_ref (scm_c_lookup ("minibuffer-mode-map")),
-                      scm_from_int (event->state),
-                      scm_from_locale_string (key_name)));
-      return TRUE;
-    }
-  // If event has state then its a modified keypress eg. `C-c' which means we
-  // can't handle prefixes, quite yet.  since we can easily capture this state,
-  // we'll use this a starting point for our keybindings. We'll call our Scheme
-  // key-press-hook. from here the nomad keymap module will do the work.
-  if ((event->state & modifiers) == GDK_CONTROL_MASK)
-    {
-      g_print ("webview-mode-map: %d\n", event->state);
-      scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
-      scm_run_hook (
-          scm_hook,
-          scm_list_3 (scm_variable_ref (scm_c_lookup ("webview-mode-map")),
-                      scm_from_int (event->state),
-                      scm_from_locale_string (key_name)));
-      return TRUE;
-    }
   return FALSE;
 }
 
@@ -245,7 +227,7 @@ read_line_focus_out_event_cb (GtkWidget *widget, GdkEvent *event,
   gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
   gtk_widget_hide (priv->mini_popup);
 
-  g_timeout_add (3500, clear_read_line_buffer, (gpointer)widget);
+  /* g_timeout_add (3500, clear_read_line_buffer, (gpointer)widget); */
   return FALSE;
 }
 
@@ -317,28 +299,90 @@ mini_popup_clear (GtkWidget *widget)
   g_list_free (children);
 }
 
+static void
+minibuffer_eval_command (GtkWidget *widget, GtkListBoxRow *row)
+{
+  GList *children;
+  const gchar *c_symbol;
+  GtkTextBuffer *buf;
+  SCM key, proc, result, format;
+
+  // text buffer
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
+
+  children = gtk_container_get_children (GTK_CONTAINER (row));
+  c_symbol = gtk_label_get_text (GTK_LABEL (g_list_nth_data (children, 0)));
+  key = scm_string_to_symbol (scm_from_locale_string (c_symbol));
+  proc = scm_call_1 (scm_c_public_ref ("nomad eval", "command-ref"), key);
+
+  result = scm_call_0 (proc);
+  format = scm_call_3 (scm_c_public_ref ("guile", "format"), SCM_BOOL_F,
+                       scm_from_utf8_string ("~a"), result);
+  gtk_text_buffer_set_text (buf, scm_to_locale_string (format), -1);
+}
+
+static void
+complete_popup (GtkWidget *widget, const char *input)
+{
+  NomadAppWindowPrivate *priv;
+  SCM filter, results, selected;
+  GtkListBox *box = NULL;
+
+  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
+
+  box = GTK_LIST_BOX (priv->mini_popup);
+  mini_popup_clear (priv->mini_popup);
+  filter = scm_from_locale_string (input);
+  selected = scm_variable_ref (scm_c_lookup ("selected"));
+  results = scm_call_1 (
+      scm_c_public_ref ("nomad minibuffer", "input-completion"), filter);
+
+  for (int i = 0; i < scm_to_int (scm_length (results)); i++)
+    {
+      GtkWidget *label;
+      label = gtk_label_new (
+          scm_to_locale_string (scm_list_ref (results, scm_from_int (i))));
+      gtk_widget_set_halign (label, GTK_ALIGN_START);
+      gtk_list_box_insert (box, GTK_WIDGET (label), 0);
+      gtk_widget_show (GTK_WIDGET (label));
+    }
+
+  // If selection is outside the bounds of the listbox children,
+  // reset the selection to 0
+  if (scm_to_int (selected)
+      > g_list_length (gtk_container_get_children (GTK_CONTAINER (box))))
+    {
+      scm_c_eval_string ("(set! selected 0)");
+      selected = scm_variable_ref (scm_c_lookup ("selected"));
+    }
+
+  gtk_list_box_select_row (GTK_LIST_BOX (box),
+                           gtk_list_box_get_row_at_index (
+                               GTK_LIST_BOX (box), scm_to_int (selected)));
+}
+
 gboolean
 read_line_key_press_event_cb (GtkWidget *widget, GdkEventKey *event,
                               gpointer user_data)
 {
-  /* GdkModifierType modifiers; */
-  /* NomadAppWindowPrivate *priv; */
+  GdkModifierType modifiers;
+  SCM scm_hook;
+  const gchar *key_name;
 
-  /* priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW
-   * (user_data)); */
+  modifiers = gtk_accelerator_get_default_mod_mask ();
+  scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
+  key_name = gdk_keyval_name (event->keyval);
 
-  /* modifiers = gtk_accelerator_get_default_mod_mask (); */
-
-  // If C-n next line
-  /* if ((event->state & modifiers) == GDK_CONTROL_MASK */
-  /*     && event->keyval == GDK_KEY_n) */
-  if (event->keyval == GDK_KEY_n)
+  if ((event->state & modifiers) == GDK_CONTROL_MASK)
     {
-      scm_c_eval_string ("(next-line)");
-      g_print ("next-line");
-      return TRUE;
-    }
 
+      scm_run_hook (
+          scm_hook,
+          scm_list_3 (scm_variable_ref (scm_c_lookup ("minibuffer-mode-map")),
+                      scm_from_int (event->state),
+                      scm_from_locale_string (key_name)));
+      return FALSE;
+    }
   return FALSE;
 }
 
@@ -346,58 +390,37 @@ gboolean
 read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
                                 gpointer user_data)
 {
-  GtkTextBuffer *buf = NULL;
+  GdkModifierType modifiers;
+  GtkListBoxRow *current_row = NULL;
+  GtkTextBuffer *buf;
   GtkTextIter start, end;
   NomadAppWindowPrivate *priv;
-  SCM found;
-  SCM search;
-  int select_index
-      = scm_to_int (scm_variable_ref (scm_c_lookup ("current-line")));
   gchar *input = NULL;
 
   priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
+  modifiers = gtk_accelerator_get_default_mod_mask ();
+  current_row
+      = gtk_list_box_get_selected_row (GTK_LIST_BOX (priv->mini_popup));
 
-  mini_popup_clear (priv->mini_popup);
-  if (event->keyval == GDK_KEY_Return)
+  if ((event->state & modifiers) == GDK_CONTROL_MASK)
     {
-      keyboard_quit (user_data);
-      read_line_eval (widget, user_data);
       return TRUE;
     }
 
-  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
+  if (event->keyval == GDK_KEY_Return)
+    {
+      minibuffer_eval_command (widget, current_row);
+      keyboard_quit (user_data);
+      return TRUE;
+    }
 
   gtk_text_buffer_get_start_iter (buf, &start);
   gtk_text_buffer_get_end_iter (buf, &end);
 
   input = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
 
-  search = scm_from_locale_string (input);
-
-  found = scm_call_1 (
-      scm_c_public_ref ("nomad minibuffer", "input-completion"), search);
-
-  for (int i = 0; i < scm_to_int (scm_length (found)); i++)
-    {
-      GtkWidget *label;
-      GtkListBoxRow *row;
-      GtkListBox *box = GTK_LIST_BOX (priv->mini_popup);
-
-      // label
-      label = gtk_label_new (
-          scm_to_locale_string (scm_list_ref (found, scm_from_int (i))));
-      gtk_widget_set_halign (label, GTK_ALIGN_START);
-
-      // row
-      row = GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
-      gtk_container_add (GTK_CONTAINER (row), label);
-      gtk_list_box_insert (box, GTK_WIDGET (row), 0);
-      gtk_list_box_select_row (
-          box, gtk_list_box_get_row_at_index (box, select_index));
-      gtk_widget_show (GTK_WIDGET (row));
-      gtk_widget_show (GTK_WIDGET (label));
-    }
-
+  complete_popup (user_data, input);
   return FALSE;
 }
 
@@ -440,16 +463,24 @@ nomad_app_window_init (NomadAppWindow *self)
   gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->read_line),
                             GTK_TEXT_BUFFER (priv->text_buffer));
 
-  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (priv->notebook), FALSE);
-
   // Signals
-  /* g_signal_connect (priv->read_line, "focus-out-event", */
-  /*                   G_CALLBACK (read_line_focus_out_event_cb),
-   * (gpointer)self); */
 
-  /* g_signal_connect (priv->read_line, "focus-in-event", */
-  /*                   G_CALLBACK (read_line_focus_in_event_cb),
-   * (gpointer)self); */
+  // Main keypress
+  g_signal_connect (self, "key-press-event", G_CALLBACK (window_key_press_cb),
+                    (gpointer)self);
+
+  g_signal_connect (priv->read_line, "focus-out-event",
+                    G_CALLBACK (read_line_focus_out_event_cb), (gpointer)self);
+
+  g_signal_connect (priv->read_line, "focus-in-event",
+                    G_CALLBACK (read_line_focus_in_event_cb), (gpointer)self);
+
+  g_signal_connect (priv->read_line, "key-release-event",
+                    G_CALLBACK (read_line_key_release_event_cb),
+                    (gpointer)self);
+
+  g_signal_connect (priv->read_line, "key-press-event",
+                    G_CALLBACK (read_line_key_press_event_cb), (gpointer)self);
 
   g_signal_connect (VTE_TERMINAL (priv->vte), "child-exited",
                     G_CALLBACK (fork_vte_child), NULL);

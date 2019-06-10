@@ -28,6 +28,7 @@
 struct _NomadBufferPrivate
 {
   WebKitWebView *view;
+  NomadAppWindow *window;
   GtkWidget *status;
   GtkWidget *title;
 };
@@ -46,6 +47,30 @@ web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
                       webkit_web_view_get_title (view));
   gtk_label_set_text (GTK_LABEL (priv->status),
                       webkit_web_view_get_uri (view));
+}
+
+gboolean
+webview_key_press_cb (GtkWidget *widget, GdkEventKey *event)
+{
+  GdkModifierType modifiers;
+  SCM scm_hook;
+  const gchar *key_name;
+
+  scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
+  key_name = gdk_keyval_name (event->keyval);
+  modifiers = gtk_accelerator_get_default_mod_mask ();
+
+  if ((event->state & modifiers) == GDK_CONTROL_MASK)
+    {
+
+      scm_hook = scm_run_hook (
+          scm_hook,
+          scm_list_3 (scm_variable_ref (scm_c_lookup ("webview-mode-map")),
+                      scm_from_int (event->state),
+                      scm_from_locale_string (key_name)));
+      return TRUE;
+    }
+  return FALSE;
 }
 
 gboolean
@@ -89,6 +114,8 @@ nomad_buffer_init (NomadBuffer *self)
                     G_CALLBACK (web_view_load_changed), priv);
   g_signal_connect (priv->view, "decide-policy", G_CALLBACK (decide_policy_cb),
                     NULL);
+  g_signal_connect (priv->view, "key-press-event",
+                    G_CALLBACK (webview_key_press_cb), priv);
 }
 
 static void
