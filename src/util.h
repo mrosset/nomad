@@ -18,4 +18,5 @@
  *   with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 void scm_to_argv (SCM list, char **argv);
+SCM scm_c_make_command (const char *key);
 void nomad_util_register_functions (void *data);

@@ -46,7 +46,6 @@ struct _NomadAppWindowPrivate
   GtkWidget *mini_popup;
   GtkWidget *vte;
   GtkWidget *overlay;
-  /* NomadBuffer *buffer; */
   WebKitWebView *web_view;
 };
 
@@ -350,7 +349,7 @@ read_line_prompt_release_event_cb (GtkWidget *window, GdkEventKey *event,
                         (gpointer)window);
 
       keyboard_quit (window);
-      return FALSE;
+      return TRUE;
     }
   return FALSE;
 }

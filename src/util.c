@@ -47,6 +47,13 @@ SCM_DEFINE (scm_nomad_grap_clipboard, "grab", 1, 0, 0, (SCM string),
   return SCM_BOOL_T;
 }
 
+SCM
+scm_c_make_command (const char *key)
+{
+  return scm_call_1 (scm_c_public_ref ("nomad eval", "make-command"),
+                     scm_string_to_symbol (scm_from_utf8_string (key)));
+}
+
 void
 nomad_util_register_functions (void *data)
 {
