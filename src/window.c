@@ -358,7 +358,15 @@ static void
 prompt_minibuffer_arg (NomadAppWindow *win, SCM proc, SCM args)
 {
   NomadAppWindowPrivate *priv;
+  SCM symbol, lst;
+  char *prompt;
+
   priv = nomad_app_window_get_instance_private (win);
+  symbol = scm_call_1 (scm_c_private_ref ("ice-9 session", "procedure-name"),
+                       proc);
+  lst = scm_list_2 (scm_symbol_to_string (symbol),
+                    scm_from_utf8_string (" ? "));
+  prompt = scm_to_locale_string (scm_string_concatenate (lst));
 
   // disconnect key release signal
   g_signal_handlers_disconnect_by_func (
@@ -372,7 +380,7 @@ prompt_minibuffer_arg (NomadAppWindow *win, SCM proc, SCM args)
                     G_CALLBACK (read_line_prompt_release_event_cb),
                     (gpointer)proc);
 
-  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "?");
+  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), prompt);
   gtk_widget_grab_focus (priv->read_line);
 }
 
