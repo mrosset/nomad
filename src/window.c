@@ -81,33 +81,17 @@ clear_read_line_buffer (gpointer user_data)
 }
 
 static void
-keyboard_quit (GtkWidget *window)
+keyboard_quit (gpointer widget)
 {
-
   NomadAppWindowPrivate *priv;
 
-  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (window));
+  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
 
   nomad_buffer_grab_view (
-      nomad_app_window_get_buffer (NOMAD_APP_WINDOW (window)));
+      nomad_app_window_get_buffer (NOMAD_APP_WINDOW (widget)));
 
   gtk_widget_hide (priv->mini_popup);
   gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
-
-  g_signal_handlers_disconnect_by_func (
-      window, read_line_prompt_release_event_cb, NULL);
-
-  // reconnect readline signals
-  //
-  // FIXME: swapping out signals is kinda an odd way todo this.
-  // design a generic way to handle minibuffer
-  g_signal_connect (priv->read_line, "key-release-event",
-                    G_CALLBACK (read_line_key_release_event_cb),
-                    (gpointer)window);
-
-  g_signal_connect (priv->read_line, "key-press-event",
-                    G_CALLBACK (read_line_key_press_event_cb),
-                    (gpointer)window);
 }
 
 static void
@@ -351,6 +335,19 @@ read_line_prompt_release_event_cb (GtkWidget *window, GdkEventKey *event,
       format = scm_call_3 (scm_c_public_ref ("guile", "format"), SCM_BOOL_F,
                            scm_from_utf8_string ("~a"), result);
       gtk_text_buffer_set_text (buf, scm_to_locale_string (format), -1);
+
+      g_signal_handlers_disconnect_by_func (
+          window, read_line_prompt_release_event_cb, user_data);
+
+      // reconnect key release signal
+      g_signal_connect (priv->read_line, "key-release-event",
+                        G_CALLBACK (read_line_key_release_event_cb),
+                        (gpointer)window);
+
+      g_signal_connect (priv->read_line, "key-press-event",
+                        G_CALLBACK (read_line_key_press_event_cb),
+                        (gpointer)window);
+
       keyboard_quit (window);
       return TRUE;
     }
@@ -414,7 +411,7 @@ minibuffer_eval_command (GtkWidget *widget, NomadAppWindow *window,
       format = scm_call_3 (scm_c_public_ref ("guile", "format"), SCM_BOOL_F,
                            scm_from_utf8_string ("~a"), result);
       gtk_text_buffer_set_text (buf, scm_to_locale_string (format), -1);
-      keyboard_quit (GTK_WIDGET (window));
+      keyboard_quit (window);
       return;
     }
   prompt_minibuffer_arg (window, proc, args);
@@ -553,7 +550,7 @@ nomad_app_window_init (NomadAppWindow *self)
                     G_CALLBACK (initialize_web_extensions), NULL);
 
   // FIXME: create a seperate UI file for minibuffer?  it does not
-  // makes sense to destroy and then add minibuffer to the overlay
+  // makes sense to desttory and then add minibuffer to the overlay
   gtk_widget_destroy (priv->mini_popup);
 
   // scroll window
@@ -577,6 +574,8 @@ nomad_app_window_init (NomadAppWindow *self)
 
   gtk_widget_show (vbox);
   gtk_widget_show (scroll);
+
+  gtk_widget_show (priv->overlay);
 
   // Buffer
   buf = nomad_buffer_new ();
