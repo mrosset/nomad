@@ -80,12 +80,12 @@
   (let* ((port (open-input-file (fluid-ref session-file)))
          (buffers (read port)))
     (close-port port)
-    (for-each (lambda (url) (make-buffer (cdr url))) buffers)))
+    (for-each (lambda (url) (make-buffer url)) buffers)))
 
 (define-command (write-session)
   "Write session to file"
   (let* ((port (open-output-file (fluid-ref session-file)))
-         (buffers (buffer-alist)))
+         (buffers (buffers->list)))
     (pretty-print buffers port)
     (close-port port)))
 

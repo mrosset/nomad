@@ -525,10 +525,8 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
 static void
 nomad_app_window_init (NomadAppWindow *self)
 {
-  /* GtkWidget *entry; */
   NomadAppWindowPrivate *priv;
   NomadBuffer *buf;
-  SCM home_page;
   WebKitCookieManager *cookie_manager;
   char *c_home_page;
   char *c_user_cookie_file;
@@ -540,8 +538,8 @@ nomad_app_window_init (NomadAppWindow *self)
 
   scm_dynwind_begin (0);
 
-  home_page = scm_c_public_ref ("nomad browser", "default-home-page");
-  c_home_page = scm_to_locale_string (home_page);
+  c_home_page = scm_to_locale_string (
+      scm_c_public_ref ("nomad browser", "default-home-page"));
 
   c_user_cookie_file = scm_to_locale_string (
       scm_c_public_ref ("nomad init", "user-cookie-file"));

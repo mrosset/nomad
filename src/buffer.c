@@ -29,8 +29,8 @@ struct _NomadBufferPrivate
 {
   WebKitWebView *view;
   NomadAppWindow *window;
-  GtkWidget *status;
   GtkWidget *title;
+  GtkWidget *progress;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadBuffer, nomad_buffer, GTK_TYPE_BOX)
@@ -42,11 +42,20 @@ web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
                        gpointer user_data)
 {
   NomadBufferPrivate *priv = user_data;
+  int fraction = webkit_web_view_get_estimated_load_progress (priv->view);
 
   gtk_label_set_text (GTK_LABEL (priv->title),
                       webkit_web_view_get_title (view));
-  gtk_label_set_text (GTK_LABEL (priv->status),
-                      webkit_web_view_get_uri (view));
+  gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->progress), fraction);
+
+  if (fraction == 1)
+    {
+      gtk_widget_hide (priv->progress);
+    }
+  else
+    {
+      gtk_widget_show (priv->progress);
+    }
 }
 
 gboolean
@@ -124,9 +133,9 @@ nomad_buffer_class_init (NomadBufferClass *klass)
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (klass),
                                                "/org/gnu/nomad/buffer.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass),
-                                                NomadBuffer, status);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass),
                                                 NomadBuffer, title);
+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass),
+                                                NomadBuffer, progress);
 }
 
 GtkWidget *
@@ -139,12 +148,6 @@ WebKitWebView *
 nomad_buffer_get_view (NomadBuffer *buf)
 {
   return buf->priv->view;
-}
-
-GtkLabel *
-nomad_buffer_get_status (NomadBuffer *buf)
-{
-  return GTK_LABEL (buf->priv->status);
 }
 
 NomadBuffer *
@@ -165,10 +168,9 @@ void
 init_buffer_type (void)
 {
   SCM name, slots;
-  scm_t_struct_finalize finalizer;
+  scm_t_struct_finalize finalizer = NULL;
 
   name = scm_from_utf8_symbol ("buffer");
-  finalizer = NULL;
   slots = scm_list_1 (scm_from_utf8_symbol ("data"));
   buffer_type = scm_make_foreign_object_type (name, slots, finalizer);
 }
