@@ -528,8 +528,8 @@ nomad_app_window_init (NomadAppWindow *self)
   NomadAppWindowPrivate *priv;
   NomadBuffer *buf;
   WebKitCookieManager *cookie_manager;
-  char *c_home_page;
-  char *c_user_cookie_file;
+  char *c_home_page, *c_user_cookie_file;
+  GtkWidget *vbox, *scroll;
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -548,6 +548,34 @@ nomad_app_window_init (NomadAppWindow *self)
   g_signal_connect (webkit_web_context_get_default (),
                     "initialize-web-extensions",
                     G_CALLBACK (initialize_web_extensions), NULL);
+
+  // FIXME: create a seperate UI file for minibuffer?  it does not
+  // makes sense to desttory and then add minibuffer to the overlay
+  gtk_widget_destroy (priv->mini_popup);
+
+  // scroll window
+  scroll = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scroll),
+                                              200);
+  gtk_scrolled_window_set_max_content_height (GTK_SCROLLED_WINDOW (scroll),
+                                              200);
+
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+
+  gtk_widget_set_halign (vbox, GTK_ALIGN_FILL);
+  gtk_widget_set_valign (vbox, GTK_ALIGN_END);
+
+  gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), vbox);
+
+  gtk_widget_set_margin_bottom (scroll, 16);
+
+  gtk_container_add (GTK_CONTAINER (scroll), priv->mini_popup);
+  gtk_container_add (GTK_CONTAINER (vbox), scroll);
+
+  gtk_widget_show (vbox);
+  gtk_widget_show (scroll);
+
+  gtk_widget_show (priv->overlay);
 
   // Buffer
   buf = nomad_buffer_new ();
