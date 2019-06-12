@@ -414,46 +414,6 @@ minibuffer_eval_command (GtkWidget *widget, NomadAppWindow *window)
   prompt_minibuffer_arg (window, proc, args);
 }
 
-static void
-complete_popup (GtkWidget *widget, const char *input)
-{
-  NomadAppWindowPrivate *priv;
-  SCM filter, results, selected;
-  GtkListBox *box = NULL;
-
-  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
-
-  box = GTK_LIST_BOX (priv->mini_popup);
-  mini_popup_clear (priv->mini_popup);
-  filter = scm_from_locale_string (input);
-  selected = scm_variable_ref (scm_c_lookup ("selected"));
-  results = scm_call_1 (
-      scm_c_public_ref ("nomad minibuffer", "input-completion"), filter);
-
-  for (int i = 0; i < scm_to_int (scm_length (results)); i++)
-    {
-      GtkWidget *label;
-      label = gtk_label_new (
-          scm_to_locale_string (scm_list_ref (results, scm_from_int (i))));
-      gtk_widget_set_halign (label, GTK_ALIGN_START);
-      gtk_list_box_insert (box, GTK_WIDGET (label), 0);
-      gtk_widget_show (GTK_WIDGET (label));
-    }
-
-  // If selection is outside the bounds of the listbox children,
-  // reset the selection to 0
-  if (scm_to_int (selected)
-      > g_list_length (gtk_container_get_children (GTK_CONTAINER (box))))
-    {
-      scm_c_eval_string ("(set! selected 0)");
-      selected = scm_variable_ref (scm_c_lookup ("selected"));
-    }
-
-  gtk_list_box_select_row (GTK_LIST_BOX (box),
-                           gtk_list_box_get_row_at_index (
-                               GTK_LIST_BOX (box), scm_to_int (selected)));
-}
-
 gboolean
 read_line_key_press_event_cb (GtkWidget *widget, GdkEventKey *event,
                               gpointer user_data)
@@ -523,9 +483,6 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
 {
   GtkWidget *scroll, *overlay_child;
   NomadAppWindowPrivate *priv = self->priv;
-  /* SCM view; */
-
-  gtk_widget_destroy (priv->mini_popup);
 
   priv->mini_popup = webkit_web_view_new ();
 
@@ -536,9 +493,11 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
   gtk_scrolled_window_set_max_content_height (GTK_SCROLLED_WINDOW (scroll),
                                               250);
 
-  gtk_container_add (GTK_CONTAINER (scroll), priv->mini_popup);
+  /* gtk_container_add (GTK_CONTAINER (scroll), priv->mini_popup); */
 
-  overlay_child = scroll;
+  overlay_child = priv->mini_popup;
+
+  gtk_widget_set_size_request (overlay_child, 100, 310);
 
   gtk_widget_set_halign (overlay_child, GTK_ALIGN_FILL);
   gtk_widget_set_valign (overlay_child, GTK_ALIGN_END);
@@ -737,8 +696,6 @@ nomad_app_window_class_init (NomadAppWindowClass *class)
                                                 NomadAppWindow, notebook);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, overlay);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, mini_popup);
   gtk_widget_class_bind_template_child_private (
       GTK_WIDGET_CLASS (class), NomadAppWindow, mini_buffer_label);
 }

@@ -152,17 +152,6 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <property name="position">1</property>
               </packing>
             </child>
-            <child>
-              <object class="GtkListBox" id="mini_popup">
-                <property name="height_request">200</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
           </object>
           <packing>
             <property name="index">-1</property>
