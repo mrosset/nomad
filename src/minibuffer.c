@@ -36,9 +36,24 @@ SCM_DEFINE (scm_nomad_minibuffer_select_line, "select-line", 1, 0, 0,
   return SCM_BOOL_T;
 }
 
+SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 0, 0, 0,
+            (SCM offset), "Renders the current popup state")
+{
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GtkWidget *popup = nomad_app_window_get_minipopup (win);
+  SCM view;
+
+  view = scm_call_0 (scm_c_public_ref ("nomad views", "completion-view"));
+
+  webkit_web_view_load_html (WEBKIT_WEB_VIEW (popup),
+                             scm_to_locale_string (view), "nomad://");
+
+  return SCM_BOOL_T;
+}
+
 void
 nomad_minibuffer_register_functions (void *data)
 {
 #include "minibuffer.x"
-  scm_c_export ("next-line", "previous-line", "select-line", NULL);
+  scm_c_export ("next-line", "previous-line", "render-popup", NULL);
 }

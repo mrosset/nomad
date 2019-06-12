@@ -42,6 +42,7 @@ SOURCES =			\
 	nomad/eval.scm		\
 	nomad/events.scm	\
 	nomad/frame.scm		\
+	nomad/html.scm		\
 	nomad/init.scm		\
 	nomad/keymap.scm	\
 	nomad/minibuffer.scm	\
@@ -49,6 +50,7 @@ SOURCES =			\
 	nomad/repl.scm		\
 	nomad/server.scm	\
 	nomad/util.scm		\
+	nomad/views.scm		\
 	nomad/webkit.scm
 
 

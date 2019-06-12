@@ -20,25 +20,33 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 session)
   #:use-module (nomad eval)
-  #:use-module (nomad init)
-  #:export (minibuffer-mode-map
-	    selected))
+  #:use-module (nomad init))
 
-(define selected 0)
+(define-public current-selection 0)
+(define-public current-input "")
 
-(define minibuffer-mode-map '(("C-n" . (next-line))
-			      ("C-p" . (previous-line))))
+(define-public minibuffer-mode-map '(("C-n" . (next-line))
+				     ("C-p" . (previous-line))))
+
+(define-public (current-command)
+  (let* ((lst (input-completion current-input))
+	 (cmd (list-ref lst current-selection)))
+    (string->symbol cmd)))
+
+(define-public (reset-minibuffer)
+  (set! current-input "")
+  (set! current-selection 0))
 
 (define-public (next-line)
-  (let ((row (+ selected 1)))
-    (select-line row)
-    (set! selected row)))
+  (let ((row (+ current-selection 1)))
+    (set! current-selection row)
+    (render-popup)))
 
 (define-public (previous-line)
-  (let ((row (- selected 1)))
-    (when (not (= selected 0))
-      (select-line row)
-      (set! selected row))))
+  (let ((row (- current-selection 1)))
+    (when (not (= current-selection 0))
+      (set! current-selection row)
+      (render-popup))))
 
 (define-public (input-completion text)
   "Returns a list of command symbols matching 'TEXT"

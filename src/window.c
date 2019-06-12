@@ -30,6 +30,7 @@
 
 #include "app.h"
 #include "buffer.h"
+#include "minibuffer.h"
 #include "util.h"
 #include "window.h"
 
@@ -92,6 +93,7 @@ keyboard_quit (gpointer widget)
 
   gtk_widget_hide (priv->mini_popup);
   gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
+  scm_call_0 (scm_c_public_ref ("nomad minibuffer", "reset-minibuffer"));
 }
 
 static void
@@ -385,20 +387,15 @@ prompt_minibuffer_arg (NomadAppWindow *win, SCM proc, SCM args)
 }
 
 static void
-minibuffer_eval_command (GtkWidget *widget, NomadAppWindow *window,
-                         GtkListBoxRow *row)
+minibuffer_eval_command (GtkWidget *widget, NomadAppWindow *window)
 {
-  GList *children;
-  const gchar *c_symbol;
   GtkTextBuffer *buf;
-  SCM args, key, proc, result, format;
+  SCM key, proc, args, result, format;
 
   // text buffer
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
 
-  children = gtk_container_get_children (GTK_CONTAINER (row));
-  c_symbol = gtk_label_get_text (GTK_LABEL (g_list_nth_data (children, 0)));
-  key = scm_string_to_symbol (scm_from_locale_string (c_symbol));
+  key = scm_call_0 (scm_c_public_ref ("nomad minibuffer", "current-command"));
   proc = scm_call_1 (scm_c_public_ref ("nomad eval", "command-ref"), key);
   args = scm_call_1 (scm_c_public_ref ("nomad eval", "command-args"), key);
 
@@ -487,7 +484,6 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
                                 gpointer user_data)
 {
   GdkModifierType modifiers;
-  GtkListBoxRow *current_row = NULL;
   GtkTextBuffer *buf;
   GtkTextIter start, end;
   NomadAppWindowPrivate *priv;
@@ -496,8 +492,6 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
   priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
   modifiers = gtk_accelerator_get_default_mod_mask ();
-  current_row
-      = gtk_list_box_get_selected_row (GTK_LIST_BOX (priv->mini_popup));
 
   if ((event->state & modifiers) == GDK_CONTROL_MASK)
     {
@@ -508,8 +502,7 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
     {
       gtk_widget_hide (priv->mini_popup);
       clear_read_line_buffer (priv->read_line);
-      minibuffer_eval_command (widget, NOMAD_APP_WINDOW (user_data),
-                               current_row);
+      minibuffer_eval_command (widget, NOMAD_APP_WINDOW (user_data));
       return FALSE;
     }
 
@@ -518,8 +511,42 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
 
   input = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
 
-  complete_popup (user_data, input);
+  scm_variable_set_x (scm_c_lookup ("current-input"),
+                      scm_from_locale_string (input));
+
+  scm_nomad_minibuffer_render_popup ();
   return FALSE;
+}
+
+static void
+nomad_app_window_overlay_init (NomadAppWindow *self)
+{
+  GtkWidget *scroll, *overlay_child;
+  NomadAppWindowPrivate *priv = self->priv;
+  /* SCM view; */
+
+  gtk_widget_destroy (priv->mini_popup);
+
+  priv->mini_popup = webkit_web_view_new ();
+
+  // scroll window
+  scroll = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scroll),
+                                              250);
+  gtk_scrolled_window_set_max_content_height (GTK_SCROLLED_WINDOW (scroll),
+                                              250);
+
+  gtk_container_add (GTK_CONTAINER (scroll), priv->mini_popup);
+
+  overlay_child = scroll;
+
+  gtk_widget_set_halign (overlay_child, GTK_ALIGN_FILL);
+  gtk_widget_set_valign (overlay_child, GTK_ALIGN_END);
+  gtk_widget_set_margin_bottom (overlay_child, 16);
+
+  gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), overlay_child);
+
+  gtk_widget_show (overlay_child);
 }
 
 static void
@@ -529,7 +556,6 @@ nomad_app_window_init (NomadAppWindow *self)
   NomadBuffer *buf;
   WebKitCookieManager *cookie_manager;
   char *c_home_page, *c_user_cookie_file;
-  GtkWidget *vbox, *scroll;
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -549,34 +575,7 @@ nomad_app_window_init (NomadAppWindow *self)
                     "initialize-web-extensions",
                     G_CALLBACK (initialize_web_extensions), NULL);
 
-  // FIXME: create a seperate UI file for minibuffer?  it does not
-  // makes sense to desttory and then add minibuffer to the overlay
-  gtk_widget_destroy (priv->mini_popup);
-
-  // scroll window
-  scroll = gtk_scrolled_window_new (NULL, NULL);
-  gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (scroll),
-                                              200);
-  gtk_scrolled_window_set_max_content_height (GTK_SCROLLED_WINDOW (scroll),
-                                              200);
-
-  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-
-  gtk_widget_set_halign (vbox, GTK_ALIGN_FILL);
-  gtk_widget_set_valign (vbox, GTK_ALIGN_END);
-
-  gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), vbox);
-
-  gtk_widget_set_margin_bottom (scroll, 16);
-
-  gtk_container_add (GTK_CONTAINER (scroll), priv->mini_popup);
-  gtk_container_add (GTK_CONTAINER (vbox), scroll);
-
-  gtk_widget_show (vbox);
-  gtk_widget_show (scroll);
-
-  gtk_widget_show (priv->overlay);
-
+  nomad_app_window_overlay_init (self);
   // Buffer
   buf = nomad_buffer_new ();
   webkit_web_view_load_uri (nomad_buffer_get_view (buf), c_home_page);

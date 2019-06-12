@@ -48,7 +48,6 @@
      (begin
        (define-public (proc arg)
 	 doc
-	 (run-hook command-hook arg)
 	 body)
        (add-to-command-alist (procedure-name proc) proc))
      )))
