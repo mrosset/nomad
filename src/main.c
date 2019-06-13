@@ -50,6 +50,7 @@ startup (GApplication *app, gpointer data)
 
   // Use essential modules
   scm_c_use_module ("nomad util");
+  scm_c_use_module ("nomad keymap");
   scm_c_use_module ("nomad browser");
   scm_c_use_module ("nomad window");
   scm_c_use_module ("nomad views");
