@@ -131,14 +131,11 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
   GdkModifierType modifiers;
   NomadAppWindowPrivate *priv;
   GtkWidget *vte;
-  SCM view, scm_hook;
-  const gchar *key_name;
+  SCM view;
 
   priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
   vte = priv->vte;
   modifiers = gtk_accelerator_get_default_mod_mask ();
-  scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
-  key_name = gdk_keyval_name (event->keyval);
 
   // When read line does not have focus. Clear it's input
   if (!gtk_widget_has_focus (priv->read_line))
@@ -153,23 +150,13 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
       return FALSE;
     }
 
-  // if mod_map is not false then run hook
-  if (!scm_is_false (priv->keymap))
-    {
-      scm_run_hook (scm_hook,
-                    scm_list_3 (priv->keymap, scm_from_int (event->state),
-                                scm_from_locale_string (key_name)));
-      /* gtk_widget_hide (priv->mini_popup); */
-      priv->keymap = SCM_BOOL_F;
-      return TRUE;
-    }
-
   if ((event->state & modifiers) == GDK_CONTROL_MASK
       && event->keyval == GDK_KEY_x)
     {
       view = scm_c_public_ref ("nomad views", "which-key-view");
       priv->keymap = scm_variable_ref (scm_c_lookup ("ctl-x-map"));
       scm_nomad_minibuffer_render_popup (view, priv->keymap, scm_from_int (0));
+      gtk_widget_grab_focus (priv->mini_popup);
       return TRUE;
     }
 
@@ -237,6 +224,29 @@ pane_size_allocate_cb (GtkWidget *widget, gpointer data)
 {
   gint h = gtk_widget_get_allocated_height (widget);
   gtk_paned_set_position (GTK_PANED (widget), (h - (h / 5)));
+}
+
+gboolean
+minipopup_focus_out_event_cb (GtkWidget *widget, GdkEvent *event,
+                              gpointer user_data)
+{
+  NomadAppWindowPrivate *priv;
+  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
+  gtk_widget_hide (widget);
+  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
+  return FALSE;
+}
+
+gboolean
+minipopup_focus_in_event_cb (GtkWidget *widget, GdkEvent *event,
+                             gpointer user_data)
+{
+  NomadAppWindowPrivate *priv;
+  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
+
+  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "C-g");
+  gtk_widget_show (widget);
+  return FALSE;
 }
 
 gboolean
@@ -441,6 +451,27 @@ minibuffer_eval_command (GtkWidget *widget, NomadAppWindow *window)
 }
 
 gboolean
+minipopup_key_press_cb (GtkWidget *widget, GdkEventKey *event,
+                        gpointer user_data)
+{
+  SCM scm_hook;
+  const gchar *key_name;
+  NomadAppWindow *window = NOMAD_APP_WINDOW (user_data);
+
+  scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
+  key_name = gdk_keyval_name (event->keyval);
+
+  scm_run_hook (scm_hook,
+                scm_list_3 (window->priv->keymap, scm_from_int (event->state),
+                            scm_from_locale_string (key_name)));
+
+  /* gtk_widget_grab_focus (GTK_WIDGET (nomad_app_window_get_webview
+   * (window))); */
+  /* window->priv->keymap = SCM_BOOL_F; */
+  return TRUE;
+}
+
+gboolean
 read_line_key_press_event_cb (GtkWidget *widget, GdkEventKey *event,
                               gpointer user_data)
 {
@@ -526,7 +557,6 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
 {
   GtkWidget *scroll, *overlay_child;
   NomadAppWindowPrivate *priv = self->priv;
-
   priv->mini_popup = webkit_web_view_new ();
 
   // scroll window
@@ -540,13 +570,23 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
 
   overlay_child = priv->mini_popup;
 
-  gtk_widget_set_size_request (overlay_child, 100, 310);
+  gtk_widget_set_size_request (overlay_child, 100, 150);
 
   gtk_widget_set_halign (overlay_child, GTK_ALIGN_FILL);
   gtk_widget_set_valign (overlay_child, GTK_ALIGN_END);
   gtk_widget_set_margin_bottom (overlay_child, 16);
 
   gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), overlay_child);
+
+  // Signals
+  g_signal_connect (priv->mini_popup, "key-press-event",
+                    G_CALLBACK (minipopup_key_press_cb), (gpointer)self);
+
+  g_signal_connect (priv->mini_popup, "focus-in-event",
+                    G_CALLBACK (minipopup_focus_in_event_cb), (gpointer)self);
+
+  g_signal_connect (priv->mini_popup, "focus-out-event",
+                    G_CALLBACK (minipopup_focus_out_event_cb), (gpointer)self);
 
   gtk_widget_show (overlay_child);
 }

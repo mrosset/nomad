@@ -47,6 +47,21 @@ width: 100%;
 ")
       (cellpadding "0")))
 
+(define grid-container `(@ (style "
+display: grid;
+grid-template-columns: auto auto auto auto auto;
+grid-gap: 1px;
+")))
+
+(define grid-item `(@ (style "
+background-color: rgba(255, 255, 255, 0.8);
+text-align: left;
+")))
+
+(define align-right `(@ (style "
+text-align: left;
+")))
+
 (define-syntax define-view
   (syntax-rules ()
     ((define-view (proc  ...) thunk)
@@ -59,11 +74,18 @@ width: 100%;
 		(div ,fill-style
 		     ,thunk))))))))
 
-(define-view (which-key-view lst selection)
+(define-view (which-key-view-old lst selection)
   `(table ,table-style
 	  ,@(map (lambda (cmd)
 		   `(tr (td ,accent ,(car cmd)) (td ,(car (cdr cmd)))))
 		 lst)))
+
+(define-view (which-key-view lst selection)
+  `(div ,grid-container ,@(map (lambda (cmd)
+				 `(div ,grid-item
+				       (font (@ (color "steelblue")) ,(car cmd)) " -> "
+				       ,(car (cdr cmd))))
+			       lst)))
 
 (define-view (completion-view lst selection)
   `(table ,table-style
