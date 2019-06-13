@@ -26,7 +26,10 @@
 			 (33554452 . "C")))
 
 (define-public ctl-x-map '(("k" . (kill-buffer))
-			   ("b" . (next-buffer))))
+			   ("b" . (next-buffer))
+			   ("C-k" . (kill-some-buffers))
+			   ("C-b" . (buffers))))
+
 
 (define-public ctl-h-map '(("k" . (kill-buffer))
 			   ("b" . (next-buffer))))
