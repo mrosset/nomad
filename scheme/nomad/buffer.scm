@@ -22,6 +22,8 @@
   #:use-module (srfi srfi-9)
   #:use-module (nomad app)
   #:use-module (nomad repl)
+  #:use-module (nomad minibuffer)
+  #:use-module (nomad views)
   #:use-module (nomad eval))
 
 (define-public (buffer-with-id key)
@@ -52,9 +54,15 @@ is not found returns #f"
           (buffer-uri (cdr buffer))))
 
 (define-command (buffers)
-  "Returns a string of all buffers pretty printed"
-  (with-output-to-string (lambda _
-                           (format #t "~a" (pretty-print (buffers->list))))))
+  "Displays buffers in minipopup"
+  (begin
+    (render-popup completion-view (buffers->list) -1)
+    (length (buffers->list))))
+
+;; (define-command (buffers)
+;;   "Returns a string of all buffers pretty printed"
+;;   (with-output-to-string (lambda _
+;;                            (format #t "~a" (pretty-print (buffers->list))))))
 
 (define-command (pp-buffers)
   "Pretty prints buffers-alist."
