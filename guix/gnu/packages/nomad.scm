@@ -17,7 +17,7 @@
  (gnu packages webkit))
 
 (define-public nomad
-  (let ((commit "0b93645c4ec4479ab775b9ea25b0e9b645dca633"))
+  (let ((commit "fedfcb791e0700a16de220f44eef72657eab3515"))
     (package
       (name "nomad")
       (version (git-version "0.0.4-alpha" "118" commit))
@@ -29,7 +29,7 @@
 		(file-name (git-file-name name version))
 		(sha256
 		 (base32
-		  "1g1jyvwdmq17p0i9qavrk45caicfsmcwm51hcbshdg5mci2lvqqp"))))
+		  "0nvbb8acqxzi4vvc6znbln4dyghbg54c51jz842vpa2fh99jimc1"))))
       (build-system gnu-build-system)
       (native-inputs
        `(
@@ -44,13 +44,13 @@
 	 ("gtk" ,gtk+)
 	 ("gtksourceview" ,gtksourceview)
 	 ("guile" ,guile-2.2)
-	 ("guile-readline" ,guile-readline)
 	 ("pkg-config" ,pkg-config)
 	 ("vte" ,vte)
 	 ("webkitgtk" ,webkitgtk)
 	 ))
       (propagated-inputs
        `(("guile" ,guile-2.2)
+	 ("guile-readline" ,guile-readline)
 	 ("gesettings-desktop-schemas" ,gsettings-desktop-schemas)
 	 ("glib-networking" ,glib-networking)))
       (home-page "https://savannah.nongnu.org/projects/nomad/")
