@@ -47,6 +47,7 @@ struct _NomadAppWindowPrivate
   GtkWidget *mini_popup;
   GtkWidget *vte;
   GtkWidget *overlay;
+  SCM keymap;
   WebKitWebView *web_view;
 };
 
@@ -130,15 +131,46 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
   GdkModifierType modifiers;
   NomadAppWindowPrivate *priv;
   GtkWidget *vte;
+  SCM view, scm_hook;
+  const gchar *key_name;
 
   priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
   vte = priv->vte;
   modifiers = gtk_accelerator_get_default_mod_mask ();
+  scm_hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
+  key_name = gdk_keyval_name (event->keyval);
 
-  // Clear the read line of anyone output if it does not have focus
+  // When read line does not have focus. Clear it's input
   if (!gtk_widget_has_focus (priv->read_line))
     {
       clear_read_line_buffer (priv->read_line);
+    }
+
+  // If the vte has focus return FALSE, so children can handle key
+  // events
+  if (gtk_widget_has_focus (GTK_WIDGET (priv->vte)))
+    {
+      return FALSE;
+    }
+
+  // if mod_map is not false then run hook
+  if (!scm_is_false (priv->keymap))
+    {
+      scm_run_hook (scm_hook,
+                    scm_list_3 (priv->keymap, scm_from_int (event->state),
+                                scm_from_locale_string (key_name)));
+      /* gtk_widget_hide (priv->mini_popup); */
+      priv->keymap = SCM_BOOL_F;
+      return TRUE;
+    }
+
+  if ((event->state & modifiers) == GDK_CONTROL_MASK
+      && event->keyval == GDK_KEY_x)
+    {
+      view = scm_c_public_ref ("nomad views", "which-key-view");
+      priv->keymap = scm_variable_ref (scm_c_lookup ("ctl-x-map"));
+      scm_nomad_minibuffer_render_popup (view, priv->keymap, scm_from_int (0));
+      return TRUE;
     }
 
   // Handles M-m
@@ -174,13 +206,6 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
         }
 
       return TRUE;
-    }
-
-  // If the vte has focus return FALSE, so children can handle key
-  // events
-  if (gtk_widget_has_focus (GTK_WIDGET (priv->vte)))
-    {
-      return FALSE;
     }
 
   // If C-g then do keyboard quit
@@ -540,6 +565,8 @@ nomad_app_window_init (NomadAppWindow *self)
   self->priv = priv;
 
   scm_dynwind_begin (0);
+
+  priv->keymap = SCM_BOOL_F;
 
   c_home_page = scm_to_locale_string (
       scm_c_public_ref ("nomad browser", "default-home-page"));

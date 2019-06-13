@@ -25,11 +25,11 @@
 (define modifier-masks '((20 . "C")
 			 (33554452 . "C")))
 
-(define-public ctrl-x-map '(("k" . (kill-buffer))
-			    ("b" . (next-buffer))))
+(define-public ctl-x-map '(("k" . (kill-buffer))
+			   ("b" . (next-buffer))))
 
-(define-public ctrl-h-map '(("k" . (kill-buffer))
-			    ("b" . (next-buffer))))
+(define-public ctl-h-map '(("k" . (kill-buffer))
+			   ("b" . (next-buffer))))
 
 (define key-masks '((66 . "b")
 		    (75 . "k")
