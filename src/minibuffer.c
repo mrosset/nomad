@@ -32,22 +32,26 @@ SCM_DEFINE (scm_nomad_minibuffer_select_line, "select-line", 1, 0, 0,
                                                       scm_to_int (offset));
 
   gtk_list_box_select_row (GTK_LIST_BOX (box), row);
-
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 0, 0, 0,
-            (SCM offset), "Renders the current popup state")
+SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 0, 0,
+            (SCM proc, SCM lst, SCM selection),
+            "Renders the current popup state")
 {
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   GtkWidget *popup = nomad_app_window_get_minipopup (win);
   SCM view;
+  char *c_view;
 
-  view = scm_call_0 (scm_c_public_ref ("nomad views", "completion-view"));
+  scm_dynwind_begin (0);
+  view = scm_call_2 (proc, lst, selection);
+  c_view = scm_to_locale_string (view);
+  webkit_web_view_load_html (WEBKIT_WEB_VIEW (popup), c_view, "nomad://");
 
-  webkit_web_view_load_html (WEBKIT_WEB_VIEW (popup),
-                             scm_to_locale_string (view), "nomad://");
-
+  gtk_widget_show (popup);
+  scm_dynwind_free (c_view);
+  scm_dynwind_end ();
   return SCM_BOOL_T;
 }
 

@@ -24,11 +24,13 @@
   #:use-module (nomad html))
 
 (define fill-style `(@ (style "
-height: 100vh;
+height: 99vh;
 width: 100%;
+border-top:1px solid steelblue;
+border-bottom:1px solid steelblue;
 ")))
 
-(define tr-selected-style `(@ (style "
+(define tr-selected `(@ (style "
 background-color: steelblue;
 color: white;
 ")))
@@ -41,20 +43,20 @@ width: 100%;
 ")
       (cellpadding "0")))
 
-(define-public (completion-view)
-  (let ((count 0))
-    (sxml->html-string
-     `(html
-       (head
-	(title "completion view"))
-       (body (@ (style "margin: 0px 0px 0px 0px;"))
-	     (div ,fill-style
-		  (table ,table-style
-			 ,@(map (lambda (proc) (version)
-					(let ((tr ""))
-					  (if (= count current-selection)
-					      (set! tr `(tr ,tr-selected-style (td ,proc)))
-					      (set! tr `(tr (td ,proc))))
-					  (set! count (+ count 1))
-					  tr))
-				(input-completion current-input)))))))))
+(define-public (completion-view lst selection)
+  (sxml->html-string
+   `(html
+     (head
+      (title "completion view"))
+     (body (@ (style "margin: 0px 0px 0px 0px;"))
+	   (div ,fill-style
+		(table ,table-style
+		       ,(let ((count 0))
+			  (map (lambda (item)
+				 (let ((tr `(tr (td ,item)))
+				       (selected `(tr ,tr-selected (td ,item))))
+				   (when (= count selection)
+				     (set! tr selected))
+				   (set! count (+ count 1))
+				   tr))
+			       lst))))))))

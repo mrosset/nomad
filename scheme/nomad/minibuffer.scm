@@ -23,30 +23,34 @@
   #:use-module (nomad init))
 
 (define-public current-selection 0)
-(define-public current-input "")
+(define-public current-view #nil)
+(define-public current-list '())
 
 (define-public minibuffer-mode-map '(("C-n" . (next-line))
 				     ("C-p" . (previous-line))))
 
 (define-public (current-command)
-  (let* ((lst (input-completion current-input))
+  (let* ((lst current-list)
 	 (cmd (list-ref lst current-selection)))
     (string->symbol cmd)))
 
 (define-public (reset-minibuffer)
-  (set! current-input "")
+  (set! current-view #nil)
+  (set! current-list '())
   (set! current-selection 0))
 
 (define-public (next-line)
   (let ((row (+ current-selection 1)))
-    (set! current-selection row)
-    (render-popup)))
+    (when (not (>= row (length current-list)))
+      (set! current-selection row)
+      (render-popup current-view current-list
+		    current-selection))))
 
 (define-public (previous-line)
   (let ((row (- current-selection 1)))
     (when (not (= current-selection 0))
       (set! current-selection row)
-      (render-popup))))
+      (render-popup current-view current-list current-selection))))
 
 (define-public (input-completion text)
   "Returns a list of command symbols matching 'TEXT"

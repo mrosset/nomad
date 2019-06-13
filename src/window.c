@@ -91,7 +91,7 @@ keyboard_quit (gpointer widget)
   nomad_buffer_grab_view (
       nomad_app_window_get_buffer (NOMAD_APP_WINDOW (widget)));
 
-  gtk_widget_hide (priv->mini_popup);
+  /* gtk_widget_hide (priv->mini_popup); */
   gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
   scm_call_0 (scm_c_public_ref ("nomad minibuffer", "reset-minibuffer"));
 }
@@ -188,6 +188,7 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
       && event->keyval == GDK_KEY_g)
     {
       keyboard_quit (widget);
+      gtk_widget_hide (priv->mini_popup);
       return TRUE;
     }
 
@@ -237,7 +238,7 @@ read_line_focus_out_event_cb (GtkWidget *widget, GdkEvent *event,
       return TRUE;
     }
   gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
-  gtk_widget_hide (priv->mini_popup);
+  /* gtk_widget_hide (priv->mini_popup); */
 
   /* g_timeout_add (3500, clear_read_line_buffer, (gpointer)widget); */
   return FALSE;
@@ -448,6 +449,7 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
   GtkTextIter start, end;
   NomadAppWindowPrivate *priv;
   gchar *input = NULL;
+  SCM view, results, select;
 
   priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
@@ -471,10 +473,16 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
 
   input = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
 
-  scm_variable_set_x (scm_c_lookup ("current-input"),
-                      scm_from_locale_string (input));
+  results
+      = scm_call_1 (scm_c_public_ref ("nomad minibuffer", "input-completion"),
+                    scm_from_locale_string (input));
+  view = scm_c_public_ref ("nomad views", "completion-view");
+  select = scm_variable_ref (scm_c_lookup ("current-selection"));
 
-  scm_nomad_minibuffer_render_popup ();
+  scm_variable_set_x (scm_c_lookup ("current-view"), view);
+  scm_variable_set_x (scm_c_lookup ("current-list"), results);
+
+  scm_nomad_minibuffer_render_popup (view, results, select);
   return FALSE;
 }
 
