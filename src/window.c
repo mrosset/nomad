@@ -479,6 +479,16 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
   view = scm_c_public_ref ("nomad views", "completion-view");
   select = scm_variable_ref (scm_c_lookup ("current-selection"));
 
+  // If the current selection is greater the size of the results
+  // list. Reset the selection to zero
+  //
+  // FIXME: have the render view check if the selection is in bounds?
+  if (scm_to_int (scm_length (results)) < scm_to_int (select))
+    {
+      select = scm_from_int (0);
+      scm_variable_set_x (scm_c_lookup ("current-selection"), select);
+    }
+
   scm_variable_set_x (scm_c_lookup ("current-view"), view);
   scm_variable_set_x (scm_c_lookup ("current-list"), results);
 
