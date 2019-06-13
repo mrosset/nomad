@@ -35,6 +35,10 @@ background-color: steelblue;
 color: white;
 ")))
 
+(define accent
+  `(@ (style "
+color: steelblue")))
+
 (define table-style
   `(@ (style "
 font-size: 14px;
@@ -43,7 +47,37 @@ width: 100%;
 ")
       (cellpadding "0")))
 
-(define-public (completion-view lst selection)
+(define-syntax define-view
+  (syntax-rules ()
+    ((define-view (proc  ...) thunk)
+     (define-public (proc ...)
+       (sxml->html-string
+	`(html
+	  (head
+	   (title "nomad view"))
+	  (body (@ (style "margin: 0px 0px 0px 0px;"))
+		(div ,fill-style
+		     ,thunk))))))))
+
+(define-view (which-key-view lst selection)
+  `(table ,table-style
+	  ,@(map (lambda (cmd)
+		   `(tr (td ,accent ,(car cmd)) (td ,(car (cdr cmd)))))
+		 lst)))
+
+(define-view (completion-view lst selection)
+  `(table ,table-style
+	 ,(let ((count 0))
+	    (map (lambda (item)
+		   (let ((tr `(tr (td ,item)))
+			 (selected `(tr ,tr-selected (td ,item))))
+		     (when (= count selection)
+		       (set! tr selected))
+		     (set! count (+ count 1))
+		     tr))
+		 lst))))
+
+(define-public (completion-view-old lst selection)
   (sxml->html-string
    `(html
      (head
