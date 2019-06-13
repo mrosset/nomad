@@ -49,7 +49,7 @@ width: 100%;
 
 (define grid-container `(@ (style "
 display: grid;
-grid-template-columns: auto auto auto auto auto;
+grid-template-columns: auto auto auto auto;
 grid-gap: 1px;
 ")))
 
@@ -83,8 +83,11 @@ text-align: left;
 (define-view (which-key-view lst selection)
   `(div ,grid-container ,@(map (lambda (cmd)
 				 `(div ,grid-item
-				       (font (@ (color "steelblue")) ,(car cmd)) " -> "
-				       ,(car (cdr cmd))))
+				       (table
+					(tr
+					 (td (@ (width "28") (align "right")) (font (@ (color "steelblue")) ,(car cmd)))
+					 (td "->")
+				       (td ,(car (cdr cmd)))))))
 			       lst)))
 
 (define-view (completion-view lst selection)
