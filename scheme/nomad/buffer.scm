@@ -53,7 +53,7 @@ is not found returns #f"
           (car buffer)
           (buffer-uri (cdr buffer))))
 
-(define-command (buffers)
+(define-command (list-buffers)
   "Displays buffers in minipopup"
   (begin
     (render-popup completion-view (buffers->list) -1)
