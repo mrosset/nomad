@@ -24,7 +24,7 @@
   #:use-module (nomad html))
 
 (define fill-style `(@ (style "
-height: 98vh;
+min-height: 100%;
 width: 100%;
 ")))
 

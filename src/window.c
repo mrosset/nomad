@@ -45,6 +45,7 @@ struct _NomadAppWindowPrivate
   GtkWidget *mini_buffer_label;
   GtkWidget *text_buffer;
   GtkWidget *mini_popup;
+  GtkWidget *mini_frame;
   GtkWidget *vte;
   GtkWidget *overlay;
   SCM keymap;
@@ -552,12 +553,28 @@ read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
   return FALSE;
 }
 
+void
+minipopup_show_event_cb (GtkWidget *widget, gpointer user_data)
+{
+  NomadAppWindowPrivate *priv = NOMAD_APP_WINDOW (user_data)->priv;
+  gtk_widget_show (priv->mini_frame);
+}
+
+void
+minipopup_hide_event_cb (GtkWidget *widget, gpointer user_data)
+{
+  NomadAppWindowPrivate *priv = NOMAD_APP_WINDOW (user_data)->priv;
+  gtk_widget_hide (priv->mini_frame);
+}
+
 static void
 nomad_app_window_overlay_init (NomadAppWindow *self)
 {
   GtkWidget *scroll, *overlay_child;
   NomadAppWindowPrivate *priv = self->priv;
+
   priv->mini_popup = webkit_web_view_new ();
+  priv->mini_frame = gtk_frame_new ("");
 
   // scroll window
   scroll = gtk_scrolled_window_new (NULL, NULL);
@@ -566,9 +583,10 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
   gtk_scrolled_window_set_max_content_height (GTK_SCROLLED_WINDOW (scroll),
                                               250);
 
-  /* gtk_container_add (GTK_CONTAINER (scroll), priv->mini_popup); */
+  // frame
+  overlay_child = priv->mini_frame;
 
-  overlay_child = priv->mini_popup;
+  gtk_container_add (GTK_CONTAINER (priv->mini_frame), priv->mini_popup);
 
   gtk_widget_set_size_request (overlay_child, 100, 150);
 
@@ -582,13 +600,16 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
   g_signal_connect (priv->mini_popup, "key-press-event",
                     G_CALLBACK (minipopup_key_press_cb), (gpointer)self);
 
-  g_signal_connect (priv->mini_popup, "focus-in-event",
-                    G_CALLBACK (minipopup_focus_in_event_cb), (gpointer)self);
+  g_signal_connect (priv->mini_popup, "show",
+                    G_CALLBACK (minipopup_show_event_cb), (gpointer)self);
+
+  g_signal_connect (priv->mini_popup, "hide",
+                    G_CALLBACK (minipopup_hide_event_cb), (gpointer)self);
 
   g_signal_connect (priv->mini_popup, "focus-out-event",
                     G_CALLBACK (minipopup_focus_out_event_cb), (gpointer)self);
 
-  gtk_widget_show (overlay_child);
+  gtk_widget_hide (overlay_child);
 }
 
 static void
