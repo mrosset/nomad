@@ -24,13 +24,11 @@
   #:use-module (nomad html))
 
 (define fill-style `(@ (style "
-height: 99vh;
+height: 98vh;
 width: 100%;
-border-top:1px solid steelblue;
-border-bottom:1px solid steelblue;
 ")))
 
-(define tr-selected `(@ (style "
+(define tr-selected `(@ (id "selected") (style "
 background-color: steelblue;
 color: white;
 ")))
@@ -62,7 +60,14 @@ text-align: left;
 text-align: left;
 ")))
 
-(define-syntax define-view
+(define key-cell `(@ (style "
+text-align: right;
+color: steelblue;
+width: 2em;
+font-weight: bolder;
+")))
+
+(define-syntax define-popup-view
   (syntax-rules ()
     ((define-view (proc  ...) thunk)
      (define-public (proc ...)
@@ -70,27 +75,28 @@ text-align: left;
 	`(html
 	  (head
 	   (title "nomad view"))
-	  (body (@ (style "margin: 0px 0px 0px 0px;"))
+	  (body (@ (onload "document.getElementById('selected').scrollIntoView();")
+		   (style "margin: 0px 0px 0px 0px;"))
 		(div ,fill-style
 		     ,thunk))))))))
 
-(define-view (which-key-view-old lst selection)
+(define-popup-view (which-key-view-old lst selection)
   `(table ,table-style
 	  ,@(map (lambda (cmd)
 		   `(tr (td ,accent ,(car cmd)) (td ,(car (cdr cmd)))))
 		 lst)))
 
-(define-view (which-key-view lst selection)
+(define-popup-view (which-key-view lst selection)
   `(div ,grid-container ,@(map (lambda (cmd)
 				 `(div ,grid-item
 				       (table
 					(tr
-					 (td (@ (width "28") (align "right")) (font (@ (color "steelblue")) ,(car cmd)))
-					 (td "->")
+					 (td ,key-cell ,(car cmd))
+
 				       (td ,(car (cdr cmd)))))))
 			       lst)))
 
-(define-view (completion-view lst selection)
+(define-popup-view (completion-view lst selection)
   `(table ,table-style
 	 ,(let ((count 0))
 	    (map (lambda (item)
