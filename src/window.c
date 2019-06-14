@@ -570,11 +570,14 @@ minipopup_hide_event_cb (GtkWidget *widget, gpointer user_data)
 static void
 nomad_app_window_overlay_init (NomadAppWindow *self)
 {
-  GtkWidget *scroll, *overlay_child;
+  GtkWidget *scroll, *overlay_child, *vbox, *top, *bottom;
   NomadAppWindowPrivate *priv = self->priv;
 
   priv->mini_popup = webkit_web_view_new ();
-  priv->mini_frame = gtk_frame_new ("");
+  priv->mini_frame = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  vbox = priv->mini_frame;
+  top = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+  bottom = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 
   // scroll window
   scroll = gtk_scrolled_window_new (NULL, NULL);
@@ -583,20 +586,19 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
   gtk_scrolled_window_set_max_content_height (GTK_SCROLLED_WINDOW (scroll),
                                               250);
 
-  // frame
-  overlay_child = priv->mini_frame;
-
-  gtk_container_add (GTK_CONTAINER (priv->mini_frame), priv->mini_popup);
+  // vbox
+  overlay_child = vbox;
+  gtk_box_pack_start (GTK_BOX (vbox), top, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), priv->mini_popup, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), bottom, FALSE, TRUE, 0);
 
   gtk_widget_set_size_request (overlay_child, 100, 150);
-
   gtk_widget_set_halign (overlay_child, GTK_ALIGN_FILL);
   gtk_widget_set_valign (overlay_child, GTK_ALIGN_END);
   gtk_widget_set_margin_bottom (overlay_child, 16);
 
   gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), overlay_child);
 
-  // Signals
   g_signal_connect (priv->mini_popup, "key-press-event",
                     G_CALLBACK (minipopup_key_press_cb), (gpointer)self);
 
@@ -610,6 +612,8 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
                     G_CALLBACK (minipopup_focus_out_event_cb), (gpointer)self);
 
   gtk_widget_hide (overlay_child);
+  gtk_widget_show (top);
+  gtk_widget_show (bottom);
 }
 
 static void
