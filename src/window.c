@@ -350,8 +350,8 @@ mini_popup_clear (GtkWidget *widget)
 }
 
 gboolean
-read_line_prompt_release_event_cb (GtkWidget *window, GdkEventKey *event,
-                                   gpointer user_data)
+read_line_prompt_press_event_cb (GtkWidget *window, GdkEventKey *event,
+                                 gpointer user_data)
 {
   SCM result, format, proc;
   NomadAppWindowPrivate *priv;
@@ -376,7 +376,7 @@ read_line_prompt_release_event_cb (GtkWidget *window, GdkEventKey *event,
       gtk_text_buffer_set_text (buf, scm_to_locale_string (format), -1);
 
       g_signal_handlers_disconnect_by_func (
-          window, read_line_prompt_release_event_cb, user_data);
+          window, read_line_prompt_press_event_cb, user_data);
 
       // reconnect key release signal
       g_signal_connect (priv->read_line, "key-release-event",
@@ -415,8 +415,8 @@ prompt_minibuffer_arg (NomadAppWindow *win, SCM proc, SCM args)
       priv->read_line, read_line_key_press_event_cb, (gpointer)win);
 
   // connect prompt signal
-  g_signal_connect (GTK_WIDGET (win), "key-release-event",
-                    G_CALLBACK (read_line_prompt_release_event_cb),
+  g_signal_connect (GTK_WIDGET (win), "key-press-event",
+                    G_CALLBACK (read_line_prompt_press_event_cb),
                     (gpointer)proc);
 
   gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), prompt);
