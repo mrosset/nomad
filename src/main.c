@@ -128,8 +128,21 @@ inner_main (void *data, int argc, char **argv)
 int
 main (int argc, char *argv[])
 {
-  // FIXME: this clobbers GUILE_LOAD_COMPILED_PATH we should append to
-  // %load-compiled-path
-  g_setenv ("GUILE_LOAD_COMPILED_PATH", NOMAD_GUILE_LOAD_COMPILED_PATH, TRUE);
+  const char *env_ccache;
+  char *new_ccache;
+
+  // If GUILE_LOAD_COMPILED_PATH is set. Append Nomad's site-ccache to
+  // the environment
+  env_ccache = g_getenv ("GUILE_LOAD_COMPILED_PATH");
+  if (env_ccache)
+    {
+      new_ccache = g_strconcat (env_ccache, ":",
+                                NOMAD_GUILE_LOAD_COMPILED_PATH, NULL);
+    }
+  {
+    new_ccache = NOMAD_GUILE_LOAD_COMPILED_PATH;
+  }
+  g_setenv ("GUILE_LOAD_COMPILED_PATH", new_ccache, TRUE);
+
   scm_boot_guile (argc, argv, inner_main, NULL);
 }
