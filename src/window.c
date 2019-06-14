@@ -567,6 +567,24 @@ minipopup_hide_event_cb (GtkWidget *widget, gpointer user_data)
   gtk_widget_hide (priv->mini_frame);
 }
 
+gboolean
+draw_border_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+{
+  guint width, height;
+  GdkRGBA color;
+
+  gdk_rgba_parse (&color, "steelblue");
+
+  width = gtk_widget_get_allocated_width (widget);
+  height = gtk_widget_get_allocated_height (widget);
+
+  cairo_rectangle (cr, 0, 0, width, height);
+  gdk_cairo_set_source_rgba (cr, &color);
+
+  cairo_fill (cr);
+  return FALSE;
+}
+
 static void
 nomad_app_window_overlay_init (NomadAppWindow *self)
 {
@@ -576,8 +594,12 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
   priv->mini_popup = webkit_web_view_new ();
   priv->mini_frame = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   vbox = priv->mini_frame;
-  top = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-  bottom = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+
+  // borders
+  top = gtk_drawing_area_new ();
+  bottom = gtk_drawing_area_new ();
+  gtk_widget_set_size_request (top, -1, 1);
+  gtk_widget_set_size_request (bottom, -1, 1);
 
   // scroll window
   scroll = gtk_scrolled_window_new (NULL, NULL);
@@ -598,6 +620,11 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
   gtk_widget_set_margin_bottom (overlay_child, 16);
 
   gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), overlay_child);
+
+  // signals
+  g_signal_connect (G_OBJECT (top), "draw", G_CALLBACK (draw_border_cb), NULL);
+  g_signal_connect (G_OBJECT (bottom), "draw", G_CALLBACK (draw_border_cb),
+                    NULL);
 
   g_signal_connect (priv->mini_popup, "key-press-event",
                     G_CALLBACK (minipopup_key_press_cb), (gpointer)self);
