@@ -8,16 +8,17 @@
  ((guix licenses)
   #:prefix license:)
  (guix utils)
- (gnu packages pkg-config)
- (gnu packages glib)
  (gnu packages autotools)
+ (gnu packages glib)
+ (gnu packages gnome)
  (gnu packages gtk)
  (gnu packages guile)
- (gnu packages gnome)
+ (gnu packages pkg-config)
+ (gnu packages tls)
  (gnu packages webkit))
 
 (define-public nomad
-  (let ((commit "fedfcb791e0700a16de220f44eef72657eab3515"))
+  (let ((commit "40b04bf84faebefedc678ac3788886f93074da94"))
     (package
       (name "nomad")
       (version (git-version "0.0.4-alpha" "118" commit))
@@ -29,7 +30,7 @@
 		(file-name (git-file-name name version))
 		(sha256
 		 (base32
-		  "0nvbb8acqxzi4vvc6znbln4dyghbg54c51jz842vpa2fh99jimc1"))))
+		  "0l4xhg5i4fbj5lhvfbhra1wis78aw61h84apzndw2ika7wv78adm"))))
       (build-system gnu-build-system)
       (native-inputs
        `(
@@ -37,22 +38,20 @@
 	 ("glib:bin" ,glib "bin")
 	 ))
       (inputs
-       `(
-	 ("autoconf" ,autoconf)
+       `(("autoconf" ,autoconf)
 	 ("automake" ,automake)
 	 ("glib" ,glib)
-	 ("gtk" ,gtk+)
+	 ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+	 ("gtk+" ,gtk+)
 	 ("gtksourceview" ,gtksourceview)
-	 ("guile" ,guile-2.2)
 	 ("pkg-config" ,pkg-config)
 	 ("vte" ,vte)
-	 ("webkitgtk" ,webkitgtk)
-	 ))
+	 ("webkitgtk" ,webkitgtk)))
       (propagated-inputs
-       `(("guile" ,guile-2.2)
-	 ("guile-readline" ,guile-readline)
-	 ("gesettings-desktop-schemas" ,gsettings-desktop-schemas)
-	 ("glib-networking" ,glib-networking)))
+       `(("dbus-glib" ,dbus-glib)
+	 ("glib-networking" ,glib-networking)
+	 ("guile" ,guile-2.2)
+	 ("guile-readline" ,guile-readline)))
       (home-page "https://savannah.nongnu.org/projects/nomad/")
       (synopsis "An extensible web browser using GNU Guile")
       (description "An extensible web browser.")
