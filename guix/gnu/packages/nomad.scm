@@ -18,7 +18,7 @@
  (gnu packages webkit))
 
 (define-public nomad
-  (let ((commit "40b04bf84faebefedc678ac3788886f93074da94"))
+  (let ((commit "3cb53d410c17c680bba3c62b0c5bf3f23140bafe"))
     (package
       (name "nomad")
       (version (git-version "0.0.4-alpha" "118" commit))
@@ -30,7 +30,7 @@
 		(file-name (git-file-name name version))
 		(sha256
 		 (base32
-		  "0l4xhg5i4fbj5lhvfbhra1wis78aw61h84apzndw2ika7wv78adm"))))
+		  "0sbl5p5740zgzi3m8md1i1wqmrnpn89kz27k51wlan9rxbq7xasy"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("libtool" ,libtool)
