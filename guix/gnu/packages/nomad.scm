@@ -33,15 +33,12 @@
 		  "0l4xhg5i4fbj5lhvfbhra1wis78aw61h84apzndw2ika7wv78adm"))))
       (build-system gnu-build-system)
       (native-inputs
-       `(
-	 ("libtool" ,libtool)
-	 ("glib:bin" ,glib "bin")
-	 ))
+       `(("libtool" ,libtool)
+	 ("glib:bin" ,glib "bin")))
       (inputs
        `(("autoconf" ,autoconf)
 	 ("automake" ,automake)
 	 ("glib" ,glib)
-	 ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
 	 ("gtk+" ,gtk+)
 	 ("gtksourceview" ,gtksourceview)
 	 ("pkg-config" ,pkg-config)
@@ -50,6 +47,7 @@
       (propagated-inputs
        `(("dbus-glib" ,dbus-glib)
 	 ("glib-networking" ,glib-networking)
+	 ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
 	 ("guile" ,guile-2.2)
 	 ("guile-readline" ,guile-readline)))
       (home-page "https://savannah.nongnu.org/projects/nomad/")
