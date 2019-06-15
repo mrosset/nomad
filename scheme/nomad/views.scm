@@ -92,8 +92,7 @@ font-weight: bolder;
 				       (table
 					(tr
 					 (td ,key-cell ,(car cmd))
-
-				       (td ,(car (cdr cmd)))))))
+					 (td ,(car (cdr cmd)))))))
 			       lst)))
 
 (define-popup-view (completion-view lst selection)
