@@ -16,11 +16,9 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad webkit))
-
-(use-modules
- (nomad eval)
- (nomad util))
+(define-module (nomad webkit)
+  #:use-module (nomad eval)
+  #:use-module (nomad util))
 
 (define-command (copy-current-url)
   "Copy current url."
