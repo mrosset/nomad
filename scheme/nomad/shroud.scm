@@ -17,22 +17,24 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(define-module (nomad shroud))
-
-(use-modules
- (nomad eval)
- (nomad util)
- (ice-9 regex)
- (ice-9 optargs)
- (shroud secret)
- (srfi srfi-1)
- (srfi srfi-26))
+(define-module (nomad shroud)
+  #:use-module (nomad eval)
+  #:use-module (nomad util)
+  #:use-module (ice-9 regex)
+  #:use-module (ice-9 optargs)
+  #:use-module (shroud secret)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
+  #:export (shroud-database-file
+            shroud-config-file
+            shroud-find-password
+            shroud-show-entry))
 
 (define (~/ filepath) (string-append (getenv "HOME") "/" filepath))
 
-(define-public shroud-database-file (~/ ".config/shroud/db.gpg"))
+(define shroud-database-file (~/ ".config/shroud/db.gpg"))
 
-(define-public shroud-config-file (~/ ".shroud"))
+(define shroud-config-file (~/ ".shroud"))
 
 (define shroud-db
   (delay (load-secrets shroud-database-file)))
@@ -50,7 +52,7 @@
   "Returns a list of matches in password list"
   (filter (cut string-match text <>) (shroud--list)))
 
-(define*-public (shroud-show-entry entry #:optional key)
+(define* (shroud-show-entry entry #:optional key)
   (let ((e (find (compose (cut string-match entry <>) secret-id)
                  (force shroud-db))))
     (if (not key) e
