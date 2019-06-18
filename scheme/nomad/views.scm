@@ -92,7 +92,7 @@ color: steelblue;
 			       lst)))
 
 (define-popup-view (completion-view lst selection)
-  `(table ,table-style
+  `(table
 	 ,(let ((count 0))
 	    (map (lambda (item)
 		   (let ((tr `(tr (td ,item)))
@@ -110,7 +110,7 @@ color: steelblue;
       (title "completion view"))
      (body (@ (style "margin: 0px 0px 0px 0px;"))
 	   (div (@ (class "fill"))
-		(table ,table-style
+		(table
 		       ,(let ((count 0))
 			  (map (lambda (item)
 				 (let ((tr `(tr (td ,item)))
