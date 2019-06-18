@@ -23,49 +23,45 @@
   #:use-module (nomad eval)
   #:use-module (nomad html))
 
-(define fill-style `(@ (style "
-min-height: 100%;
-width: 100%;
-")))
-
-(define tr-selected `(@ (id "selected") (style "
-background-color: steelblue;
-color: white;
-")))
-
-(define accent
-  `(@ (style "
-color: steelblue")))
-
-(define table-style
-  `(@ (style "
+(define style-sheet "
+table {
 font-size: 14px;
 border-collapse: collapse;
 width: 100%;
-")
-      (cellpadding "0")))
+}
 
-(define grid-container `(@ (style "
+.fill {
+min-height: 100%;
+width: 100%;
+}
+
+.grid-container {
 display: grid;
 grid-template-columns: auto auto auto auto;
 grid-gap: 1px;
-")))
+}
 
-(define grid-item `(@ (style "
+.grid-item {
 background-color: rgba(255, 255, 255, 0.8);
 text-align: left;
-")))
+}
 
-(define align-right `(@ (style "
-text-align: left;
-")))
+.selected {
+background-color: steelblue;
+color: white;
+}
 
-(define key-cell `(@ (style "
+.key-cell {
 text-align: right;
 color: steelblue;
 width: 2em;
 font-weight: bolder;
-")))
+}
+
+.accent {
+color: steelblue;
+}
+")
 
 (define-syntax define-popup-view
   (syntax-rules ()
@@ -73,25 +69,25 @@ font-weight: bolder;
      (define-public (proc ...)
        (sxml->html-string
 	`(html
+	  (style ,style-sheet)
 	  (head
 	   (title "nomad view"))
 	  (body (@ (onload "document.getElementById('selected').scrollIntoView();")
 		   (style "margin: 0px 0px 0px 0px;"))
-		(div ,fill-style
+		(div (@ (class "fill"))
 		     ,thunk))))))))
 
 (define-popup-view (which-key-view-old lst selection)
-  `(table ,table-style
-	  ,@(map (lambda (cmd)
-		   `(tr (td ,accent ,(car cmd)) (td ,(car (cdr cmd)))))
+  `(table ,@(map (lambda (cmd)
+		   `(tr (td (@ (class "accent")) ,(car cmd)) (td ,(car (cdr cmd)))))
 		 lst)))
 
 (define-popup-view (which-key-view lst selection)
-  `(div ,grid-container ,@(map (lambda (cmd)
-				 `(div ,grid-item
+  `(div (@ (class "grid-container")) ,@(map (lambda (cmd)
+				 `(div (@ (class "grid-item"))
 				       (table
 					(tr
-					 (td ,key-cell ,(car cmd))
+					 (td (@ (class "key-cell")) ,(car cmd))
 					 (td ,(car (cdr cmd)))))))
 			       lst)))
 
@@ -100,7 +96,7 @@ font-weight: bolder;
 	 ,(let ((count 0))
 	    (map (lambda (item)
 		   (let ((tr `(tr (td ,item)))
-			 (selected `(tr ,tr-selected (td ,item))))
+			 (selected `(tr (@ (class "selected")) (td ,item))))
 		     (when (= count selection)
 		       (set! tr selected))
 		     (set! count (+ count 1))
@@ -113,7 +109,7 @@ font-weight: bolder;
      (head
       (title "completion view"))
      (body (@ (style "margin: 0px 0px 0px 0px;"))
-	   (div ,fill-style
+	   (div (@ (class "fill"))
 		(table ,table-style
 		       ,(let ((count 0))
 			  (map (lambda (item)
