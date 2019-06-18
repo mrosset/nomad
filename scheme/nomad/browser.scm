@@ -42,10 +42,8 @@
   "Returns a full protocol URI for domain URI.
 e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 
-  (and (not (string-prefix? "http://" url))
-       (not (string-prefix? "https://" url))
-       (set! url (string-append "https://" url)))
-  url)
+  (if (string-contains url "://") url
+      (string-append "https://" url)))
 
 (define (go-back x)
   (if (positive? x)
