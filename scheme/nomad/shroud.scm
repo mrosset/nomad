@@ -21,7 +21,7 @@
 
 (use-modules
  (nomad eval)
- (nomad webkit)
+ (nomad util)
  (ice-9 regex)
  (ice-9 optargs)
  (shroud secret)
@@ -58,4 +58,4 @@
 
 (define-command (shroud-find-password entry)
   "Show password/secrets entry"
-  (clipboard-copy (shroud-show-entry (car (shroud-find-entries entry)) "password")))
+  (yank-string (shroud-show-entry (car (shroud-find-entries entry)) "password")))

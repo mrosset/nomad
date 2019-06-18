@@ -195,26 +195,11 @@ URI vs URL")
   return result;
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_clipboard_copy, "clipboard-copy", 1, 0, 0, (SCM x),
-                   "Copy X to clipboard.")
-{
-  GtkClipboard *clip = gtk_clipboard_get_default (gdk_display_get_default ());
-  SCM url = x;
-  char *c_text = scm_to_locale_string (url);
-  int len = scm_to_int (scm_string_length (url));
-
-  scm_dynwind_begin (0);
-  gtk_clipboard_set_text (clip, c_text, len);
-  scm_dynwind_free (c_text);
-  scm_dynwind_end ();
-  return SCM_BOOL_T;
-}
-
 void
 nomad_webkit_register_functions (void *data)
 {
 #include "webkit.x"
   scm_c_export ("webview-load-uri", "webview-go-back", "webview-go-forward",
                 "webview-reload", "webview-current-url", "scroll-up",
-                "scroll-down", "clipboard-copy", NULL);
+                "scroll-down", NULL);
 }
