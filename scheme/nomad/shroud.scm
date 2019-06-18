@@ -1,6 +1,6 @@
-;; Copyright (C) 2019  Amar Singh
+;; Shroud.scm --- Shroud integration for Nomad
 
-;; Nomad --- An extensible web browser
+;; Copyright (C) 2019  Amar Singh
 
 ;; This file is part of Nomad.
 
