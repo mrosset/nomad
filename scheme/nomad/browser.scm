@@ -47,6 +47,21 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
        (set! url (string-append "https://" url)))
   url)
 
+(define (go-back x)
+  (if (positive? x)
+      (and (webview-go-back)
+           (go-back (1- x)))))
+
+(define (go-forward x)
+  (if (positive? x)
+      (and (webview-go-forward)
+           (go-forward (1- x)))))
+
+(define-public (web-go-back x)
+  (cond ((zero? x) #f)
+        ((positive? x) (go-back x))
+        ((negative? x) (go-forward (- x)))))
+
 (define-command (browse url)
   "Browse to URI. URI is prefixed with https:// if no protocol is
 specified. Returns the final URL passed to webkit"
