@@ -13,6 +13,7 @@
  (gnu packages gnome)
  (gnu packages gtk)
  (gnu packages guile)
+ (gnu packages password-utils)
  (gnu packages pkg-config)
  (gnu packages tls)
  (gnu packages webkit))
@@ -46,6 +47,7 @@
 	 ("webkitgtk" ,webkitgtk)))
       (propagated-inputs
        `(("dbus-glib" ,dbus-glib)
+         ("shroud" ,shroud)
 	 ("glib-networking" ,glib-networking)
 	 ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
 	 ("guile" ,guile-2.2)
