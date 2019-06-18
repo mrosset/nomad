@@ -32,7 +32,7 @@ scm_to_argv (SCM list, char **argv)
   argv[len] = NULL;
 }
 
-SCM_DEFINE (scm_nomad_grap_clipboard, "grab", 1, 0, 0, (SCM string),
+SCM_DEFINE (scm_nomad_yank_string, "yank-string", 1, 0, 0, (SCM string),
             "Grabs STRING to primary clipboard")
 {
 
@@ -58,5 +58,5 @@ void
 nomad_util_register_functions (void *data)
 {
 #include "util.x"
-  scm_c_export ("grab", NULL);
+  scm_c_export ("yank-string", NULL);
 }
