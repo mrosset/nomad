@@ -21,10 +21,12 @@
   #:use-module (nomad buffer)
   #:use-module (nomad webkit)
   #:use-module (nomad eval)
+  #:use-module (ice-9 optargs)
   #:export (current-url
             default-home-page
             prefix-url
-            search-provider-format))
+            search-provider-format
+            history-forward))
 
 (define-public webview-mode-map '(("C-b" . (next-buffer))
                                   ("C-u" . (back))
@@ -45,20 +47,15 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
   (if (string-contains url "://") url
       (string-append "https://" url)))
 
-(define (go-back x)
-  (if (positive? x)
-      (and (webview-go-back)
-           (go-back (1- x)))))
-
-(define (go-forward x)
-  (if (positive? x)
-      (and (webview-go-forward)
-           (go-forward (1- x)))))
-
-(define-public (web-go-back x)
-  (cond ((zero? x) #f)
-        ((positive? x) (go-back x))
-        ((negative? x) (go-forward (- x)))))
+(define* (history-forward #:optional x)
+  (if (not x) (webview-go-forward)
+      (cond ((zero? x) #f)
+            ((positive? x)
+             (and (webview-go-forward)
+                  (history-forward (1- x))))
+            ((negative? x)
+             (and (webview-go-back)
+                  (history-forward (1+ x)))))))
 
 (define-command (browse url)
   "Browse to URI. URI is prefixed with https:// if no protocol is
