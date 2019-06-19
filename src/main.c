@@ -129,20 +129,21 @@ int
 main (int argc, char *argv[])
 {
   const char *env_ccache;
-  char *new_ccache;
+  char *ccache;
 
   // If GUILE_LOAD_COMPILED_PATH is set. Append Nomad's site-ccache to
   // the environment
   env_ccache = g_getenv ("GUILE_LOAD_COMPILED_PATH");
   if (env_ccache)
     {
-      new_ccache = g_strconcat (env_ccache, ":",
-                                NOMAD_GUILE_LOAD_COMPILED_PATH, NULL);
+      ccache = g_strconcat (env_ccache, ":", NOMAD_GUILE_LOAD_COMPILED_PATH,
+                            NULL);
     }
-  {
-    new_ccache = NOMAD_GUILE_LOAD_COMPILED_PATH;
-  }
-  g_setenv ("GUILE_LOAD_COMPILED_PATH", new_ccache, TRUE);
+  else
+    {
+      ccache = NOMAD_GUILE_LOAD_COMPILED_PATH;
+    }
+  g_setenv ("GUILE_LOAD_COMPILED_PATH", ccache, TRUE);
 
   scm_boot_guile (argc, argv, inner_main, NULL);
 }
