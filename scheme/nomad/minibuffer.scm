@@ -30,10 +30,10 @@
 (define-public minibuffer-mode-map '(("C-n" . (next-line))
 				     ("C-p" . (previous-line))))
 
-(define-public (current-command)
+(define-public (current-selection-ref)
   (let* ((lst current-list)
-	 (cmd (list-ref lst current-selection)))
-    (string->symbol cmd)))
+	 (item (list-ref lst current-selection)))
+    (string->symbol item)))
 
 (define-public (reset-minibuffer)
   (set! current-view #nil)

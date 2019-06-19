@@ -363,16 +363,15 @@ minibuffer_eval_command (GtkWidget *widget, NomadAppWindow *window)
   GtkTextBuffer *buf;
   SCM key, proc, args, result, format;
 
-  // text buffer
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
 
-  key = scm_call_0 (scm_c_public_ref ("nomad minibuffer", "current-command"));
+  key = scm_call_0 (
+      scm_c_public_ref ("nomad minibuffer", "current-selection-ref"));
   proc = scm_call_1 (scm_c_public_ref ("nomad eval", "command-ref"), key);
   args = scm_call_1 (scm_c_public_ref ("nomad eval", "command-args"), key);
 
-  // If procedure does not take any arguments. Call the procedure and
-  // set the minibuffer to either value returned from the procedure or
-  // the exception
+  // If command has no arguments call the procedure and display the
+  // results in the minibuffer.
   if (scm_is_null (args))
     {
       result = scm_call_0 (proc);
@@ -382,6 +381,8 @@ minibuffer_eval_command (GtkWidget *widget, NomadAppWindow *window)
       keyboard_quit (window);
       return;
     }
+
+  // If command has arguments then prompt for argument input.
   prompt_minibuffer_arg (window, proc, args);
 }
 
