@@ -96,7 +96,7 @@ color: steelblue;
 	 ,(let ((count 0))
 	    (map (lambda (item)
 		   (let ((tr `(tr (td ,item)))
-			 (selected `(tr (@ (class "selected")) (td ,item))))
+			 (selected `(tr (@ (id "selected") (class "selected")) (td ,item))))
 		     (when (= count selection)
 		       (set! tr selected))
 		     (set! count (+ count 1))
