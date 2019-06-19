@@ -90,3 +90,166 @@ specified. Returns the final URL passed to webkit"
 (define-command (current-url)
   "Returns the current url"
   (webview-current-url))
+
+;; Nomad feature API cum wishlist
+;; Icecat
+;; adblocker/js-blocker
+(use-modules (ice-9 optargs)
+             (srfi srfi-1)
+             (srfi srfi-9))
+(define* (javascript-enable bool #:optional buffer)
+  "Toggel Javascript in current buffer.
+Or if provided in BUFFER"
+  #f)
+
+;; proxy:
+(define* (proxy-server #:optional scheme+uri)
+  "Return current proxy-server, if provided Set scheme+uri as the new
+proxy-server."
+  #f)
+;; fonts:
+(define* (font #:optional font-name)
+  "Return font-name, if FONT-NAME is provided, set font to
+FONT-NAME."
+  #f)
+;; fullscreen:
+(define* (fullscreen #:optional boolean)
+  "Return fullscreen status, if BOOLEAN set fullscreen to BOOLEAN."
+  #f)
+;; page-down:
+(define* (scroll-page integer #:optional goto-end?)
+  "Scroll page by INTEGER no. of pages, negative values mean scroll
+upwards. If goto-end? then go to beginning if positive, or go to end
+if negative INTEGER."
+  #f)
+;; move-frame
+(define* (switch-buffer buffer #:optional tab)
+  "Switch to buffer BUFFER in current, or if present TAB."
+  #f)
+;; save-page:
+(define* (save-page #:optional url)
+  (write-file file (get-html (or (current-url) url)))
+  #f)
+;; copy:
+(define (yank)
+  "yank string."
+  #f)
+;; cut:
+(define (kill str)
+  "kill-new"
+  #f)
+;; readline-like-shortcuts:
+;; ?
+;; cancel:
+(define* (keyboard-quit #:optional process)
+  "Discard process."
+  #f)
+;; default-search-provider:
+(define search-providers
+  (circular-list '("search1.com/q?=~a" "ddg.com/q?=~a")))
+
+;; buffers: buffer=webview or buffer =~ tab?
+(define-record-type <buffer>
+  (make-buffer name)
+  buffer?
+  (name buffer-name))
+(define (kill-buffer buffer)
+  "Kill the buffer"
+  #f)
+(define* (switch-buffer buffer #:optional tab)
+  "Switch to buffer in
+tab."
+  #f)
+(define (new-buffer buffer)
+  "Create buffer"
+  #f)
+
+;; fix:
+(define (exit)
+  "Fix: save session and exit. BROKEN atm."
+  #f)
+;; mute:
+(define* (mute bool #:optional buffer)
+  "If bool=t mute buffer, otherwise unmute it. if no buffer, then
+assume current-buffer."
+  #f)
+;; bookmarks:
+(define-record-type <bookmark>
+  (make-bookmark name)
+  bookmark?
+  (name bookmark-name))
+;; (define bookmark?
+;;   "return t if bookmark."
+;;   #f)
+(define (new-bookmark)
+  "Add new bookmark."
+  #f)
+(define (remove-bookmark)
+  "Remove bookmark."
+  #f)
+(define (open-bookmark)
+  ;; (begin
+  ;;   (browse (completing-read "select bookmark: " (bookmarks-list))))
+  #f)
+;; history:
+(define-record-type <history>
+  (make-history name)
+  history?
+  (name history-name))
+;; implement history in scheme or use webkit history? history is just
+;; another form of bookmarks, a compulsory, runtime bookmarks
+;; (define (history?)
+;;   #f)
+(define (remove-history)
+  #f)
+(define (add-history)
+  #f)
+(define (find-history)
+  #f)
+;; download:
+(define (start-download)
+  #f)
+(define (stop-download)
+  #f)
+(define (list-downloads)
+  #f)
+(define (download-directory)
+  #f)
+
+;; Search
+(define* (string-search str #:optional buffer)
+  "Search for a string str in buffer contents."
+  ;; search link: (search (string-append "<a href=" (input)) (get-html
+  ;; (current-url)))
+  ;; search text: (string-search (input) (get-html (current-url)))
+
+  #f)
+;; isearch:
+(define (isearch)
+  "isearch from emacs."
+  ;; (string-search (input "isearch: "
+  ;;                       (get-html (current-url))))
+
+  #f)
+
+;; Edit url/like URL bar in a browser
+(define (edit-url)
+  "edit current-url in minibuffer (with completions?)"
+  #f)
+;; define-key:
+(define (set-key map key symbol)
+  "like emacs define-key or global-set-key."
+  #f)
+;; mouse-* events: "Mouse-1" - left click, "Mouse-2" - right-click, "Mouse-3" - middle-click
+
+;; input/ui
+;; read-from-minibuffer:
+(define (input prompt)
+  "input prompt. like emacs read-from-minibuffer"
+  #f)
+;; completing-read:
+(define (completing-read prompt)
+  "completing read from emacs."
+  ;; (begin (render-popup ...) (input prompt))
+
+  #f)
