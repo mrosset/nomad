@@ -17,9 +17,10 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad keymap)
-  #:use-module (nomad browser)
-  #:use-module (nomad app)
+  #:use-module (nomad minibuffer)
   #:use-module (ice-9 threads)
+  #:use-module (nomad app)
+  #:use-module (nomad browser)
   #:export (key-press-hook debug-key-press))
 
 (define modifier-masks '((20 . "C")
@@ -60,7 +61,7 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
   (let* ((mod-key (modifier-key->string mod key))
 	 (proc (assoc-ref keymap mod-key)))
     (if (eq? proc #f)
-	(simple-format #f "~s : key not found\n" key)
+	(message (simple-format #f "~s : key not found in ~a" mod-key keymap))
 	(eval proc (interaction-environment)))))
 
 (define (debug-key-press keymap mod key)

@@ -55,9 +55,23 @@ SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 0, 0,
   return SCM_BOOL_T;
 }
 
+SCM_DEFINE (scm_nomad_minibuffer_message, "message", 1, 0, 0, (SCM text),
+            "Sets the minibuffer to 'TEXT")
+{
+  NomadAppWindow *win;
+  GtkTextBuffer *buf;
+  GtkWidget *readline;
+
+  win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  readline = nomad_app_window_get_readline (win);
+  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (readline));
+  gtk_text_buffer_set_text (buf, scm_to_locale_string (text), -1);
+  return SCM_UNSPECIFIED;
+}
+
 void
 nomad_minibuffer_register_functions (void *data)
 {
 #include "minibuffer.x"
-  scm_c_export ("next-line", "previous-line", "render-popup", NULL);
+  scm_c_export ("next-line", "previous-line", "message", "render-popup", NULL);
 }
