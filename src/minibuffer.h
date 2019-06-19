@@ -21,5 +21,6 @@
 #ifndef __NOMADMINIBUFFER_H
 #define __NOMADMINIBUFFER_H
 SCM scm_nomad_minibuffer_render_popup ();
+SCM scm_nomad_minibuffer_message (SCM text);
 void nomad_minibuffer_register_functions (void *data);
 #endif /* __NOMADAPPWIN_H */

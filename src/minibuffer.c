@@ -35,8 +35,8 @@ SCM_DEFINE (scm_nomad_minibuffer_select_line, "select-line", 1, 0, 0,
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 0, 0,
-            (SCM proc, SCM lst, SCM selection),
+SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 1, 0,
+            (SCM view_proc, SCM lst, SCM selection, SCM proc),
             "Renders the current popup state")
 {
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
@@ -45,7 +45,7 @@ SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 0, 0,
   char *c_view;
 
   scm_dynwind_begin (0);
-  view = scm_call_2 (proc, lst, selection);
+  view = scm_call_2 (view_proc, lst, selection);
   c_view = scm_to_locale_string (view);
   webkit_web_view_load_html (WEBKIT_WEB_VIEW (popup), c_view, "nomad://");
 
@@ -92,7 +92,8 @@ SCM_DEFINE (scm_nomad_minibuffer_whichkey_popup, "which-key-popup", 1, 0, 0,
   mini = nomad_app_window_get_minipopup (win);
 
   nomad_app_window_set_keymap (win, keymap);
-  scm_nomad_minibuffer_render_popup (view, keymap, scm_from_int (0));
+  scm_nomad_minibuffer_render_popup (view, keymap, scm_from_int (0),
+                                     SCM_BOOL_F);
   gtk_widget_grab_focus (mini);
   return SCM_UNDEFINED;
 }
