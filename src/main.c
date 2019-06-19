@@ -20,6 +20,7 @@
 
 #include "app.h"
 #include "buffer.h"
+#include "emacsy.h"
 #include "minibuffer.h"
 #include "util.h"
 #include "webkit.h"
@@ -49,6 +50,7 @@ startup (GApplication *app, gpointer data)
   scm_c_define_module ("nomad util", nomad_util_register_functions, NULL);
 
   // Use essential modules
+  scm_c_use_module ("emacsy emacsy");
   scm_c_use_module ("nomad util");
   scm_c_use_module ("nomad keymap");
   scm_c_use_module ("nomad browser");
@@ -68,13 +70,18 @@ shutdown (GApplication *app, gpointer data)
   SCM socket;
   socket = scm_c_eval_string ("(option-listen (command-line))");
   scm_call_1 (scm_c_public_ref ("nomad repl", "server-force-delete"), socket);
+  scm_variable_set_x (scm_c_lookup ("emacsy-quit-application?"), SCM_BOOL_T);
 }
 
 void
 inner_main (void *data, int argc, char **argv)
 {
-
+  int err;
   SCM socket, exists, url;
+
+  err = emacsy_initialize (EMACSY_INTERACTIVE);
+  if (err)
+    exit (err);
 
   // Use minimal amount of modules before application starts
   scm_c_use_module ("nomad init");

@@ -47,7 +47,8 @@ moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
 
 ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 
-AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
+AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wno-declaration-after-statement	\
+	-lemacsy								\
 	-Wno-deprecated-declarations						\
 	$(GTK_FLAGS)								\
 	$(GUILE_CFLAGS)								\

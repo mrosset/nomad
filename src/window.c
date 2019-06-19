@@ -18,6 +18,7 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <emacsy.h>
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksource.h>
 #include <gtksourceview/gtksourcebuffer.h>
@@ -126,8 +127,99 @@ nomad_app_window_map_event_cb (GtkWidget *widget, gpointer user_data)
   keyboard_quit (widget);
 }
 
+// FIXME: This has been copied verbatim from emacsy example. include
+// emacsy copyright
+static int
+scm_c_char_to_int (const char *char_name)
+{
+  /* I should put a regex in here to validate it's a char */
+  return scm_to_int (scm_char_to_integer (scm_c_eval_string (char_name)));
+}
+
+// FIXME: This has been copied verbatim from emacsy example. include
+// emacsy copyright
 gboolean
 window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
+{
+  static guint32 last_unichar = 0;
+  guint32 unichar;
+  GdkModifierType modifiers;
+  int flags;
+  int mod_flags = 0;
+
+  modifiers = gtk_accelerator_get_default_mod_mask ();
+  if (event->state & modifiers & GDK_CONTROL_MASK)
+    mod_flags |= EMACSY_MODKEY_CONTROL;
+
+  if (event->state & modifiers & GDK_SHIFT_MASK)
+    mod_flags |= EMACSY_MODKEY_SHIFT;
+
+  if (event->state & modifiers & GDK_SUPER_MASK)
+    mod_flags |= EMACSY_MODKEY_SUPER;
+
+  if (event->state & modifiers & GDK_MOD1_MASK)
+    mod_flags |= EMACSY_MODKEY_META;
+
+  unichar = gdk_keyval_to_unicode (event->keyval);
+
+  // Fix up any key values that don't translate perfectly.
+  if (event->keyval == GDK_KEY_BackSpace)
+    unichar = scm_c_char_to_int ("#\\del");
+
+  // If unichar is 0 then it's not a regular key, e.g., Control, Meta, etc.
+
+  if (event->type == GDK_KEY_PRESS)
+    {
+      printf ("Key press %d %s (unicode %d last_unichar %d)\n", event->keyval,
+              event->string, unichar, last_unichar);
+      // Fix up some keys.
+      if (unichar)
+        {
+          // Register the key event with Emacsy.
+          emacsy_key_event (unichar, mod_flags);
+          /*
+             One can do the event handling and the actual processing
+             separately in Emacsy.  However, in this case, it's convenient
+             to do some processing in the event handling here so we know
+             whether or not to pass the event on to the browser.
+           */
+          flags = emacsy_tick ();
+
+          printf ("flags = %d\n", flags);
+          if (flags & EMACSY_RAN_UNDEFINED_COMMAND_P)
+            {
+              printf ("Passing to browser.\n");
+              return FALSE; // Pass the event through to the web browser.
+            }
+          else
+            {
+              printf ("Emacsy handled it.\n");
+              last_unichar = unichar;
+              return TRUE; // Emacsy handled it. Don't pass the event through.
+            }
+        }
+    }
+  else if (event->type == GDK_KEY_RELEASE)
+    {
+      /*
+         We receive both key presses and key releases.  If we decide not
+         to pass a key event when pressed, then we remember it
+         (last_unichar) such that we squelch the key release event too.
+       */
+      printf ("Key release %d %s (unicode %d last_unichar %d)\n",
+              event->keyval, event->string, unichar, last_unichar);
+      if (last_unichar && last_unichar == unichar)
+        {
+          last_unichar = 0;
+          return TRUE; // Don't pass event to the browser.
+        }
+    }
+
+  return FALSE;
+}
+
+gboolean
+window_key_press_cb_old (GtkWidget *widget, GdkEventKey *event)
 {
   const gchar *key_name;
   SCM hook;
@@ -577,6 +669,40 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
   gtk_widget_show (top);
   gtk_widget_show (bottom);
 }
+static gboolean
+process_and_update_emacsy (void *user_data)
+{
+  // Process events and any background coroutines.
+  int flags = emacsy_tick ();
+
+  GtkWidget *label = GTK_WIDGET (user_data);
+
+  // If there's been a request to quit, quit.
+  if (flags & EMACSY_QUIT_APPLICATION_P)
+    {
+      /* g_application_quit (G_APPLICATION (app)); */
+      return FALSE;
+    }
+
+  // Update the status line.
+  const char *status = emacsy_message_or_echo_area ();
+  // Use markup to style the status line.
+  char *markup = g_markup_printf_escaped (
+      "<span foreground=\"steelblue\" background=\"black\" "
+      "underline=\"single\"><tt>%s </tt></span>",
+      status);
+  gtk_label_set_markup (GTK_LABEL (label), markup);
+  g_free (markup);
+
+  // Show the cursor.  Exercise for the reader: Make it blink.
+  char message[255];
+  memset (message, ' ', 254);
+  message[254] = 0;
+  message[emacsy_minibuffer_point () - 1] = '_';
+  gtk_label_set_pattern (GTK_LABEL (label), message);
+
+  return TRUE;
+}
 
 static void
 nomad_app_window_init (NomadAppWindow *self)
@@ -617,24 +743,42 @@ nomad_app_window_init (NomadAppWindow *self)
   gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->read_line),
                             GTK_TEXT_BUFFER (priv->text_buffer));
 
+  // FIXME: remove read_line from glade ui file
+  gtk_widget_destroy (priv->read_line);
+  // This label will be where we display Emacsy's echo-area.
+  priv->read_line = gtk_label_new ("label");
+  gtk_misc_set_alignment (GTK_MISC (priv->read_line), 0.0f, 0.0f);
+  gtk_label_set_use_underline (GTK_LABEL (priv->read_line), FALSE);
+  gtk_label_set_line_wrap (GTK_LABEL (priv->read_line), TRUE);
+  gtk_label_set_single_line_mode (GTK_LABEL (priv->read_line), TRUE);
+  gtk_label_set_max_width_chars (GTK_LABEL (priv->read_line), 160);
+
+  gtk_box_pack_start (GTK_BOX (priv->box), priv->read_line, FALSE, FALSE, 0);
+
   // Signals
+
+  // While idle, process events in Emacsy and upate the echo-area.
+  g_idle_add ((GSourceFunc)process_and_update_emacsy, priv->read_line);
 
   // Main keypress
   g_signal_connect (self, "key-press-event", G_CALLBACK (window_key_press_cb),
                     (gpointer)self);
 
-  g_signal_connect (priv->read_line, "focus-out-event",
-                    G_CALLBACK (read_line_focus_out_event_cb), (gpointer)self);
+  /* g_signal_connect (priv->read_line, "focus-out-event",
+   *                   G_CALLBACK (read_line_focus_out_event_cb),
+   * (gpointer)self); */
 
-  g_signal_connect (priv->read_line, "focus-in-event",
-                    G_CALLBACK (read_line_focus_in_event_cb), (gpointer)self);
+  /* g_signal_connect (priv->read_line, "focus-in-event",
+   *                   G_CALLBACK (read_line_focus_in_event_cb),
+   * (gpointer)self); */
 
-  g_signal_connect (priv->read_line, "key-release-event",
-                    G_CALLBACK (read_line_key_release_event_cb),
-                    (gpointer)self);
+  /* g_signal_connect (priv->read_line, "key-release-event",
+   *                   G_CALLBACK (read_line_key_release_event_cb),
+   *                   (gpointer)self); */
 
-  g_signal_connect (priv->read_line, "key-press-event",
-                    G_CALLBACK (read_line_key_press_event_cb), (gpointer)self);
+  /* g_signal_connect (priv->read_line, "key-press-event",
+   *                   G_CALLBACK (read_line_key_press_event_cb),
+   * (gpointer)self); */
 
   g_signal_connect (VTE_TERMINAL (priv->vte), "child-exited",
                     G_CALLBACK (fork_vte_child), NULL);
@@ -649,6 +793,7 @@ nomad_app_window_init (NomadAppWindow *self)
       cookie_manager, c_user_cookie_file,
       WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE);
 
+  gtk_widget_show (priv->read_line);
   // Unwind
   scm_dynwind_free (c_home_page);
   scm_dynwind_free (c_user_cookie_file);

@@ -12,6 +12,7 @@
  (gnu packages glib)
  (gnu packages gnome)
  (gnu packages gtk)
+ (gnu packages guile-xyz)
  (gnu packages guile)
  (gnu packages password-utils)
  (gnu packages pkg-config)
@@ -43,6 +44,7 @@
 	 ("gtk+" ,gtk+)
 	 ("gtksourceview" ,gtksourceview)
 	 ("pkg-config" ,pkg-config)
+	 ("emacsy" ,emacsy)
 	 ("vte" ,vte)
 	 ("webkitgtk" ,webkitgtk)))
       (propagated-inputs
