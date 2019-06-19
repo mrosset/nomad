@@ -24,6 +24,7 @@
   #:export (key-press-hook debug-key-press))
 
 (define modifier-masks '((20 . "C")
+			 (24 . "M")
 			 (33554452 . "C")))
 
 (define-public ctl-x-map '(("k" . (kill-buffer))
@@ -31,6 +32,7 @@
 			   ("C-k" . (kill-some-buffers))
 			   ("C-b" . (list-buffers))))
 
+(define-public global-map '(("M-x" . (execute-extended-command))))
 
 (define-public ctl-h-map '(("k" . (kill-buffer))
 			   ("b" . (next-buffer))))

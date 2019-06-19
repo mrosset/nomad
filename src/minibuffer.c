@@ -55,6 +55,7 @@ SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 0, 0,
   return SCM_BOOL_T;
 }
 
+// TODO: message should act like emacs message procedure
 SCM_DEFINE (scm_nomad_minibuffer_message, "message", 1, 0, 0, (SCM text),
             "Sets the minibuffer to 'TEXT")
 {
@@ -69,9 +70,23 @@ SCM_DEFINE (scm_nomad_minibuffer_message, "message", 1, 0, 0, (SCM text),
   return SCM_UNSPECIFIED;
 }
 
+SCM_DEFINE (
+    scm_nomad_minibuffer_focus, "execute-extended-command", 0, 0, 0, (),
+    "Moves input focus to the minibuffer shows completion for commands")
+{
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GtkWidget *readline = nomad_app_window_get_readline (win);
+  GtkWidget *popup = nomad_app_window_get_minipopup (win);
+
+  gtk_widget_grab_focus (readline);
+  gtk_widget_show (popup);
+  return SCM_UNSPECIFIED;
+}
+
 void
 nomad_minibuffer_register_functions (void *data)
 {
 #include "minibuffer.x"
-  scm_c_export ("next-line", "previous-line", "message", "render-popup", NULL);
+  scm_c_export ("next-line", "previous-line", "message", "render-popup",
+                "execute-extended-command", NULL);
 }
