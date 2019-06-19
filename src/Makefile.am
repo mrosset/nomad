@@ -77,12 +77,12 @@ format:
 resources.c: $(G_RESOURCES)
 	$(GLIB_COMPILE_R) $< --target=$@ --generate-source
 
-snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS)
+snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(AM_CFLAGS)
 
 SUFFIXES = .x
 .c.x:
 	@echo "  SNARF" $@;
-	@$(GUILE_SNARF) -o $@ $< $(snarfcppopts) $(AM_FLAGS)
+	@$(GUILE_SNARF) -o $@ $< $(snarfcppopts)
 
 DEVEL_SOCKET  = /tmp/nomad-devel
 
