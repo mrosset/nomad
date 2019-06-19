@@ -26,6 +26,7 @@
 
 (define modifier-masks '((20 . "C")
 			 (24 . "M")
+			 (33554456 . "M")
 			 (33554452 . "C")))
 
 (define-public ctl-x-map '(("k" . (kill-buffer))

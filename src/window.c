@@ -129,22 +129,8 @@ nomad_app_window_map_event_cb (GtkWidget *widget, gpointer user_data)
 gboolean
 window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
 {
-  GdkModifierType modifiers;
-  NomadAppWindowPrivate *priv;
-  GtkWidget *vte;
   const gchar *key_name;
   SCM hook;
-
-  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
-  vte = priv->vte;
-  modifiers = gtk_accelerator_get_default_mod_mask ();
-
-  // If the vte has focus return FALSE, so children can handle key
-  // events
-  if (gtk_widget_has_focus (GTK_WIDGET (priv->vte)))
-    {
-      return FALSE;
-    }
 
   hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
   key_name = gdk_keyval_name (event->keyval);
@@ -153,27 +139,6 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
                 scm_list_3 (scm_variable_ref (scm_c_lookup ("global-map")),
                             scm_from_int (event->state),
                             scm_from_locale_string (key_name)));
-
-  // Handles M-m
-  if (event->keyval == GDK_KEY_m
-      && (event->state & modifiers) == GDK_MOD1_MASK)
-    {
-      if (!gtk_widget_is_visible (vte) || !gtk_widget_has_focus (vte))
-        {
-          gtk_widget_hide (priv->read_line);
-          gtk_widget_show (vte);
-          gtk_widget_grab_focus (vte);
-          return TRUE;
-        }
-      if (gtk_widget_is_visible (vte) && gtk_widget_has_focus (vte))
-        {
-          gtk_widget_show (priv->read_line);
-          gtk_widget_hide (vte);
-          nomad_buffer_grab_view (
-              nomad_app_window_get_buffer (NOMAD_APP_WINDOW (widget)));
-        }
-      return TRUE;
-    }
 
   return FALSE;
 }
