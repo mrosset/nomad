@@ -139,7 +139,6 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
                 scm_list_3 (scm_variable_ref (scm_c_lookup ("global-map")),
                             scm_from_int (event->state),
                             scm_from_locale_string (key_name)));
-
   return FALSE;
 }
 

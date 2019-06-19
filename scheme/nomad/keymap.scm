@@ -74,8 +74,8 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
 
 (define (debug-key-press keymap mod key)
   (message (simple-format #f
-		  "thread: ~s mod: ~s key: ~s map: ~s"
-		  (current-thread)
-		  mod
-		  key
-		  (modifier-key->string mod key))))
+			  "mod: ~s key: ~s map: ~s thread: ~s"
+			  mod
+			  key
+			  (modifier-key->string mod key)
+			  (current-thread))))
