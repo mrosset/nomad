@@ -17,10 +17,11 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad keymap)
-  #:use-module (nomad minibuffer)
   #:use-module (ice-9 threads)
   #:use-module (nomad app)
   #:use-module (nomad browser)
+  #:use-module (nomad minibuffer)
+  #:use-module (nomad window)
   #:export (key-press-hook debug-key-press))
 
 (define modifier-masks '((20 . "C")
@@ -32,7 +33,10 @@
 			   ("C-k" . (kill-some-buffers))
 			   ("C-b" . (list-buffers))))
 
-(define-public global-map '(("M-x" . (execute-extended-command))))
+(define-public global-map '(("M-x" . (execute-extended-command))
+			    ("C-g" . (keyboard-quit))
+			    ("C-x" . (which-key-popup ctl-x-map))
+			    ("C-h" . (which-key-popup ctl-h-map))))
 
 (define-public ctl-h-map '(("k" . (kill-buffer))
 			   ("b" . (next-buffer))))
@@ -63,9 +67,14 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
   (let* ((mod-key (modifier-key->string mod key))
 	 (proc (assoc-ref keymap mod-key)))
     (if (eq? proc #f)
-	(message (simple-format #f "~s : key not found in ~a" mod-key keymap))
+	(message (simple-format #f "~s : key not found in ~a"
+				mod-key keymap))
 	(eval proc (interaction-environment)))))
 
 (define (debug-key-press keymap mod key)
-  (simple-format #t "thread: ~s mod: ~s key: ~s map: ~s\n"
-		 (current-thread)  mod key (modifier-key->string mod key)))
+  (message (simple-format #f
+		  "thread: ~s mod: ~s key: ~s map: ~s"
+		  (current-thread)
+		  mod
+		  key
+		  (modifier-key->string mod key))))

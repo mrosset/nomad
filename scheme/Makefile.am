@@ -51,7 +51,8 @@ SOURCES =			\
 	nomad/server.scm	\
 	nomad/util.scm		\
 	nomad/views.scm		\
-	nomad/webkit.scm
+	nomad/webkit.scm	\
+	nomad/window.scm
 
 
 TESTS =				\

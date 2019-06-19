@@ -20,7 +20,8 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 session)
   #:use-module (nomad eval)
-  #:use-module (nomad init))
+  #:use-module (nomad init)
+  #:use-module (nomad minibuffer))
 
 (define-public current-selection 0)
 (define-public current-view #nil)
@@ -37,7 +38,8 @@
 (define-public (reset-minibuffer)
   (set! current-view #nil)
   (set! current-list '())
-  (set! current-selection 0))
+  (set! current-selection 0)
+  (minibuffer-popup-hide))
 
 (define-public (next-line)
   (let ((row (+ current-selection 1)))

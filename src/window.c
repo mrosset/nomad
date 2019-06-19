@@ -132,17 +132,12 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
   GdkModifierType modifiers;
   NomadAppWindowPrivate *priv;
   GtkWidget *vte;
-  SCM view;
+  const gchar *key_name;
+  SCM hook;
 
   priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
   vte = priv->vte;
   modifiers = gtk_accelerator_get_default_mod_mask ();
-
-  // When read line does not have focus. Clear it's input
-  if (!gtk_widget_has_focus (priv->read_line))
-    {
-      clear_read_line_buffer (priv->read_line);
-    }
 
   // If the vte has focus return FALSE, so children can handle key
   // events
@@ -151,15 +146,13 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
       return FALSE;
     }
 
-  if ((event->state & modifiers) == GDK_CONTROL_MASK
-      && event->keyval == GDK_KEY_x)
-    {
-      view = scm_c_public_ref ("nomad views", "which-key-view");
-      priv->keymap = scm_variable_ref (scm_c_lookup ("ctl-x-map"));
-      scm_nomad_minibuffer_render_popup (view, priv->keymap, scm_from_int (0));
-      gtk_widget_grab_focus (priv->mini_popup);
-      return TRUE;
-    }
+  hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
+  key_name = gdk_keyval_name (event->keyval);
+
+  scm_run_hook (hook,
+                scm_list_3 (scm_variable_ref (scm_c_lookup ("global-map")),
+                            scm_from_int (event->state),
+                            scm_from_locale_string (key_name)));
 
   // Handles M-m
   if (event->keyval == GDK_KEY_m
@@ -179,29 +172,6 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
           nomad_buffer_grab_view (
               nomad_app_window_get_buffer (NOMAD_APP_WINDOW (widget)));
         }
-      return TRUE;
-    }
-
-  // Handles M-x
-  if (event->keyval == GDK_KEY_x
-      && (event->state & modifiers) == GDK_MOD1_MASK)
-    {
-      if (!gtk_widget_has_focus (priv->read_line)
-          && !gtk_widget_has_focus (priv->vte))
-        {
-          gtk_widget_grab_focus (priv->read_line);
-          gtk_widget_show (priv->mini_popup);
-        }
-
-      return TRUE;
-    }
-
-  // If C-g then do keyboard quit
-  if ((event->state & modifiers) == GDK_CONTROL_MASK
-      && event->keyval == GDK_KEY_g)
-    {
-      keyboard_quit (widget);
-      gtk_widget_hide (priv->mini_popup);
       return TRUE;
     }
 
@@ -767,6 +737,12 @@ nomad_app_window_get_minipopup (NomadAppWindow *self)
   return self->priv->mini_popup;
 }
 
+GtkWidget *
+nomad_app_window_get_readline (NomadAppWindow *self)
+{
+  return self->priv->read_line;
+}
+
 NomadBuffer *
 nomad_app_window_get_buffer (NomadAppWindow *self)
 {
@@ -774,6 +750,12 @@ nomad_app_window_get_buffer (NomadAppWindow *self)
   gint i = gtk_notebook_get_current_page (notebook);
   GtkWidget *w = gtk_notebook_get_nth_page (notebook, i);
   return NOMAD_BUFFER (w);
+}
+
+void
+nomad_app_window_set_keymap (NomadAppWindow *self, SCM keymap)
+{
+  self->priv->keymap = keymap;
 }
 
 void
@@ -850,7 +832,7 @@ nomad_app_window_get_webview (NomadAppWindow *self)
   return nomad_buffer_get_view (buf);
 }
 
-SCM_DEFINE (scm_nomad_window_focus, "focus", 0, 0, 0, (),
+SCM_DEFINE (scm_nomad_window_focus, "webview-focus", 0, 0, 0, (),
             "Switch focus to WebView")
 {
   GtkWidget *view = GTK_WIDGET (nomad_app_get_webview (app));
@@ -862,9 +844,20 @@ SCM_DEFINE (scm_nomad_window_focus, "focus", 0, 0, 0, (),
   return SCM_BOOL_T;
 }
 
+SCM_DEFINE (scm_nomad_window_keyboard_quit, "keyboard-quit", 0, 0, 0, (),
+            "Quits keyboard input and returns focus to the webview buffer")
+{
+  NomadAppWindow *win;
+
+  win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+
+  keyboard_quit (win);
+  return SCM_UNDEFINED;
+}
+
 void
 nomad_window_register_functions (void *data)
 {
 #include "window.x"
-  scm_c_export ("focus", NULL);
+  scm_c_export ("webview-focus", "keyboard-quit", NULL);
 }

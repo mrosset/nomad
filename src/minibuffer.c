@@ -80,6 +80,23 @@ SCM_DEFINE (scm_nomad_minibuffer_message, "message", 1, 0, 0, (SCM text),
   return SCM_UNSPECIFIED;
 }
 
+SCM_DEFINE (scm_nomad_minibuffer_whichkey_popup, "which-key-popup", 1, 0, 0,
+            (SCM keymap), "Show whichkey popup for 'KEY MAP")
+{
+  SCM view;
+  GtkWidget *mini;
+  NomadAppWindow *win;
+
+  win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  view = scm_c_public_ref ("nomad views", "which-key-view");
+  mini = nomad_app_window_get_minipopup (win);
+
+  nomad_app_window_set_keymap (win, keymap);
+  scm_nomad_minibuffer_render_popup (view, keymap, scm_from_int (0));
+  gtk_widget_grab_focus (mini);
+  return SCM_UNDEFINED;
+}
+
 SCM_DEFINE (
     scm_nomad_minibuffer_focus, "execute-extended-command", 0, 0, 0, (),
     "Moves input focus to the minibuffer shows completion for commands")
@@ -93,10 +110,19 @@ SCM_DEFINE (
   return SCM_UNSPECIFIED;
 }
 
+SCM_DEFINE (scm_nomad_minibuffer_popup_hide, "minibuffer-popup-hide", 0, 0, 0,
+            (), "Hides the minibuffer popup")
+{
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GtkWidget *popup = nomad_app_window_get_minipopup (win);
+  gtk_widget_hide (popup);
+  return SCM_UNSPECIFIED;
+}
 void
 nomad_minibuffer_register_functions (void *data)
 {
 #include "minibuffer.x"
   scm_c_export ("next-line", "previous-line", "message", "render-popup",
-                "execute-extended-command", NULL);
+                "minibuffer-popup-hide", "execute-extended-command",
+                "which-key-popup", NULL);
 }
