@@ -65,6 +65,16 @@ SCM_DEFINE (scm_nomad_minibuffer_message, "message", 1, 0, 0, (SCM text),
 
   win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   readline = nomad_app_window_get_readline (win);
+
+  // If the minibuffer has focus don't message there. instead message
+  // to STDOUT.
+  //
+  // FIXME: Instead of messaging to STDOUT message to a *Messages* buffer
+  if (gtk_widget_has_focus (readline))
+    {
+      g_print ("%s\n", scm_to_locale_string (text));
+      return SCM_UNSPECIFIED;
+    }
   buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (readline));
   gtk_text_buffer_set_text (buf, scm_to_locale_string (text), -1);
   return SCM_UNSPECIFIED;
