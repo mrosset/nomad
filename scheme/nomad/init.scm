@@ -26,6 +26,7 @@
   #:use-module (nomad options)
   #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:export (init
             user-cookie-file
             user-init-file
@@ -88,7 +89,7 @@
   (let* ((port (open-input-file (fluid-ref session-file)))
          (buffers (read port)))
     (close-port port)
-    (for-each (lambda (url) (make-buffer url)) buffers)))
+    (for-each (cut make-buffer <>) buffers)))
 
 (define-command (write-session)
   "Write session to file"
