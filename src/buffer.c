@@ -295,15 +295,6 @@ set_buffer_invoke (void *data)
   return FALSE;
 }
 
-// FIXME: this should return true or false depending on the success of
-// trying to switch to buffer.
-SCM_DEFINE (scm_nomad_switch_to_buffer, "switch-to-buffer", 1, 0, 0, (SCM id),
-            "Switch to buffer with ID. Returns UNSPECIFIED")
-{
-  g_main_context_invoke (NULL, set_buffer_invoke, id);
-  return SCM_UNSPECIFIED;
-}
-
 void
 nomad_buffer_register_functions (void *data)
 {
@@ -311,6 +302,6 @@ nomad_buffer_register_functions (void *data)
   init_buffer_type ();
   scm_c_export ("buffer-title", "buffer-uri", "make-buffer", "kill-buffer",
                 "current-buffer", "next-buffer", "prev-buffer", "scheme-test",
-                "switch-to-buffer", NULL);
+                NULL);
   return;
 }

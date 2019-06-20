@@ -195,11 +195,19 @@ URI vs URL")
   return result;
 }
 
+SCM_DEFINE (scm_make_web_view, "make-web-view", 0, 0, 0, (),
+            "Creates and returns a pointer to a new webkit view.")
+{
+  WebKitWebView *a_web_view = WEBKIT_WEB_VIEW (webkit_web_view_new ());
+  a_web_view = g_object_ref (a_web_view);
+  return scm_from_pointer (a_web_view, /*g_free*/ NULL);
+}
+
 void
 nomad_webkit_register_functions (void *data)
 {
 #include "webkit.x"
   scm_c_export ("webview-load-uri", "webview-go-back", "webview-go-forward",
                 "webview-reload", "webview-current-url", "scroll-up",
-                "scroll-down", NULL);
+                "scroll-down", "make-web-view", NULL);
 }

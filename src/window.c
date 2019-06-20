@@ -954,9 +954,31 @@ SCM_DEFINE (scm_nomad_window_keyboard_quit, "keyboard-quit", 0, 0, 0, (),
   return SCM_UNDEFINED;
 }
 
+SCM_DEFINE (scm_set_web_view_x, "set-web-view!", 1, 0, 0,
+            (SCM web_view_pointer),
+            "Set the current web view to the given pointer.")
+{
+  if (SCM_POINTER_P (web_view_pointer))
+    {
+      g_print ("SET BUFFER\n");
+      // Remove the current one from the window.
+      /* if (web_view)
+       *   gtk_container_remove (GTK_CONTAINER (scrolled_window),
+       *                         GTK_WIDGET (web_view));
+       * web_view = WEBKIT_WEB_VIEW (scm_to_pointer (web_view_pointer));
+       * gtk_container_add (GTK_CONTAINER (scrolled_window),
+       *                    GTK_WIDGET (web_view));
+       * gtk_widget_show_all (GTK_WIDGET (web_view)); */
+      // gtk_widget_grab_focus(GTK_WIDGET(web_view));
+    }
+  else
+    fprintf (stderr, "error: not given a pointer in set-web-view!\n");
+  return SCM_UNSPECIFIED;
+}
+
 void
 nomad_window_register_functions (void *data)
 {
 #include "window.x"
-  scm_c_export ("webview-focus", "keyboard-quit", NULL);
+  scm_c_export ("webview-focus", "keyboard-quit", "set-web-view!", NULL);
 }
