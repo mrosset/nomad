@@ -20,6 +20,7 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-26)
   #:use-module (nomad app)
   #:use-module (nomad repl)
   #:use-module (nomad minibuffer)
@@ -29,23 +30,25 @@
 (define-public (buffer-with-id key)
   "Returns a buffer from the buffer alist with ID. If a buffer with ID
 is not found returns #f"
-  (let* ((result #f) (pair (assv key (buffer-alist))))
-    (when pair
-      (set! result (cdr pair)))
-    result))
+  (let ((pair (assv key (buffer-alist))))
+    (if pair (cdr pair)
+        #f)))
 
 (define-public (make-buffer-socket url socket)
-  (let ((exp (format #f "(make-buffer \"~a\")" url)))
-    (write-socket exp socket)))
+  "Write `make-buffer' comand with arg URL to a SOCKET."
+  (write-socket (format #f "~S" `(make-buffer ,url))
+                   socket))
 
 (define-command (kill-some-buffers)
   "Kill all buffers but one"
+  ;; doings something weird, not using the argument?
   (for-each (lambda (arg)
               (kill-buffer)) (buffer-alist)))
 
 (define-public (buffers->list)
   "Returns a list of uri's for all buffers"
-    (map (lambda (x) (buffer-uri (cdr x))) (buffer-alist)))
+  (map (compose buffer-uri cdr)
+       (buffer-alist)))
 
 (define (format-buffer buffer)
   "Returns a human readable buffer string in 80 column format"
@@ -68,5 +71,6 @@ is not found returns #f"
   "Pretty prints buffers-alist."
   (with-output-to-string
     (lambda _
-      (for-each (lambda (x)
-                  (format #t "~a\n" (format-buffer x))) (buffer-alist)))))
+      (for-each (compose (cut format #t "~a\n" <>)
+                         format-buffer)
+                (buffer-alist)))))
