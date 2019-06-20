@@ -31,7 +31,14 @@
             user-init-file
             user-init-hook
             user-nomad-directory
-            create-nomad-directory))
+            create-nomad-directory
+            history
+            history-file
+            read-history
+            nomad-write-history
+            add-to-history
+            session-file
+            shutdown))
 
 (define user-init-hook (make-hook))
 
@@ -41,24 +48,24 @@
 (define user-nomad-directory
   (make-fluid (~/ ".nomad.d")))
 
-(define-public history '())
+(define history '())
 
-(define-public history-file
+(define history-file
   (make-fluid (string-append (fluid-ref user-nomad-directory)
                              //
                              "history.scm")))
 
-(define-public (read-history)
+(define (read-history)
   (let ((port (open-input-file (fluid-ref history-file))))
     (set! history (read port))
     (close-port port)))
 
-(define-public (nomad-write-history)
+(define (nomad-write-history)
   (let ((port (open-output-file (fluid-ref history-file))))
     (pretty-print history port)
     (close-port port)))
 
-(define-public (add-to-history text)
+(define (add-to-history text)
   (when (not (find (lambda (x)
                      (string=? x text))
                    history))
@@ -68,9 +75,10 @@
 
 (add-hook! command-hook (lambda (arg)
                           (add-to-history arg)))
+
 (define session '())
 
-(define-public session-file
+(define session-file
   (make-fluid (string-append (fluid-ref user-nomad-directory)
                              //
                              "session.scm")))
@@ -98,7 +106,7 @@
       (info (format #f "creating ~a" dir))
       (mkdir dir #o755))))
 
-(define-public (shutdown)
+(define (shutdown)
   "Cleans up after guile and serialize persistent objects"
   (format #t "writing history....\n")
   (nomad-write-history)
