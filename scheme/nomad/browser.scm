@@ -19,6 +19,7 @@
 (define-module (nomad browser)
   #:use-module (nomad events)
   #:use-module (nomad buffer)
+  #:use-module (emacsy emacsy)
   #:use-module (nomad webkit)
   #:use-module (nomad eval)
   #:use-module (ice-9 optargs)
@@ -63,6 +64,11 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 specified. Returns the final URL passed to webkit"
     (webview-load-uri (prefix-url url)))
 
+(define-interactive
+  (load-url #:optional
+        (url (read-from-minibuffer "URL: ")))
+  (message (webview-load-uri (prefix-url url))))
+
 (define-command (forward)
   "Go forward in browser history"
   (webview-go-forward))
@@ -88,6 +94,6 @@ specified. Returns the final URL passed to webkit"
   (let ((uri (simple-format #f search-provider-format q)))
     (browse uri)))
 
-(define-command (current-url)
+(define-interactive (current-url)
   "Returns the current url"
-  (webview-current-url))
+  (message (webview-current-url)))

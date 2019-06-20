@@ -43,6 +43,7 @@ struct _NomadAppWindowPrivate
   GtkWidget *notebook;
   GtkWidget *pane;
   GtkWidget *read_line;
+  GtkWidget *modeline;
   GtkWidget *mini_buffer_label;
   GtkWidget *text_buffer;
   GtkWidget *mini_popup;
@@ -345,22 +346,22 @@ read_line_eval (GtkWidget *widget, gpointer user_data)
 }
 
 GtkSourceBuffer *
-text_buffer_new ()
+text_buffer_new (const char *theme, const char *lang)
 {
   GtkSourceLanguageManager *lm;
   GtkSourceLanguage *sl;
-  /* GtkSourceStyleSchemeManager *sm; */
-  /* GtkSourceStyleScheme *ss; */
+  GtkSourceStyleSchemeManager *sm;
+  GtkSourceStyleScheme *ss;
   GtkSourceBuffer *buf;
 
   buf = gtk_source_buffer_new (NULL);
-  /* sm = gtk_source_style_scheme_manager_new (); */
-  /* ss = gtk_source_style_scheme_manager_get_scheme (sm, "classic"); */
+  sm = gtk_source_style_scheme_manager_new ();
+  ss = gtk_source_style_scheme_manager_get_scheme (sm, theme);
   lm = gtk_source_language_manager_new ();
-  sl = gtk_source_language_manager_get_language (lm, "scheme");
+  sl = gtk_source_language_manager_get_language (lm, lang);
 
   gtk_source_buffer_set_language (buf, sl);
-  /* gtk_source_buffer_set_style_scheme (buf, ss); */
+  gtk_source_buffer_set_style_scheme (buf, ss);
   return buf;
 }
 
@@ -669,38 +670,32 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
   gtk_widget_show (top);
   gtk_widget_show (bottom);
 }
+
 static gboolean
 process_and_update_emacsy (void *user_data)
 {
-  // Process events and any background coroutines.
-  int flags = emacsy_tick ();
+  int flags;
+  GtkTextBuffer *mbuf, *rbuf;
+  NomadAppWindowPrivate *priv = NOMAD_APP_WINDOW (user_data)->priv;
+  const char *modeline, *status;
 
-  GtkWidget *label = GTK_WIDGET (user_data);
+  flags = emacsy_tick ();
+  mbuf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->modeline));
+  rbuf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->read_line));
 
   // If there's been a request to quit, quit.
   if (flags & EMACSY_QUIT_APPLICATION_P)
     {
-      /* g_application_quit (G_APPLICATION (app)); */
       return FALSE;
     }
 
   // Update the status line.
-  const char *status = emacsy_message_or_echo_area ();
-  // Use markup to style the status line.
-  char *markup = g_markup_printf_escaped (
-      "<span foreground=\"steelblue\" background=\"black\" "
-      "underline=\"single\"><tt>%s </tt></span>",
-      status);
-  gtk_label_set_markup (GTK_LABEL (label), markup);
-  g_free (markup);
+  modeline = emacsy_mode_line ();
+  status = emacsy_message_or_echo_area ();
 
-  // Show the cursor.  Exercise for the reader: Make it blink.
-  char message[255];
-  memset (message, ' ', 254);
-  message[254] = 0;
-  message[emacsy_minibuffer_point () - 1] = '_';
-  gtk_label_set_pattern (GTK_LABEL (label), message);
+  gtk_text_buffer_set_text (mbuf, modeline, -1);
 
+  gtk_text_buffer_set_text (rbuf, status, -1);
   return TRUE;
 }
 
@@ -733,32 +728,25 @@ nomad_app_window_init (NomadAppWindow *self)
                     G_CALLBACK (initialize_web_extensions), NULL);
 
   nomad_app_window_overlay_init (self);
+
   // Buffer
   buf = nomad_buffer_new ();
   webkit_web_view_load_uri (nomad_buffer_get_view (buf), c_home_page);
   nomad_app_window_add_buffer (self, buf);
 
   // Minbuf
-  priv->text_buffer = GTK_WIDGET (text_buffer_new ());
-  gtk_text_view_set_buffer (GTK_TEXT_VIEW (priv->read_line),
-                            GTK_TEXT_BUFFER (priv->text_buffer));
+  gtk_text_view_set_buffer (
+      GTK_TEXT_VIEW (priv->read_line),
+      GTK_TEXT_BUFFER (text_buffer_new ("classic", "scheme")));
 
-  // FIXME: remove read_line from glade ui file
-  gtk_widget_destroy (priv->read_line);
-  // This label will be where we display Emacsy's echo-area.
-  priv->read_line = gtk_label_new ("label");
-  gtk_misc_set_alignment (GTK_MISC (priv->read_line), 0.0f, 0.0f);
-  gtk_label_set_use_underline (GTK_LABEL (priv->read_line), FALSE);
-  gtk_label_set_line_wrap (GTK_LABEL (priv->read_line), TRUE);
-  gtk_label_set_single_line_mode (GTK_LABEL (priv->read_line), TRUE);
-  gtk_label_set_max_width_chars (GTK_LABEL (priv->read_line), 160);
-
-  gtk_box_pack_start (GTK_BOX (priv->box), priv->read_line, FALSE, FALSE, 0);
+  gtk_text_view_set_buffer (
+      GTK_TEXT_VIEW (priv->modeline),
+      GTK_TEXT_BUFFER (text_buffer_new ("oblivion", "scheme")));
 
   // Signals
 
   // While idle, process events in Emacsy and upate the echo-area.
-  g_idle_add ((GSourceFunc)process_and_update_emacsy, priv->read_line);
+  g_idle_add ((GSourceFunc)process_and_update_emacsy, self);
 
   // Main keypress
   g_signal_connect (self, "key-press-event", G_CALLBACK (window_key_press_cb),
@@ -922,11 +910,11 @@ nomad_app_window_class_init (NomadAppWindowClass *class)
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, read_line);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
+                                                NomadAppWindow, modeline);
+  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, notebook);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, overlay);
-  gtk_widget_class_bind_template_child_private (
-      GTK_WIDGET_CLASS (class), NomadAppWindow, mini_buffer_label);
 }
 
 NomadAppWindow *

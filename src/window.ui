@@ -106,50 +106,38 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
               </packing>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkSourceView" id="modeline">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkLabel" id="mini_buffer_label">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <attributes>
-                      <attribute name="weight" value="semibold"/>
-                      <attribute name="foreground" value="#34346565a4a4"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkSourceView" id="read_line">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="valign">baseline</property>
-                    <property name="margin_top">1</property>
-                    <property name="margin_bottom">1</property>
-                    <property name="hexpand">True</property>
-                    <property name="vexpand">False</property>
-                    <property name="left_margin">5</property>
-                    <property name="right_margin">2</property>
-                    <property name="input_hints">GTK_INPUT_HINT_WORD_COMPLETION | GTK_INPUT_HINT_NONE</property>
-                    <property name="monospace">True</property>
-                    <property name="smart_backspace">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="can_focus">True</property>
+                <property name="editable">False</property>
+                <property name="left_margin">2</property>
+                <property name="right_margin">2</property>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSourceView" id="read_line">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="valign">baseline</property>
+                <property name="margin_top">1</property>
+                <property name="margin_bottom">1</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">False</property>
+                <property name="left_margin">5</property>
+                <property name="right_margin">2</property>
+                <property name="input_hints">GTK_INPUT_HINT_WORD_COMPLETION | GTK_INPUT_HINT_NONE</property>
+                <property name="monospace">True</property>
+                <property name="smart_backspace">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
