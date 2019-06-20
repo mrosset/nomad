@@ -20,7 +20,6 @@
   #:use-module (nomad repl)
   #:export (make-frame-socket))
 
-
 (define (make-frame-socket url socket)
-  (let ((exp (format #f "(make-frame \"~a\")" url)))
-    (write-socket exp socket)))
+  "Write `make-frame' comand with arg URL to a SOCKET."
+  (write-socket (format #f "~S" `(make-frame ,url)) socket))
