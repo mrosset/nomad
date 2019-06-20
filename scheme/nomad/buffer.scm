@@ -25,16 +25,19 @@
   #:use-module (nomad repl)
   #:use-module (nomad minibuffer)
   #:use-module (nomad views)
-  #:use-module (nomad eval))
+  #:use-module (nomad eval)
+  #:export (buffer-with-id
+            make-buffer-socket
+            buffers->list))
 
-(define-public (buffer-with-id key)
+(define (buffer-with-id key)
   "Returns a buffer from the buffer alist with ID. If a buffer with ID
 is not found returns #f"
   (let ((pair (assv key (buffer-alist))))
     (if pair (cdr pair)
         #f)))
 
-(define-public (make-buffer-socket url socket)
+(define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
   (write-socket (format #f "~S" `(make-buffer ,url))
                    socket))
@@ -45,7 +48,7 @@ is not found returns #f"
   (for-each (lambda (arg)
               (kill-buffer)) (buffer-alist)))
 
-(define-public (buffers->list)
+(define (buffers->list)
   "Returns a list of uri's for all buffers"
   (map (compose buffer-uri cdr)
        (buffer-alist)))
