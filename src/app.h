@@ -33,7 +33,7 @@ NomadApp *app;
 NomadApp *nomad_app_new (void);
 WebKitWebView *nomad_app_get_webview (NomadApp *app);
 GtkWidget *nomad_app_get_window (NomadApp *self);
-NomadBuffer *nomad_app_get_first_buffer (NomadApp *app);
+GtkWidget *nomad_app_get_first_buffer (NomadApp *app);
 SCM nomad_app_get_buffers (NomadApp *app);
 GList *nomad_app_get_buffer_list (NomadApp *app);
 void nomad_app_remove_buffer (NomadApp *app, NomadBuffer *buf);

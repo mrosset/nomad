@@ -140,6 +140,15 @@ nomad_app_new (void)
 }
 
 GtkWidget *
+nomad_app_get_first_buffer (NomadApp *app)
+{
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GtkNotebook *nbook = nomad_window_get_notebook (win);
+
+  return gtk_notebook_get_nth_page (nbook, 0);
+}
+
+GtkWidget *
 nomad_app_get_window (NomadApp *app)
 {
 

@@ -34,7 +34,7 @@
 			   ("C-k" . (kill-some-buffers))
 			   ("C-b" . (list-buffers))))
 
-(define-public global-map '(("M-x" . (execute-extended-command))
+(define global-map-old '(("M-x" . (execute-extended-command))
 			    ("C-g" . (keyboard-quit))
 			    ("C-x" . (which-key-popup ctl-x-map))
 			    ("C-h" . (which-key-popup ctl-h-map))))

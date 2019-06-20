@@ -35,7 +35,7 @@ struct _NomadBufferPrivate
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadBuffer, nomad_buffer, GTK_TYPE_BOX)
 
-SCM scm_nomad_make_buffer (SCM uri);
+SCM scm_nomad_make_buffer ();
 
 static void
 web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
@@ -193,35 +193,23 @@ make_buffer_invoke (void *data)
   return FALSE;
 }
 
-SCM_DEFINE (scm_nomad_make_buffer, "make-buffer", 0, 1, 0, (SCM uri),
-            "Returns a new foreign object buffer for URI. The buffer will "
-            "become the current buffer and load URI.")
+SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 0, 0, 0, (),
+            "Returns a new scheme nomad buffer pointer for URI.")
 {
-  struct request *request = &(
-      struct request){ .args = uri, .response = SCM_BOOL_F, .done = FALSE };
+  NomadBuffer *buf = nomad_buffer_new ();
+  WebKitWebView *view = nomad_buffer_get_view (buf);
+  /* const char *uri = scm_to_locale_string (url); */
 
-  g_main_context_invoke (NULL, make_buffer_invoke, request);
-
-  wait_for_response (request);
-  return request->response;
+  webkit_web_view_load_uri (view, "https://duckduckgo.com");
+  return scm_from_pointer (buf, NULL);
 }
 
 gboolean
 kill_buffer_invoke (void *data)
 {
-
   GtkWidget *win = nomad_app_get_window (app);
   nomad_app_window_remove_buffer (NOMAD_APP_WINDOW (win));
   return FALSE;
-}
-
-SCM_DEFINE (scm_nomad_kill_buffer, "kill-buffer", 0, 0, 0, (),
-            "Kill the current buffer. Returns #f if this is the last buffer "
-            "or #t if buffer was killed")
-
-{
-  g_main_context_invoke (NULL, kill_buffer_invoke, NULL);
-  return SCM_BOOL_T;
 }
 
 gboolean
@@ -300,7 +288,7 @@ nomad_buffer_register_functions (void *data)
 {
 #include "buffer.x"
   init_buffer_type ();
-  scm_c_export ("buffer-title", "buffer-uri", "make-buffer", "kill-buffer",
+  scm_c_export ("buffer-title", "buffer-uri", "make-web-buffer",
                 "current-buffer", "next-buffer", "prev-buffer", "scheme-test",
                 NULL);
   return;
