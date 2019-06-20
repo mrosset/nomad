@@ -185,6 +185,7 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
              whether or not to pass the event on to the browser.
            */
           flags = emacsy_tick ();
+          flags = emacsy_tick ();
 
           printf ("flags = %d\n", flags);
           if (flags & EMACSY_RAN_UNDEFINED_COMMAND_P)
