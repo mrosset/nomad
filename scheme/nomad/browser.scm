@@ -26,9 +26,10 @@
             default-home-page
             prefix-url
             search-provider-format
-            history-forward))
+            history-forward
+            webview-mode-map))
 
-(define-public webview-mode-map '(("C-b" . (next-buffer))
+(define webview-mode-map '(("C-b" . (next-buffer))
                                   ("C-u" . (back))
                                   ("C-m" . (forward))
                                   ("C-n" . (scroll-down))
@@ -38,12 +39,12 @@
                                   ("C-x" . (kill-buffer))))
 
 (define search-provider-format "https://duckduckgo.com/?q=~a")
+
 (define default-home-page "https://www.gnu.org/software/guile")
 
 (define (prefix-url url)
   "Returns a full protocol URI for domain URI.
 e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
-
   (if (string-contains url "://") url
       (string-append "https://" url)))
 
