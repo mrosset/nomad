@@ -17,6 +17,18 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad app)
-  #:export (emacs-init-file))
+  #:use-module (emacsy emacsy)
+  #:use-module (nomad browser)
+  #:use-module (nomad buffer)
+  #:export (emacs-init-file
+            app-init))
 
-(define emacs-init-file "init.el")
+(define emacs-init-file "init.ell")
+
+(define (app-init)
+  "This is called when the application is activated. Which ensures
+controls are accessible to scheme"
+  ;; Kill emacsys message buffer
+  (kill-buffer)
+  ;; Create one buffer
+  (make-buffer default-home-page))

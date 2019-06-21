@@ -39,8 +39,6 @@
 
 (define socket-file "/tmp/nomad-socket")
 
-(define emacs-command-line (list "emacs" "-q" "-nw" "-l" emacs-init-file))
-
 (define nc-command-line (list "nc" "-U" socket-file))
 
 (define bash-command-line (list "bash" "--login"))

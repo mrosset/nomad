@@ -124,8 +124,7 @@ nomad_app_activate (GApplication *self)
                   G_BUS_NAME_OWNER_FLAGS_NONE,
                   (GBusAcquiredCallback)on_bus_acquired, NULL,
                   (GBusNameLostCallback)on_name_lost, NULL, NULL);
-  scm_call_1 (scm_c_public_ref ("nomad buffer", "make-buffer"),
-              scm_c_public_ref ("nomad browser", "default-home-page"));
+  scm_call_0 (scm_c_public_ref ("nomad app", "app-init"));
 }
 
 static void
