@@ -26,8 +26,7 @@
   #:use-module (ice-9 textual-ports)
   #:use-module (system repl coop-server)
   #:use-module (system repl server)
-  #:export (
-            emacs-command-line
+  #:export (emacs-command-line
             nc-command-line
             rlwrap-command-line
             repl-command-line
@@ -68,8 +67,8 @@
 value of socket-file."
   (when (file-exists? socket-file)
     (delete-file socket-file))
-    (spawn-server
-     (make-unix-domain-server-socket #:path socket-file)))
+  (spawn-server
+   (make-unix-domain-server-socket #:path socket-file)))
 
 (define (socket-exists? socket-file)
   (access? socket-file R_OK))
@@ -98,33 +97,33 @@ client connections first."
 reached."
   (while #t
     (let ((c (get-char port)))
-      (when (eof-object? c)
-        (break))
-      ;; if char is > and there is a space after, assume this is the
-      ;; prompt and stop
-      (when (and (char=? c #\>) (char=? (lookahead-char port) #\space))
-        (get-char port)
-        (break))
+      (cond ((eof-object? c) (break))
+            ;; if char is > and there is a space after, assume this is the
+            ;; prompt and stop
+            ((and (char=? c #\>)
+                  (char=? (lookahead-char port) #\space))
+             (get-char port) (break)))
       (display c))))
 
 (define (client-start path)
   "Starts a client connected to a guile unix socket REPL server"
-  (when (not (access? path W_OK))
-    (display "socket is not readable")
-    (exit))
-  ;; setup readline
-  (activate-readline)
-  (set-readline-prompt! "> ")
-  ;; create port and enter readline loop
-  (let ((port (socket PF_UNIX SOCK_STREAM 0)))
-    (connect port AF_UNIX path)
-    (read-until-prompt port)
-    (newline)
-    (while #t
-      (let ((line (readline)))
-        (write-line line port)
-        (read-until-prompt port)
-        (newline)))))
+  (if (not (access? path W_OK))
+      (begin (display "socket is not readable")
+             (exit))
+      ;; setup readline
+      (begin
+        (activate-readline)
+        (set-readline-prompt! "> ")
+        ;; create port and enter readline loop
+        (let ((port (socket PF_UNIX SOCK_STREAM 0)))
+          (connect port AF_UNIX path)
+          (read-until-prompt port)
+          (newline)
+          (while #t
+            (let ((line (readline)))
+              (write-line line port)
+              (read-until-prompt port)
+              (newline)))))))
 
 (define-public (write-socket input socket-file)
   "Write string INPUT to guile unix socket at SOCKET-FILE. The guile
