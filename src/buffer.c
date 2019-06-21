@@ -193,14 +193,14 @@ make_buffer_invoke (void *data)
   return FALSE;
 }
 
-SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 0, 0, 0, (),
+SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 1, 0, 0, (SCM url),
             "Returns a new scheme nomad buffer pointer for URI.")
 {
   NomadBuffer *buf = nomad_buffer_new ();
   WebKitWebView *view = nomad_buffer_get_view (buf);
-  /* const char *uri = scm_to_locale_string (url); */
+  const char *uri = scm_to_locale_string (url);
 
-  webkit_web_view_load_uri (view, "https://duckduckgo.com");
+  webkit_web_view_load_uri (view, uri);
   return scm_from_pointer (buf, NULL);
 }
 
@@ -217,12 +217,6 @@ next_buffer_invoke (void *data)
 {
   nomad_app_next_buffer (NOMAD_APP (app));
   return FALSE;
-}
-
-SCM_DEFINE (scm_nomad_get_next_buffer, "next-buffer", 0, 0, 0, (), "")
-{
-  g_main_context_invoke (NULL, next_buffer_invoke, NULL);
-  return SCM_UNSPECIFIED;
 }
 
 gboolean
@@ -289,7 +283,6 @@ nomad_buffer_register_functions (void *data)
 #include "buffer.x"
   init_buffer_type ();
   scm_c_export ("buffer-title", "buffer-uri", "make-web-buffer",
-                "current-buffer", "next-buffer", "prev-buffer", "scheme-test",
-                NULL);
+                "current-buffer", "prev-buffer", "scheme-test", NULL);
   return;
 }

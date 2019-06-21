@@ -704,7 +704,6 @@ static void
 nomad_app_window_init (NomadAppWindow *self)
 {
   NomadAppWindowPrivate *priv;
-  NomadBuffer *buf;
   WebKitCookieManager *cookie_manager;
   char *c_home_page, *c_user_cookie_file;
 
@@ -729,11 +728,6 @@ nomad_app_window_init (NomadAppWindow *self)
                     G_CALLBACK (initialize_web_extensions), NULL);
 
   nomad_app_window_overlay_init (self);
-
-  // Buffer
-  buf = nomad_buffer_new ();
-  webkit_web_view_load_uri (nomad_buffer_get_view (buf), c_home_page);
-  nomad_app_window_add_buffer (self, buf);
 
   // Minbuf
   gtk_text_view_set_buffer (
@@ -964,7 +958,13 @@ SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0,
 
   if (SCM_POINTER_P (web_buffer_pointer))
     {
-      gtk_notebook_detach_tab (notebook, current);
+      if (current)
+        {
+          // If a widget exists mark the widget so it is not destroyed
+          // when detaching
+          g_object_ref (current);
+          gtk_notebook_detach_tab (notebook, current);
+        }
       nomad_app_window_add_buffer (win, scm_to_pointer (web_buffer_pointer));
     }
   else

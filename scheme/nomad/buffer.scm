@@ -17,83 +17,57 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad buffer)
+  #:use-module (emacsy emacsy)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
-  #:use-module (srfi srfi-9)
-  #:use-module (srfi srfi-26)
-  #:use-module (nomad app)
   #:use-module (nomad browser)
-  #:use-module (emacsy emacsy)
-  #:use-module (nomad window)
-  #:use-module (nomad webkit)
-  #:use-module (nomad repl)
-  #:use-module (nomad minibuffer)
-  #:use-module (nomad views)
   #:use-module (nomad eval)
-  #:export (buffer-with-id
-            make-buffer-socket
-            buffers->list))
-
-(define (buffer-with-id key)
-  "Returns a buffer from the buffer alist with ID. If a buffer with ID
-is not found returns #f"
-  (let ((pair (assv key (buffer-alist))))
-    (if pair (cdr pair)
-        #f)))
+  #:use-module (nomad minibuffer)
+  #:use-module (nomad window)
+  #:export (make-buffer-socket
+            buffers->uri))
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
   (write-socket (format #f "~S" `(make-buffer ,url))
                    socket))
 
+;; FIXME: port this to emacsy buffers
 (define-command (kill-some-buffers)
   "Kill all buffers but one"
-  ;; doings something weird, not using the argument?
-  (for-each (lambda (arg)
+  (for-each (lambda _
               (kill-buffer)) (buffer-alist)))
 
-(define (buffers->list)
+(define (buffers->uri)
   "Returns a list of uri's for all buffers"
-  (map (compose buffer-uri cdr)
-       (buffer-alist)))
+  (map (lambda (buffer)
+         (buffer-name buffer))
+       (buffer-list)))
 
-(define (format-buffer buffer)
-  "Returns a human readable buffer string in 80 column format"
-  (format #f "id: ~80:@y\t uri: ~80:@y"
-          (car buffer)
-          (buffer-uri (cdr buffer))))
-
+;; FIXME: port this to emacsy buffers
 (define-command (list-buffers)
   "Displays buffers in minipopup"
   (begin
     (render-popup completion-view (buffers->list) -1)
     (length (buffers->list))))
 
-;; (define-command (buffers)
-;;   "Returns a string of all buffers pretty printed"
-;;   (with-output-to-string (lambda _
-;;                            (format #t "~a" (pretty-print (buffers->list))))))
+(define-interactive (message-buffers)
+  "Pretty prints the buffers to echo area"
+  (message "~a" (with-output-to-string (lambda _ (pretty-print (buffer-list))))))
 
-(define-command (pp-buffers)
-  "Pretty prints buffers-alist."
-  (with-output-to-string
-    (lambda _
-      (for-each (compose (cut format #t "~a\n" <>)
-                         format-buffer)
-                (buffer-alist)))))
-
-(define-interactive (new-web-buffer)
+(define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
   (define (on-enter)
     (when (local-var 'web-buffer)
       (format #t
               "Setting web-view to ~a~%"
               (local-var 'web-buffer))
       (set-web-buffer! (local-var 'web-buffer))))
-  (let ((buffer (switch-to-buffer "*new-web-buffer*")))
+  (let ((buffer (switch-to-buffer url)))
     (set! (local-var 'web-buffer)
-          (make-web-buffer))
-    (add-hook! (buffer-enter-hook buffer)
+          (make-web-buffer (prefix-url url)))
+     (add-hook! (buffer-enter-hook buffer)
                on-enter)
     (on-enter)))
 
-(define-key global-map (kbd "C-k") 'kill-buffer)
+(define-key global-map (kbd "C-x C-b") 'message-buffers)
+(define-key global-map (kbd "C-b") 'prev-buffer)
