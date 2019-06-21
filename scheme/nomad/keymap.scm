@@ -18,6 +18,7 @@
 
 (define-module (nomad keymap)
   #:use-module (ice-9 threads)
+  #:use-module (emacsy emacsy)
   #:use-module (nomad app)
   #:use-module (nomad browser)
   #:use-module (nomad minibuffer)
@@ -68,14 +69,14 @@ return \"C-c\". When the modifer is not found in the modifer-masks it returns #f
   (let* ((mod-key (modifier-key->string mod key))
 	 (proc (assoc-ref keymap mod-key)))
     (if (eq? proc #f)
-	(message (simple-format #f "~s : key not found in ~a"
-				mod-key keymap))
-	(eval proc (interaction-environment)))))
+	(format #t "~s : key not found in ~a" mod-key
+		keymap)
+	(eval proc
+	      (interaction-environment)))))
 
 (define (debug-key-press keymap mod key)
-  (message (simple-format #f
-			  "mod: ~s key: ~s map: ~s thread: ~s"
-			  mod
-			  key
-			  (modifier-key->string mod key)
-			  (current-thread))))
+  (format #t "mod: ~s key: ~s map: ~s thread: ~s"
+	   mod
+	   key
+	   (modifier-key->string mod key)
+	   (current-thread)))
