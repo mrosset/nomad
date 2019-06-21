@@ -96,4 +96,4 @@ specified. Returns the final URL passed to webkit"
 
 (define-interactive (current-url)
   "Returns the current url"
-  (message (webview-current-url)))
+  (message "~a" (webview-current-url)))
