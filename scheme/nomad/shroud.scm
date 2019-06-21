@@ -21,7 +21,6 @@
   #:use-module (nomad eval)
   #:use-module (nomad util)
   #:use-module (ice-9 regex)
-  #:use-module (ice-9 optargs)
   #:use-module (shroud secret)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -29,8 +28,6 @@
             shroud-config-file
             shroud-find-password
             shroud-show-entry))
-
-(define (~/ filepath) (string-append (getenv "HOME") "/" filepath))
 
 (define shroud-database-file (~/ ".config/shroud/db.gpg"))
 
