@@ -95,15 +95,14 @@ client connections first."
 (define (read-until-prompt port)
   "Read from PORT until prompt has been read or the end-of-file was
 reached."
-  (while #t
-    (let ((c (get-char port)))
-      (cond ((eof-object? c) (break))
-            ;; if char is > and there is a space after, assume this is the
-            ;; prompt and stop
-            ((and (char=? c #\>)
-                  (char=? (lookahead-char port) #\space))
-             (get-char port) (break)))
-      (display c))))
+  (let ((c (get-char port)))
+    (unless (eof-object? c)
+      (display c)
+      ;; if char is > and there is a space after, assume this is the
+      ;; prompt and stop
+      (if (and (char=? c #\>) (char=? (lookahead-char port) #\space))
+          (get-char port)
+          (read-until-prompt port)))))
 
 (define (client-start path)
   "Starts a client connected to a guile unix socket REPL server"
