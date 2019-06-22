@@ -20,6 +20,7 @@
 (define-module (nomad shroud)
   #:use-module (nomad eval)
   #:use-module (nomad util)
+  #:use-module (emacsy emacsy)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 optargs)
   #:use-module (shroud secret)
@@ -58,6 +59,6 @@
     (if (not key) e
         (secret-ref e key))))
 
-(define-command (shroud-find-password entry)
+(define-interactive (shroud-find-password #:optional (entry (read-from-minibuffer "Entry: ")))
   "Show password/secrets entry"
   (yank-string (shroud-show-entry (car (shroud-find-entries entry)) "password")))
