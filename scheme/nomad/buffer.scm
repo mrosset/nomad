@@ -69,5 +69,15 @@
                on-enter)
     (on-enter)))
 
+(define mru-next! (@@ (emacsy mru-stack) mru-next!))
+(define mru-ref (@@ (emacsy mru-stack) mru-ref))
+
+(define* (buffer-previous! #:optional (incr 1))
+  (mru-next! buffer-stack incr)
+  (switch-to-buffer (mru-ref buffer-stack)))
+
+(define* (buffer-next! #:optional (incr 1))
+  (buffer-previous! (- incr)))
+
 (define-key global-map (kbd "C-x C-b") 'message-buffers)
-(define-key global-map (kbd "C-b") 'prev-buffer)
+(define-key global-map (kbd "C-b") 'buffer-next!)
