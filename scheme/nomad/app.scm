@@ -19,16 +19,38 @@
 (define-module (nomad app)
   #:use-module (emacsy emacsy)
   #:use-module (nomad browser)
+  #:use-module (nomad views)
   #:use-module (nomad buffer)
+  #:use-module (nomad minibuffer)
   #:export (emacs-init-file
             app-init))
 
-(define emacs-init-file "init.ell")
+(define emacs-init-file "init.el")
+
+;; FIXME: this is temperay
+(define-interactive (temp-view)
+  (let ((lst (commands global-cmdset)))
+    (render-popup completion-view lst 0)))
 
 (define (app-init)
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
   ;; Kill emacsys message buffer
   (kill-buffer)
+  ;; Setup the minibuffer
+  (with-buffer minibuffer
+    (set! (local-var 'view) completion-view)
+    (set! (local-var 'selection) 0)
+    (set! (local-var 'list) (commands global-cmdset))
+    (add-hook! (buffer-enter-hook (current-buffer))
+               temp-view)
+    (add-hook! (buffer-exit-hook (current-buffer))
+               hide-minibuffer-popup))
   ;; Create one buffer
   (make-buffer default-home-page))
+
+
+;; Move these somewhere else?
+(define-key minibuffer-local-map "C-n" 'next-line)
+(define-key minibuffer-local-map "C-p" 'previous-line)
+;; (define-key minibuffer-local-map "RET" 'minibuffer-execute)

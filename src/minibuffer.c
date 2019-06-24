@@ -86,7 +86,7 @@ SCM_DEFINE (
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE (scm_nomad_minibuffer_popup_hide, "minibuffer-popup-hide", 0, 0, 0,
+SCM_DEFINE (scm_nomad_minibuffer_popup_hide, "hide-minibuffer-popup", 0, 0, 0,
             (), "Hides the minibuffer popup")
 {
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
@@ -99,6 +99,6 @@ nomad_minibuffer_register_functions (void *data)
 {
 #include "minibuffer.x"
   scm_c_export ("next-line", "previous-line", "render-popup",
-                "minibuffer-popup-hide", "execute-extended-command",
+                "hide-minibuffer-popup", "execute-extended-command",
                 "which-key-popup", NULL);
 }

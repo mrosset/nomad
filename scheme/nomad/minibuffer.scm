@@ -20,12 +20,15 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 session)
   #:use-module (nomad eval)
+  #:use-module (emacsy emacsy)
   #:use-module (nomad init)
-  #:use-module (nomad minibuffer))
+  #:export (current-selection
+	    current-view
+	    current-list))
 
-(define-public current-selection 0)
-(define-public current-view #nil)
-(define-public current-list '())
+(define current-selection 0)
+(define current-view #nil)
+(define current-list '())
 
 (define-public minibuffer-mode-map '(("C-n" . (next-line))
 				     ("C-p" . (previous-line))))
@@ -39,20 +42,33 @@
   (set! current-view #nil)
   (set! current-list '())
   (set! current-selection 0)
-  (minibuffer-popup-hide))
+  (hide-minibuffer-popup))
 
-(define-public (next-line)
-  (let ((row (+ current-selection 1)))
-    (when (not (>= row (length current-list)))
-      (set! current-selection row)
-      (render-popup current-view current-list
-		    current-selection))))
+(define-interactive (minibuffer-execute)
+  (let* ((ref (local-var 'selection))
+	 (sym (list-ref (commands global-cmdset)
+			ref))
+	 (proc (eval sym
+		     (interaction-environment))))
+    ;; (command-execute proc)
+    (exit-minibuffer)))
 
-(define-public (previous-line)
-  (let ((row (- current-selection 1)))
-    (when (not (= current-selection 0))
-      (set! current-selection row)
-      (render-popup current-view current-list current-selection))))
+(define-interactive (next-line)
+  (let ((row (+ (local-var 'selection) 1))
+	(view (local-var 'view))
+	(lst (local-var 'list)))
+    (when (not (>= row (length lst)))
+      (set! (local-var 'selection)
+	    row)
+      (render-popup view lst row))))
+
+(define-interactive (previous-line)
+  (let ((row (- (local-var 'selection) 1))
+	(view (local-var 'view))
+	(lst (local-var 'list)))
+    (when (not (= row 0))
+      (set! (local-var 'selection) row)
+      (render-popup view lst row))))
 
 (define-public (input-completion text)
   "Returns a list of command symbols matching 'TEXT"

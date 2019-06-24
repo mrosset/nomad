@@ -646,7 +646,7 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
   gtk_widget_set_size_request (overlay_child, 100, 150);
   gtk_widget_set_halign (overlay_child, GTK_ALIGN_FILL);
   gtk_widget_set_valign (overlay_child, GTK_ALIGN_END);
-  gtk_widget_set_margin_bottom (overlay_child, 16);
+  gtk_widget_set_margin_bottom (overlay_child, 18);
 
   gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), overlay_child);
 
@@ -677,8 +677,19 @@ process_and_update_emacsy (void *user_data)
 {
   int flags;
   GtkTextBuffer *mbuf, *rbuf;
-  NomadAppWindowPrivate *priv = NOMAD_APP_WINDOW (user_data)->priv;
+  NomadAppWindowPrivate *priv;
+  NomadAppWindow *self;
+
   const char *modeline, *status;
+
+  // If user_data is NULL stop this idle process
+  if (!user_data)
+    {
+      return FALSE;
+    }
+
+  self = NOMAD_APP_WINDOW (user_data);
+  priv = self->priv;
 
   flags = emacsy_tick ();
   mbuf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->modeline));
