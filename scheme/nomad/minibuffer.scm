@@ -20,6 +20,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 session)
   #:use-module (nomad eval)
+  #:use-module (nomad views)
   #:use-module (emacsy emacsy)
   #:use-module (nomad init)
   #:export (current-selection
@@ -44,31 +45,43 @@
   (set! current-selection 0)
   (hide-minibuffer-popup))
 
+(define emacsy-minibuffer-complete #f)
+
+(set! emacsy-minibuffer-complete minibuffer-complete)
+
+(define-interactive (nomad-minibuffer-complete)
+  (emacsy-minibuffer-complete)
+  (render-completion-popup-view))
+
+(set! minibuffer-complete nomad-minibuffer-complete)
+
 (define-interactive (minibuffer-execute)
   (let* ((ref (local-var 'selection))
-	 (sym (list-ref (commands global-cmdset)
+	 (sym (list-ref (local-var 'completions)
 			ref))
 	 (proc (eval sym
 		     (interaction-environment))))
-    ;; (command-execute proc)
+    (delete-minibuffer-contents minibuffer)
+    (with-buffer minibuffer
+      (insert sym))
     (exit-minibuffer)))
 
 (define-interactive (next-line)
   (let ((row (+ (local-var 'selection) 1))
 	(view (local-var 'view))
-	(lst (local-var 'list)))
+	(lst (local-var 'completions)))
     (when (not (>= row (length lst)))
       (set! (local-var 'selection)
-	    row)
-      (render-popup view lst row))))
+	    row))
+    (render-completion-popup-view)))
 
 (define-interactive (previous-line)
   (let ((row (- (local-var 'selection) 1))
 	(view (local-var 'view))
-	(lst (local-var 'list)))
-    (when (not (= row 0))
+	(lst (local-var 'completions)))
+    (when (not (< row 0))
       (set! (local-var 'selection) row)
-      (render-popup view lst row))))
+      (render-completion-popup-view))))
 
 (define-public (input-completion text)
   "Returns a list of command symbols matching 'TEXT"

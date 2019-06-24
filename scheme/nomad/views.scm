@@ -18,10 +18,12 @@
 
 (define-module (nomad views)
   #:use-module (nomad app)
+  #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
   #:use-module (nomad minibuffer)
   #:use-module (nomad eval)
-  #:use-module (nomad html))
+  #:use-module (nomad html)
+  #:export (render-completion-popup-view))
 
 (define style-sheet "
 table {
@@ -103,20 +105,16 @@ color: steelblue;
 		     tr))
 		 lst))))
 
-(define-public (completion-view-old lst selection)
-  (sxml->html-string
-   `(html
-     (head
-      (title "completion view"))
-     (body (@ (style "margin: 0px 0px 0px 0px;"))
-	   (div (@ (class "fill"))
-		(table
-		       ,(let ((count 0))
-			  (map (lambda (item)
-				 (let ((tr `(tr (td ,item)))
-				       (selected `(tr ,tr-selected (td ,item))))
-				   (when (= count selection)
-				     (set! tr selected))
-				   (set! count (+ count 1))
-				   tr))
-			       lst))))))))
+(define-interactive (render-completion-popup-view)
+  "Renders the current minibuffer completion state"
+  (with-buffer minibuffer
+    (let* ((contents (substring (minibuffer-contents) 0 (- (point) (point-min))))
+	   (completions (all-completions
+			 contents
+			 (fluid-ref (@@ (emacsy minibuffer) minibuffer-completion-table))
+			 (fluid-ref (@@ (emacsy minibuffer) minibuffer-completion-predicate))))
+	   (view (local-var 'view))
+	   (row (local-var 'selection)))
+      (set! (local-var 'completions) completions)
+      (render-popup view completions row))))
+
