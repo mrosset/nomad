@@ -38,6 +38,8 @@ controls are accessible to scheme"
   ;; Kill emacsys message buffer
   (kill-buffer)
   ;; Setup the minibuffer
+  (define-key minibuffer-local-map "C-n" 'next-line)
+  (define-key minibuffer-local-map "C-p" 'previous-line)
   (with-buffer minibuffer
     (set! (local-var 'view) completion-view)
     (set! (local-var 'selection) 0)
@@ -47,10 +49,5 @@ controls are accessible to scheme"
     (add-hook! (buffer-exit-hook (current-buffer))
                hide-minibuffer-popup))
   ;; Create one buffer
-  (make-buffer default-home-page))
-
-
-;; Move these somewhere else?
-(define-key minibuffer-local-map "C-n" 'next-line)
-(define-key minibuffer-local-map "C-p" 'previous-line)
-;; (define-key minibuffer-local-map "RET" 'minibuffer-execute)
+  (make-buffer default-home-page)
+  )
