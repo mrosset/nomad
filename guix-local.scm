@@ -35,6 +35,7 @@
 	   (name "nomad")
 	   (version "git")
 	   (source (local-file %source-dir
-			       #:recursive? #t#:select? (git-predicate %source-dir)))))
+			       #:recursive? #t
+			       #:select? (git-predicate %source-dir)))))
 
 nomad-local
