@@ -91,14 +91,14 @@
   (run-hook (buffer-enter-hook (current-buffer)))
   (current-buffer))
 
-(define switch-to-buffer primitive-switch-to-buffer)
+(define switch-to-buffer* primitive-switch-to-buffer)
 
 (define-interactive (next-buffer* #:optional incr)
   (mru-next! buffer-stack)
   (let ((mru-recall! (lambda (a b) #t)))
     ;; this won't work because this is not elisp, i.e. we have lexical
     ;; scope and closures.
-    (switch-to-buffer (current-buffer))))
+    (switch-to-buffer* (current-buffer))))
 
 (define-key global-map (kbd "C-x C-b") 'message-buffers)
 (define-key global-map (kbd "C-b") 'next-buffer*)
