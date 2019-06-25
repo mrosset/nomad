@@ -93,3 +93,7 @@ specified. Returns the final URL passed to webkit"
   "Returns the current url"
   (message "~a"
            (webview-current-url)))
+
+;; FIXME: convert these to a mode-map
+(define-key global-map (kbd "C-u") 'back)
+(define-key global-map (kbd "C-m") 'forward)
