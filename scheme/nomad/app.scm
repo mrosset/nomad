@@ -35,8 +35,6 @@
 (define (app-init)
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
-  ;; Kill emacsys message buffer
-  (kill-buffer)
   ;; Setup the minibuffer
   (define-key minibuffer-local-map "C-n" 'next-line)
   (define-key minibuffer-local-map "C-p" 'previous-line)

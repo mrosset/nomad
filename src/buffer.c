@@ -175,6 +175,20 @@ init_buffer_type (void)
   buffer_type = scm_make_foreign_object_type (name, slots, finalizer);
 }
 
+gboolean
+destroy_buffer_invoke (void *data)
+{
+  GtkWidget *widget = GTK_WIDGET (data);
+  gtk_widget_destroy (widget);
+  return FALSE;
+}
+
+static void
+destroy_buffer (void *data)
+{
+  g_main_context_invoke (NULL, destroy_buffer_invoke, data);
+}
+
 SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 1, 0, 0, (SCM url),
             "Returns a new scheme nomad buffer pointer for URI.")
 {
@@ -183,15 +197,7 @@ SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 1, 0, 0, (SCM url),
   const char *uri = scm_to_locale_string (url);
 
   webkit_web_view_load_uri (view, uri);
-  return scm_from_pointer (buf, NULL);
-}
-
-gboolean
-kill_buffer_invoke (void *data)
-{
-  GtkWidget *win = nomad_app_get_window (app);
-  nomad_app_window_remove_buffer (NOMAD_APP_WINDOW (win));
-  return FALSE;
+  return scm_from_pointer (buf, destroy_buffer);
 }
 
 gboolean

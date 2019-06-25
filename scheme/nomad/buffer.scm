@@ -21,6 +21,7 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
   #:use-module (nomad browser)
+  #:use-module (nomad views)
   #:use-module (nomad eval)
   #:use-module (nomad minibuffer)
   #:use-module (nomad window)
@@ -32,11 +33,13 @@
   (write-socket (format #f "~S" `(make-buffer ,url))
                    socket))
 
-;; FIXME: port this to emacsy buffers
-(define-command (kill-some-buffers)
-  "Kill all buffers but one"
+(define-interactive (kill-some-buffers)
+  "Kill all buffers but the message buffer"
   (for-each (lambda _
-              (kill-buffer)) (buffer-alist)))
+              (when (not (string= "*Messages*"
+                                  (buffer-name (current-buffer))))
+                (kill-buffer)))
+            (buffer-list)))
 
 (define (buffers->uri)
   "Returns a list of uri's for all buffers"
@@ -44,12 +47,11 @@
          (buffer-name buffer))
        (buffer-list)))
 
-;; FIXME: port this to emacsy buffers
-(define-command (list-buffers)
+(define (show-buffers)
   "Displays buffers in minipopup"
   (begin
-    (render-popup completion-view (buffers->list) -1)
-    (length (buffers->list))))
+    (render-popup completion-view (buffers->uri) -1)
+    (length (buffers->uri))))
 
 (define-interactive (message-buffers)
   "Pretty prints the buffers to echo area"
@@ -65,7 +67,7 @@
   (let ((buffer (switch-to-buffer url)))
     (set! (local-var 'web-buffer)
           (make-web-buffer (prefix-url url)))
-     (add-hook! (buffer-enter-hook buffer)
+    (add-hook! (buffer-enter-hook buffer)
                on-enter)
     (on-enter)))
 
