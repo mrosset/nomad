@@ -48,10 +48,9 @@ controls are accessible to scheme"
     ;;              (render-completion-popup-view)))
     ;; (add-hook! (buffer-exit-hook (current-buffer))
     ;;            hide-minibuffer-popup)
-    ;; (agenda-schedule-interval (lambda ()
-    ;;                             (format #t "TICK\n")
-    ;;                              (minibuffer-complete))
-                              ;; 3000)
+    (agenda-schedule-interval (lambda _
+                                (update-buffer-names))
+                              3000)
     )
   ;; Create one buffer
   (make-buffer default-home-page))

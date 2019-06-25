@@ -72,7 +72,6 @@
       (format #t
               "Setting web-view to ~a~%"
               (local-var 'web-buffer))
-      (set-buffer-name! (buffer-uri (current-buffer)))
       (set-web-buffer! (local-var 'web-buffer))))
   (let ((buffer (switch-to-buffer url)))
     (set! (local-var 'web-buffer)
@@ -89,6 +88,13 @@
     ;;                           4000)
     (on-enter)))
 
+(define-public (update-buffer-names)
+  (for-each (lambda buffer
+              (with-buffer (car buffer)
+                           (let ((uri (buffer-uri (current-buffer))))
+                             (when uri
+                               (set-buffer-name! (buffer-uri (current-buffer)))))))
+            (buffer-list)))
 
 (define* (primitive-switch-to-buffer buffer #:optional recall?)
   (emacsy-log-debug "Running exit hook for ~a" (current-buffer))
