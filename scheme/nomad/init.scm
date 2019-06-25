@@ -20,6 +20,7 @@
   #:use-module (nomad keymap)
   #:use-module (nomad events)
   #:use-module (nomad util)
+  #:use-module (emacsy emacsy)
   #:use-module (nomad eval)
   #:use-module (nomad buffer)
   #:use-module (nomad repl)
@@ -84,17 +85,20 @@
                              //
                              "session.scm")))
 
-(define-command (read-session)
+(define-interactive (read-session)
   "Read session from file"
   (let* ((port (open-input-file (fluid-ref session-file)))
          (buffers (read port)))
     (close-port port)
-    (for-each (cut make-buffer <>) buffers)))
+    (for-each (lambda (uri)
+                (when uri
+                  (make-buffer uri)))
+              buffers)))
 
-(define-command (write-session)
+(define-interactive (write-session)
   "Write session to file"
   (let* ((port (open-output-file (fluid-ref session-file)))
-         (buffers (buffers->list)))
+         (buffers (buffers->uri)))
     (pretty-print buffers port)
     (close-port port)))
 

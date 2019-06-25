@@ -223,11 +223,12 @@ SCM_DEFINE (scm_nomad_buffer_title, "buffer-title", 1, 0, 0, (SCM buffer),
   return scm_from_locale_string (webkit_web_view_get_title (buf->view));
 }
 
-SCM_DEFINE (scm_nomad_buffer_uri, "buffer-uri", 1, 0, 0, (SCM buffer),
-            "Returns buffer title of BUFFER")
+SCM_DEFINE (scm_nomad_buffer_uri, "primitive-buffer-uri", 1, 0, 0,
+            (SCM pointer), "Returns buffer URI of BUFFER pointer")
 {
-  struct buffer *buf = scm_foreign_object_ref (buffer, 0);
-  return scm_from_locale_string (webkit_web_view_get_uri (buf->view));
+  NomadBuffer *buf;
+  buf = NOMAD_BUFFER (scm_to_pointer (pointer));
+  return scm_from_locale_string (webkit_web_view_get_uri (buf->priv->view));
 }
 
 gboolean
@@ -261,6 +262,7 @@ nomad_buffer_register_functions (void *data)
 {
 #include "buffer.x"
   init_buffer_type ();
-  scm_c_export ("buffer-title", "buffer-uri", "make-web-buffer", NULL);
+  scm_c_export ("buffer-title", "primitive-buffer-uri", "make-web-buffer",
+                NULL);
   return;
 }

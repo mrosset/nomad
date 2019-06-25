@@ -42,10 +42,18 @@
                 (kill-buffer)))
             (buffer-list)))
 
+(define (buffer-uri buffer)
+  "Returns the webview URI for 'buffer"
+  (with-buffer buffer
+               (if (not (string= "*Messages*"
+                                   (buffer-name)))
+                   (primitive-buffer-uri (local-var 'web-buffer))
+                   #f)))
+
 (define (buffers->uri)
   "Returns a list of uri's for all buffers"
   (map (lambda (buffer)
-         (buffer-name buffer))
+         (buffer-uri buffer))
        (buffer-list)))
 
 (define (show-buffers)
