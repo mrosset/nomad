@@ -18,6 +18,7 @@
 
 (define-module (nomad buffer)
   #:use-module (emacsy emacsy)
+  #:use-module (emacsy mru-stack) ;; until switch-to-buffer is upstreamed
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
   #:use-module (nomad browser)
@@ -71,18 +72,34 @@
                on-enter)
     (on-enter)))
 
-(define mru-next! (@@ (emacsy mru-stack) mru-next!))
-(define mru-prev! (@@ (emacsy mru-stack) mru-prev!))
-(define mru-ref (@@ (emacsy mru-stack) mru-ref))
 
-(define* (buffer-previous! #:optional (incr 1))
-  (mru-prev! buffer-stack incr)
-  (switch-to-buffer (mru-ref buffer-stack)))
+(define* (primitive-switch-to-buffer buffer #:optional recall?)
+  (emacsy-log-debug "Running exit hook for ~a" (current-buffer))
+  (run-hook (buffer-exit-hook (current-buffer)))
+  (set! last-buffer (current-buffer))
+  (if (mru-contains? buffer-stack buffer)
+      (begin
+        (emacsy-log-debug "Recall buffer ~a" buffer)
+        ;; if we want to set the buffer as most recenly used, then
+        ;; call with additional non false argument.
+        (if recall? (mru-recall! buffer-stack buffer))
+        (set! aux-buffer #f))
+      (begin
+        (emacsy-log-debug "Set buffer to ~a" buffer)
+        (set-buffer! buffer)))
+  (emacsy-log-debug "Running enter hook for ~a" (current-buffer))
+  (run-hook (buffer-enter-hook (current-buffer)))
+  (current-buffer))
 
-(define* (buffer-next! #:optional (incr 1))
-  (mru-next! buffer-stack (- incr))
-  (switch-to-buffer (mru-ref buffer-stack)))
+(define switch-to-buffer primitive-switch-to-buffer)
+
+(define-interactive (next-buffer* #:optional incr)
+  (mru-next! buffer-stack)
+  (let ((mru-recall! (lambda (a b) #t)))
+    ;; this won't work because this is not elisp, i.e. we have lexical
+    ;; scope and closures.
+    (switch-to-buffer (current-buffer))))
 
 (define-key global-map (kbd "C-x C-b") 'message-buffers)
-(define-key global-map (kbd "C-b") 'buffer-next!)
-(define-key global-map (kbd "C-n") 'buffer-previous!)
+(define-key global-map (kbd "C-b") 'next-buffer*)
+(define-key global-map (kbd "C-n") 'prev-buffer)
