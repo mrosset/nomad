@@ -72,6 +72,7 @@
       (format #t
               "Setting web-view to ~a~%"
               (local-var 'web-buffer))
+      (set-buffer-name! (buffer-uri (current-buffer)))
       (set-web-buffer! (local-var 'web-buffer))))
   (let ((buffer (switch-to-buffer url)))
     (set! (local-var 'web-buffer)
@@ -80,12 +81,12 @@
                on-enter)
     ;; Create an agenda that updates the buffer name from buffer
     ;; URI. When the buffer URI changes
-    (agenda-schedule-interval (lambda ()
-                                (with-buffer buffer
-                                             (when (not (string= (buffer-name (current-buffer))
-                                                                 (buffer-uri buffer)))
-                                               (set-buffer-name! (buffer-uri buffer)))))
-                              4000)
+    ;; (agenda-schedule-interval (lambda ()
+    ;;                             (with-buffer buffer
+    ;;                                          (when (not (string= (buffer-name (current-buffer))
+    ;;                                                              (buffer-uri buffer)))
+    ;;                                            (set-buffer-name! (buffer-uri buffer)))))
+    ;;                           4000)
     (on-enter)))
 
 
@@ -115,7 +116,6 @@
     ;; this won't work because this is not elisp, i.e. we have lexical
     ;; scope and closures.
     (switch-to-buffer* (current-buffer))))
-
 
 ;; Skip over Message buffer for now
 (define-key global-map (kbd "C-b") (lambda _
