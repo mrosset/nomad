@@ -40,20 +40,20 @@ controls are accessible to scheme"
   ;; Setup the minibuffer
   (define-key minibuffer-local-map "C-n" 'next-line)
   (define-key minibuffer-local-map "C-p" 'previous-line)
-  (define-key minibuffer-local-map "RET" 'minibuffer-execute)
+  ;; (define-key minibuffer-local-map "RET" 'minibuffer-execute)
   (with-buffer minibuffer
     (set! (local-var 'view) completion-view)
     (set! (local-var 'selection) 0)
     (set! (local-var 'completions) '())
     ;; (add-hook! (buffer-enter-hook (current-buffer))
-    ;;            render-completion-popup-view)
-    (add-hook! (buffer-exit-hook (current-buffer))
-               hide-minibuffer-popup)
+    ;;            (lambda _
+    ;;              (render-completion-popup-view)))
+    ;; (add-hook! (buffer-exit-hook (current-buffer))
+    ;;            hide-minibuffer-popup)
     ;; (agenda-schedule-interval (lambda ()
     ;;                             (format #t "TICK\n")
-    ;;                              (nomad-minibuffer-complete))
-    ;;                           3000)
+    ;;                              (minibuffer-complete))
+                              ;; 3000)
     )
   ;; Create one buffer
-  (make-buffer default-home-page)
-  )
+  (make-buffer default-home-page))

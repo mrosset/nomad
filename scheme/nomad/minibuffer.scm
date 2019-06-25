@@ -19,6 +19,7 @@
 (define-module (nomad minibuffer)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 session)
+  #:use-module (oop goops)
   #:use-module (nomad eval)
   #:use-module (nomad views)
   #:use-module (emacsy emacsy)
@@ -53,18 +54,25 @@
   (emacsy-minibuffer-complete)
   (render-completion-popup-view))
 
-(set! minibuffer-complete nomad-minibuffer-complete)
+;; (set! minibuffer-complete nomad-minibuffer-complete)
 
 (define-interactive (minibuffer-execute)
   (let* ((ref (local-var 'selection))
 	 (sym (list-ref (local-var 'completions)
 			ref))
-	 (proc (eval sym
+	 (proc (eval (string->symbol sym)
 		     (interaction-environment))))
-    ;; (delete-minibuffer-contents minibuffer)
-    ;; (with-buffer minibuffer
-    ;;   (insert sym))
-    (exit-minibuffer)))
+    (if (command? proc)
+	(begin (format #t "COMMAND: ~a\n" sym)
+	       ;; (command-execute proc)
+	       (delete-minibuffer-contents minibuffer)
+	       (with-buffer minibuffer
+		 (insert sym))
+	       (exit-minibuffer))
+	(begin (format #t
+		       "NOT COMMAND: ~a\n"
+		       (class-of sym))
+	       (exit-minibuffer)))))
 
 (define-interactive (next-line)
   (let ((row (+ (local-var 'selection) 1))
