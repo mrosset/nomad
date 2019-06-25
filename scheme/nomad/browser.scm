@@ -59,41 +59,37 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
              (and (webview-go-back)
                   (history-forward (1+ x)))))))
 
-(define-command (browse url)
+(define-interactive (browse #:optional (url (read-from-minibuffer "URL: ")))
   "Browse to URI. URI is prefixed with https:// if no protocol is
 specified. Returns the final URL passed to webkit"
-    (webview-load-uri (prefix-url url)))
+  (webview-load-uri (prefix-url url)))
 
-(define-interactive
-  (load-url #:optional
-        (url (read-from-minibuffer "URL: ")))
-  (message (webview-load-uri (prefix-url url))))
-
-(define-command (forward)
+(define-interactive (forward)
   "Go forward in browser history"
   (webview-go-forward))
 
-(define-command (home)
+(define-interactive (home)
   "Load default home page"
   (webview-load-uri default-home-page))
 
-(define-command (reload)
+(define-interactive (reload)
   "Reload current URI"
   (webview-reload))
 
-(define-command (back)
+(define-interactive (back)
   "Browse backwards in history"
   (webview-go-back))
 
-(define-command (make-query q)
+(define-interactive (make-query #:optional (q (read-from-minibuffer "Query: ")))
   "Makes a new buffer and queries ARG using 'search-provider-format"
   (make-buffer (simple-format #f search-provider-format q)))
 
-(define-command (query q)
+(define-interactive (query #:optional (q (read-from-minibuffer "Query: ")))
   "Queries ARG using 'search-provider-format"
   (let ((uri (simple-format #f search-provider-format q)))
     (browse uri)))
 
 (define-interactive (current-url)
   "Returns the current url"
-  (message "~a" (webview-current-url)))
+  (message "~a"
+           (webview-current-url)))
