@@ -78,6 +78,14 @@
           (make-web-buffer (prefix-url url)))
     (add-hook! (buffer-enter-hook buffer)
                on-enter)
+    ;; Create an agenda that updates the buffer name from buffer
+    ;; URI. When the buffer URI changes
+    (agenda-schedule-interval (lambda ()
+                                (with-buffer buffer
+                                             (when (not (string= (buffer-name (current-buffer))
+                                                                 (buffer-uri buffer)))
+                                               (set-buffer-name! (buffer-uri buffer)))))
+                              4000)
     (on-enter)))
 
 
