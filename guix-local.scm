@@ -21,25 +21,20 @@
 		 "/guix/gnu/packages/nomad.scm"))
 
 (use-modules (guix packages)
+	     (guix gexp)
 	     (guix git-download)
 	     (gnu packages nomad))
+
+(define %source-dir (dirname (current-filename)))
 
 ;; Override nomad's nomad sources uri to use guix-testing branch. This
 ;; allows for testing development builds of nomad without effecting
 ;; stable end user release build or git history.
 (define nomad-local
-  (let ((commit "0fb72953af7e1f202e6f1a1692fa1a4b784cb58e"))
-    (package (inherit nomad)
-	     (name "nomad")
-	     (version (git-version "alpha" "testing" commit))
-	     (source (origin
-		       (method git-fetch)
-		       (uri (git-reference
-			     (url "https://git.savannah.gnu.org/git/nomad.git")
-			     (commit commit)))
-		       (file-name (git-file-name name version))
-		       (sha256
-			(base32
-			 "1b06nb5mmj7xsqharfh4plfcbv4z2jylj06blgn53vs2dfjhmzhi")))))))
+  (package (inherit nomad)
+	   (name "nomad")
+	   (version "git")
+	   (source (local-file %source-dir
+			       #:recursive? #t#:select? (git-predicate %source-dir)))))
 
 nomad-local
