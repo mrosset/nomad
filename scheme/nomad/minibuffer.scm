@@ -61,9 +61,9 @@
 			ref))
 	 (proc (eval sym
 		     (interaction-environment))))
-    (delete-minibuffer-contents minibuffer)
-    (with-buffer minibuffer
-      (insert sym))
+    ;; (delete-minibuffer-contents minibuffer)
+    ;; (with-buffer minibuffer
+    ;;   (insert sym))
     (exit-minibuffer)))
 
 (define-interactive (next-line)
