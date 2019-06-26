@@ -118,8 +118,6 @@ nomad_app_activate (GApplication *self)
 
   NomadAppWindow *win = nomad_app_window_new (NOMAD_APP (self));
   gtk_window_present (GTK_WINDOW (win));
-  nomad_app_window_add_vte (win);
-  nomad_app_window_grab_vte (win);
   g_bus_own_name (G_BUS_TYPE_SESSION, BUS_INTERFACE_NAME,
                   G_BUS_NAME_OWNER_FLAGS_NONE,
                   (GBusAcquiredCallback)on_bus_acquired, NULL,
@@ -296,13 +294,6 @@ SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
   return nomad_app_get_buffers (app);
 }
 
-SCM_DEFINE (scm_nomad_start_vte, "start-vte", 0, 0, 0, (), "")
-{
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  nomad_app_window_start_repl (win);
-  return SCM_UNDEFINED;
-}
-
 void
 run_hints_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
@@ -344,6 +335,5 @@ nomad_app_register_functions (void *data)
 {
 #include "app.x"
   scm_c_export ("nomad-version", "start-browser", "restart-nomad",
-                "kill-nomad", "buffer-alist", "main-thread", "start-vte",
-                "hints", NULL);
+                "kill-nomad", "buffer-alist", "main-thread", "hints", NULL);
 }

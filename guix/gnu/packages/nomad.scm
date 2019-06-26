@@ -44,7 +44,6 @@
 	 ("gtk+" ,gtk+)
 	 ("gtksourceview" ,gtksourceview)
 	 ("pkg-config" ,pkg-config)
-	 ("vte" ,vte)
 	 ("webkitgtk" ,webkitgtk)))
       (propagated-inputs
        `(("dbus-glib" ,dbus-glib)

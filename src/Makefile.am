@@ -52,7 +52,6 @@ AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
 	-Wno-deprecated-declarations						\
 	$(GTK_FLAGS)								\
 	$(GUILE_CFLAGS)								\
-	$(VTE_CFLAGS)								\
 	$(WEBKIT_CFLAGS)							\
 	$(GTK_SOURCEVIEW_CFLAGS)						\
 	-DNOMAD_SOCKET_FILE=\""/tmp/nomad-socket"\"				\
@@ -63,7 +62,7 @@ AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
 
 AM_LDFLAGS = -export-dynamic
 
-nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(VTE_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
+nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
 
 
 DOT_X_FILES = app.x buffer.x webkit.x window.x util.x minibuffer.x

@@ -27,10 +27,6 @@
   #:use-module (system repl coop-server)
   #:use-module (system repl server)
   #:export (
-            emacs-command-line
-            nc-command-line
-            rlwrap-command-line
-            repl-command-line
             repl-server
             server-force-delete
             server-start
@@ -38,14 +34,6 @@
             socket-file))
 
 (define socket-file "/tmp/nomad-socket")
-
-(define nc-command-line (list "nc" "-U" socket-file))
-
-(define bash-command-line (list "bash" "--login"))
-
-(define rlwrap-command-line (append (list "rlwrap") nc-command-line))
-
-(define repl-command-line bash-command-line)
 
 (define repl-server #f)
 

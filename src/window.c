@@ -26,7 +26,6 @@
 #include <gtksourceview/gtksourcelanguagemanager.h>
 #include <libguile.h>
 #include <libguile/hooks.h>
-#include <vte/vte.h>
 #include <webkit2/webkit2.h>
 
 #include "app.h"
@@ -48,7 +47,6 @@ struct _NomadAppWindowPrivate
   GtkWidget *text_buffer;
   GtkWidget *mini_popup;
   GtkWidget *mini_frame;
-  GtkWidget *vte;
   GtkWidget *overlay;
   SCM keymap;
   WebKitWebView *web_view;
@@ -98,28 +96,6 @@ keyboard_quit (gpointer widget)
   /* gtk_widget_hide (priv->mini_popup); */
   gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
   scm_call_0 (scm_c_public_ref ("nomad minibuffer", "reset-minibuffer"));
-}
-
-static void
-fork_vte_child (VteTerminal *vte, gint status, gpointer data)
-{
-  gchar **envv;
-  gchar *pwd;
-  SCM cmd = scm_c_public_ref ("nomad repl", "repl-command-line");
-  gchar *argv[scm_to_int (scm_length (cmd)) + 1];
-
-  scm_to_argv (cmd, argv);
-  pwd = g_get_current_dir ();
-  envv = g_get_environ ();
-  envv = g_environ_setenv (envv, "TERM", "xterm-256color", TRUE);
-
-  vte_terminal_spawn_async (vte, VTE_PTY_DEFAULT, NULL, argv, envv,
-                            G_SPAWN_DEFAULT | G_SPAWN_SEARCH_PATH_FROM_ENVP,
-                            NULL, 0, NULL, -1, NULL, NULL, NULL);
-
-  g_strfreev (envv);
-  g_free (pwd);
-  gtk_widget_grab_focus (GTK_WIDGET (vte));
 }
 
 void
@@ -774,11 +750,6 @@ nomad_app_window_init (NomadAppWindow *self)
    *                   G_CALLBACK (read_line_key_press_event_cb),
    * (gpointer)self); */
 
-  g_signal_connect (VTE_TERMINAL (priv->vte), "child-exited",
-                    G_CALLBACK (fork_vte_child), NULL);
-
-  gtk_widget_hide (self->priv->vte);
-
   // Cookies
   cookie_manager = webkit_web_context_get_cookie_manager (
       webkit_web_context_get_default ());
@@ -798,41 +769,6 @@ GtkNotebook *
 nomad_window_get_notebook (NomadAppWindow *self)
 {
   return GTK_NOTEBOOK (self->priv->notebook);
-}
-
-void
-nomad_app_window_add_vte (NomadAppWindow *self)
-{
-  GdkRGBA b_rgba;
-  GdkRGBA f_rgba;
-
-  gdk_rgba_parse (&b_rgba, "white");
-  gdk_rgba_parse (&f_rgba, "black");
-
-  vte_terminal_set_color_background (VTE_TERMINAL (self->priv->vte), &b_rgba);
-  vte_terminal_set_color_foreground (VTE_TERMINAL (self->priv->vte), &f_rgba);
-
-  /* self->priv->vte = GTK_WIDGET (nomad_vte_new ()); */
-  gtk_paned_add2 (GTK_PANED (self->priv->pane), self->priv->vte);
-  fork_vte_child (VTE_TERMINAL (self->priv->vte), 0, NULL);
-}
-
-void
-nomad_app_window_grab_vte (NomadAppWindow *self)
-{
-  gtk_widget_grab_focus (self->priv->vte);
-}
-
-void
-nomad_app_window_show_vte (NomadAppWindow *self)
-{
-  gtk_widget_show (self->priv->vte);
-}
-
-void
-nomad_app_window_hide_vte (NomadAppWindow *self)
-{
-  gtk_widget_hide (self->priv->vte);
 }
 
 GtkWidget *
@@ -889,18 +825,6 @@ nomad_window_get_tabs (NomadAppWindow *self)
   return gtk_container_get_children (GTK_CONTAINER (self->priv->notebook));
 }
 
-void
-vte_show_cb (GtkWidget *vte, void *data)
-{
-  g_print ("SHOW\n");
-}
-
-void
-nomad_app_window_start_repl (NomadAppWindow *self)
-{
-  fork_vte_child (VTE_TERMINAL (self->priv->vte), 0, NULL);
-}
-
 static void
 nomad_app_window_class_init (NomadAppWindowClass *class)
 {
@@ -911,8 +835,6 @@ nomad_app_window_class_init (NomadAppWindowClass *class)
                                                 NomadAppWindow, pane);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, box);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, vte);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 NomadAppWindow, read_line);
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
