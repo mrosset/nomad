@@ -655,6 +655,7 @@ process_and_update_emacsy (void *user_data)
   GtkTextBuffer *mbuf, *rbuf;
   NomadAppWindowPrivate *priv;
   NomadAppWindow *self;
+  GtkWidget *webview;
 
   const char *modeline, *status;
 
@@ -671,6 +672,8 @@ process_and_update_emacsy (void *user_data)
   mbuf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->modeline));
   rbuf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->read_line));
 
+  webview = GTK_WIDGET (nomad_app_window_get_webview (self));
+
   // If there's been a request to quit, quit.
   if (flags & EMACSY_QUIT_APPLICATION_P)
     {
@@ -683,6 +686,22 @@ process_and_update_emacsy (void *user_data)
 
   gtk_text_buffer_set_text (mbuf, modeline, -1);
 
+  if (scm_is_true (
+          scm_c_private_ref ("emacsy minibuffer", "minibuffer-reading?")))
+    {
+      gtk_widget_grab_focus (priv->read_line);
+    }
+  else
+    {
+      if (webview)
+        {
+          gtk_widget_grab_focus (webview);
+        }
+      else
+        {
+          gtk_widget_grab_focus (priv->modeline);
+        }
+    }
   gtk_text_buffer_set_text (rbuf, status, -1);
   return TRUE;
 }
@@ -855,6 +874,10 @@ WebKitWebView *
 nomad_app_window_get_webview (NomadAppWindow *self)
 {
   NomadBuffer *buf = nomad_app_window_get_buffer (self);
+  if (!buf)
+    {
+      return NULL;
+    }
   return nomad_buffer_get_view (buf);
 }
 

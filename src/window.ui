@@ -97,6 +97,7 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
                 <property name="editable">False</property>
                 <property name="left_margin">2</property>
                 <property name="right_margin">2</property>
+                <property name="cursor_visible">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>
