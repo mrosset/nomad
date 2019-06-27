@@ -179,7 +179,9 @@ gboolean
 destroy_buffer_invoke (void *data)
 {
   GtkWidget *widget = GTK_WIDGET (data);
-  gtk_widget_destroy (widget);
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GtkNotebook *notebook = nomad_window_get_notebook (win);
+  gtk_notebook_detach_tab (notebook, widget);
   return FALSE;
 }
 
