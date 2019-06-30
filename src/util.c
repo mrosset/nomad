@@ -47,6 +47,18 @@ SCM_DEFINE (scm_nomad_yank_string, "yank-string", 1, 0, 0, (SCM string),
   return SCM_BOOL_T;
 }
 
+SCM_DEFINE (scm_c_register_interactive, "nomad-register-interactive", 2, 0, 0,
+            (const char *c_name),
+            "Registers procedure name as an interactive command")
+{
+  SCM name = scm_from_locale_string (c_name);
+  SCM sym = scm_string_to_symbol (name);
+  SCM proc = scm_eval_string (name);
+
+  return scm_call_2 (
+      scm_c_public_ref ("emacsy command", "register-interactive"), sym, proc);
+}
+
 SCM
 scm_c_make_command (const char *key)
 {
