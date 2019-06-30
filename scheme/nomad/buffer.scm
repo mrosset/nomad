@@ -139,6 +139,7 @@
     (switch-to-buffer* (current-buffer))))
 
 ;; Skip over Message buffer for now
+(define-key global-map (kbd "C-n") 'prev-buffer)
 (define-key global-map (kbd "C-b") (lambda _
                                      (next-buffer*)
                                      (when (string= "*Messages*"
