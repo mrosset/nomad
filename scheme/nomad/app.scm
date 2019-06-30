@@ -50,7 +50,6 @@ controls are accessible to scheme"
     ;;            hide-minibuffer-popup)
     (agenda-schedule-interval (lambda _
                                 (update-buffer-names))
-                              3000)
-    )
+                              10))
   ;; Create one buffer
   (make-buffer default-home-page))

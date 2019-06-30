@@ -626,6 +626,9 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
 
   gtk_overlay_add_overlay (GTK_OVERLAY (priv->overlay), overlay_child);
 
+  // Notebook
+  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (priv->notebook), FALSE);
+
   // signals
   g_signal_connect (G_OBJECT (top), "draw", G_CALLBACK (draw_border_cb), NULL);
   g_signal_connect (G_OBJECT (bottom), "draw", G_CALLBACK (draw_border_cb),
@@ -656,8 +659,7 @@ process_and_update_emacsy (void *user_data)
   NomadAppWindowPrivate *priv;
   NomadAppWindow *self;
   GtkWidget *webview;
-
-  const char *modeline, *status;
+  char *modeline, *status;
 
   // If user_data is NULL stop this idle process
   if (!user_data)
@@ -685,24 +687,26 @@ process_and_update_emacsy (void *user_data)
   status = emacsy_message_or_echo_area ();
 
   gtk_text_buffer_set_text (mbuf, modeline, -1);
+  gtk_text_buffer_set_text (rbuf, status, -1);
 
-  if (scm_is_true (
-          scm_c_private_ref ("emacsy minibuffer", "minibuffer-reading?")))
+  g_free (modeline);
+  g_free (status);
+
+  if (scm_is_true (scm_c_public_ref ("emacsy minibuffer",
+                                     "emacsy-display-minibuffer?")))
     {
       gtk_widget_grab_focus (priv->read_line);
+      return TRUE;
+    }
+
+  if (webview)
+    {
+      gtk_widget_grab_focus (webview);
     }
   else
     {
-      if (webview)
-        {
-          gtk_widget_grab_focus (webview);
-        }
-      else
-        {
-          gtk_widget_grab_focus (priv->modeline);
-        }
+      gtk_widget_grab_focus (priv->modeline);
     }
-  gtk_text_buffer_set_text (rbuf, status, -1);
   return TRUE;
 }
 
@@ -747,8 +751,8 @@ nomad_app_window_init (NomadAppWindow *self)
   // Signals
 
   // While idle, process events in Emacsy and upate the echo-area.
-  g_idle_add ((GSourceFunc)process_and_update_emacsy, self);
-
+  g_timeout_add_full (G_PRIORITY_LOW, 50, process_and_update_emacsy, self,
+                      NULL);
   // Main keypress
   g_signal_connect (self, "key-press-event", G_CALLBACK (window_key_press_cb),
                     (gpointer)self);
@@ -828,14 +832,15 @@ nomad_app_window_remove_buffer (NomadAppWindow *self)
     }
 }
 
-void
+gint
 nomad_app_window_add_buffer (NomadAppWindow *self, NomadBuffer *buf)
 {
   NomadAppWindowPrivate *priv = self->priv;
-  gint n = gtk_notebook_append_page (GTK_NOTEBOOK (priv->notebook),
-                                     GTK_WIDGET (buf), NULL);
+  gint page = gtk_notebook_append_page (GTK_NOTEBOOK (priv->notebook),
+                                        GTK_WIDGET (buf), NULL);
   gtk_widget_show_all (GTK_WIDGET (buf));
-  gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook), n);
+  gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook), page);
+  return page;
 }
 
 GList *
@@ -908,20 +913,23 @@ SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0,
             (SCM web_buffer_pointer),
             "Set the current web view to the given pointer.")
 {
+  gint page;
+  GtkWidget *buf;
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  GtkWidget *current = nomad_app_get_first_buffer (app);
   GtkNotebook *notebook = nomad_window_get_notebook (win);
 
   if (SCM_POINTER_P (web_buffer_pointer))
     {
-      if (current)
+      buf = GTK_WIDGET (scm_to_pointer (web_buffer_pointer));
+      page = gtk_notebook_page_num (notebook, buf);
+      if (page < 0)
         {
-          // If a widget exists mark the widget so it is not destroyed
-          // when detaching
-          g_object_ref (current);
-          gtk_notebook_detach_tab (notebook, current);
+          nomad_app_window_add_buffer (win, NOMAD_BUFFER (buf));
         }
-      nomad_app_window_add_buffer (win, scm_to_pointer (web_buffer_pointer));
+      else
+        {
+          gtk_notebook_set_current_page (notebook, page);
+        }
     }
   else
     fprintf (stderr, "error: not given a pointer in set-web-buffer!\n");

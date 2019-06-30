@@ -57,10 +57,6 @@ startup (GApplication *app, gpointer data)
   scm_c_use_module ("nomad window");
   scm_c_use_module ("nomad views");
 
-  // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
-  // documentation for $HOME/.nomad
-  scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"), NULL);
-
   scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"), socket);
 }
 

@@ -179,16 +179,44 @@ gboolean
 destroy_buffer_invoke (void *data)
 {
   GtkWidget *widget = GTK_WIDGET (data);
+  if (widget)
+    {
+      gtk_widget_destroy (widget);
+    }
+  return FALSE;
+}
+
+gboolean
+remove_buffer_invoke (void *data)
+{
+  GtkWidget *widget = GTK_WIDGET (data);
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   GtkNotebook *notebook = nomad_window_get_notebook (win);
-  gtk_notebook_detach_tab (notebook, widget);
+  gint page = gtk_notebook_page_num (notebook, widget);
+
+  if (page > -1)
+    {
+      gtk_notebook_remove_page (notebook, page);
+    }
   return FALSE;
 }
 
 static void
 destroy_buffer (void *data)
 {
-  g_main_context_invoke (NULL, destroy_buffer_invoke, data);
+  g_print ("DESTROY: %p\n", data);
+  g_idle_add (remove_buffer_invoke, data);
+}
+
+SCM_DEFINE (scm_nomad_remove_web_buffer, "remove-web-buffer", 1, 0, 0,
+            (SCM web_buffer), "remove web buffer from notebook")
+{
+  GtkWidget *buf = scm_to_pointer (web_buffer);
+  if (buf)
+    {
+      g_idle_add (remove_buffer_invoke, buf);
+    }
+  return SCM_UNSPECIFIED;
 }
 
 SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 1, 0, 0, (SCM url),
@@ -199,7 +227,7 @@ SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 1, 0, 0, (SCM url),
   const char *uri = scm_to_locale_string (url);
 
   webkit_web_view_load_uri (view, uri);
-  return scm_from_pointer (buf, destroy_buffer);
+  return scm_from_pointer (buf, NULL);
 }
 
 gboolean
@@ -250,7 +278,7 @@ set_buffer_invoke (void *data)
 
   obj = scm_foreign_object_ref (buffer, 0);
   win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  if (obj->buffer == NULL)
+  if (!obj->buffer)
     {
       g_critical ("window not found");
       return FALSE;
@@ -265,6 +293,6 @@ nomad_buffer_register_functions (void *data)
 #include "buffer.x"
   init_buffer_type ();
   scm_c_export ("buffer-title", "primitive-buffer-uri", "make-web-buffer",
-                NULL);
+                "remove-web-buffer", NULL);
   return;
 }

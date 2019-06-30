@@ -38,10 +38,10 @@
 
 (define-interactive (kill-some-buffers)
   "Kill all buffers but the message buffer"
-  (for-each (lambda _
-              (when (not (string= "*Messages*"
-                                  (buffer-name (current-buffer))))
-                (kill-buffer)))
+  (for-each (lambda (buffer)
+              (when (not (string= (buffer-name buffer)
+                                  "*Messages*"))
+                (kill-buffer buffer)))
             (buffer-list)))
 
 (define (buffer-uri buffer)
@@ -68,6 +68,18 @@
   "Pretty prints the buffers to echo area"
   (message "~a" (with-output-to-string (lambda _ (pretty-print (buffer-list))))))
 
+(define emacsy-kill-buffer kill-buffer)
+
+
+(define-interactive (nomad-kill-buffer #:optional (buffer (current-buffer)))
+  (when (not (string= "*Messages*"
+                      (buffer-name (current-buffer))))
+    (with-buffer buffer
+      (remove-web-buffer (local-var 'web-buffer)))
+    (emacsy-kill-buffer buffer)))
+
+(set! kill-buffer nomad-kill-buffer)
+
 (define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
   (define (on-enter)
     (when (local-var 'web-buffer)
@@ -88,7 +100,7 @@
     ;;                                          (when (not (string= (buffer-name (current-buffer))
     ;;                                                              (buffer-uri buffer)))
     ;;                                            (set-buffer-name! (buffer-uri buffer)))))
-    ;;                           4000)
+    ;;                           40)
     (on-enter)))
 
 (define-public (update-buffer-names)
