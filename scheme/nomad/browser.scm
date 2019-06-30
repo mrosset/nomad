@@ -28,7 +28,8 @@
             prefix-url
             search-provider-format
             history-forward
-            webview-mode-map))
+            webview-mode-map
+            webview-map))
 
 (define webview-mode-map '(("C-b" . (next-buffer))
                                   ("C-u" . (back))
@@ -95,5 +96,6 @@ specified. Returns the final URL passed to webkit"
            (webview-current-url)))
 
 ;; FIXME: convert these to a mode-map
-(define-key global-map (kbd "C-u") 'back)
-(define-key global-map (kbd "C-m") 'forward)
+(define webview-map (make-keymap))
+(define-key webview-map (kbd "C-u") 'next-buffer)
+(define-key webview-map (kbd "C-m") 'prev-buffer)

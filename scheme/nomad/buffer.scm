@@ -18,6 +18,7 @@
 
 (define-module (nomad buffer)
   #:use-module (emacsy emacsy)
+  #:use-module (emacsy buffer)
   #:use-module (emacsy mru-stack) ;; until switch-to-buffer is upstreamed
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
@@ -76,6 +77,7 @@
   (let ((buffer (switch-to-buffer url)))
     (set! (local-var 'web-buffer)
           (make-web-buffer (prefix-url url)))
+    (use-local-map webview-map)
     (add-hook! (buffer-enter-hook buffer)
                on-enter)
     ;; Create an agenda that updates the buffer name from buffer
