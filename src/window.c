@@ -936,9 +936,22 @@ SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0,
   return SCM_UNSPECIFIED;
 }
 
+SCM_DEFINE (scm_nomad_window_show_tabs, "toggle-tabs", 0, 0, 0, (),
+            "Turns notebook tabs on or off")
+{
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GtkNotebook *notebook = nomad_window_get_notebook (win);
+
+  gtk_notebook_set_show_tabs (notebook,
+                              !gtk_notebook_get_show_tabs (notebook));
+  return SCM_UNSPECIFIED;
+}
+
 void
 nomad_window_register_functions (void *data)
 {
 #include "window.x"
-  scm_c_export ("webview-focus", "keyboard-quit", "set-web-buffer!", NULL);
+  scm_c_export ("webview-focus", "keyboard-quit", "set-web-buffer!",
+                "toggle-tabs", NULL);
+  scm_c_register_interactive ("toggle-tabs");
 }
