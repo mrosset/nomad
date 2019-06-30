@@ -27,6 +27,7 @@
   #:use-module (nomad eval)
   #:use-module (nomad minibuffer)
   #:use-module (nomad window)
+  #:use-module (nomad repl)
   #:export (make-buffer-socket
             buffers->uri))
 
