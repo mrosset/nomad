@@ -32,6 +32,7 @@
            bookmark->alist
            bookmark-file
            bookmark-find
+           bookmark-init
            bookmark-list
            bookmark-ref
            make-bookmark
@@ -54,6 +55,9 @@
            (sexp (map bookmark->alist bookmarks)))
       (write sexp out)
       (close-port out))))
+
+(define (bookmark-init)
+  (read-bookmarks))
 
 (define-record-type <bookmark>
   (make-bookmark id contents)
