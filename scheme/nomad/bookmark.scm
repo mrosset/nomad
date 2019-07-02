@@ -1,6 +1,6 @@
 ;; bookmark --- bookmarks for Nomad
 
-;; Copyright (C) 2019 Mike Rosset
+;; Copyright (C) 2019 Mike Rosset<Mike.Rosset@gmail.com>
 ;; Copyright (C) 2019 Amar Singh<nly@disroot.org>
 
 ;; This file is part of Nomad.
@@ -25,25 +25,28 @@
  #:use-module (ice-9 optargs)
  #:use-module (nomad browser)
  #:use-module (nomad buffer)
+ #:use-module (nomad init)
  #:use-module (nomad util)
  #:use-module (srfi srfi-1)
  #:use-module (srfi srfi-26)
  #:use-module (srfi srfi-9)
  #:export (alist->bookmark
-           bookmark->alist
-           bookmark-file
-           bookmark-find
-           bookmark-init
-           bookmark-list
-           bookmark-ref
-           make-bookmark
-           read-bookmarks
-           write-bookmarks
-           bookmarks
-           open-bookmark
-           save-bookmark))
+	   bookmark->alist
+	   bookmark-file
+	   bookmark-find
+	   bookmark-init
+	   bookmark-list
+	   bookmark-ref
+	   make-bookmark
+	   read-bookmarks
+	   write-bookmarks
+	   bookmarks
+	   open-bookmark
+	   save-bookmark))
 
-(define bookmark-file (~/ ".nomad.d/bookmarks.scm"))
+(define bookmark-file
+  (string-append (fluid-ref user-nomad-directory)
+		 // "bookmarks.scm"))
 
 (define* (read-bookmarks #:optional file)
   (let ((bookmark-file (or file bookmark-file)))
@@ -87,15 +90,11 @@
 (define bookmarks
   (map alist->bookmark
        '(((id . "guilem")
-          (contents . "https://www.gnu.org/software/guile/manual/html_node"))
-         ((id . "emacs")
-          (contents . "https://www.gnu.org/software/emacs"))
-         ((id . "guile")
-          (contents . "https://www.gnu.org/software/guile"))
-         ((id . "google")
-          (contents . "https://www.google.ca"))
-         ((id . "etoscheme")
-          (contents . "https://www.cs.utexas.edu/~novak/schemevscl.html")))))
+	  (contents . "https://www.gnu.org/software/guile/manual/html_node"))
+	 ((id . "emacs")
+	  (contents . "https://www.gnu.org/software/emacs"))
+	 ((id . "guile")
+	  (contents . "https://www.gnu.org/software/guile")))))
 
 (define (pp-bookmarks)
   (define (print-bookmark arg)
