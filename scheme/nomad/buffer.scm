@@ -93,14 +93,6 @@
     (use-local-map webview-map)
     (add-hook! (buffer-enter-hook buffer)
                on-enter)
-    ;; Create an agenda that updates the buffer name from buffer
-    ;; URI. When the buffer URI changes
-    ;; (agenda-schedule-interval (lambda ()
-    ;;                             (with-buffer buffer
-    ;;                                          (when (not (string= (buffer-name (current-buffer))
-    ;;                                                              (buffer-uri buffer)))
-    ;;                                            (set-buffer-name! (buffer-uri buffer)))))
-    ;;                           40)
     (on-enter)))
 
 (define-public (update-buffer-names)
@@ -111,39 +103,17 @@
                                (set-buffer-name! (buffer-uri (current-buffer)))))))
             (buffer-list)))
 
-(define* (primitive-switch-to-buffer buffer #:optional recall?)
-  (emacsy-log-debug "Running exit hook for ~a" (current-buffer))
-  (run-hook (buffer-exit-hook (current-buffer)))
-  (set! last-buffer (current-buffer))
-  (if (mru-contains? buffer-stack buffer)
-      (begin
-        (emacsy-log-debug "Recall buffer ~a" buffer)
-        ;; if we want to set the buffer as most recenly used, then
-        ;; call with additional non false argument.
-        (if recall? (mru-recall! buffer-stack buffer))
-        (set! aux-buffer #f))
-      (begin
-        (emacsy-log-debug "Set buffer to ~a" buffer)
-        (set-buffer! buffer)))
-  (emacsy-log-debug "Running enter hook for ~a" (current-buffer))
-  (run-hook (buffer-enter-hook (current-buffer)))
-  (current-buffer))
-
-(define switch-to-buffer* primitive-switch-to-buffer)
-
-(define-interactive (next-buffer* #:optional incr)
-  (mru-next! buffer-stack)
-  (let ((mru-recall! (lambda (a b) #t)))
-    ;; this won't work because this is not elisp, i.e. we have lexical
-    ;; scope and closures.
-    (switch-to-buffer* (current-buffer))))
-
-(define-key global-map (kbd "C-n") 'prev-buffer)
-
 ;; Skip over Message buffer for now
 (define-key global-map (kbd "C-b") (lambda _
-                                     (next-buffer*)
+                                     (next-buffer)
                                      (when (string= "*Messages*"
                                                     (buffer-name (current-buffer)))
-                                       (next-buffer*))))
+                                       (next-buffer))))
+
+(define-key global-map (kbd "C-n") (lambda _
+                                     (prev-buffer)
+                                     (when (string= "*Messages*"
+                                                    (buffer-name (current-buffer)))
+                                       (prev-buffer))))
+
 (define-key global-map (kbd "C-x C-b") 'message-buffers)
