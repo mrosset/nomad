@@ -19,9 +19,10 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 (define-module (nomad bookmark)
- #:use-module (emacsy command)
+ #:use-module (emacsy emacsy)
  #:use-module (ice-9 match)
  #:use-module (ice-9 regex)
+ #:use-module (ice-9 optargs)
  #:use-module (nomad browser)
  #:use-module (nomad buffer)
  #:use-module (nomad util)
@@ -38,7 +39,9 @@
            make-bookmark
            read-bookmarks
            write-bookmarks
-           bookmarks))
+           bookmarks
+           open-bookmark
+           save-bookmark))
 
 (define bookmark-file (~/ ".nomad.d/bookmarks.scm"))
 
@@ -106,18 +109,13 @@
   (filter (compose (cut string-match key <>) bookmark-id)
           (or books bookmarks)))
 
-(define-interactive (open-bookmark str)
+(define-interactive (open-bookmark #:optional (str (read-from-minibuffer "Bookmark: ")))
   "Opens bookmark by key in current buffer"
-  (unless str (set! str (read-from-minibuffer "Bookmark: ")))
   (make-buffer (bookmark-contents
                 (car (bookmark-find str)))))
 
-(define-interactive (save-bookmark key url)
+(define-interactive (save-bookmark #:optional (key (read-from-minibuffer "Key: ")) (url (or (current-url) (read-from-minibuffer "URL: "))))
   "Makes a bookmark by 'KEY in a new buffer"
-  (unless key
-    (set! key (read-from-minibuffer "Key: ")))
-  (unless (or url (current-url))
-    (set! key (read-from-minibuffer "URL: ")))
   (let ((book (make-bookmark key url)))
     (if bookmark? book)
     (set! bookmarks (cons book bookmarks)))
