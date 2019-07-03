@@ -1,5 +1,6 @@
-;; webkit.scm
+;; webkit.scm --- scheme bindings to webkit
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+;; Copyright (C) 2019 by Amar Singh<nly@disroot.org>
 
 ;; This file is part of Nomad
 
@@ -18,4 +19,10 @@
 
 (define-module (nomad webkit)
   #:use-module (nomad eval)
-  #:use-module (nomad util))
+  #:use-module (nomad util)
+  #:use-module (nomad util)
+  #:export (webview-load-content))
+
+(define-command (copy-current-url)
+  "Copy current url."
+  (yank-string (webview-current-url)))
