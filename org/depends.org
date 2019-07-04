@@ -1,0 +1,8 @@
+* GTK frontend
+** Ubuntu 19.04
+#+begin_src shell
+sudo apt install -y \
+libgtk-3-dev \
+libwebkit2gtk-4.0-dev \
+libgtksourceview-4-dev
+  #+end_src

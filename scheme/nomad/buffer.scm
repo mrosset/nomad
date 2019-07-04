@@ -70,7 +70,6 @@
 
 (define emacsy-kill-buffer kill-buffer)
 
-
 (define-interactive (nomad-kill-buffer #:optional (buffer (current-buffer)))
   (when (not (string= "*Messages*"
                       (buffer-name (current-buffer))))
@@ -98,9 +97,9 @@
 (define-public (update-buffer-names)
   (for-each (lambda buffer
               (with-buffer (car buffer)
-                           (let ((uri (buffer-uri (current-buffer))))
-                             (when uri
-                               (set-buffer-name! (buffer-uri (current-buffer)))))))
+                (let ((uri (buffer-uri (current-buffer))))
+                  (when uri
+                    (set-buffer-name! (buffer-uri (current-buffer)))))))
             (buffer-list)))
 
 ;; Skip over Message buffer for now
