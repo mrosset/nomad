@@ -89,7 +89,11 @@
 
 (define bookmarks
   (map alist->bookmark
-       '(((id . "guilem")
+       '(((id . "nomad")
+	  (contents . "https://savannah.nongnu.org/projects/nomad"))
+	 ((id . "emacsy")
+	  (contents . "https://savannah.nongnu.org/projects/emacsy"))
+	 ((id . "guilem")
 	  (contents . "https://www.gnu.org/software/guile/manual/html_node"))
 	 ((id . "emacs")
 	  (contents . "https://www.gnu.org/software/emacs"))
