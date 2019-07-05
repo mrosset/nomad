@@ -37,6 +37,7 @@ SUFFIXES = .scm .go
 
 SOURCES =			\
 	nomad/app.scm		\
+	nomad/bookmark.scm	\
 	nomad/browser.scm	\
 	nomad/buffer.scm	\
 	nomad/eval.scm		\
