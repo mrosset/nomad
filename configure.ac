@@ -44,6 +44,7 @@ GUILE_SITE_DIR
 
 # pkg-config modules
 PKG_CHECK_MODULES([GUILE], [guile-2.2])
+PKG_CHECK_MODULES([EMACSY], [emacsy])
 PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
 PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])

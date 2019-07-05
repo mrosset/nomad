@@ -1,6 +1,6 @@
 * GTK frontend
 ** Ubuntu 19.04
-#+begin_src shell
+#+begin_src shell :results output silent
 sudo apt install -y \
 libgtk-3-dev \
 libwebkit2gtk-4.0-dev \

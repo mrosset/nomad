@@ -48,9 +48,9 @@ moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
 ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 
 AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
-	-lemacsy								\
 	-Wno-deprecated-declarations						\
-	$(GTK_FLAGS)								\
+	$(EMACSY_CFLAGS)							\
+	$(GTK_CFLAGS)								\
 	$(GUILE_CFLAGS)								\
 	$(WEBKIT_CFLAGS)							\
 	$(GTK_SOURCEVIEW_CFLAGS)						\
@@ -62,7 +62,7 @@ AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
 
 AM_LDFLAGS = -export-dynamic
 
-nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
+nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(EMACSY_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
 
 
 DOT_X_FILES = app.x buffer.x webkit.x window.x util.x minibuffer.x
