@@ -17,12 +17,13 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad browser)
-  #:use-module (nomad events)
-  #:use-module (nomad buffer)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad webkit)
-  #:use-module (nomad eval)
   #:use-module (ice-9 optargs)
+  #:use-module (nomad buffer)
+  #:use-module (nomad eval)
+  #:use-module (nomad events)
+  #:use-module (nomad util)
+  #:use-module (nomad webkit)
   #:export (current-url
             default-home-page
             prefix-url
@@ -94,6 +95,11 @@ specified. Returns the final URL passed to webkit"
   "Returns the current url"
   (message "~a"
            (webview-current-url)))
+
+(define-interactive (copy-current-url)
+  "Copy current url to clipboard"
+  (yank-string (webview-current-url))
+  (message (webview-current-url)))
 
 ;; FIXME: convert these to a mode-map
 (define webview-map (make-keymap))

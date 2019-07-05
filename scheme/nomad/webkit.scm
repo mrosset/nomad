@@ -19,7 +19,3 @@
 (define-module (nomad webkit)
   #:use-module (nomad eval)
   #:use-module (nomad util))
-
-(define-command (copy-current-url)
-  "Copy current url."
-  (yank-string (webview-current-url)))
