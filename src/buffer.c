@@ -230,6 +230,33 @@ SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 1, 0, 0, (SCM url),
   return scm_from_pointer (buf, NULL);
 }
 
+SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0,
+            (SCM web_buffer_pointer),
+            "Set the current web view to the given pointer.")
+{
+  gint page;
+  GtkWidget *buf;
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GtkNotebook *notebook = nomad_window_get_notebook (win);
+
+  if (SCM_POINTER_P (web_buffer_pointer))
+    {
+      buf = GTK_WIDGET (scm_to_pointer (web_buffer_pointer));
+      page = gtk_notebook_page_num (notebook, buf);
+      if (page < 0)
+        {
+          nomad_app_window_add_buffer (win, NOMAD_BUFFER (buf));
+        }
+      else
+        {
+          gtk_notebook_set_current_page (notebook, page);
+        }
+    }
+  else
+    fprintf (stderr, "error: not given a pointer in set-web-buffer!\n");
+  return SCM_UNSPECIFIED;
+}
+
 gboolean
 next_buffer_invoke (void *data)
 {
@@ -293,6 +320,6 @@ nomad_buffer_register_functions (void *data)
 #include "buffer.x"
   init_buffer_type ();
   scm_c_export ("buffer-title", "primitive-buffer-uri", "make-web-buffer",
-                "remove-web-buffer", NULL);
+                "set-web-buffer!", "remove-web-buffer", NULL);
   return;
 }

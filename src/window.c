@@ -909,33 +909,6 @@ SCM_DEFINE (scm_nomad_window_keyboard_quit, "keyboard-quit", 0, 0, 0, (),
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0,
-            (SCM web_buffer_pointer),
-            "Set the current web view to the given pointer.")
-{
-  gint page;
-  GtkWidget *buf;
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  GtkNotebook *notebook = nomad_window_get_notebook (win);
-
-  if (SCM_POINTER_P (web_buffer_pointer))
-    {
-      buf = GTK_WIDGET (scm_to_pointer (web_buffer_pointer));
-      page = gtk_notebook_page_num (notebook, buf);
-      if (page < 0)
-        {
-          nomad_app_window_add_buffer (win, NOMAD_BUFFER (buf));
-        }
-      else
-        {
-          gtk_notebook_set_current_page (notebook, page);
-        }
-    }
-  else
-    fprintf (stderr, "error: not given a pointer in set-web-buffer!\n");
-  return SCM_UNSPECIFIED;
-}
-
 SCM_DEFINE (scm_nomad_window_show_tabs, "toggle-tabs", 0, 0, 0, (),
             "Turns notebook tabs on or off")
 {
@@ -951,7 +924,6 @@ void
 nomad_window_register_functions (void *data)
 {
 #include "window.x"
-  scm_c_export ("webview-focus", "keyboard-quit", "set-web-buffer!",
-                "toggle-tabs", NULL);
+  scm_c_export ("webview-focus", "keyboard-quit", "toggle-tabs", NULL);
   scm_c_register_interactive ("toggle-tabs");
 }

@@ -89,30 +89,24 @@
   (let ((buffer (switch-to-buffer url)))
     (set! (local-var 'web-buffer)
           (make-web-buffer (prefix-url url)))
+    (set! (local-var 'update) #t)
     (use-local-map webview-map)
     (add-hook! (buffer-enter-hook buffer)
                on-enter)
     (on-enter)))
 
 (define-public (update-buffer-names)
+  "Updates web bufffer names to it's current URI"
   (for-each (lambda buffer
               (with-buffer (car buffer)
-                (let ((uri (buffer-uri (current-buffer))))
-                  (when uri
-                    (set-buffer-name! (buffer-uri (current-buffer)))))))
+                (when (local-var 'update)
+                  (set-buffer-name! (buffer-uri (current-buffer))))))
             (buffer-list)))
 
 ;; Skip over Message buffer for now
-(define-key global-map (kbd "C-b") (lambda _
-                                     (next-buffer)
-                                     (when (string= "*Messages*"
-                                                    (buffer-name (current-buffer)))
-                                       (next-buffer))))
+(define-key global-map (kbd "C-b") 'next-buffer)
 
-(define-key global-map (kbd "C-n") (lambda _
-                                     (prev-buffer)
-                                     (when (string= "*Messages*"
-                                                    (buffer-name (current-buffer)))
-                                       (prev-buffer))))
+;; Prev buffer is not that useful as of now
+;; (define-key global-map (kbd "C-n") 'prev-buffer)
 
 (define-key global-map (kbd "C-x C-b") 'message-buffers)

@@ -19,6 +19,7 @@
 (define-module (nomad app)
   #:use-module (emacsy emacsy)
   #:use-module (nomad browser)
+  #:use-module (emacsy buffer)
   #:use-module (nomad views)
   #:use-module (nomad buffer)
   #:use-module (nomad minibuffer)
@@ -35,6 +36,21 @@
 (define (app-init)
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
+  ;; Setup the scratch and messages
+  ;;
+  ;; FIXME: don't use localhost use instead sxml view to show scratch
+  ;; and messages?
+  (for-each (lambda buffer
+              (with-buffer (car buffer)
+                (define (on-enter)
+                  (set-web-buffer! (local-var 'web-buffer)))
+                (set! (local-var 'web-buffer)
+                      (make-web-buffer "http://localhost"))
+                (set! (local-var 'update) #f)
+                (add-hook! (buffer-enter-hook (car buffer))
+                           on-enter)
+                (on-enter)))
+            (list messages scratch))
   ;; Setup the minibuffer
   (define-key minibuffer-local-map "C-n" 'next-line)
   (define-key minibuffer-local-map "C-p" 'previous-line)
