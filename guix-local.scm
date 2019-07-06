@@ -27,6 +27,15 @@
 
 (define %source-dir (dirname (current-filename)))
 
+(define %emacsy-source-dir "/home/mrosset/src/emacsy")
+
+(define-public emacsy-local
+  (package (inherit emacsy)
+	   (version "git")
+	   (source (local-file %source-dir
+			       #:recursive? #t#:select? (git-predicate %source-dir)))))
+
+
 ;; Override nomad's nomad sources uri to use guix-testing branch. This
 ;; allows for testing development builds of nomad without effecting
 ;; stable end user release build or git history.

@@ -3,6 +3,7 @@
 (use-modules
  (guix packages)
  (guix git-download)
+ (guix gexp)
  (guix download)
  (guix build-system gnu)
  ((guix licenses)
@@ -19,11 +20,22 @@
  (gnu packages tls)
  (gnu packages webkit))
 
+(define-public emacsy-git
+  (let ((commit "f6334add3d51521acd5fcdd539a45ec2e5423530"))
+    (package (inherit emacsy)
+	     (name "emacsy-git")
+	     (version (git-version "0.4.1" "5" commit))
+	     (source (origin (method git-fetch)
+			     (uri (git-reference (url "https://git.savannah.gnu.org/git/emacsy.git")
+						 (commit commit)))
+			     (file-name (string-append name "-" version))
+			     (sha256 (base32 "0y1lx3xjp0xswgsw5lnnijgqfjwpjfixm5aaj70kw3yw1cixcfy6")))))))
+
 (define-public nomad
-  (let ((commit "3cb53d410c17c680bba3c62b0c5bf3f23140bafe"))
+  (let ((commit "161950216e0b355c2e47f3484805bde25a6a9542"))
     (package
       (name "nomad")
-      (version (git-version "0.0.4-alpha" "118" commit))
+      (version (git-version "0.0.4-alpha" "375" commit))
       (source (origin
 		(method git-fetch)
 		(uri (git-reference
@@ -32,7 +44,7 @@
 		(file-name (git-file-name name version))
 		(sha256
 		 (base32
-		  "0sbl5p5740zgzi3m8md1i1wqmrnpn89kz27k51wlan9rxbq7xasy"))))
+		  "15v8glkagzdag75dgqxs697n3vn8sxlrgs2kyjr6s6hiy9l62lsd"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("libtool" ,libtool)
@@ -47,8 +59,8 @@
 	 ("webkitgtk" ,webkitgtk)))
       (propagated-inputs
        `(("dbus-glib" ,dbus-glib)
-         ("shroud" ,shroud)
-	 ("emacsy" ,emacsy)
+	 ("shroud" ,shroud)
+	 ("emacsy" ,emacsy-git)
 	 ("glib-networking" ,glib-networking)
 	 ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
 	 ("guile" ,guile-2.2)
