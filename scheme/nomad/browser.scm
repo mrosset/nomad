@@ -105,7 +105,40 @@ specified. Returns the final URL passed to webkit"
   "Load CONTENT into current webview"
   (webview-load-content content "nomad://"))
 
-;; FIXME: convert these to a mode-map
 (define webview-map (make-keymap))
 (define-key webview-map (kbd "C-u") 'next-buffer)
 (define-key webview-map (kbd "C-m") 'prev-buffer)
+(define-key webview-map (kbd "M-n") 'forward)
+(define-key webview-map (kbd "M-b") 'back)
+(define-public scroll-up (@@ (nomad webkit) scroll-up))
+(define-public scroll-down (@@ (nomad webkit) scroll-down))
+(define-key webview-map (kbd "M-v") 'scroll-up)
+(define-key webview-map (kbd "C-v") 'scroll-down)
+(define-public hints (@@ (nomad app) hints))
+(define-key webview-map (kbd "M-'") 'hints)
+(define-key webview-map (kbd "M-h") 'home)
+(define-key webview-map (kbd "M-f") 'browse)
+(define-key webview-map (kbd "M-g") 'reload)
+(define-public (tweak-url)
+  "Edit the current-url."
+  (browse (read-from-minibuffer "Url: " (current-url))))
+(define-key webview-map (kbd "M-u") 'tweak-url)
+;; (define-key webview-map (kbd "M->") 'scroll-down)
+;; (define-key webview-map (kbd "M-<") 'scroll-up)
+(define-key webview-map (kbd "M-c") 'copy-current-url)
+
+;; search providers
+(use-modules (srfi srfi-1))
+(define search-providers
+  (circular-list "https://searx.info/?q=~a"
+                 "https://google.com/?q=~a"
+                 "https://duckduckgo.com/?q=~a"))
+(define (pick-search-provider)
+  (let ((s search-providers))
+    (lambda ()
+      (set! search-provider-format (car s))
+      (set! s (cdr s)))))
+(define-public cycle-search-provider (pick-search-provider))
+
+(define-key webview-map (kbd "C-s") 'query)
+(define-key webview-map (kbd "M-s") 'cycle-search-provider)
