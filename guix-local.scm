@@ -27,10 +27,10 @@
 
 (define %source-dir (dirname (current-filename)))
 
-(define %emacsy-source-dir "/home/mrosset/src/emacsy")
+(define %emacsy-source-dir (string-append (getenv "HOME") "/src/emacsy"))
 
 (define-public emacsy-local
-  (package (inherit emacsy)
+  (package (inherit emacsy-git)
 	   (version "git")
 	   (source (local-file %source-dir
 			       #:recursive? #t#:select? (git-predicate %source-dir)))))

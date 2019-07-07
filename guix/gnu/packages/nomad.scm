@@ -65,6 +65,7 @@
 	 ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
 	 ("guile" ,guile-2.2)
 	 ("guile-readline" ,guile-readline)))
+      (arguments `(#:tests? #f))
       (home-page "https://savannah.nongnu.org/projects/nomad/")
       (synopsis "An extensible web browser using GNU Guile")
       (description "An extensible web browser.")
