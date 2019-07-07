@@ -19,73 +19,11 @@
 (define-module (nomad eval)
   #:use-module (ice-9 session)
   #:use-module (nomad events)
-  #:export (define-alias
-             define-command
-             command-alist
-             add-to-command-alist
-             command-hook
-             make-command
-             command-ref
-             command-args
-             command?
-             command->string
-             input-eval))
-
-(define command-alist '())
-
-(define (add-to-command-alist key proc)
-  (set-procedure-property! proc 'command #t)
-  (set! command-alist (assoc-set! command-alist key proc)))
-
-(define command-hook (make-hook 1))
-
-(define (make-command key)
-  "Adds procedure with the symbol key to command-alist"
-  (let ((proc (eval key (interaction-environment))))
-    (add-to-command-alist key proc)))
-
-(define-syntax define-command
-  (syntax-rules ()
-    ((define-command (proc) doc body)
-     (begin
-       (define-public (proc)
-	 doc
-	 body)
-       (add-to-command-alist (procedure-name proc) proc)))
-    ((define-command (proc arg) doc body)
-     (begin
-       (define-public (proc arg)
-	 doc
-	 body)
-       (add-to-command-alist (procedure-name proc) proc)))))
-
-(define-syntax define-alias
-  (syntax-rules ()
-    ((define-alias alias proc)
-     (begin
-       (add-to-command-alist (quote alias) proc)
-       (define-public alias proc)))))
-
-(define (command-ref key)
-  "Returns the associated proc by key from command-alist"
-  (assoc-ref command-alist key))
-
-(define (command-args key)
-  "Return a list of required arguments for procedure by `key'"
-  (assoc-ref (procedure-arguments (command-ref key)) 'required))
-
-(define (command? proc)
-  (if (procedure? proc)
-      (procedure-property proc 'command)
-      #f))
-
-(define (command->string sym)
-  (when (command? sym)
-      (symbol->string (procedure-name sym))))
+  #:export (input-eval))
 
 (define (input-eval input)
   (let ((result #nil)
-         (error #nil))
+	 (error #nil))
     (catch #t
       (lambda ()
 	(set! result (format #f "~a" (eval-string input))))

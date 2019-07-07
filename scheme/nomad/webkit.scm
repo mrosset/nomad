@@ -18,11 +18,4 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad webkit)
-  #:use-module (nomad eval)
-  #:use-module (nomad util)
-  #:use-module (nomad util)
   #:export (webview-load-content))
-
-(define-command (copy-current-url)
-  "Copy current url."
-  (yank-string (webview-current-url)))

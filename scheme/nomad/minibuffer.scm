@@ -20,7 +20,6 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 session)
   #:use-module (oop goops)
-  #:use-module ((nomad eval) #:prefix nomad: #:select (command?))
   #:use-module (nomad views)
   #:use-module (emacsy emacsy)
   #:use-module (nomad init)

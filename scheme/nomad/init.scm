@@ -75,9 +75,6 @@
       (append history
               (list text)))))
 
-(add-hook! command-hook (lambda (arg)
-                          (add-to-history arg)))
-
 (define session '())
 
 (define session-file

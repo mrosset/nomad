@@ -169,13 +169,12 @@ SCM_DEFINE (scm_nomad_webkit_reload, "webview-reload", 0, 1, 0, (SCM nocache),
 }
 
 SCM_DEFINE (scm_nomad_get_current_url, "webview-current-url", 0, 0, 0, (),
-            "Return's the WebView's current URL. This calls webkit's \
-webkit_web_view_get_uri. Note: this function can potentially return a   \
-URI that is not a URL. Since the API is directed towards end users,     \
-we use URL since it's the more common term. \
-                                                                        \
-see https://danielmiessler.com/study/url-uri/ on the distinction of     \
-URI vs URL")
+            "Return's the WebView's current URL. This calls webkit's "
+            "webkit_web_view_get_uri. Note: this function can potentially "
+            "return a URI that is not a URL. Since the API is directed "
+            "towards end users, we use URL since it's the more common term, "
+            "see https://danielmiessler.com/study/url-uri/ on the distinction "
+            "of URI vs URL")
 {
   WebKitWebView *web_view;
   const char *uri;
@@ -196,8 +195,10 @@ URI vs URL")
   return result;
 }
 
-SCM_DEFINE (scm_nomad_webkit_load_content, "webview-load-content", 2, 0, 0, (SCM content, SCM base_uri),
-            "Load CONTENT/HTML in current buffer. (P.S. can also be used to load any other type of text.")
+SCM_DEFINE (scm_nomad_webkit_load_content, "webview-load-content", 2, 0, 0,
+            (SCM content, SCM base_uri),
+            "Load CONTENT/HTML in current buffer. (P.S. can also be used to "
+            "load any other type of text.")
 {
   gchar *text;
   gchar *uri;

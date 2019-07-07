@@ -34,7 +34,7 @@ test-local-guix:
 	guix build -f ./guix-local.scm
 
 format:
-	make -C src format
+	$(MAKE) -C src format
 
 rebuild: clean all
 
