@@ -128,8 +128,8 @@ inner_main (void *data, int argc, char **argv)
   exit (g_application_run (G_APPLICATION (app), 0, NULL));
 }
 
-int
-main (int argc, char *argv[])
+static void
+init_environment ()
 {
   const char *env_ccache;
   char *ccache;
@@ -148,5 +148,12 @@ main (int argc, char *argv[])
     }
   g_setenv ("GUILE_LOAD_COMPILED_PATH", ccache, TRUE);
 
+  free (ccache);
+}
+
+int
+main (int argc, char *argv[])
+{
+  /* init_environment (); */
   scm_boot_guile (argc, argv, inner_main, NULL);
 }
