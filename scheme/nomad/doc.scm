@@ -1,4 +1,4 @@
-;; Self-doc --- Self-documentation for Nomad
+;; doc --- Self-documentation for Nomad
 
 ;; Copyright (C) 2019  Amar Singh<nly@disroot.org>
 
@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-(define-module (nomad self-doc)
+(define-module (nomad doc)
   #:use-module (ice-9 documentation)
   #:use-module (emacsy emacsy)
   #:use-module (nomad webkit)

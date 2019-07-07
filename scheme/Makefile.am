@@ -40,6 +40,7 @@ SOURCES =			\
 	nomad/bookmark.scm	\
 	nomad/browser.scm	\
 	nomad/buffer.scm	\
+	nomad/doc.scm	\
 	nomad/eval.scm		\
 	nomad/events.scm	\
 	nomad/frame.scm		\
