@@ -101,6 +101,10 @@ specified. Returns the final URL passed to webkit"
   (yank-string (webview-current-url))
   (message (webview-current-url)))
 
+(define-interactive (load-content #:optional (content (read-from-minibuffer "Content: ")))
+  "Load CONTENT into current webview"
+  (webview-load-content content "nomad://"))
+
 ;; FIXME: convert these to a mode-map
 (define webview-map (make-keymap))
 (define-key webview-map (kbd "C-u") 'next-buffer)
