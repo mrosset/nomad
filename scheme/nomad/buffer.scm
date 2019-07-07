@@ -85,12 +85,12 @@
       (format #t
               "Setting web-view to ~a~%"
               (local-var 'web-buffer))
-      (set-web-buffer! (local-var 'web-buffer))))
+      (set-web-buffer! (local-var 'web-buffer))
+      (use-local-map webview-map)))
   (let ((buffer (switch-to-buffer url)))
     (set! (local-var 'web-buffer)
           (make-web-buffer (prefix-url url)))
     (set! (local-var 'update) #t)
-    (use-local-map webview-map)
     (add-hook! (buffer-enter-hook buffer)
                on-enter)
     (on-enter)))
