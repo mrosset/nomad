@@ -200,15 +200,16 @@ SCM_DEFINE (scm_nomad_webkit_load_content, "webview-load-content", 2, 0, 0,
             "Load CONTENT/HTML in current buffer. (P.S. can also be used to "
             "load any other type of text.")
 {
-  gchar *text;
-  gchar *uri;
+  gchar *c_text;
+  gchar *c_uri;
   WebKitWebView *web_view;
 
   scm_dynwind_begin (0);
 
-  text = scm_to_locale_string (content);
-  uri = scm_to_locale_string (base_uri);
-  scm_dynwind_unwind_handler (free, text, SCM_F_WIND_EXPLICITLY);
+  c_text = scm_to_locale_string (content);
+  c_uri = scm_to_locale_string (base_uri);
+  scm_dynwind_unwind_handler (free, c_text, SCM_F_WIND_EXPLICITLY);
+  scm_dynwind_unwind_handler (free, c_uri, SCM_F_WIND_EXPLICITLY);
 
   web_view = nomad_app_get_webview (NOMAD_APP (app));
 
@@ -218,7 +219,7 @@ SCM_DEFINE (scm_nomad_webkit_load_content, "webview-load-content", 2, 0, 0,
       return SCM_BOOL_F;
     }
 
-  webkit_web_view_load_html (web_view, text, uri);
+  webkit_web_view_load_html (web_view, c_text, c_uri);
   scm_dynwind_end ();
 
   return SCM_BOOL_T;
