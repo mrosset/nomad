@@ -34,29 +34,6 @@ startup (GApplication *app, gpointer data)
 {
 
   SCM socket = scm_c_eval_string ("(option-listen (command-line))");
-
-  // Define scheme C modules
-  // Modules that are used before defining have a scheme file. This
-  // allows mixing pure scheme with C scheme.
-  scm_c_use_module ("nomad webkit");
-  scm_c_define_module ("nomad webkit", nomad_webkit_register_functions, NULL);
-
-  scm_c_define_module ("nomad window", nomad_window_register_functions, NULL);
-
-  scm_c_use_module ("nomad minibuffer");
-  scm_c_define_module ("nomad minibuffer", nomad_minibuffer_register_functions,
-                       NULL);
-
-  scm_c_define_module ("nomad util", nomad_util_register_functions, NULL);
-
-  // Use essential modules
-  scm_c_use_module ("emacsy emacsy");
-  scm_c_use_module ("nomad util");
-  scm_c_use_module ("nomad keymap");
-  scm_c_use_module ("nomad browser");
-  scm_c_use_module ("nomad window");
-  scm_c_use_module ("nomad views");
-
   scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"), socket);
 }
 
@@ -69,6 +46,40 @@ shutdown (GApplication *app, gpointer data)
   scm_variable_set_x (scm_c_lookup ("emacsy-quit-application?"), SCM_BOOL_T);
 }
 
+static void
+register_c_modules ()
+{
+  // Modules that are used before defining have a scheme file. This
+  // allows mixing pure scheme with C scheme.
+  scm_c_use_module ("nomad app");
+  scm_c_define_module ("nomad app", nomad_app_register_functions, app);
+
+  scm_c_use_module ("nomad buffer");
+  scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
+
+  scm_c_use_module ("nomad webkit");
+  scm_c_define_module ("nomad webkit", nomad_webkit_register_functions, NULL);
+
+  scm_c_define_module ("nomad window", nomad_window_register_functions, NULL);
+
+  scm_c_use_module ("nomad minibuffer");
+  scm_c_define_module ("nomad minibuffer", nomad_minibuffer_register_functions,
+                       NULL);
+
+  scm_c_define_module ("nomad util", nomad_util_register_functions, NULL);
+
+  // Use essential modules
+  scm_c_use_module ("nomad init");
+  scm_c_use_module ("emacsy emacsy");
+  scm_c_use_module ("nomad util");
+  scm_c_use_module ("nomad keymap");
+  scm_c_use_module ("nomad browser");
+  scm_c_use_module ("nomad window");
+  scm_c_use_module ("nomad views");
+  scm_c_use_module ("nomad options");
+  scm_c_use_module ("nomad repl");
+}
+
 void
 inner_main (void *data, int argc, char **argv)
 {
@@ -79,26 +90,12 @@ inner_main (void *data, int argc, char **argv)
   if (err)
     exit (err);
 
-  // Use minimal amount of modules before application starts
-  scm_c_use_module ("nomad init");
-  scm_c_use_module ("nomad options");
-  scm_c_use_module ("nomad repl");
-
-  scm_c_use_module ("nomad app");
-  scm_c_define_module ("nomad app", nomad_app_register_functions, app);
-
-  scm_c_use_module ("nomad buffer");
-  scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
-
+  register_c_modules ();
   app = nomad_app_new ();
 
   // App signals
   g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
   g_signal_connect (app, "shutdown", G_CALLBACK (shutdown), NULL);
-
-  // Set emacs-init-file to datadir installed file
-  scm_variable_set_x (scm_c_lookup ("emacs-init-file"),
-                      scm_from_locale_string (NOMAD_DATAROOT_DIR "/init.el"));
 
   // We need to call init for so things like GDK_SCALE are used by our
   // GApplication

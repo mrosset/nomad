@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad browser)
+  #:use-module (srfi srfi-1)
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 optargs)
   #:use-module (nomad buffer)
@@ -25,12 +26,14 @@
   #:use-module (nomad util)
   #:use-module (nomad webkit)
   #:export (current-url
+            browser-init
             default-home-page
             prefix-url
             search-provider-format
             history-forward
             webview-mode-map
-            webview-map))
+            webview-map
+            firefox-webview-map))
 
 (define webview-mode-map '(("C-b" . (next-buffer))
                                   ("C-u" . (back))
@@ -106,40 +109,57 @@ specified. Returns the final URL passed to webkit"
   (webview-load-content content "nomad://"))
 
 (define webview-map (make-keymap))
-(define-key webview-map (kbd "C-u") 'next-buffer)
-(define-key webview-map (kbd "C-m") 'prev-buffer)
-(define-key webview-map (kbd "M-n") 'forward)
-(define-key webview-map (kbd "M-b") 'back)
-;; (define-public scroll-up (@@ (nomad webkit) scroll-up))
-;; (define-public scroll-down (@@ (nomad webkit) scroll-down))
-;; (define-key webview-map (kbd "M-v") 'scroll-up)
-;; (define-key webview-map (kbd "C-v") 'scroll-down)
-;; (use-modules (nomad app))
-;; (define-public hints (@@ (nomad app) hints))
-;; (define-key webview-map (kbd "M-'") 'hints)
-(define-key webview-map (kbd "M-h") 'home)
-(define-key webview-map (kbd "M-f") 'browse)
-(define-key webview-map (kbd "M-g") 'reload)
+
 (define-public (tweak-url)
   "Edit the current-url."
   (browse (read-from-minibuffer "Url: " (current-url))))
-(define-key webview-map (kbd "M-u") 'tweak-url)
-;; (define-key webview-map (kbd "M->") 'scroll-down)
-;; (define-key webview-map (kbd "M-<") 'scroll-up)
-(define-key webview-map (kbd "M-c") 'copy-current-url)
 
 ;; search providers
-(use-modules (srfi srfi-1))
 (define search-providers
   (circular-list "https://searx.info/?q=~a"
                  "https://google.com/?q=~a"
                  "https://duckduckgo.com/?q=~a"))
+
 (define (pick-search-provider)
   (let ((s search-providers))
     (lambda ()
       (set! search-provider-format (car s))
       (set! s (cdr s)))))
+
 (define-public cycle-search-provider (pick-search-provider))
 
-(define-key webview-map (kbd "C-s") 'query)
-(define-key webview-map (kbd "M-s") 'cycle-search-provider)
+;; Provides firefox key mappings for webview-mode. This can be set as
+;; the default webview mode map by using (!set webview-map
+;; firefox-webview-map) in user-init-file
+(define firefox-webview-map (make-keymap))
+
+(define (firefox-webview-map-init)
+  ;; browser
+  (set-current-module (resolve-module '(nomad browser)))
+  (define-key firefox-webview-map (kbd "C-u") 'next-buffer)
+  (define-key firefox-webview-map (kbd "C-m") 'prev-buffer)
+  (define-key firefox-webview-map (kbd "M-n") 'forward)
+  (define-key firefox-webview-map (kbd "M-b") 'back)
+  (define-key firefox-webview-map (kbd "M-h") 'home)
+  (define-key firefox-webview-map (kbd "M-f") 'browse)
+  (define-key firefox-webview-map (kbd "M-g") 'reload)
+  (define-key firefox-webview-map (kbd "M-u") 'tweak-url)
+  (define-key firefox-webview-map (kbd "M-c") 'copy-current-url)
+  (define-key firefox-webview-map (kbd "C-s") 'query)
+  (define-key firefox-webview-map (kbd "M-s") 'cycle-search-provider)
+  ;; webkit
+  ;;
+  ;; FIXME: merge webkit module into browser module
+  (set-current-module (resolve-module '(nomad webkit)))
+  (define-key firefox-webview-map (kbd "M-v") 'scroll-up)
+  (define-key firefox-webview-map (kbd "C-v") 'scroll-down)
+  ;; app
+  ;;
+  ;; FIXME: move hints into browser module
+  (set-current-module (resolve-module '(nomad app)))
+  (define-key firefox-webview-map (kbd "M-'") 'hints))
+
+(define (browser-init)
+  (let ((caller (current-module)))
+    (firefox-webview-map-init)
+    (set-current-module caller)))

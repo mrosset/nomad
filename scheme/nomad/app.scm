@@ -28,11 +28,6 @@
 
 (define emacs-init-file "init.el")
 
-;; FIXME: this is temperay
-(define-interactive (temp-view)
-  (let ((lst (commands global-cmdset)))
-    (render-popup completion-view lst 0)))
-
 (define (app-init)
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
