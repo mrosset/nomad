@@ -38,7 +38,6 @@ SUFFIXES = .scm .go
 SOURCES =			\
 	nomad/app.scm		\
 	nomad/bookmark.scm	\
-	nomad/browser.scm	\
 	nomad/buffer.scm	\
 	nomad/doc.scm		\
 	nomad/eval.scm		\
@@ -53,12 +52,12 @@ SOURCES =			\
 	nomad/server.scm	\
 	nomad/util.scm		\
 	nomad/views.scm		\
-	nomad/webkit.scm	\
+	nomad/webview.scm	\
 	nomad/window.scm
 
 
 TESTS =				\
-	tests/browser.scm	\
+	tests/webview.scm	\
 	tests/eval.scm
 
 TEST_EXTENSIONS = .scm

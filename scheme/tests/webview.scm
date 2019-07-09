@@ -1,4 +1,4 @@
-;; browser.scm
+;; webview.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -17,7 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (tests browser)
-  #:use-module (nomad browser)
+  #:use-module (nomad webview)
   #:use-module (srfi srfi-64))
 
 (test-begin "browser")

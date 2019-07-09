@@ -1,5 +1,5 @@
 /*
- * webkit.h
+ * webview.h
  * Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
  *
  * This file is part of Nomad
@@ -18,4 +18,4 @@
  *   with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-void nomad_webkit_register_functions (void *data);
+void nomad_webview_register_functions (void *data);

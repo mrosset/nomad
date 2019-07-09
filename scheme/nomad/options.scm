@@ -1,8 +1,7 @@
 (define-module (nomad options)
-  #:use-module (nomad browser)
+  #:use-module (nomad webview)
   #:use-module (ice-9 getopt-long)
   #:export (
-	    display-options
 	    option-client
 	    option-listen
 	    option-url
@@ -26,5 +25,5 @@
 (define (option-url options)
   (let ((url (get-option '() options default-home-page)))
     (if (null? url)
-        default-home-page
-        (car url))))
+	default-home-page
+	(car url))))

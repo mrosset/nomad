@@ -22,7 +22,7 @@
   #:use-module (emacsy mru-stack) ;; until switch-to-buffer is upstreamed
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
-  #:use-module (nomad browser)
+  #:use-module (nomad webview)
   #:use-module (nomad views)
   #:use-module (nomad eval)
   #:use-module (nomad minibuffer)

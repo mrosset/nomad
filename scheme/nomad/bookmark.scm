@@ -23,7 +23,7 @@
  #:use-module (ice-9 match)
  #:use-module (ice-9 regex)
  #:use-module (ice-9 optargs)
- #:use-module (nomad browser)
+ #:use-module (nomad webview)
  #:use-module (nomad buffer)
  #:use-module (nomad init)
  #:use-module (nomad util)

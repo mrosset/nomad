@@ -20,7 +20,7 @@
 (define-module (nomad doc)
   #:use-module (ice-9 documentation)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad webkit)
+  #:use-module (nomad webview)
   #:use-module (nomad buffer)
   #:export (describe-symbol))
 

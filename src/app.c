@@ -299,26 +299,11 @@ SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
   return nomad_app_get_buffers (app);
 }
 
-void
-run_hints_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
-{
-  WebKitWebView *view = user_data;
-  GError *error = NULL;
-  webkit_web_view_run_javascript_from_gresource_finish (view, res, &error);
-  if (error != NULL)
-    {
-      g_printerr ("Error invoking Javascript resource: %s\n", error->message);
-      g_error_free (error);
-    }
-  g_print ("RESULT CB\n");
-}
-
 // FIXME: invoke on main thread?
-SCM_DEFINE (scm_nomad_show_hints, "hints", 0, 0, 0, (),
+SCM_DEFINE (scm_nomad_dbus_test, "dbus-test", 0, 0, 0, (),
             "Shows WebView html links.")
 {
 
-  WebKitWebView *view = nomad_app_get_webview (app);
   GError *error = NULL;
 
   g_dbus_connection_emit_signal (connection, NULL, BUS_INTERFACE_PATH,
@@ -329,9 +314,6 @@ SCM_DEFINE (scm_nomad_show_hints, "hints", 0, 0, 0, (),
       g_error_free (error);
     }
 
-  webkit_web_view_run_javascript_from_gresource (
-      view, "/org/gnu/nomad/hints.js", NULL, run_hints_cb, view);
-
   return SCM_UNDEFINED;
 }
 
@@ -340,5 +322,6 @@ nomad_app_register_functions (void *data)
 {
 #include "app.x"
   scm_c_export ("nomad-version", "start-browser", "restart-nomad",
-                "kill-nomad", "buffer-alist", "main-thread", "hints", NULL);
+                "kill-nomad", "buffer-alist", "main-thread", "dbus-test",
+                NULL);
 }

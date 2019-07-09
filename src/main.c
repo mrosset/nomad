@@ -23,7 +23,7 @@
 #include "emacsy.h"
 #include "minibuffer.h"
 #include "util.h"
-#include "webkit.h"
+#include "webview.h"
 #include "window.h"
 #include <gtk/gtk.h>
 #include <libguile.h>
@@ -57,8 +57,9 @@ register_c_modules ()
   scm_c_use_module ("nomad buffer");
   scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
 
-  scm_c_use_module ("nomad webkit");
-  scm_c_define_module ("nomad webkit", nomad_webkit_register_functions, NULL);
+  scm_c_use_module ("nomad webview");
+  scm_c_define_module ("nomad webview", nomad_webview_register_functions,
+                       NULL);
 
   scm_c_define_module ("nomad window", nomad_window_register_functions, NULL);
 
@@ -73,7 +74,6 @@ register_c_modules ()
   scm_c_use_module ("emacsy emacsy");
   scm_c_use_module ("nomad util");
   scm_c_use_module ("nomad keymap");
-  scm_c_use_module ("nomad browser");
   scm_c_use_module ("nomad window");
   scm_c_use_module ("nomad views");
   scm_c_use_module ("nomad options");

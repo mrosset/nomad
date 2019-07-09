@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad browser)
+(define-module (nomad webview)
   #:use-module (srfi srfi-1)
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 optargs)
@@ -24,9 +24,8 @@
   #:use-module (nomad eval)
   #:use-module (nomad events)
   #:use-module (nomad util)
-  #:use-module (nomad webkit)
   #:export (current-url
-            browser-init
+            webview-init
             default-home-page
             prefix-url
             search-provider-format
@@ -134,8 +133,7 @@ specified. Returns the final URL passed to webkit"
 (define firefox-webview-map (make-keymap))
 
 (define (firefox-webview-map-init)
-  ;; browser
-  (set-current-module (resolve-module '(nomad browser)))
+  ;; webview
   (define-key firefox-webview-map (kbd "C-u") 'next-buffer)
   (define-key firefox-webview-map (kbd "C-m") 'prev-buffer)
   (define-key firefox-webview-map (kbd "M-n") 'forward)
@@ -147,19 +145,9 @@ specified. Returns the final URL passed to webkit"
   (define-key firefox-webview-map (kbd "M-c") 'copy-current-url)
   (define-key firefox-webview-map (kbd "C-s") 'query)
   (define-key firefox-webview-map (kbd "M-s") 'cycle-search-provider)
-  ;; webkit
-  ;;
-  ;; FIXME: merge webkit module into browser module
-  (set-current-module (resolve-module '(nomad webkit)))
   (define-key firefox-webview-map (kbd "M-v") 'scroll-up)
   (define-key firefox-webview-map (kbd "C-v") 'scroll-down)
-  ;; app
-  ;;
-  ;; FIXME: move hints into browser module
-  (set-current-module (resolve-module '(nomad app)))
   (define-key firefox-webview-map (kbd "M-'") 'hints))
 
-(define (browser-init)
-  (let ((caller (current-module)))
-    (firefox-webview-map-init)
-    (set-current-module caller)))
+(define (webview-init)
+  (firefox-webview-map-init))

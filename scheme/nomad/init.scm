@@ -23,7 +23,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad eval)
   #:use-module (nomad buffer)
-  #:use-module (nomad browser)
+  #:use-module (nomad webview)
   #:use-module (nomad repl)
   #:use-module (nomad options)
   #:use-module (ice-9 pretty-print)
@@ -117,7 +117,7 @@
   (server-force-delete (option-listen (command-line))))
 
 (define (init)
-  (browser-init)
+  (webview-init)
   (add-hook! key-press-hook handle-key-press)
   (add-hook! event-hook debug-event)
   (create-nomad-directory)

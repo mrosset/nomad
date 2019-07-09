@@ -18,7 +18,7 @@
 
 (define-module (nomad app)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad browser)
+  #:use-module (nomad webview)
   #:use-module (emacsy buffer)
   #:use-module (nomad views)
   #:use-module (nomad buffer)

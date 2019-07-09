@@ -20,7 +20,7 @@
   #:use-module (ice-9 threads)
   #:use-module (emacsy emacsy)
   #:use-module (nomad app)
-  #:use-module (nomad browser)
+  #:use-module (nomad webview)
   #:use-module (nomad minibuffer)
   #:use-module (nomad window)
   #:export (key-press-hook debug-key-press))

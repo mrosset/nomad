@@ -1,5 +1,5 @@
 /*
- * webkit.c
+ * webview.c
  * Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
  * Copyright (C) 2019 by Amar Singh<nly@disroot.org>
  *
@@ -226,10 +226,37 @@ SCM_DEFINE (scm_nomad_webkit_load_content, "webview-load-content", 2, 0, 0,
 }
 
 void
-nomad_webkit_register_functions (void *data)
+run_hints_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
-#include "webkit.x"
+  WebKitWebView *view = user_data;
+  GError *error = NULL;
+  webkit_web_view_run_javascript_from_gresource_finish (view, res, &error);
+  if (error != NULL)
+    {
+      g_printerr ("Error invoking Javascript resource: %s\n", error->message);
+      g_error_free (error);
+    }
+  g_print ("RESULT CB\n");
+}
+
+// FIXME: invoke on main thread?
+SCM_DEFINE (scm_nomad_show_hints, "hints", 0, 0, 0, (),
+            "Shows WebView html links.")
+{
+
+  WebKitWebView *view = nomad_app_get_webview (app);
+
+  webkit_web_view_run_javascript_from_gresource (
+      view, "/org/gnu/nomad/hints.js", NULL, run_hints_cb, view);
+
+  return SCM_UNDEFINED;
+}
+
+void
+nomad_webview_register_functions (void *data)
+{
+#include "webview.x"
   scm_c_export ("webview-load-uri", "webview-go-back", "webview-go-forward",
                 "webview-reload", "webview-current-url", "scroll-up",
-                "scroll-down", NULL);
+                "scroll-down", "hints", NULL);
 }

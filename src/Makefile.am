@@ -38,8 +38,8 @@ nomad_SOURCES =		\
 	request.h	\
 	util.c		\
 	util.h		\
-	webkit.c	\
-	webkit.h	\
+	webview.c	\
+	webview.h	\
 	window.c	\
 	window.h
 
@@ -65,7 +65,7 @@ AM_LDFLAGS = -export-dynamic
 nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(EMACSY_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
 
 
-DOT_X_FILES = app.x buffer.x webkit.x window.x util.x minibuffer.x
+DOT_X_FILES = app.x buffer.x webview.x window.x util.x minibuffer.x
 
 BUILT_SOURCES = $(DOT_X_FILES) resources.c
 

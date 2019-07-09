@@ -727,7 +727,7 @@ nomad_app_window_init (NomadAppWindow *self)
   priv->keymap = SCM_BOOL_F;
 
   c_home_page = scm_to_locale_string (
-      scm_c_public_ref ("nomad browser", "default-home-page"));
+      scm_c_public_ref ("nomad webview", "default-home-page"));
 
   c_user_cookie_file = scm_to_locale_string (
       scm_c_public_ref ("nomad init", "user-cookie-file"));
