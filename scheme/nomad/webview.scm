@@ -29,6 +29,7 @@
             default-home-page
             prefix-url
             search-provider-format
+            set-current-uri!
             history-forward
             webview-mode-map
             webview-map
@@ -63,10 +64,13 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
              (and (webview-go-back)
                   (history-forward (1+ x)))))))
 
+(define (set-current-uri! uri)
+  (set-buffer-uri! (current-buffer) uri))
+
 (define-interactive (browse #:optional (url (read-from-minibuffer "URL: ")))
   "Browse to URI. URI is prefixed with https:// if no protocol is
 specified. Returns the final URL passed to webkit"
-  (webview-load-uri (prefix-url url)))
+  (set-current-uri! (prefix-url url)))
 
 (define-interactive (forward)
   "Go forward in browser history"

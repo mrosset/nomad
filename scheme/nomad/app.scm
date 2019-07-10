@@ -45,7 +45,7 @@ controls are accessible to scheme"
                           (local-var 'web-buffer))
                   (destroy-web-buffer! (local-var 'web-buffer)))
                 (set! (local-var 'web-buffer)
-                      (make-web-buffer "http://localhost"))
+                      (make-web-buffer))
                 (set! (local-var 'update)
                       #f)
                 (add-hook! (buffer-enter-hook (car buffer))

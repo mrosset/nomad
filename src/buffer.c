@@ -175,25 +175,32 @@ init_buffer_type (void)
   buffer_type = scm_make_foreign_object_type (name, slots, finalizer);
 }
 
+gboolean
+idle_destroy (gpointer data)
+{
+  gtk_widget_destroy (data);
+  return FALSE;
+}
+
 SCM_DEFINE (scm_nomad_destroy_web_buffer, "destroy-web-buffer!", 1, 0, 0,
             (SCM web_buffer), "remove web buffer from notebook")
 {
   GtkWidget *buf = scm_to_pointer (web_buffer);
   if (buf)
     {
-      gtk_widget_destroy (buf);
+      g_idle_add (idle_destroy, buf);
     }
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 1, 0, 0, (SCM url),
-            "Returns a new scheme nomad buffer pointer for URI.")
+SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 0, 0, 0, (),
+            "Returns a new scheme nomad buffer control")
 {
   NomadBuffer *buf = nomad_buffer_new ();
-  WebKitWebView *view = nomad_buffer_get_view (buf);
-  const char *uri = scm_to_locale_string (url);
+  /* WebKitWebView *view = nomad_buffer_get_view (buf); */
+  /* const char *uri = scm_to_locale_string (url); */
 
-  webkit_web_view_load_uri (view, uri);
+  /* webkit_web_view_load_uri (view, uri); */
   return scm_from_pointer (buf, NULL);
 }
 
@@ -247,12 +254,39 @@ SCM_DEFINE (scm_nomad_buffer_title, "buffer-title", 1, 0, 0, (SCM buffer),
   return scm_from_locale_string (webkit_web_view_get_title (buf->view));
 }
 
+SCM_DEFINE (scm_nomad_set_current_uri_x, "set-buffer-uri!", 2, 0, 0,
+            (SCM buffer, SCM uri), "Sets current buffer URI")
+{
+  NomadBuffer *buf;
+  SCM pointer;
+  char *c_uri;
+
+  scm_dynwind_begin (0);
+
+  c_uri = scm_to_locale_string (uri);
+  scm_dynwind_unwind_handler (free, c_uri, SCM_F_WIND_EXPLICITLY);
+
+  pointer = scm_call_1 (scm_c_public_ref ("nomad buffer", "buffer-pointer"),
+                        buffer);
+
+  buf = scm_to_pointer (pointer);
+  webkit_web_view_load_uri (buf->priv->view, c_uri);
+  scm_dynwind_end ();
+
+  return SCM_UNDEFINED;
+}
+
 SCM_DEFINE (scm_nomad_buffer_uri, "primitive-buffer-uri", 1, 0, 0,
             (SCM pointer), "Returns buffer URI of BUFFER pointer")
 {
-  NomadBuffer *buf;
-  buf = NOMAD_BUFFER (scm_to_pointer (pointer));
-  return scm_from_locale_string (webkit_web_view_get_uri (buf->priv->view));
+  NomadBuffer *buf = NOMAD_BUFFER (scm_to_pointer (pointer));
+  const char *c_uri = webkit_web_view_get_uri (buf->priv->view);
+
+  if (c_uri)
+    {
+      return scm_from_locale_string (c_uri);
+    }
+  return scm_from_utf8_string ("nomad://");
 }
 
 gboolean
@@ -287,6 +321,7 @@ nomad_buffer_register_functions (void *data)
 #include "buffer.x"
   init_buffer_type ();
   scm_c_export ("buffer-title", "primitive-buffer-uri", "make-web-buffer",
-                "set-web-buffer!", "destroy-web-buffer!", NULL);
+                "set-web-buffer!", "destroy-web-buffer!", "set-buffer-uri!",
+                NULL);
   return;
 }

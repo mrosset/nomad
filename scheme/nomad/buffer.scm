@@ -19,7 +19,6 @@
 (define-module (nomad buffer)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy buffer)
-  #:use-module (emacsy mru-stack) ;; until switch-to-buffer is upstreamed
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
   #:use-module (nomad webview)
@@ -29,6 +28,7 @@
   #:use-module (nomad window)
   #:use-module (nomad repl)
   #:export (make-buffer-socket
+            buffer-pointer
             buffers->uri))
 
 (define (make-buffer-socket url socket)
@@ -47,6 +47,10 @@
   (with-buffer buffer
     (primitive-buffer-uri (local-var 'web-buffer))))
 
+(define (buffer-pointer buffer)
+  (with-buffer buffer
+    (local-var 'web-buffer)))
+
 (define (buffers->uri)
   "Returns a list of uri's for all buffers"
   (map (lambda (buffer)
@@ -64,17 +68,6 @@
   "Pretty prints the buffers to echo area"
   (message "~a" (with-output-to-string (lambda _ (pretty-print (buffer-list))))))
 
-(define emacsy-kill-buffer kill-buffer)
-
-(define-interactive (nomad-kill-buffer #:optional (buffer (current-buffer)))
-  (when (not (string= "*Messages*"
-                      (buffer-name (current-buffer))))
-    (with-buffer buffer
-      (destroy-web-buffer! (local-var 'web-buffer)))
-    (emacsy-kill-buffer buffer)))
-
-;; (set! kill-buffer nomad-kill-buffer)
-
 (define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
   (define (on-enter)
     (when (local-var 'web-buffer)
@@ -90,25 +83,26 @@
     (destroy-web-buffer! (local-var 'web-buffer)))
   (let ((buffer (switch-to-buffer url)))
     (set! (local-var 'web-buffer)
-          (make-web-buffer (prefix-url url)))
+          (make-web-buffer))
     (set! (local-var 'update)
           #t)
     (add-hook! (buffer-enter-hook buffer)
                on-enter)
     (add-hook! (buffer-kill-hook buffer)
                on-kill)
-    (on-enter)))
+    (on-enter)
+    (set-current-uri! (prefix-url url))))
 
 (define (webview-buffer? buffer)
-  (let ((webview #f))
+  (let ((iswebview #f))
     (with-buffer buffer
       (catch 'no-such-local-variable
         (lambda _
           (when (local-var 'web-buffer)
-            (set! webview #t)))
+            (set! iswebview #t)))
         (lambda (key . param)
-          (set! webview #f))))
-    webview))
+          (set! iswebview #f))))
+    iswebview))
 
 (define-public (update-buffer-names)
   "Updates web bufffer names to it's current URI"
