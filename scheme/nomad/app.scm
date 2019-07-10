@@ -39,11 +39,19 @@ controls are accessible to scheme"
               (with-buffer (car buffer)
                 (define (on-enter)
                   (set-web-buffer! (local-var 'web-buffer)))
+                (define (on-kill)
+                  (format #t
+                          "Destroying web-view ~a~%"
+                          (local-var 'web-buffer))
+                  (destroy-web-buffer! (local-var 'web-buffer)))
                 (set! (local-var 'web-buffer)
                       (make-web-buffer "http://localhost"))
-                (set! (local-var 'update) #f)
+                (set! (local-var 'update)
+                      #f)
                 (add-hook! (buffer-enter-hook (car buffer))
                            on-enter)
+                (add-hook! (buffer-kill-hook (car buffer))
+                           on-kill)
                 (on-enter)))
             (list messages scratch))
   ;; Setup the minibuffer
@@ -51,9 +59,12 @@ controls are accessible to scheme"
   (define-key minibuffer-local-map "C-p" 'previous-line)
   ;; (define-key minibuffer-local-map "RET" 'minibuffer-execute)
   (with-buffer minibuffer
-    (set! (local-var 'view) completion-view)
-    (set! (local-var 'selection) 0)
-    (set! (local-var 'completions) '())
+    (set! (local-var 'view)
+          completion-view)
+    (set! (local-var 'selection)
+          0)
+    (set! (local-var 'completions)
+          '())
     ;; (add-hook! (buffer-enter-hook (current-buffer))
     ;;            (lambda _
     ;;              (render-completion-popup-view)))

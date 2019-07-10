@@ -22,7 +22,7 @@
  (gnu packages webkit))
 
 (define-public emacsy-git
-  (let ((commit "f6334add3d51521acd5fcdd539a45ec2e5423530"))
+  (let ((commit "ed88cfbe57d5a40ea4e1604bfdc61f10ff750626"))
     (package (inherit emacsy)
 	     (name "emacsy-git")
 	     (version (git-version "0.4.1" "5" commit))
@@ -30,7 +30,7 @@
 			     (uri (git-reference (url "https://git.savannah.gnu.org/git/emacsy.git")
 						 (commit commit)))
 			     (file-name (string-append name "-" version))
-			     (sha256 (base32 "0y1lx3xjp0xswgsw5lnnijgqfjwpjfixm5aaj70kw3yw1cixcfy6")))))))
+			     (sha256 (base32 "05zgpdh997q53042w192xdzgnfv6ymmkb16xkgd0ssj5pnnccj28")))))))
 
 (define-public nomad
   (let ((commit "161950216e0b355c2e47f3484805bde25a6a9542"))

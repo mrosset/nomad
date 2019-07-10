@@ -175,46 +175,13 @@ init_buffer_type (void)
   buffer_type = scm_make_foreign_object_type (name, slots, finalizer);
 }
 
-gboolean
-destroy_buffer_invoke (void *data)
-{
-  GtkWidget *widget = GTK_WIDGET (data);
-  if (widget)
-    {
-      gtk_widget_destroy (widget);
-    }
-  return FALSE;
-}
-
-gboolean
-remove_buffer_invoke (void *data)
-{
-  GtkWidget *widget = GTK_WIDGET (data);
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  GtkNotebook *notebook = nomad_window_get_notebook (win);
-  gint page = gtk_notebook_page_num (notebook, widget);
-
-  if (page > -1)
-    {
-      gtk_notebook_remove_page (notebook, page);
-    }
-  return FALSE;
-}
-
-static void
-destroy_buffer (void *data)
-{
-  g_print ("DESTROY: %p\n", data);
-  g_idle_add (remove_buffer_invoke, data);
-}
-
-SCM_DEFINE (scm_nomad_remove_web_buffer, "remove-web-buffer", 1, 0, 0,
+SCM_DEFINE (scm_nomad_destroy_web_buffer, "destroy-web-buffer!", 1, 0, 0,
             (SCM web_buffer), "remove web buffer from notebook")
 {
   GtkWidget *buf = scm_to_pointer (web_buffer);
   if (buf)
     {
-      g_idle_add (remove_buffer_invoke, buf);
+      gtk_widget_destroy (buf);
     }
   return SCM_UNSPECIFIED;
 }
@@ -320,6 +287,6 @@ nomad_buffer_register_functions (void *data)
 #include "buffer.x"
   init_buffer_type ();
   scm_c_export ("buffer-title", "primitive-buffer-uri", "make-web-buffer",
-                "set-web-buffer!", "remove-web-buffer", NULL);
+                "set-web-buffer!", "destroy-web-buffer!", NULL);
   return;
 }

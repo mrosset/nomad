@@ -39,18 +39,13 @@
 (define-interactive (kill-some-buffers)
   "Kill all buffers but the message buffer"
   (for-each (lambda (buffer)
-              (when (not (string= (buffer-name buffer)
-                                  "*Messages*"))
-                (kill-buffer buffer)))
+              (kill-buffer buffer))
             (buffer-list)))
 
 (define (buffer-uri buffer)
   "Returns the webview URI for 'buffer"
   (with-buffer buffer
-               (if (not (string= "*Messages*"
-                                   (buffer-name)))
-                   (primitive-buffer-uri (local-var 'web-buffer))
-                   #f)))
+    (primitive-buffer-uri (local-var 'web-buffer))))
 
 (define (buffers->uri)
   "Returns a list of uri's for all buffers"
@@ -58,11 +53,12 @@
          (buffer-uri buffer))
        (buffer-list)))
 
-(define (show-buffers)
+(define-interactive (show-buffers)
   "Displays buffers in minipopup"
-  (begin
-    (render-popup completion-view (buffers->uri) -1)
-    (length (buffers->uri))))
+  (begin (render-popup completion-view
+                       (buffers->uri)
+                       -1)
+         (length (buffers->uri))))
 
 (define-interactive (message-buffers)
   "Pretty prints the buffers to echo area"
@@ -74,10 +70,10 @@
   (when (not (string= "*Messages*"
                       (buffer-name (current-buffer))))
     (with-buffer buffer
-      (remove-web-buffer (local-var 'web-buffer)))
+      (destroy-web-buffer! (local-var 'web-buffer)))
     (emacsy-kill-buffer buffer)))
 
-(set! kill-buffer nomad-kill-buffer)
+;; (set! kill-buffer nomad-kill-buffer)
 
 (define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
   (define (on-enter)
@@ -87,19 +83,39 @@
               (local-var 'web-buffer))
       (set-web-buffer! (local-var 'web-buffer))
       (use-local-map webview-map)))
+  (define (on-kill)
+    (format #t
+            "Destroying web-view ~a~%"
+            (local-var 'web-buffer))
+    (destroy-web-buffer! (local-var 'web-buffer)))
   (let ((buffer (switch-to-buffer url)))
     (set! (local-var 'web-buffer)
           (make-web-buffer (prefix-url url)))
-    (set! (local-var 'update) #t)
+    (set! (local-var 'update)
+          #t)
     (add-hook! (buffer-enter-hook buffer)
                on-enter)
+    (add-hook! (buffer-kill-hook buffer)
+               on-kill)
     (on-enter)))
+
+(define (webview-buffer? buffer)
+  (let ((webview #f))
+    (with-buffer buffer
+      (catch 'no-such-local-variable
+        (lambda _
+          (when (local-var 'web-buffer)
+            (set! webview #t)))
+        (lambda (key . param)
+          (set! webview #f))))
+    webview))
 
 (define-public (update-buffer-names)
   "Updates web bufffer names to it's current URI"
   (for-each (lambda buffer
               (with-buffer (car buffer)
-                (when (local-var 'update)
+                (when (and (webview-buffer? (current-buffer))
+                           (local-var 'update))
                   (set-buffer-name! (buffer-uri (current-buffer))))))
             (buffer-list)))
 
