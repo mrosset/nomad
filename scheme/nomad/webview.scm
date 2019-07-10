@@ -108,8 +108,8 @@ specified. Returns the final URL passed to webkit"
   (message (webview-current-url)))
 
 (define-interactive (load-content #:optional (content (read-from-minibuffer "Content: ")))
-  "Load CONTENT into current webview"
-  (webview-load-content content "nomad://"))
+  "Load CONTENT into current buffer"
+  (set-buffer-content! (current-buffer) content "nomad://"))
 
 (define webview-map (make-keymap))
 

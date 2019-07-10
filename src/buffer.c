@@ -272,6 +272,39 @@ SCM_DEFINE (scm_nomad_set_current_uri_x, "set-buffer-uri!", 2, 0, 0,
   return SCM_UNDEFINED;
 }
 
+SCM_DEFINE (scm_nomad_buffer_load_content, "set-buffer-content!", 3, 0, 0,
+            (SCM buffer, SCM content, SCM base_uri),
+            "Load CONTENT/HTML in BUFFER. (P.S. can also be used to "
+            "load any other type of text.")
+{
+  gchar *c_text;
+  gchar *c_uri;
+  NomadBuffer *buf;
+  SCM pointer;
+
+  scm_dynwind_begin (0);
+
+  pointer = scm_call_1 (scm_c_public_ref ("nomad buffer", "buffer-pointer"),
+                        buffer);
+
+  buf = scm_to_pointer (pointer);
+  c_text = scm_to_locale_string (content);
+  c_uri = scm_to_locale_string (base_uri);
+  scm_dynwind_unwind_handler (free, c_text, SCM_F_WIND_EXPLICITLY);
+  scm_dynwind_unwind_handler (free, c_uri, SCM_F_WIND_EXPLICITLY);
+
+  if (buf->priv->view == NULL)
+    {
+      scm_dynwind_end ();
+      return SCM_BOOL_F;
+    }
+
+  webkit_web_view_load_html (buf->priv->view, c_text, c_uri);
+  scm_dynwind_end ();
+
+  return SCM_BOOL_T;
+}
+
 SCM_DEFINE (scm_nomad_buffer_uri, "primitive-buffer-uri", 1, 0, 0,
             (SCM pointer), "Returns buffer URI of BUFFER pointer")
 {
@@ -318,6 +351,6 @@ nomad_buffer_register_functions (void *data)
   init_buffer_type ();
   scm_c_export ("buffer-title", "primitive-buffer-uri", "make-web-buffer",
                 "set-web-buffer!", "destroy-web-buffer!", "set-buffer-uri!",
-                NULL);
+                "set-buffer-content!", NULL);
   return;
 }

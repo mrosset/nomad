@@ -31,10 +31,9 @@
 (define (app-init)
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
-  ;; Setup the scratch and messages
-  ;;
-  ;; FIXME: don't use localhost use instead sxml view to show scratch
-  ;; and messages?
+  ;; Setup the scratch and *Messages* buffers
+  ;; FIXME: do not hard code HTML use SXML views to display *Messages* and
+  ;; scratch and messages?
   (for-each (lambda buffer
               (with-buffer (car buffer)
                 (define (on-enter)
@@ -52,7 +51,10 @@ controls are accessible to scheme"
                            on-enter)
                 (add-hook! (buffer-kill-hook (car buffer))
                            on-kill)
-                (on-enter)))
+                (on-enter)
+                (load-content (format #f
+                                      "<H2>~a<H2>"
+                                      (buffer-name (car buffer))))))
             (list messages scratch))
   ;; Setup the minibuffer
   (define-key minibuffer-local-map "C-n" 'next-line)
