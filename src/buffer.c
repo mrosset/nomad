@@ -197,10 +197,6 @@ SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 0, 0, 0, (),
             "Returns a new scheme nomad buffer control")
 {
   NomadBuffer *buf = nomad_buffer_new ();
-  /* WebKitWebView *view = nomad_buffer_get_view (buf); */
-  /* const char *uri = scm_to_locale_string (url); */
-
-  /* webkit_web_view_load_uri (view, uri); */
   return scm_from_pointer (buf, NULL);
 }
 
