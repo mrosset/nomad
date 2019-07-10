@@ -6,6 +6,7 @@
  (guix gexp)
  (guix download)
  (guix build-system gnu)
+ (guix build-system glib-or-gtk)
  ((guix licenses)
   #:prefix license:)
  (guix utils)
@@ -37,36 +38,70 @@
       (name "nomad")
       (version (git-version "0.0.4-alpha" "375" commit))
       (source (origin
-		(method git-fetch)
-		(uri (git-reference
-		      (url "https://git.savannah.gnu.org/git/nomad.git")
-		      (commit commit)))
-		(file-name (git-file-name name version))
-		(sha256
-		 (base32
-		  "15v8glkagzdag75dgqxs697n3vn8sxlrgs2kyjr6s6hiy9l62lsd"))))
-      (build-system gnu-build-system)
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/nomad.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "15v8glkagzdag75dgqxs697n3vn8sxlrgs2kyjr6s6hiy9l62lsd"))))
+      (build-system glib-or-gtk-build-system)
       (native-inputs
-       `(("libtool" ,libtool)
-	 ("glib:bin" ,glib "bin")))
-      (inputs
        `(("autoconf" ,autoconf)
-	 ("automake" ,automake)
-	 ("glib" ,glib)
-	 ("gtk+" ,gtk+)
-	 ("gtksourceview" ,gtksourceview)
-	 ("pkg-config" ,pkg-config)
-	 ("webkitgtk" ,webkitgtk)))
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("libtool" ,libtool)
+         ("guile" ,guile-2.2)
+         ("glib:bin" ,glib "bin")))
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("guile-lib" ,guile-lib)
+         ("guile-readline" ,guile-readline)
+         ("shroud" ,shroud)
+         ("emacsy" ,emacsy-git)
+         ("glib" ,glib)
+         ("gtk+" ,gtk+)
+         ("gtksourceview" ,gtksourceview)
+         ("webkitgtk" ,webkitgtk)))
       (propagated-inputs
        `(("dbus-glib" ,dbus-glib)
-	 ("shroud" ,shroud)
-	 ("emacsy" ,emacsy-git)
-	 ("glib-networking" ,glib-networking)
-	 ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-	 ("guile" ,guile-2.2)
-	 ("guile-readline" ,guile-readline)))
-      (arguments `(#:tests? #f))
+         ("glib-networking" ,glib-networking)
+         ("gsettings-desktop-schemas"
+          ,gsettings-desktop-schemas)))
+      (arguments
+       `(#:tests? #t
+         #:modules ((guix build gnu-build-system)
+                    (guix build glib-or-gtk-build-system)
+                    (guix build utils)
+                    (ice-9 popen)
+                    (ice-9 rdelim)
+                    (srfi srfi-26))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-binaries
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (effective (read-line (open-pipe* OPEN_READ
+                                                        "guile" "-c"
+                                                        "(display (effective-version))")))
+                      (deps (map (cut assoc-ref inputs <>) '("emacsy")))
+                      (scm-path (map (cut string-append <>
+                                          "/share/guile/site/" effective)
+                                     `(,out ,@deps)))
+                      (go-path (map (cut string-append <>
+                                         "/lib/guile/" effective "/site-ccache/")
+                                    `(,out ,@deps)))
+                      (progs (map (cut string-append out "/bin/" <>)
+                                  '("nomad"))))
+                 (map (cut wrap-program <>
+                           `("GUILE_LOAD_PATH" ":" prefix ,scm-path)
+                           `("GUILE_LOAD_COMPILED_PATH" ":"
+                             prefix ,go-path))
+                      progs)
+                 #t))))))
       (home-page "https://savannah.nongnu.org/projects/nomad/")
-      (synopsis "An extensible web browser using GNU Guile")
-      (description "An extensible web browser.")
+      (synopsis "Web Browser extensible in Guile scheme")
+      (description "Nomad is a Emacs-like web browser that consists of a small
+C backend and modular feature-set fully programmable in Guile.")
       (license license:gpl3+))))
