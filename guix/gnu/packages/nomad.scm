@@ -33,7 +33,7 @@
                              (sha256 (base32 "05zgpdh997q53042w192xdzgnfv6ymmkb16xkgd0ssj5pnnccj28")))))))
 
 (define-public nomad
-  (let ((commit "161950216e0b355c2e47f3484805bde25a6a9542"))
+  (let ((commit "ba908ebb4ca87e0c5ffbbe9b3a743003df9626a1"))
     (package
       (name "nomad")
       (version (git-version "0.0.4-alpha" "375" commit))
@@ -45,7 +45,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "15v8glkagzdag75dgqxs697n3vn8sxlrgs2kyjr6s6hiy9l62lsd"))))
+                  "10r79rjrhksq2ji7gn798rnvi9r46k1zwn96n0qz8aqilvfml8bs"))))
       (build-system glib-or-gtk-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -85,7 +85,7 @@
                       (effective (read-line (open-pipe* OPEN_READ
                                                         "guile" "-c"
                                                         "(display (effective-version))")))
-                      (deps (map (cut assoc-ref inputs <>) '("emacsy")))
+                      (deps (map (cut assoc-ref inputs <>) '("emacsy" "guile-lib" "guile-readline")))
                       (scm-path (map (cut string-append <>
                                           "/share/guile/site/" effective)
                                      `(,out ,@deps)))
