@@ -72,7 +72,6 @@ register_c_modules ()
   scm_c_use_module ("nomad init");
   scm_c_use_module ("emacsy emacsy");
   scm_c_use_module ("nomad util");
-  scm_c_use_module ("nomad keymap");
   scm_c_use_module ("nomad window");
   scm_c_use_module ("nomad views");
   scm_c_use_module ("nomad options");

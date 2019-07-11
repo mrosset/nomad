@@ -17,7 +17,6 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad init)
-  #:use-module (nomad keymap)
   #:use-module (nomad events)
   #:use-module (nomad util)
   #:use-module (emacsy emacsy)
@@ -111,7 +110,6 @@
 
 (define (init)
   (webview-init)
-  (add-hook! key-press-hook handle-key-press)
   (add-hook! event-hook debug-event)
   (create-nomad-directory)
   (when (file-exists? (fluid-ref history-file))

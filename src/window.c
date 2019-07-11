@@ -196,22 +196,6 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
   return FALSE;
 }
 
-gboolean
-window_key_press_cb_old (GtkWidget *widget, GdkEventKey *event)
-{
-  const gchar *key_name;
-  SCM hook;
-
-  hook = scm_c_public_ref ("nomad keymap", "key-press-hook");
-  key_name = gdk_keyval_name (event->keyval);
-
-  scm_run_hook (hook,
-                scm_list_3 (scm_variable_ref (scm_c_lookup ("global-map")),
-                            scm_from_int (event->state),
-                            scm_from_locale_string (key_name)));
-  return FALSE;
-}
-
 static void
 initialize_web_extensions (WebKitWebContext *context, gpointer user_data)
 {

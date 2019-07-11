@@ -45,7 +45,6 @@ SOURCES =			\
 	nomad/frame.scm		\
 	nomad/html.scm		\
 	nomad/init.scm		\
-	nomad/keymap.scm	\
 	nomad/minibuffer.scm	\
 	nomad/options.scm	\
 	nomad/repl.scm		\
