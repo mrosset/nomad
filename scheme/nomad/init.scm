@@ -32,7 +32,7 @@
   #:export (init
             user-cookie-file
             user-init-file
-            user-init-hook
+            startup-hook
             user-nomad-directory
             create-nomad-directory
             history
@@ -43,7 +43,7 @@
             session-file
             shutdown))
 
-(define user-init-hook (make-hook))
+(define startup-hook (make-hook))
 
 (define user-init-file
   (~/ ".nomad"))
@@ -108,13 +108,6 @@
     (when (not (file-exists? dir))
       (info (format #f "creating ~a" dir))
       (mkdir dir #o755))))
-
-(define (shutdown)
-  "Cleans up after guile and serialize persistent objects"
-  (format #t "writing history....\n")
-  (nomad-write-history)
-  (format #t "shutting down repl...\n")
-  (server-force-delete (option-listen (command-line))))
 
 (define (init)
   (webview-init)

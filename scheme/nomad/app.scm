@@ -17,17 +17,28 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad app)
-  #:use-module (emacsy emacsy)
-  #:use-module (nomad webview)
   #:use-module (emacsy buffer)
-  #:use-module (nomad views)
-  #:use-module (nomad init)
+  #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
-  #:use-module (nomad minibuffer)
+  #:use-module (nomad init)
+  #:use-module (nomad options)
+  #:use-module (nomad repl)
+  #:use-module (nomad views)
+  #:use-module (nomad webview)
   #:export (emacs-init-file
+            shutdown-hook
+            shutdown
             app-init))
 
-(define emacs-init-file "init.el")
+(define shutdown-hook (make-hook 0))
+
+(define (shutdown)
+  "Cleans up after guile and serialize persistent objects"
+  (format #t "writing history...\n")
+  (nomad-write-history)
+  (format #t "shutting down repl...\n")
+  (server-force-delete (option-listen (command-line)))
+  (run-hook shutdown-hook))
 
 (define (app-init)
   "This is called when the application is activated. Which ensures
@@ -47,14 +58,20 @@ controls are accessible to scheme"
     ;;              (render-completion-popup-view)))
     ;; (add-hook! (buffer-exit-hook (current-buffer))
     ;;            hide-minibuffer-popup)
-    (agenda-schedule-interval (lambda _
-                                (update-buffer-names))
-                              10))
+    (add-hook! shutdown-hook
+               (lambda _
+                 (format #t "running shutdown hook...\n"))))
+
+  (agenda-schedule-interval (lambda _
+                              (update-buffer-names))
+                            10)
   ;; Create one buffer
   (make-buffer default-home-page)
-  (run-hook user-init-hook)
   ;; Kill the scratch and messages buffer
   (for-each (lambda (buffer)
               (with-buffer buffer
                 (kill-buffer)))
-            (list scratch messages)))
+            (list scratch messages))
+  ;; Run user hooks
+  (run-hook startup-hook)
+  (switch-to-buffer default-home-page))

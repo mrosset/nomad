@@ -42,10 +42,7 @@ startup (GApplication *app, gpointer data)
 static void
 shutdown (GApplication *app, gpointer data)
 {
-  SCM socket;
-  socket = scm_c_eval_string ("(option-listen (command-line))");
-  scm_call_1 (scm_c_public_ref ("nomad repl", "server-force-delete"), socket);
-  scm_variable_set_x (scm_c_lookup ("emacsy-quit-application?"), SCM_BOOL_T);
+  scm_call_0 (scm_c_public_ref ("nomad app", "shutdown"));
 }
 
 static void
