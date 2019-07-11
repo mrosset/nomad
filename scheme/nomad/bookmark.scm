@@ -1,6 +1,6 @@
 ;; bookmark --- bookmarks for Nomad
 
-;; Copyright (C) 2019 Mike Rosset<Mike.Rosset@gmail.com>
+;; Copyright (C) 2019 Mike Rosset<mike.rosset@gmail.com>
 ;; Copyright (C) 2019 Amar Singh<nly@disroot.org>
 
 ;; This file is part of Nomad.

@@ -43,18 +43,32 @@
             (buffer-list)))
 
 (define (buffer-uri buffer)
-  "Returns the webview URI for 'buffer"
+  "Returns the webview URI for BUFFER"
   (with-buffer buffer
-    (primitive-buffer-uri (local-var 'web-buffer))))
+    (local-var 'uri)))
 
 (define (buffer-pointer buffer)
   (with-buffer buffer
     (local-var 'web-buffer)))
 
+(define-public (buffers-contains? uri)
+  "Returns #t of buffer-list contains URI"
+  (let ((contains #f))
+    (for-each (lambda buffer
+                (when (string= uri
+                               (buffer-name (car buffer)))
+                  (set! contains #t)))
+              (buffer-list))
+    contains))
+
 (define (buffers->uri)
   "Returns a list of uri's for all buffers"
   (map (lambda (buffer)
-         (buffer-uri buffer))
+         (with-buffer buffer
+           (let ((uri (buffer-name buffer)))
+             (when (and uri
+                        (not (string= uri "nomad://")))
+               uri))))
        (buffer-list)))
 
 (define-interactive (show-buffers)
@@ -87,7 +101,9 @@
     (set! (local-var 'web-buffer)
           (make-web-buffer))
     (set! (local-var 'update)
-          #t)
+      #t)
+    (set! (local-var 'uri)
+          url)
     (add-hook! (buffer-enter-hook buffer)
                on-webview-enter)
     (add-hook! (buffer-kill-hook buffer)
@@ -126,12 +142,13 @@
                           (buffer-name buffer)))))
 
 (define-public (update-buffer-names)
-  "Updates web bufffer names to it's current URI"
+  "Updates web buffer names to it's current URI"
   (for-each (lambda buffer
               (with-buffer (car buffer)
                 (when (and (webview-buffer? (current-buffer))
                            (local-var 'update))
-                  (set-buffer-name! (buffer-uri (current-buffer))))
+                  (set! (local-var 'uri) (primitive-buffer-uri (local-var 'web-buffer)))
+                  (set-buffer-name! (local-var 'uri)))
                 (when (and (or (string= (buffer-name (current-buffer))
                                         "*Messages*")
                                (string= (buffer-name (current-buffer))

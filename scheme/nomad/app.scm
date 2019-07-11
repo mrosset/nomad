@@ -59,7 +59,6 @@ controls are accessible to scheme"
     (add-hook! shutdown-hook
                (lambda _
                  (format #t "running shutdown hook...\n"))))
-
   (agenda-schedule-interval (lambda _
                               (update-buffer-names))
                             10)
@@ -71,5 +70,4 @@ controls are accessible to scheme"
                 (kill-buffer)))
             (list scratch messages))
   ;; Run user hooks
-  (run-hook startup-hook)
-  (switch-to-buffer default-home-page))
+  (run-hook startup-hook))
