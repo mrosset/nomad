@@ -31,34 +31,34 @@
  #:use-module (srfi srfi-26)
  #:use-module (srfi srfi-9)
  #:export (alist->bookmark
-	   bookmark->alist
-	   bookmark-file
-	   bookmark-find
-	   bookmark-init
-	   bookmark-list
-	   bookmark-ref
-	   make-bookmark
-	   read-bookmarks
-	   write-bookmarks
-	   bookmarks
-	   open-bookmark
-	   save-bookmark))
+           bookmark->alist
+           bookmark-file
+           bookmark-find
+           bookmark-init
+           bookmark-list
+           bookmark-ref
+           make-bookmark
+           read-bookmarks
+           write-bookmarks
+           bookmarks
+           open-bookmark
+           save-bookmark))
 
 (define bookmark-file
   (string-append (fluid-ref user-nomad-directory)
-		 // "bookmarks.scm"))
+                 // "bookmarks.scm"))
 
 (define* (read-bookmarks #:optional file)
   (let ((bookmark-file (or file bookmark-file)))
     (let* ((in (open-input-file bookmark-file))
-	  (sexp (read in)))
+          (sexp (read in)))
       (set! bookmarks (map alist->bookmark sexp))
       (close-port in))))
 
 (define* (write-bookmarks #:optional file)
   (let ((bookmark-file (or file bookmark-file)))
     (let* ((out (open-output-file bookmark-file))
-	   (sexp (map bookmark->alist bookmarks)))
+           (sexp (map bookmark->alist bookmarks)))
       (write sexp out)
       (close-port out))))
 
@@ -78,7 +78,7 @@
 (define (alist->bookmark alist)
   "Convert ALIST into a <bookmark> record."
   (make-bookmark (assq-ref alist 'id)
-	       (assq-ref alist 'contents)))
+               (assq-ref alist 'contents)))
 
 (define (bookmark->alist bookmark)
   "Convert BOOKMARK into an alist."
@@ -90,17 +90,17 @@
 (define bookmarks
   (map alist->bookmark
        '(((id . "nomad")
-	  (contents . "https://savannah.nongnu.org/projects/nomad"))
-	 ((id . "nomad-git")
-	  (contents . "http://git.savannah.nongnu.org/cgit/nomad.git"))
-	 ((id . "emacsy")
-	  (contents . "https://savannah.nongnu.org/projects/emacsy"))
-	 ((id . "guilem")
-	  (contents . "https://www.gnu.org/software/guile/manual/html_node"))
-	 ((id . "emacs")
-	  (contents . "https://www.gnu.org/software/emacs"))
-	 ((id . "guile")
-	  (contents . "https://www.gnu.org/software/guile")))))
+          (contents . "https://savannah.nongnu.org/projects/nomad"))
+         ((id . "nomad-git")
+          (contents . "http://git.savannah.nongnu.org/cgit/nomad.git"))
+         ((id . "emacsy")
+          (contents . "https://savannah.nongnu.org/projects/emacsy"))
+         ((id . "guilem")
+          (contents . "https://www.gnu.org/software/guile/manual/html_node"))
+         ((id . "emacs")
+          (contents . "https://www.gnu.org/software/emacs"))
+         ((id . "guile")
+          (contents . "https://www.gnu.org/software/guile")))))
 
 (define (pp-bookmarks)
   (define (print-bookmark arg)
@@ -112,12 +112,12 @@
 
 (define* (bookmark-find key #:optional books)
   (filter (compose (cut string-match key <>) bookmark-id)
-	  (or books bookmarks)))
+          (or books bookmarks)))
 
 (define-interactive (open-bookmark #:optional (str (read-from-minibuffer "Bookmark: ")))
   "Opens bookmark by key in current buffer"
   (make-buffer (bookmark-contents
-		(car (bookmark-find str)))))
+                (car (bookmark-find str)))))
 
 (define-interactive (save-bookmark #:optional (key (read-from-minibuffer "Key: ")) (url (or (current-url) (read-from-minibuffer "URL: "))))
   "Makes a bookmark by 'KEY in a new buffer"
