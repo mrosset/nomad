@@ -123,11 +123,6 @@ nomad_app_activate (GApplication *self)
                   (GBusAcquiredCallback)on_bus_acquired, NULL,
                   (GBusNameLostCallback)on_name_lost, NULL, NULL);
   scm_call_0 (scm_c_public_ref ("nomad app", "app-init"));
-
-  // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
-  // documentation for $HOME/.nomad
-  scm_c_run_hook (scm_c_public_ref ("nomad init", "user-init-hook"),
-                  scm_list_1 (SCM_BOOL_T));
 }
 
 static void

@@ -68,29 +68,31 @@
   "Pretty prints the buffers to echo area"
   (message "~a" (with-output-to-string (lambda _ (pretty-print (buffer-list))))))
 
-(define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
-  (define (on-enter)
-    (when (local-var 'web-buffer)
-      (format #t
-              "Setting web-view to ~a~%"
-              (local-var 'web-buffer))
-      (set-web-buffer! (local-var 'web-buffer))
-      (use-local-map webview-map)))
-  (define (on-kill)
+(define (on-webview-enter)
+  (when (local-var 'web-buffer)
     (format #t
-            "Destroying web-view ~a~%"
+            "Setting web-view to ~a~%"
             (local-var 'web-buffer))
-    (destroy-web-buffer! (local-var 'web-buffer)))
+    (set-web-buffer! (local-var 'web-buffer))
+    (use-local-map webview-map)))
+
+(define (on-webview-kill)
+  (format #t
+          "Destroying web-view ~a~%"
+          (local-var 'web-buffer))
+  (destroy-web-buffer! (local-var 'web-buffer)))
+
+(define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
   (let ((buffer (switch-to-buffer url)))
     (set! (local-var 'web-buffer)
           (make-web-buffer))
     (set! (local-var 'update)
           #t)
     (add-hook! (buffer-enter-hook buffer)
-               on-enter)
+               on-webview-enter)
     (add-hook! (buffer-kill-hook buffer)
-               on-kill)
-    (on-enter)
+               on-webview-kill)
+    (on-webview-enter)
     (set-current-uri! (prefix-url url))))
 
 (define (webview-buffer? buffer)
@@ -104,19 +106,46 @@
           (set! iswebview #f))))
     iswebview))
 
+;; FIXME: use a webview-buffer instead of converting text-buffers
+(define-public (text-buffer->webview! buffer)
+  "converts in place a text BUFFER to webview buffer"
+  (with-buffer buffer
+    (set! (local-var 'web-buffer)
+          (make-web-buffer))
+    (set! (local-var 'update)
+          #f)
+    (add-hook! (buffer-enter-hook buffer)
+               on-webview-enter)
+    (add-hook! (buffer-kill-hook buffer)
+               on-webview-kill)
+    (switch-to-buffer buffer)
+    ;; FIXME: do not hard code HTML use SXML views to display *Messages* and
+    ;; scratch and messages?
+    (load-content (format #f
+                          "<H2>~a<H2>"
+                          (buffer-name buffer)))))
+
 (define-public (update-buffer-names)
   "Updates web bufffer names to it's current URI"
   (for-each (lambda buffer
               (with-buffer (car buffer)
                 (when (and (webview-buffer? (current-buffer))
                            (local-var 'update))
-                  (set-buffer-name! (buffer-uri (current-buffer))))))
+                  (set-buffer-name! (buffer-uri (current-buffer))))
+                (when (and (or (string= (buffer-name (current-buffer))
+                                        "*Messages*")
+                               (string= (buffer-name (current-buffer))
+                                        "*scratch*"))
+                           (not (webview-buffer? (current-buffer))))
+                  (text-buffer->webview! (car buffer)))))
             (buffer-list)))
 
-;; Skip over Message buffer for now
+;; (define-key global-map (kbd "C-b") (lambda _
+;;                                      (next-buffer)
+;;                                      (when (string= (buffer-name (current-buffer))
+;;                                                     "*scratch*")
+;;                                        (next-buffer))))
+
 (define-key global-map (kbd "C-b") 'next-buffer)
 
-;; Prev buffer is not that useful as of now
-;; (define-key global-map (kbd "C-n") 'prev-buffer)
-
-(define-key global-map (kbd "C-x C-b") 'message-buffers)
+;; (define-key global-map (kbd "C-x C-b") 'next-buffer)

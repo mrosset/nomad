@@ -34,6 +34,8 @@ startup (GApplication *app, gpointer data)
 {
 
   SCM socket = scm_c_eval_string ("(option-listen (command-line))");
+  // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
+  // documentation for $HOME/.nomad
   scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"), socket);
 }
 
@@ -99,7 +101,7 @@ inner_main (void *data, int argc, char **argv)
 
   // We need to call init for so things like GDK_SCALE are used by our
   // GApplication
-  scm_c_eval_string ("(init)");
+  scm_call_0 (scm_c_public_ref ("nomad init", "init"));
 
   socket = scm_c_eval_string ("(option-listen (command-line))");
   exists = scm_call_1 (scm_c_private_ref ("nomad repl", "socket-exists?"),
@@ -117,6 +119,8 @@ inner_main (void *data, int argc, char **argv)
   // instance
   if (exists == SCM_BOOL_T)
     {
+      // FIXME: Convert this to use DBUS so running a REPL socket is not a
+      // requirement
       scm_call_2 (scm_c_public_ref ("nomad buffer", "make-buffer-socket"), url,
                   socket);
       sleep (1);

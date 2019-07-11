@@ -21,6 +21,7 @@
   #:use-module (nomad webview)
   #:use-module (emacsy buffer)
   #:use-module (nomad views)
+  #:use-module (nomad init)
   #:use-module (nomad buffer)
   #:use-module (nomad minibuffer)
   #:export (emacs-init-file
@@ -31,32 +32,6 @@
 (define (app-init)
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
-  ;; Setup the scratch and *Messages* buffers
-  ;; FIXME: do not hard code HTML use SXML views to display *Messages* and
-  ;; scratch and messages?
-  (for-each (lambda buffer
-              (with-buffer (car buffer)
-                (define (on-enter)
-                  (set-web-buffer! (local-var 'web-buffer)))
-                (define (on-kill)
-                  (format #t
-                          "Destroying web-view ~a~%"
-                          (local-var 'web-buffer))
-                  (destroy-web-buffer! (local-var 'web-buffer)))
-                (set! (local-var 'web-buffer)
-                      (make-web-buffer))
-                (set! (local-var 'update)
-                      #f)
-                (add-hook! (buffer-enter-hook (car buffer))
-                           on-enter)
-                (add-hook! (buffer-kill-hook (car buffer))
-                           on-kill)
-                (on-enter)
-                (load-content (format #f
-                                      "<H2>~a<H2>"
-                                      (buffer-name (car buffer))))))
-            (list messages scratch))
-  ;; Setup the minibuffer
   (define-key minibuffer-local-map "C-n" 'next-line)
   (define-key minibuffer-local-map "C-p" 'previous-line)
   ;; (define-key minibuffer-local-map "RET" 'minibuffer-execute)
@@ -76,4 +51,10 @@ controls are accessible to scheme"
                                 (update-buffer-names))
                               10))
   ;; Create one buffer
-  (make-buffer default-home-page))
+  (make-buffer default-home-page)
+  (run-hook user-init-hook)
+  ;; Kill the scratch and messages buffer
+  (for-each (lambda (buffer)
+              (with-buffer buffer
+                (kill-buffer)))
+            (list scratch messages)))
