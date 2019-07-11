@@ -510,22 +510,6 @@ nomad_app_window_init (NomadAppWindow *self)
   g_signal_connect (self, "key-press-event", G_CALLBACK (window_key_press_cb),
                     (gpointer)self);
 
-  /* g_signal_connect (priv->read_line, "focus-out-event",
-   *                   G_CALLBACK (read_line_focus_out_event_cb),
-   * (gpointer)self); */
-
-  /* g_signal_connect (priv->read_line, "focus-in-event",
-   *                   G_CALLBACK (read_line_focus_in_event_cb),
-   * (gpointer)self); */
-
-  /* g_signal_connect (priv->read_line, "key-release-event",
-   *                   G_CALLBACK (read_line_key_release_event_cb),
-   *                   (gpointer)self); */
-
-  /* g_signal_connect (priv->read_line, "key-press-event",
-   *                   G_CALLBACK (read_line_key_press_event_cb),
-   * (gpointer)self); */
-
   // Cookies
   cookie_manager = webkit_web_context_get_cookie_manager (
       webkit_web_context_get_default ());
