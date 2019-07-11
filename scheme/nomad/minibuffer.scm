@@ -24,19 +24,19 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad init)
   #:export (current-selection
-	    current-view
-	    current-list))
+            current-view
+            current-list))
 
 (define current-selection 0)
 (define current-view #nil)
 (define current-list '())
 
 (define-public minibuffer-mode-map '(("C-n" . (next-line))
-				     ("C-p" . (previous-line))))
+                                     ("C-p" . (previous-line))))
 
 (define-public (current-selection-ref)
   (let* ((lst current-list)
-	 (item (list-ref lst current-selection)))
+         (item (list-ref lst current-selection)))
     (string->symbol item)))
 
 (define-public (reset-minibuffer)
@@ -47,7 +47,7 @@
 
 (define emacsy-minibuffer-complete #f)
 
-(set! emacsy-minibuffer-complete minibuffer-complete)
+;; (set! emacsy-minibuffer-complete minibuffer-complete)
 
 (define-interactive (nomad-minibuffer-complete)
   (emacsy-minibuffer-complete)
@@ -55,56 +55,37 @@
 
 ;; (set! minibuffer-complete nomad-minibuffer-complete)
 
-(define-interactive (minibuffer-execute)
+(define (minibuffer-execute)
   (let* ((ref (local-var 'selection))
-	 (sym (list-ref (local-var 'completions)
-			ref))
-	 (proc (eval (string->symbol sym)
-		     (interaction-environment))))
+         (sym (list-ref (local-var 'completions)
+                        ref))
+         (proc (eval (string->symbol sym)
+                     (interaction-environment))))
     (if (nomad:command? proc)
-	(begin (format #t "COMMAND: ~a\n" sym)
-	       ;; (command-execute proc)
-	       (delete-minibuffer-contents minibuffer)
-	       (with-buffer minibuffer
-		 (insert sym))
-	       (exit-minibuffer))
-	(begin (format #t
-		       "NOT COMMAND: ~a\n"
-		       (class-of sym))
-	       (exit-minibuffer)))))
+        (begin (format #t "COMMAND: ~a\n" sym)
+               ;; (command-execute proc)
+               (delete-minibuffer-contents minibuffer)
+               (with-buffer minibuffer
+                 (insert sym))
+               (exit-minibuffer))
+        (begin (format #t
+                       "NOT COMMAND: ~a\n"
+                       (class-of sym))
+               (exit-minibuffer)))))
 
-(define-interactive (next-line)
-  (let ((row (+ (local-var 'selection) 1))
-	(view (local-var 'view))
-	(lst (local-var 'completions)))
-    (when (not (>= row (length lst)))
-      (set! (local-var 'selection)
-	    row))
-    (render-completion-popup-view)))
+;; (define-interactive (next-line)
+;;   (let ((row (+ (local-var 'selection) 1))
+;;      (view (local-var 'view))
+;;      (lst (local-var 'completions)))
+;;     (when (not (>= row (length lst)))
+;;       (set! (local-var 'selection)
+;;          row))
+;;     (render-completion-popup-view)))
 
-(define-interactive (previous-line)
-  (let ((row (- (local-var 'selection) 1))
-	(view (local-var 'view))
-	(lst (local-var 'completions)))
-    (when (not (< row 0))
-      (set! (local-var 'selection) row)
-      (render-completion-popup-view))))
-
-(define-public (input-completion text)
-  "Returns a list of command symbols matching 'TEXT"
-  (let ((completion '()))
-    (map (lambda (p)
-	   (let ((key (symbol->string (car p))))
-	     (when (string-match text key)
-	       (set! completion (append completion (list key))))))
-	 command-alist)
-    completion))
-
-(define-public (history-completion text)
-  "Returns a list of matches in history list"
-  (let ((completion '()))
-    (map (lambda (s)
-	   (when (string-match text s)
-	     (set! completion (append completion (list s)))))
-	 history)
-    completion))
+;; (define-interactive (previous-line)
+;;   (let ((row (- (local-var 'selection) 1))
+;;      (view (local-var 'view))
+;;      (lst (local-var 'completions)))
+;;     (when (not (< row 0))
+;;       (set! (local-var 'selection) row)
+;;       (render-completion-popup-view))))

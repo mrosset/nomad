@@ -23,18 +23,6 @@
 #include <gtk/gtk.h>
 #include <libguile.h>
 
-SCM_DEFINE (scm_nomad_minibuffer_select_line, "select-line", 1, 0, 0,
-            (SCM offset), "Select minitbuffer row by offset")
-{
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  GtkWidget *box = nomad_app_window_get_minipopup (win);
-  GtkListBoxRow *row = gtk_list_box_get_row_at_index (GTK_LIST_BOX (box),
-                                                      scm_to_int (offset));
-
-  gtk_list_box_select_row (GTK_LIST_BOX (box), row);
-  return SCM_BOOL_T;
-}
-
 SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 1, 0,
             (SCM view_proc, SCM lst, SCM selection, SCM proc),
             "Renders the current popup state")
@@ -73,19 +61,6 @@ SCM_DEFINE (scm_nomad_minibuffer_whichkey_popup, "which-key-popup", 1, 0, 0,
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE (
-    scm_nomad_minibuffer_focus, "execute-extended-command", 0, 0, 0, (),
-    "Moves input focus to the minibuffer shows completion for commands")
-{
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  GtkWidget *readline = nomad_app_window_get_readline (win);
-  GtkWidget *popup = nomad_app_window_get_minipopup (win);
-
-  gtk_widget_grab_focus (readline);
-  gtk_widget_show (popup);
-  return SCM_UNSPECIFIED;
-}
-
 SCM_DEFINE (scm_nomad_minibuffer_popup_hide, "hide-minibuffer-popup", 0, 0, 0,
             (), "Hides the minibuffer popup")
 {
@@ -98,7 +73,6 @@ void
 nomad_minibuffer_register_functions (void *data)
 {
 #include "minibuffer.x"
-  scm_c_export ("next-line", "previous-line", "render-popup",
-                "hide-minibuffer-popup", "execute-extended-command",
-                "which-key-popup", NULL);
+  scm_c_export ("render-popup", "hide-minibuffer-popup", "which-key-popup",
+                NULL);
 }
