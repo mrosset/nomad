@@ -31,18 +31,16 @@
             search-provider-format
             set-current-uri!
             history-forward
-            webview-mode-map
             webview-map
             firefox-webview-map))
 
-(define webview-mode-map '(("C-b" . (next-buffer))
-                                  ("C-u" . (back))
-                                  ("C-m" . (forward))
-                                  ("C-n" . (scroll-down))
-                                  ("C-f" . (hints))
-                                  ("C-p" . (scroll-up))
-                                  ("C-r" . (reload))
-                                  ("C-x" . (kill-buffer))))
+;; Provides emacs like key mappings for webview-mode
+(define webview-map (make-keymap))
+
+;; Provides firefox key mappings for webview-mode. This can be set as
+;; the default webview mode map by using (!set webview-map
+;; firefox-webview-map) in user-init-file
+(define firefox-webview-map (make-keymap))
 
 (define search-provider-format "https://duckduckgo.com/?q=~a")
 
@@ -111,8 +109,6 @@ specified. Returns the final URL passed to webkit"
   "Load CONTENT into current buffer"
   (set-buffer-content! (current-buffer) content "nomad://"))
 
-(define webview-map (make-keymap))
-
 (define-public (tweak-url)
   "Edit the current-url."
   (browse (read-from-minibuffer "Url: " (current-url))))
@@ -131,12 +127,8 @@ specified. Returns the final URL passed to webkit"
 
 (define-public cycle-search-provider (pick-search-provider))
 
-;; Provides firefox key mappings for webview-mode. This can be set as
-;; the default webview mode map by using (!set webview-map
-;; firefox-webview-map) in user-init-file
-(define firefox-webview-map (make-keymap))
-
 (define (firefox-webview-map-init)
+  "Initializes firefox-webview-map"
   ;; webview
   (define-key firefox-webview-map (kbd "C-u") 'next-buffer)
   (define-key firefox-webview-map (kbd "C-m") 'prev-buffer)
@@ -153,5 +145,20 @@ specified. Returns the final URL passed to webkit"
   (define-key firefox-webview-map (kbd "C-v") 'scroll-down)
   (define-key firefox-webview-map (kbd "M-'") 'hints))
 
+(define (webview-map-init)
+  "Initializes webview-map"
+  (let ((pairs '(("C-u" . back)
+                 ("C-m" . forward)
+                 ("C-n" . scroll-down)
+                 ("C-p" . scroll-up)
+                 ("C-f" . hints)
+                 ("C-r" . reload)
+                 ("C-q" . kill-buffer)
+                 ("C-x C-f" . query))))
+    (for-each (lambda (pair)
+                (define-key webview-map (car pair) (cdr pair)))
+              pairs)))
+
 (define (webview-init)
-  (firefox-webview-map-init))
+  (firefox-webview-map-init)
+  (webview-map-init))
