@@ -49,7 +49,7 @@
 
 ;; (set! emacsy-minibuffer-complete minibuffer-complete)
 
-(define-interactive (nomad-minibuffer-complete)
+(define (nomad-minibuffer-complete)
   (emacsy-minibuffer-complete)
   (render-completion-popup-view))
 
