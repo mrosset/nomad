@@ -21,6 +21,7 @@
 (define-module (nomad bookmark)
  #:use-module (emacsy emacsy)
  #:use-module (ice-9 match)
+ #:use-module (ice-9 pretty-print)
  #:use-module (ice-9 regex)
  #:use-module (ice-9 optargs)
  #:use-module (nomad webview)
@@ -101,6 +102,12 @@
           (contents . "https://www.gnu.org/software/emacs"))
          ((id . "guile")
           (contents . "https://www.gnu.org/software/guile")))))
+
+(define-interactive (message-bookmarks)
+  "Pretty prints bookmarks to echo area"
+  (message "~a"
+           (with-output-to-string (lambda _
+                                    (pretty-print bookmarks)))))
 
 (define (pp-bookmarks)
   (define (print-bookmark arg)
