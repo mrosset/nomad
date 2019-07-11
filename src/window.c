@@ -83,27 +83,6 @@ clear_read_line_buffer (gpointer user_data)
   return FALSE;
 }
 
-static void
-keyboard_quit (gpointer widget)
-{
-  NomadAppWindowPrivate *priv;
-
-  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (widget));
-
-  nomad_buffer_grab_view (
-      nomad_app_window_get_buffer (NOMAD_APP_WINDOW (widget)));
-
-  /* gtk_widget_hide (priv->mini_popup); */
-  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
-  scm_call_0 (scm_c_public_ref ("nomad minibuffer", "reset-minibuffer"));
-}
-
-void
-nomad_app_window_map_event_cb (GtkWidget *widget, gpointer user_data)
-{
-  keyboard_quit (widget);
-}
-
 // FIXME: This has been copied verbatim from emacsy example. include
 // emacsy copyright
 static int
@@ -635,17 +614,6 @@ SCM_DEFINE (scm_nomad_window_focus, "webview-focus", 0, 0, 0, (),
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_nomad_window_keyboard_quit, "keyboard-quit", 0, 0, 0, (),
-            "Quits keyboard input and returns focus to the webview buffer")
-{
-  NomadAppWindow *win;
-
-  win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-
-  keyboard_quit (win);
-  return SCM_UNDEFINED;
-}
-
 SCM_DEFINE (scm_nomad_window_show_tabs, "toggle-tabs", 0, 0, 0, (),
             "Turns notebook tabs on or off")
 {
@@ -661,6 +629,6 @@ void
 nomad_window_register_functions (void *data)
 {
 #include "window.x"
-  scm_c_export ("webview-focus", "keyboard-quit", "toggle-tabs", NULL);
+  scm_c_export ("webview-focus", "toggle-tabs", NULL);
   scm_c_register_interactive ("toggle-tabs");
 }

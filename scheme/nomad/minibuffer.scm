@@ -31,15 +31,12 @@
 (define current-view #nil)
 (define current-list '())
 
-(define-public minibuffer-mode-map '(("C-n" . (next-line))
-                                     ("C-p" . (previous-line))))
-
-(define-public (current-selection-ref)
+(define (current-selection-ref)
   (let* ((lst current-list)
          (item (list-ref lst current-selection)))
     (string->symbol item)))
 
-(define-public (reset-minibuffer)
+(define (reset-minibuffer)
   (set! current-view #nil)
   (set! current-list '())
   (set! current-selection 0)
