@@ -181,32 +181,29 @@ tab_label_new (int id)
   return gtk_label_new (scm_to_locale_string (label));
 }
 
-SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0,
-            (SCM web_buffer_pointer),
-            "Set the current web view to the given pointer.")
+SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0, (SCM pointer),
+            "Sets the current tab to the given pointer.")
 {
   gint page;
   GtkWidget *buf;
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   GtkNotebook *notebook = nomad_window_get_notebook (win);
 
-  if (SCM_POINTER_P (web_buffer_pointer))
+  if (SCM_POINTER_P (pointer))
     {
-      buf = GTK_WIDGET (scm_to_pointer (web_buffer_pointer));
+      buf = GTK_WIDGET (scm_to_pointer (pointer));
       page = gtk_notebook_page_num (notebook, buf);
       if (page < 0)
         {
-          page = gtk_notebook_append_page (notebook, buf, NULL);
-          gtk_notebook_set_tab_label (notebook, buf, tab_label_new (page));
-          gtk_widget_show_all (buf);
+          page = gtk_notebook_append_page (
+              notebook, buf,
+              tab_label_new (gtk_notebook_get_n_pages (notebook)));
         }
-      else
-        {
-          gtk_notebook_set_current_page (notebook, page);
-        }
+      gtk_notebook_set_current_page (notebook, page);
+      gtk_widget_show_all (buf);
     }
   else
-    fprintf (stderr, "error: not given a pointer in set-web-buffer!\n");
+    g_warning ("warning: not given a pointer in set-web-buffer!\n");
   return SCM_UNSPECIFIED;
 }
 
