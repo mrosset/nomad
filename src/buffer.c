@@ -174,6 +174,13 @@ SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 0, 0, 0, (),
   return scm_from_pointer (buf, NULL);
 }
 
+GtkWidget *
+tab_label_new (int id)
+{
+  SCM label = scm_number_to_string (scm_from_int (id), scm_from_int (10));
+  return gtk_label_new (scm_to_locale_string (label));
+}
+
 SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0,
             (SCM web_buffer_pointer),
             "Set the current web view to the given pointer.")
@@ -189,7 +196,9 @@ SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0,
       page = gtk_notebook_page_num (notebook, buf);
       if (page < 0)
         {
-          nomad_app_window_add_buffer (win, NOMAD_BUFFER (buf));
+          page = gtk_notebook_append_page (notebook, buf, NULL);
+          gtk_notebook_set_tab_label (notebook, buf, tab_label_new (page));
+          gtk_widget_show_all (buf);
         }
       else
         {
