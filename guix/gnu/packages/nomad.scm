@@ -13,13 +13,15 @@
  (gnu packages autotools)
  (gnu packages glib)
  (gnu packages gnome)
+ (gnu packages gnupg)
  (gnu packages gtk)
  (gnu packages guile-xyz)
  (gnu packages guile)
  (gnu packages password-utils)
  (gnu packages pkg-config)
  (gnu packages tls)
- (gnu packages webkit))
+ (gnu packages webkit)
+ (gnu packages xdisorg))
 
 (define-public emacsy-git
   (let ((commit "ed88cfbe57d5a40ea4e1604bfdc61f10ff750626"))
@@ -31,6 +33,53 @@
                                                  (commit commit)))
                              (file-name (string-append name "-" version))
                              (sha256 (base32 "05zgpdh997q53042w192xdzgnfv6ymmkb16xkgd0ssj5pnnccj28")))))))
+
+(define-public shroud-0.1.2
+  (package (inherit shroud)
+    (name "shroud")
+    (version "0.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.dthompson.us/"
+                                  name "/shroud-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1l2shrhvcwfzkar9qiwb75nhcqmx25iz55lzmz0c187nbjhqzi9p"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf-wrapper)
+       ("automake" ,automake)))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 popen)
+                  (ice-9 rdelim)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-shroud
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (guile (assoc-ref inputs "guile"))
+                    (xclip (assoc-ref inputs "xclip"))
+                    (prog (string-append out "/bin/shroud"))
+                    (deps (list xclip))
+                    (effective (read-line
+                                (open-pipe* OPEN_READ
+                                            (string-append guile "/bin/guile")
+                                            "-c" "(display (effective-version))")))
+                    (path (map (cut string-append <> "/bin")
+                               (delete #f deps)))
+                    (ccachedir (string-append out
+                                              "/lib/guile/" effective "/site-ccache")))
+               (wrap-program prog
+                 `("PATH" ":" prefix ,path)
+                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,ccachedir)))
+               #t))))))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("gnupg" ,gnupg)
+       ("xclip" ,xclip)))))
 
 (define-public nomad
   (let ((commit "ba908ebb4ca87e0c5ffbbe9b3a743003df9626a1"))
@@ -58,8 +107,10 @@
        `(("guile" ,guile-2.2)
          ("guile-lib" ,guile-lib)
          ("guile-readline" ,guile-readline)
-         ("shroud" ,shroud)
+         ("shroud" ,shroud-0.1.2)
+         ;; waiting on shroud to be updated in guix
          ("emacsy" ,emacsy-git)
+         ;; emacsy needs to be updated in guix
          ("glib" ,glib)
          ("gtk+" ,gtk+)
          ("gtksourceview" ,gtksourceview)
