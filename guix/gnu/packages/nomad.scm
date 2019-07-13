@@ -112,14 +112,13 @@
          ("emacsy" ,emacsy-git)
          ;; emacsy needs to be updated in guix
          ("glib" ,glib)
+         ("dbus-glib" ,dbus-glib)
+         ("glib-networking" ,glib-networking)
+         ("gsettings-desktop-schemas"
+          ,gsettings-desktop-schemas)
          ("gtk+" ,gtk+)
          ("gtksourceview" ,gtksourceview)
          ("webkitgtk" ,webkitgtk)))
-      (propagated-inputs
-       `(("dbus-glib" ,dbus-glib)
-         ("glib-networking" ,glib-networking)
-         ("gsettings-desktop-schemas"
-          ,gsettings-desktop-schemas)))
       (arguments
        `(#:tests? #t
          #:modules ((guix build gnu-build-system)
