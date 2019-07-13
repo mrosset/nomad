@@ -82,7 +82,7 @@
        ("xclip" ,xclip)))))
 
 (define-public nomad
-  (let ((commit "ba908ebb4ca87e0c5ffbbe9b3a743003df9626a1"))
+  (let ((commit "d3ecd7486b7f65f1bbd52e4251d77354d81707f3"))
     (package
       (name "nomad")
       (version (git-version "0.0.4-alpha" "375" commit))
@@ -94,7 +94,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "10r79rjrhksq2ji7gn798rnvi9r46k1zwn96n0qz8aqilvfml8bs"))))
+                  "0lbqr1rm94w341vyv7nvpxmcl4arlac36b2k7z40af89d451m78k"))))
       (build-system glib-or-gtk-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
