@@ -85,12 +85,13 @@
                       (effective (read-line (open-pipe* OPEN_READ
                                                         "guile" "-c"
                                                         "(display (effective-version))")))
-                      (deps (map (cut assoc-ref inputs <>) '("emacsy" "guile-lib" "guile-readline")))
+                      (deps (map (cut assoc-ref inputs <>) '("emacsy" "guile-lib"
+                                                             "guile-readline" "shroud")))
                       (scm-path (map (cut string-append <>
                                           "/share/guile/site/" effective)
                                      `(,out ,@deps)))
                       (go-path (map (cut string-append <>
-                                         "/lib/guile/" effective "/site-ccache/")
+                                         "/lib/guile/" effective "/site-ccache")
                                     `(,out ,@deps)))
                       (progs (map (cut string-append out "/bin/" <>)
                                   '("nomad"))))
