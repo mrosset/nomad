@@ -19,6 +19,7 @@
  */
 
 #include "app.h"
+#include "util.h"
 #include "window.h"
 #include <gtk/gtk.h>
 #include <libguile.h>
@@ -37,7 +38,7 @@ SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 1, 0,
   c_view = scm_to_locale_string (view);
   webkit_web_view_load_html (WEBKIT_WEB_VIEW (popup), c_view, "nomad://");
 
-  gtk_widget_show (popup);
+  nomad_app_window_show_minipopup (win);
   scm_dynwind_free (c_view);
   scm_dynwind_end ();
   return SCM_BOOL_T;
@@ -65,8 +66,7 @@ SCM_DEFINE (scm_nomad_minibuffer_popup_hide, "hide-minibuffer-popup", 0, 0, 0,
             (), "Hides the minibuffer popup")
 {
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  GtkWidget *popup = nomad_app_window_get_minipopup (win);
-  gtk_widget_hide (popup);
+  nomad_app_window_hide_minipopup (win);
   return SCM_UNSPECIFIED;
 }
 void
@@ -75,4 +75,5 @@ nomad_minibuffer_register_functions (void *data)
 #include "minibuffer.x"
   scm_c_export ("render-popup", "hide-minibuffer-popup", "which-key-popup",
                 NULL);
+  scm_c_register_interactive ("hide-minibuffer-popup");
 }

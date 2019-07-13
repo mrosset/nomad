@@ -38,6 +38,8 @@ NomadBuffer *nomad_app_window_get_buffer (NomadAppWindow *win);
 GtkWidget *nomad_app_window_get_minipopup (NomadAppWindow *win);
 GtkWidget *nomad_app_window_get_readline (NomadAppWindow *self);
 void nomad_app_window_set_keymap (NomadAppWindow *self, SCM keymap);
+void nomad_app_window_show_minipopup (NomadAppWindow *self);
+void nomad_app_window_hide_minipopup (NomadAppWindow *self);
 gint nomad_app_window_add_buffer (NomadAppWindow *win, NomadBuffer *buf);
 void nomad_app_window_remove_buffer (NomadAppWindow *win);
 void nomad_window_register_functions (void *data);

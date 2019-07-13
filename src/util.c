@@ -47,7 +47,7 @@ SCM_DEFINE (scm_nomad_yank_string, "yank-string", 1, 0, 0, (SCM string),
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_c_register_interactive, "nomad-register-interactive", 2, 0, 0,
+SCM_DEFINE (scm_c_register_interactive, "nomad-register-interactive", 1, 0, 0,
             (const char *c_name),
             "Registers procedure name as an interactive command")
 {

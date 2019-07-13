@@ -516,6 +516,18 @@ nomad_app_window_get_minipopup (NomadAppWindow *self)
   return self->priv->mini_popup;
 }
 
+void
+nomad_app_window_show_minipopup (NomadAppWindow *self)
+{
+  gtk_widget_show_all (self->priv->mini_frame);
+}
+
+void
+nomad_app_window_hide_minipopup (NomadAppWindow *self)
+{
+  gtk_widget_hide (self->priv->mini_frame);
+}
+
 GtkWidget *
 nomad_app_window_get_readline (NomadAppWindow *self)
 {
