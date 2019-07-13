@@ -48,6 +48,7 @@ SOURCES =			\
 	nomad/minibuffer.scm	\
 	nomad/options.scm	\
 	nomad/repl.scm		\
+	nomad/shroud.scm	\
 	nomad/server.scm	\
 	nomad/util.scm		\
 	nomad/views.scm		\
