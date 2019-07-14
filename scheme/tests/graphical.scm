@@ -1,4 +1,5 @@
-;; tests.scm
+;; grphical.scm --- tests for nomad gui
+
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -15,6 +16,9 @@
 
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+;; these tests are supposed to be run from a running instance of nomad
 
 (define-module (tests graphical)
   #:use-module (emacsy emacsy)
