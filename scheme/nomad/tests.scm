@@ -82,6 +82,7 @@
 
 (define-interactive (run-graphical-tests)
   (test-runner-factory html-simple-runner)
+  (kill-some-buffers)
   (test-begin "graphical")
   (begin (test-equal "https://gnu.org/"
            (begin (make-buffer "gnu.org")
@@ -98,7 +99,6 @@
   (let* ((log-file "graphical.log")
          (port (open-input-file log-file))
          (content (get-string-all port)))
-    (make-buffer "https://www.google.ca")
-    (load-content content)
+    (make-buffer-content content)
     (close-port port)
     (delete-file log-file)))

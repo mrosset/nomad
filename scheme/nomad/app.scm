@@ -45,20 +45,20 @@ controls are accessible to scheme"
   (define-key minibuffer-local-map "C-p" 'previous-line)
   ;; (define-key minibuffer-local-map "RET" 'minibuffer-execute)
   (with-buffer minibuffer
-    (set! (local-var 'view)
-          completion-view)
-    (set! (local-var 'selection)
-          0)
-    (set! (local-var 'completions)
-          '())
-    ;; (add-hook! (buffer-enter-hook (current-buffer))
-    ;;            (lambda _
-    ;;              (render-completion-popup-view)))
-    ;; (add-hook! (buffer-exit-hook (current-buffer))
-    ;;            hide-minibuffer-popup)
-    (add-hook! shutdown-hook
-               (lambda _
-                 (format #t "running shutdown hook...\n"))))
+               (set! (local-var 'view)
+                     completion-view)
+               (set! (local-var 'selection)
+                     0)
+               (set! (local-var 'completions)
+                     '())
+               ;; (add-hook! (buffer-enter-hook (current-buffer))
+               ;;            (lambda _
+               ;;              (render-completion-popup-view)))
+               ;; (add-hook! (buffer-exit-hook (current-buffer))
+               ;;            hide-minibuffer-popup)
+               (add-hook! shutdown-hook
+                          (lambda _
+                            (format #t "running shutdown hook...\n"))))
   (agenda-schedule-interval (lambda _
                               (update-buffer-names))
                             10)
@@ -67,7 +67,14 @@ controls are accessible to scheme"
   ;; Kill the scratch and messages buffer
   (for-each (lambda (buffer)
               (with-buffer buffer
-                (kill-buffer)))
-            (list scratch messages))
+                           (text-buffer->webview! buffer #f)
+                           (when (not (notebook-contains buffer))
+                             (notebook-insert buffer 0)
+                             (load-content (format #f
+                                                   "<H2>~a<H2>"
+                                                   (buffer-name (current-buffer)))))))
+            (list messages))
+  (with-buffer scratch
+               (kill-buffer))
   ;; Run user hooks
   (run-hook startup-hook))

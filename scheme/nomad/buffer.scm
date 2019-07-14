@@ -97,7 +97,15 @@
           (local-var 'web-buffer))
   (destroy-web-buffer! (local-var 'web-buffer)))
 
+(define-interactive (make-buffer-content #:optional (content (read-from-minibuffer "Content: ")))
+  "Creates a new webifew buffer with CONTENT"
+  (let ((buffer (switch-to-buffer "nomad://")))
+    (text-buffer->webview! buffer #f)
+    (on-webview-enter)
+    (load-content content)))
+
 (define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
+  "Creates a new webview-bufer with URL"
   (let ((buffer (switch-to-buffer url)))
     (text-buffer->webview! buffer #t)
     (on-webview-enter)
