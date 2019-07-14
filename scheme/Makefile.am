@@ -50,7 +50,6 @@ SOURCES =			\
 	nomad/repl.scm		\
 	nomad/shroud.scm	\
 	nomad/server.scm	\
-	nomad/tests.scm	\
 	nomad/util.scm		\
 	nomad/views.scm	\
 	nomad/webview.scm	\
