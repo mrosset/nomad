@@ -20,6 +20,8 @@
   #:use-module (nomad util)
   #:use-module (srfi srfi-64))
 
+(test-begin "util")
 (with-fluids ((~ "/tmp/home"))
   (test-equal "procedure ~  expands to $HOME" (fluid-ref ~) "/tmp/home")
   (test-equal "procedure ~/ expands to $HOME/child" (~/ "test") "/tmp/home/test"))
+(test-end)
