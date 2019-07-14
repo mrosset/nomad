@@ -23,76 +23,39 @@
   #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-64))
 
-(define (%test-write-result1 pair port)
-  (display "  " port)
-  (display (car pair) port)
-  (display ": " port)
-  (write (cdr pair) port)
-  (newline port))
 
-(define (test-on-test-end-simple runner log)
-  (let ((kind (test-result-ref runner 'result-kind)))
-    (if (memq kind
-              '(fail xpass))
-        (let* ((results (test-result-alist runner))
-               (source-file (assq 'source-file results))
-               (source-line (assq 'source-line results))
-               (test-name (assq 'test-name results)))
-          (if (or source-file source-line)
-              (begin (if source-file
-                         (display (cdr source-file)))
-                     (display ":")
-                     (if source-line
-                         (display (cdr source-line)))
-                     (display ": ")))
-          (display (if (eq? kind 'xpass)
-                       "XPASS"
-                       "FAIL"))
-          (if test-name
-              (begin (display " ")
-                     (display (cdr test-name))))
-          (newline)))
+(define (test-on-group-begin-simple runner suite-name
+                                    count)
+  (if (null? (test-runner-group-stack runner))
+      (begin (display "%%%% Starting test ")
+             (display suite-name)
+             (if test-log-to-file
+                 (let* ((log-file-name (if (string? test-log-to-file)
+                                           test-log-to-file
+                                           (string-append suite-name ".log")))
+                        (log-file (cond-expand (mzscheme (open-output-file log-file-name 'truncate/replace))
+                                               (else (open-output-file log-file-name)))))
+                   (display "<pre><code>" log-file)
+                   (display "%%%% Starting test " log-file)
+                   (display suite-name log-file)
+                   (newline log-file)
+                   (test-runner-aux-value! runner log-file)
+                   (display "  (Writing full log to \"")
+                   (display log-file-name)
+                   (display "\")")))
+             (newline)))
+  (let ((log (test-runner-aux-value runner)))
     (if (output-port? log)
-        (begin (display "Test end:" log)
-               (newline log)
-               (let loop
-                   ((list (test-result-alist runner)))
-                 (if (pair? list)
-                     (let ((pair (car list)))
-                       ;; Write out properties not written out by on-test-begin.
-                       (if (not (memq (car pair)
-                                      '(test-name source-file source-line source-form)))
-                           (%test-write-result1 pair log))
-                       (loop (cdr list)))))
-               ))))
+        (begin (display "Group begin: " log)
+               (display suite-name log)
+               (newline log))))
+  #f)
 
-(define (test-on-test-begin-simple runner log)
-  (if (output-port? log)
-      (let* ((results (test-result-alist runner))
-             (source-file (assq 'source-file results))
-             (source-line (assq 'source-line results))
-             (source-form (assq 'source-form results))
-             (test-name (assq 'test-name results)))
-        (display "Test begin:" log)
-        (newline log)
-        (if test-name
-            (%test-write-result1 test-name log))
-        (if source-file
-            (%test-write-result1 source-file log))
-        (if source-line
-            (%test-write-result1 source-line log))
-        (if source-form
-            (%test-write-result1 source-form log)))))
-
-(define (html-simple-runner filename)
-  (let ((runner (test-runner-null))
-        (port (open-output-file filename))
+(define (html-simple-runner)
+  (let ((runner (test-runner-simple))
         (num-passed 0)
         (num-failed 0))
-    (display "<pre><code>" port)
-    (test-runner-on-test-begin! runner
-      (lambda (runner)
-        (test-on-test-begin-simple runner port)))
+    (test-runner-on-group-begin! runner test-on-group-begin-simple)
     (test-runner-on-test-end! runner
       (lambda (runner)
         (case (test-result-kind runner)
@@ -103,37 +66,39 @@
            (set! num-failed
                  (+ num-failed 1)))
           (else #t))
-        (test-on-test-end-simple runner port)))
+        (test-on-test-end-simple runner)))
     (test-runner-on-final! runner
       (lambda (runner)
-        (format port
-                "</code></pre><p><font color=~s> Passing tests: ~d. Failing tests: ~d.</font>~%</div>"
-                (if (> num-failed 0)
-                    "red"
-                    "green")
-                num-passed
-                num-failed)
-        (close-output-port port)))
+        (let ((log (test-runner-aux-value runner)))
+          (format log
+                  "</code></pre><p><font color=~s> Passing tests: ~d. Failing tests: ~d.</font>~%</div>"
+                  (if (> num-failed 0)
+                      "red"
+                      "green")
+                  num-passed
+                  num-failed)
+          (close-output-port log))))
     runner))
 
 (define-interactive (run-graphical-tests)
-  (test-runner-factory (lambda ()
-                         (html-simple-runner "graphical.log")))
+  (test-runner-factory html-simple-runner)
   (test-begin "graphical")
-  (kill-some-buffers)
-  (test-equal "https://gnu.org/"
-    (begin (make-buffer "gnu.org")
-           (update-buffer-names)
-           (buffer-name (current-buffer))))
-  (test-equal #t (notebook-contains (current-buffer)))
-  (test-equal "*scratch*"
-    (begin (kill-buffer)
-           (buffer-name (current-buffer))))
-  (test-equal (number-tabs)
-    (length (buffer-list)))
+  (begin (test-equal "https://gnu.org/"
+           (begin (make-buffer "gnu.org")
+                  (update-buffer-names)
+                  (buffer-name (current-buffer))))
+         (test-equal #t
+           (notebook-contains (current-buffer)))
+         (test-equal "*scratch*"
+           (begin (kill-buffer)
+                  (buffer-name (current-buffer))))
+         (test-equal (number-tabs)
+           (length (buffer-list))))
   (test-end)
-  (let* ((port (open-input-file "graphical.log"))
-         (log (get-string-all port)))
+  (let* ((log-file "graphical.log")
+         (port (open-input-file log-file))
+         (content (get-string-all port)))
     (make-buffer "https://www.google.ca")
-    (load-content log)
-    (close-port port)))
+    (load-content content)
+    (close-port port)
+    (delete-file log-file)))
