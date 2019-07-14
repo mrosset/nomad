@@ -99,16 +99,7 @@
 
 (define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
   (let ((buffer (switch-to-buffer url)))
-    (set! (local-var 'web-buffer)
-          (make-web-buffer))
-    (set! (local-var 'update)
-      #t)
-    (set! (local-var 'uri)
-          url)
-    (add-hook! (buffer-enter-hook buffer)
-               on-webview-enter)
-    (add-hook! (buffer-kill-hook buffer)
-               on-webview-kill)
+    (text-buffer->webview! buffer #t)
     (on-webview-enter)
     (set-current-uri! (prefix-url url))))
 
@@ -124,38 +115,40 @@
     iswebview))
 
 ;; FIXME: use a webview-buffer instead of converting text-buffers
-(define-public (text-buffer->webview! buffer)
+(define-public (text-buffer->webview! buffer update)
   "converts in place a text BUFFER to webview buffer"
   (with-buffer buffer
-    (set! (local-var 'web-buffer)
-          (make-web-buffer))
-    (set! (local-var 'update)
-          #f)
-    (add-hook! (buffer-enter-hook buffer)
-               on-webview-enter)
-    (add-hook! (buffer-kill-hook buffer)
-               on-webview-kill)
-    (switch-to-buffer buffer)
-    ;; FIXME: do not hard code HTML use SXML views to display *Messages* and
-    ;; scratch and messages?
-    (load-content (format #f
-                          "<H2>~a<H2>"
-                          (buffer-name buffer)))))
+               (set! (local-var 'web-buffer)
+                     (make-web-buffer))
+               (set! (local-var 'update)
+                     update)
+               (add-hook! (buffer-enter-hook buffer)
+                          on-webview-enter)
+               (add-hook! (buffer-kill-hook buffer)
+                          on-webview-kill)))
 
 (define-public (update-buffer-names)
   "Updates web buffer names to it's current URI"
-  (for-each (lambda buffer
-              (with-buffer (car buffer)
-                (when (and (webview-buffer? (current-buffer))
-                           (local-var 'update))
-                  (set! (local-var 'uri) (primitive-buffer-uri (local-var 'web-buffer)))
-                  (set-buffer-name! (local-var 'uri)))
-                (when (and (or (string= (buffer-name (current-buffer))
-                                        "*Messages*")
-                               (string= (buffer-name (current-buffer))
-                                        "*scratch*"))
-                           (not (webview-buffer? (current-buffer))))
-                  (text-buffer->webview! (car buffer)))))
+  (for-each (lambda (buffer)
+              (with-buffer buffer
+                           (when (and (webview-buffer? (current-buffer))
+                                      (local-var 'update))
+                             (set! (local-var 'uri)
+                                   (primitive-buffer-uri (local-var 'web-buffer)))
+                             (set-buffer-name! (local-var 'uri)))
+                           (when (and (or (string= (buffer-name (current-buffer))
+                                                   "*Messages*")
+                                          (string= (buffer-name (current-buffer))
+                                                   "*scratch*"))
+                                      (not (webview-buffer? (current-buffer))))
+                             (text-buffer->webview! buffer #f)
+                             (when (not (notebook-contains buffer))
+                               (notebook-insert buffer 0))
+                             ;; FIXME: do not hard code HTML use SXML views to display *Messages* and
+                             ;; scratch and messages?
+                             (load-content (format #f
+                                                   "<H2>~a<H2>"
+                                                   (buffer-name (current-buffer)))))))
             (buffer-list)))
 
 ;; (define-key global-map (kbd "C-b") (lambda _

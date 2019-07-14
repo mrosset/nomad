@@ -107,8 +107,10 @@
     (test-runner-on-final! runner
       (lambda (runner)
         (format port
-                "</code></pre><p><font color=\"~a\"> Passing tests: ~d. Failing tests: ~d.</font>~%</div>"
-                (if (> num-failed 0) "red" "green")
+                "</code></pre><p><font color=~s> Passing tests: ~d. Failing tests: ~d.</font>~%</div>"
+                (if (> num-failed 0)
+                    "red"
+                    "green")
                 num-passed
                 num-failed)
         (close-output-port port)))
@@ -118,15 +120,17 @@
   (test-runner-factory (lambda ()
                          (html-simple-runner "graphical.log")))
   (test-begin "graphical")
-  (begin (kill-some-buffers)
-         (test-equal "https://bufio.org/"
-           (begin (make-buffer "bufio.org")
-                  (update-buffer-names)
-                  (switch-to-buffer "https://bufio.org/")
-                  (buffer-name (current-buffer))))
-         (test-equal "*scratch*"
-           (begin (kill-buffer)
-                  (buffer-name (current-buffer)))))
+  (kill-some-buffers)
+  (test-equal "https://gnu.org/"
+    (begin (make-buffer "gnu.org")
+           (update-buffer-names)
+           (buffer-name (current-buffer))))
+  (test-equal #t (notebook-contains (current-buffer)))
+  (test-equal "*scratch*"
+    (begin (kill-buffer)
+           (buffer-name (current-buffer))))
+  (test-equal (number-tabs)
+    (length (buffer-list)))
   (test-end)
   (let* ((port (open-input-file "graphical.log"))
          (log (get-string-all port)))

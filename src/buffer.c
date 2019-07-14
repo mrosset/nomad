@@ -162,7 +162,7 @@ SCM_DEFINE (scm_nomad_destroy_web_buffer, "destroy-web-buffer!", 1, 0, 0,
   GtkWidget *buf = scm_to_pointer (web_buffer);
   if (buf)
     {
-      g_idle_add (idle_destroy, buf);
+      gtk_widget_destroy (buf);
     }
   return SCM_UNSPECIFIED;
 }
@@ -298,30 +298,49 @@ SCM_DEFINE (scm_nomad_buffer_uri, "primitive-buffer-uri", 1, 0, 0,
   return scm_from_utf8_string ("nomad://");
 }
 
-gboolean
-set_buffer_invoke (void *data)
+SCM_DEFINE (scm_nomad_number_tabs, "number-tabs", 0, 0, 0, (),
+            "Return the total number of tabs")
 {
-  SCM id = data;
-  NomadAppWindow *win;
-  struct buffer *obj;
-  SCM buffer
-      = scm_call_1 (scm_c_public_ref ("nomad buffer", "buffer-with-id"), id);
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GtkNotebook *notebook = nomad_window_get_notebook (win);
+  return scm_from_int (gtk_notebook_get_n_pages (notebook));
+}
 
-  if (scm_is_bool (buffer))
+SCM_DEFINE (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
+            (SCM buffer), "Return #t if notebook contains BUFFER")
+{
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GtkNotebook *notebook = nomad_window_get_notebook (win);
+  SCM pointer = scm_call_1 (
+      scm_c_public_ref ("nomad buffer", "buffer-pointer"), buffer);
+  GtkWidget *widget = scm_to_pointer (pointer);
+  gint page = gtk_notebook_page_num (notebook, widget);
+
+  if (page >= 0)
     {
-      g_critical ("buffer not found");
-      return FALSE;
+      return SCM_BOOL_T;
     }
 
-  obj = scm_foreign_object_ref (buffer, 0);
-  win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  if (!obj->buffer)
+  return SCM_BOOL_F;
+}
+
+SCM_DEFINE (scm_nomad_notebook_insert, "notebook-insert", 2, 0, 0,
+            (SCM buffer, SCM INDEX), "Inserts BUFFER into notebook at INDEX")
+{
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  GtkNotebook *notebook = nomad_window_get_notebook (win);
+  SCM pointer = scm_call_1 (
+      scm_c_public_ref ("nomad buffer", "buffer-pointer"), buffer);
+  GtkWidget *widget = scm_to_pointer (pointer);
+
+  gint page
+      = gtk_notebook_insert_page (notebook, widget, tab_label_new (0), 0);
+  if (page >= 0)
     {
-      g_critical ("window not found");
-      return FALSE;
+      return SCM_BOOL_T;
     }
-  nomad_app_window_add_buffer (win, obj->buffer);
-  return FALSE;
+
+  return SCM_BOOL_F;
 }
 
 void
@@ -331,6 +350,7 @@ nomad_buffer_register_functions (void *data)
   init_buffer_type ();
   scm_c_export ("buffer-title", "primitive-buffer-uri", "make-web-buffer",
                 "set-web-buffer!", "destroy-web-buffer!", "set-buffer-uri!",
-                "set-buffer-content!", NULL);
+                "set-buffer-content!", "number-tabs", "notebook-contains",
+                "notebook-insert", NULL);
   return;
 }
