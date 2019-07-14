@@ -42,7 +42,7 @@ SOURCES =			\
 	nomad/doc.scm		\
 	nomad/eval.scm		\
 	nomad/events.scm	\
-	nomad/frame.scm		\
+	nomad/frame.scm	\
 	nomad/html.scm		\
 	nomad/init.scm		\
 	nomad/minibuffer.scm	\
@@ -50,13 +50,14 @@ SOURCES =			\
 	nomad/repl.scm		\
 	nomad/shroud.scm	\
 	nomad/server.scm	\
+	nomad/tests.scm	\
 	nomad/util.scm		\
-	nomad/views.scm		\
+	nomad/views.scm	\
 	nomad/webview.scm	\
 	nomad/window.scm
 
 
-TESTS =				\
+TESTS =			\
 	tests/webview.scm	\
 	tests/eval.scm
 

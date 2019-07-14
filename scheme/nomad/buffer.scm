@@ -29,6 +29,7 @@
   #:use-module (nomad repl)
   #:export (make-buffer-socket
             buffer-pointer
+            buffer-uri
             buffers->uri))
 
 (define (make-buffer-socket url socket)
