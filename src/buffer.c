@@ -332,11 +332,12 @@ SCM_DEFINE (scm_nomad_notebook_insert, "notebook-insert", 2, 0, 0,
   SCM pointer = scm_call_1 (
       scm_c_public_ref ("nomad buffer", "buffer-pointer"), buffer);
   GtkWidget *widget = scm_to_pointer (pointer);
-
   gint page
       = gtk_notebook_insert_page (notebook, widget, tab_label_new (0), 0);
+
   if (page >= 0)
     {
+      gtk_widget_show_all (widget);
       return SCM_BOOL_T;
     }
 
