@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tests util)
+(define-module (tests init)
   #:use-module (nomad init)
   #:use-module (srfi srfi-64))
 

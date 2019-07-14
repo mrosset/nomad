@@ -16,11 +16,11 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tests browser)
+(define-module (tests webview)
   #:use-module (nomad webview)
   #:use-module (srfi srfi-64))
 
-(test-begin "browser")
+(test-begin "webview")
 
 (test-equal "https prefix url" (prefix-url "127.0.0.1") "https://127.0.0.1")
 
