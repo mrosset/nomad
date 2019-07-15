@@ -17,7 +17,16 @@
  *   You should have received a copy of the GNU General Public License along
  *   with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#ifndef __NOMAD_UTIL_H__
+#define __NOMAD_UTIL_H__
+
 void scm_to_argv (SCM list, char **argv);
 SCM scm_c_make_command (const char *key);
 SCM scm_c_register_interactive (const char *c_name);
+void scm_c_debug_object (SCM object);
+SCM scm_c_current_buffer ();
+
 void nomad_util_register_functions (void *data);
+
+#endif /* __NOMAD_UTIL_H__ */

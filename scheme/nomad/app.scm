@@ -41,8 +41,8 @@
 (define (app-init)
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
-  (define-key minibuffer-local-map "C-n" 'next-line)
-  (define-key minibuffer-local-map "C-p" 'previous-line)
+  ;; (define-key minibuffer-local-map "C-n" 'next-line)
+  ;; (define-key minibuffer-local-map "C-p" 'previous-line)
   ;; (define-key minibuffer-local-map "RET" 'minibuffer-execute)
   (with-buffer minibuffer
                (set! (local-var 'view)
@@ -60,7 +60,7 @@ controls are accessible to scheme"
                           (lambda _
                             (format #t "running shutdown hook...\n"))))
   (agenda-schedule-interval (lambda _
-                              (update-buffer-names))
+                              (update-buffers))
                             10)
   ;; Create one buffer
   (make-buffer default-home-page)
@@ -69,6 +69,5 @@ controls are accessible to scheme"
     (kill-buffer))
   (with-buffer messages
     (kill-buffer))
-
   ;; Run user hooks
   (run-hook startup-hook))

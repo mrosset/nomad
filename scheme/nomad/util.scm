@@ -17,9 +17,17 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad util)
+  #:use-module (oop goops)
   #:export (info
             add-to-nomad-path
             ~ // ~/))
+
+
+(define-public (debug-object object)
+  (format #t
+          "type: ~a value: ~a~%"
+          (class-of object)
+          object))
 
 (define (info msg)
   (format #t "INFO: ~a\n" msg))

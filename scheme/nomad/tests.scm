@@ -83,11 +83,11 @@
 (define-interactive (run-graphical-tests)
   (test-runner-factory html-simple-runner)
   (kill-some-buffers)
+  (update-buffers)
   (test-begin "graphical")
   ;; buffer-name
   (test-equal "https://gnu.org/"
     (begin (make-buffer "gnu.org")
-           (update-buffer-names)
            (buffer-name (current-buffer))))
   ;; notebook-contains
   (test-equal #t
@@ -109,7 +109,7 @@
               (next-buffer))
             (buffer-list))
   (kill-some-buffers)
-  (update-buffer-names)
+  (update-buffers)
   ;; total tabs equals total buffers
   (test-equal (length (buffer-list))
     (number-tabs))
