@@ -159,13 +159,3 @@
                                                    "<H2>~a<H2>"
                                                    (buffer-name (current-buffer)))))))
             (buffer-list)))
-
-;; (define-key global-map (kbd "C-b") (lambda _
-;;                                      (next-buffer)
-;;                                      (when (string= (buffer-name (current-buffer))
-;;                                                     "*scratch*")
-;;                                        (next-buffer))))
-
-(define-key global-map (kbd "C-b") 'next-buffer)
-
-;; (define-key global-map (kbd "C-x C-b") 'next-buffer)
