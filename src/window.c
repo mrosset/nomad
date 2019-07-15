@@ -126,8 +126,6 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
 
   if (event->type == GDK_KEY_PRESS)
     {
-      printf ("Key press %d %s (unicode %d last_unichar %d)\n", event->keyval,
-              event->string, unichar, last_unichar);
       // Fix up some keys.
       if (unichar)
         {
@@ -142,7 +140,6 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
           flags = emacsy_tick ();
           flags = emacsy_tick ();
 
-          printf ("flags = %d\n", flags);
           if (flags & EMACSY_RAN_UNDEFINED_COMMAND_P)
             {
               printf ("Passing to browser.\n");
