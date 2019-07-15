@@ -65,16 +65,10 @@ controls are accessible to scheme"
   ;; Create one buffer
   (make-buffer default-home-page)
   ;; Kill the scratch and messages buffer
-  (for-each (lambda (buffer)
-              (with-buffer buffer
-                           (text-buffer->webview! buffer #f)
-                           (when (not (notebook-contains buffer))
-                             (notebook-insert buffer 0)
-                             (load-content (format #f
-                                                   "<H2>~a<H2>"
-                                                   (buffer-name (current-buffer)))))))
-            (list messages))
   (with-buffer scratch
-               (kill-buffer))
+    (kill-buffer))
+  (with-buffer messages
+    (kill-buffer))
+
   ;; Run user hooks
   (run-hook startup-hook))
