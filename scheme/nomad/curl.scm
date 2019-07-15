@@ -19,9 +19,36 @@
 
 (define-module (nomad curl)
   #:use-module (curl)
-  #:export (curl-download))
+  #:use-module (ice-9 textual-ports)
+  #:use-module (web uri)
+  #:use-module (nomad util)
+  #:export (curl-download-directory
+            curl
+            curl-download))
 
-(define* (curl-download url)
+(define curl-download-directory
+  (make-fluid (~/ "download/")))
+
+(define (uri->filepath url)
+  (string-join (split-and-decode-uri-path
+                (uri-path (string->uri url)))
+               "-"))
+
+(define (write-to-file file str)
+  (let ((out (open-output-file file)))
+    (put-string out str)
+    (close-port out)))
+
+(define (curl url)
   (let ((handle (curl-easy-init)))
     (curl-easy-setopt handle 'url url)
-    (curl-easy-perform handle)))
+    (let ((result (curl-easy-perform handle)))
+      (curl-easy-cleanup handle)
+      result)))
+
+(define (curl-download url)
+  (let ((res (curl url))
+        (file (string-append (fluid-ref curl-download-directory)
+                             (uri->filepath url))))
+    (unless (string-null? res)
+      (write-to-file file res))))
