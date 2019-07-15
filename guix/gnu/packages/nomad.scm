@@ -11,6 +11,7 @@
   #:prefix license:)
  (guix utils)
  (gnu packages autotools)
+ (gnu packages curl)
  (gnu packages glib)
  (gnu packages gnome)
  (gnu packages gnupg)
@@ -107,6 +108,7 @@
        `(("guile" ,guile-2.2)
          ("guile-lib" ,guile-lib)
          ("guile-readline" ,guile-readline)
+         ("guile-curl" ,guile-curl)
          ("shroud" ,shroud-0.1.2)
          ;; waiting on shroud to be updated in guix
          ("emacsy" ,emacsy-git)
@@ -136,7 +138,7 @@
                                                         "guile" "-c"
                                                         "(display (effective-version))")))
                       (deps (map (cut assoc-ref inputs <>) '("emacsy" "guile-lib"
-                                                             "guile-readline" "shroud")))
+                                                             "guile-readline" "shroud" "guile-curl")))
                       (scm-path (map (cut string-append <>
                                           "/share/guile/site/" effective)
                                      `(,out ,@deps)))
