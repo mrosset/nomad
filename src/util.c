@@ -21,6 +21,18 @@
 #include <gtk/gtk.h>
 #include <libguile.h>
 
+SCM
+scm_c_current_buffer ()
+{
+  return scm_call_0 (scm_c_public_ref ("emacsy emacsy", "current-buffer"));
+}
+
+void
+scm_c_debug_object (SCM object)
+{
+  scm_call_1 (scm_c_public_ref ("nomad util", "debug-object"), object);
+}
+
 void
 scm_to_argv (SCM list, char **argv)
 {

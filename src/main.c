@@ -144,8 +144,6 @@ init_environment ()
       ccache = NOMAD_GUILE_LOAD_COMPILED_PATH;
     }
   g_setenv ("GUILE_LOAD_COMPILED_PATH", ccache, TRUE);
-
-  free (ccache);
 }
 
 int

@@ -28,9 +28,21 @@
   #:use-module (nomad window)
   #:use-module (nomad repl)
   #:export (make-buffer-socket
+            webview-onload
+            update-buffers
+            buffers-contain?
             buffer-pointer
             buffer-uri
             buffers->uri))
+
+(define (webview-onload buffer uri)
+  "Update BUFFER on webview load"
+  (format #t "NAME: ~a URI: ~a~%" (buffer-name buffer) uri)
+  (with-buffer buffer
+    (when (local-var 'update)
+      (set-buffer-name! uri buffer)))
+  (when (not (buffers-contain? (buffer-name buffer)))
+    (notebook-insert buffer 0)))
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
@@ -53,12 +65,12 @@
   (with-buffer buffer
     (local-var 'web-buffer)))
 
-(define-public (buffers-contains? uri)
+(define (buffers-contain? uri)
   "Returns #t of buffer-list contains URI"
   (let ((contains #f))
-    (for-each (lambda buffer
+    (for-each (lambda (buffer)
                 (when (string= uri
-                               (buffer-name (car buffer)))
+                               (buffer-name buffer))
                   (set! contains #t)))
               (buffer-list))
     contains))
@@ -123,7 +135,7 @@
           (set! iswebview #f))))
     iswebview))
 
-;; FIXME: use a webview-buffer instead of converting text-buffers
+;; FIXME: use a webview-buffer class instead of converting text-buffers
 (define-public (text-buffer->webview! buffer update)
   "converts in place a text BUFFER to webview buffer"
   (with-buffer buffer
@@ -136,26 +148,21 @@
                (add-hook! (buffer-kill-hook buffer)
                           on-webview-kill)))
 
-(define-public (update-buffer-names)
-  "Updates web buffer names to it's current URI"
+(define (update-buffers)
+  "Updates scratch and messages buffers"
   (for-each (lambda (buffer)
               (with-buffer buffer
-                           (when (and (webview-buffer? (current-buffer))
-                                      (local-var 'update))
-                             (set! (local-var 'uri)
-                                   (primitive-buffer-uri (local-var 'web-buffer)))
-                             (set-buffer-name! (local-var 'uri)))
-                           (when (and (or (string= (buffer-name (current-buffer))
-                                                   "*Messages*")
-                                          (string= (buffer-name (current-buffer))
-                                                   "*scratch*"))
-                                      (not (webview-buffer? (current-buffer))))
-                             (text-buffer->webview! buffer #f)
-                             (when (not (notebook-contains buffer))
-                               (notebook-insert buffer 0))
-                             ;; FIXME: do not hard code HTML use SXML views to display *Messages* and
-                             ;; scratch and messages?
-                             (load-content (format #f
-                                                   "<H2>~a<H2>"
-                                                   (buffer-name (current-buffer)))))))
+                (when (and (or (string= (buffer-name (current-buffer))
+                                        "*Messages*")
+                               (string= (buffer-name (current-buffer))
+                                        "*scratch*"))
+                           (not (webview-buffer? (current-buffer))))
+                  (text-buffer->webview! buffer #f)
+                  (when (not (notebook-contains buffer))
+                    (notebook-insert buffer 0))
+                  ;; FIXME: do not hard code HTML use SXML views to display *Messages* and
+                  ;; scratch and messages?
+                  (load-content (format #f
+                                        "<H2>~a<H2>"
+                                        (buffer-name (current-buffer)))))))
             (buffer-list)))

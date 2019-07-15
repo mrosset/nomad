@@ -23,6 +23,7 @@
 #include "app.h"
 #include "buffer.h"
 #include "request.h"
+#include "util.h"
 #include "window.h"
 
 struct _NomadBufferPrivate
@@ -30,7 +31,7 @@ struct _NomadBufferPrivate
   WebKitWebView *view;
   NomadAppWindow *window;
   GtkWidget *title;
-  GtkWidget *progress;
+  SCM buffer;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadBuffer, nomad_buffer, GTK_TYPE_BOX)
@@ -41,21 +42,14 @@ static void
 web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
                        gpointer user_data)
 {
-  NomadBufferPrivate *priv = user_data;
-  int fraction = webkit_web_view_get_estimated_load_progress (priv->view);
-
+  NomadBuffer *self = user_data;
+  NomadBufferPrivate *priv = self->priv;
   gtk_label_set_text (GTK_LABEL (priv->title),
-                      webkit_web_view_get_title (view));
-  gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->progress), fraction);
+                      webkit_web_view_get_title (priv->view));
 
-  if (fraction == 1)
-    {
-      gtk_widget_hide (priv->progress);
-    }
-  else
-    {
-      gtk_widget_show (priv->progress);
-    }
+  scm_call_2 (scm_c_public_ref ("nomad buffer", "webview-onload"),
+              priv->buffer,
+              scm_from_locale_string (webkit_web_view_get_uri (priv->view)));
 }
 
 gboolean
@@ -91,12 +85,13 @@ nomad_buffer_init (NomadBuffer *self)
   self->priv = nomad_buffer_get_instance_private (self);
 
   priv = self->priv;
+  priv->buffer = scm_c_current_buffer ();
   priv->view = WEBKIT_WEB_VIEW (webkit_web_view_new ());
   gtk_box_pack_start (GTK_BOX (self), GTK_WIDGET (priv->view), TRUE, TRUE, 0);
   gtk_box_reorder_child (GTK_BOX (self), GTK_WIDGET (priv->view), 0);
 
   g_signal_connect (priv->view, "load-changed",
-                    G_CALLBACK (web_view_load_changed), priv);
+                    G_CALLBACK (web_view_load_changed), self);
   g_signal_connect (priv->view, "decide-policy", G_CALLBACK (decide_policy_cb),
                     NULL);
 }
@@ -108,8 +103,6 @@ nomad_buffer_class_init (NomadBufferClass *klass)
                                                "/org/gnu/nomad/buffer.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass),
                                                 NomadBuffer, title);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (klass),
-                                                NomadBuffer, progress);
 }
 
 GtkWidget *
@@ -236,7 +229,8 @@ SCM_DEFINE (scm_nomad_buffer_title, "buffer-title", 1, 0, 0, (SCM buffer),
 }
 
 SCM_DEFINE (scm_nomad_set_current_uri_x, "set-buffer-uri!", 2, 0, 0,
-            (SCM buffer, SCM uri), "Sets current buffer URI")
+            (SCM buffer, SCM uri),
+            "Sets BUFFER URI. This causes the webview to load URI")
 {
   NomadBuffer *buf;
   SCM pointer;
