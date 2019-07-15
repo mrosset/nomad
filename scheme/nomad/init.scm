@@ -88,7 +88,7 @@
          (buffers (read port)))
     (close-port port)
     (for-each (lambda (uri)
-                (when (not (buffers-contains? uri))
+                (when (not (buffers-contain? uri))
                   (make-buffer uri)))
               buffers)))
 
