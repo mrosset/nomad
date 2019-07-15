@@ -24,4 +24,4 @@
 (define* (curl-download url)
   (let ((handle (curl-easy-init)))
     (curl-easy-setopt handle 'url url)
-    (curl-easy-perform handle #t)))
+    (curl-easy-perform handle)))
