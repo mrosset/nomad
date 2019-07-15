@@ -96,7 +96,7 @@
   (format #t
           "Destroying web-view ~a~%"
           (local-var 'web-buffer))
-  (destroy-web-buffer! (current-buffer)))
+  (destroy-web-buffer! (local-var 'web-buffer)))
 
 (define-interactive (make-buffer-content #:optional (name (read-from-minibuffer "Name: "))(content (read-from-minibuffer "Content: ")))
   "Creates a new webview buffer with NAME and CONTENT"

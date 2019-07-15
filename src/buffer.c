@@ -157,12 +157,15 @@ idle_destroy (gpointer data)
 }
 
 SCM_DEFINE (scm_nomad_destroy_web_buffer, "destroy-web-buffer!", 1, 0, 0,
-            (SCM buffer), "Remove BUFFER's widget pointer from notebook")
+            (SCM pointer), "Destroys widget POINTER")
 {
-  SCM pointer = scm_call_1 (
-      scm_c_public_ref ("nomad buffer", "buffer-pointer"), buffer);
   GtkWidget *widget = scm_to_pointer (pointer);
 
+  if (!widget || !GTK_IS_WIDGET (widget))
+    {
+      g_warning ("Can't destroy %p\n", widget);
+      return SCM_UNSPECIFIED;
+    }
   gtk_widget_destroy (widget);
   return SCM_UNSPECIFIED;
 }
