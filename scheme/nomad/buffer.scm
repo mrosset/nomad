@@ -40,7 +40,8 @@
 (define-interactive (kill-some-buffers)
   "Kill all buffers but the message buffer"
   (for-each (lambda (buffer)
-              (kill-buffer buffer))
+              (switch-to-buffer buffer)
+              (kill-buffer))
             (buffer-list)))
 
 (define (buffer-uri buffer)
@@ -86,20 +87,20 @@
 (define (on-webview-enter)
   (when (local-var 'web-buffer)
     (format #t
-            "Setting web-view to ~a~%"
+            "Setting GTK control to ~a~%"
             (local-var 'web-buffer))
-    (set-web-buffer! (local-var 'web-buffer))
+    (set-web-buffer! (current-buffer))
     (use-local-map webview-map)))
 
 (define (on-webview-kill)
   (format #t
           "Destroying web-view ~a~%"
           (local-var 'web-buffer))
-  (destroy-web-buffer! (local-var 'web-buffer)))
+  (destroy-web-buffer! (current-buffer)))
 
-(define-interactive (make-buffer-content #:optional (content (read-from-minibuffer "Content: ")))
-  "Creates a new webifew buffer with CONTENT"
-  (let ((buffer (switch-to-buffer "nomad://")))
+(define-interactive (make-buffer-content #:optional (name (read-from-minibuffer "Name: "))(content (read-from-minibuffer "Content: ")))
+  "Creates a new webview buffer with NAME and CONTENT"
+  (let ((buffer (switch-to-buffer name)))
     (text-buffer->webview! buffer #f)
     (on-webview-enter)
     (load-content content)))
@@ -107,8 +108,8 @@
 (define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
   "Creates a new webview-bufer with URL"
   (let ((buffer (switch-to-buffer url)))
-    (text-buffer->webview! buffer #t)
-    (on-webview-enter)
+     (text-buffer->webview! buffer #t)
+     (on-webview-enter)
     (set-current-uri! (prefix-url url))))
 
 (define (webview-buffer? buffer)

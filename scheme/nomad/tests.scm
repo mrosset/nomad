@@ -84,21 +84,40 @@
   (test-runner-factory html-simple-runner)
   (kill-some-buffers)
   (test-begin "graphical")
-  (begin (test-equal "https://gnu.org/"
-           (begin (make-buffer "gnu.org")
-                  (update-buffer-names)
-                  (buffer-name (current-buffer))))
-         (test-equal #t
-           (notebook-contains (current-buffer)))
-         (test-equal "*scratch*"
-           (begin (kill-buffer)
-                  (buffer-name (current-buffer))))
-         (test-equal (number-tabs)
-           (length (buffer-list))))
+  ;; buffer-name
+  (test-equal "https://gnu.org/"
+    (begin (make-buffer "gnu.org")
+           (update-buffer-names)
+           (buffer-name (current-buffer))))
+  ;; notebook-contains
+  (test-equal #t
+    (notebook-contains (current-buffer)))
+  ;; kill-buffer
+  (test-equal "*scratch*"
+    (begin (kill-buffer)
+           (buffer-name (current-buffer))))
+  ;; total tabs equals total buffers
+  (test-equal (length (buffer-list))
+    (number-tabs))
+  (do ((i 0
+          (+ 1 i)))
+      ((> i 10))
+    (make-buffer-content (number->string i)
+                         (format #f "<h2>ID: ~a</h2>" i)))
+  ;; visit each buffer
+  (for-each (lambda (buffer)
+              (next-buffer))
+            (buffer-list))
+  (kill-some-buffers)
+  (update-buffer-names)
+  ;; total tabs equals total buffers
+  (test-equal (length (buffer-list))
+    (number-tabs))
   (test-end)
+  ;; Display test results in a content buffer
   (let* ((log-file "graphical.log")
          (port (open-input-file log-file))
          (content (get-string-all port)))
-    (make-buffer-content content)
+    (make-buffer-content log-file content)
     (close-port port)
     (delete-file log-file)))

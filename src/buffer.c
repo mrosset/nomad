@@ -157,13 +157,13 @@ idle_destroy (gpointer data)
 }
 
 SCM_DEFINE (scm_nomad_destroy_web_buffer, "destroy-web-buffer!", 1, 0, 0,
-            (SCM web_buffer), "remove web buffer from notebook")
+            (SCM buffer), "Remove BUFFER's widget pointer from notebook")
 {
-  GtkWidget *buf = scm_to_pointer (web_buffer);
-  if (buf)
-    {
-      gtk_widget_destroy (buf);
-    }
+  SCM pointer = scm_call_1 (
+      scm_c_public_ref ("nomad buffer", "buffer-pointer"), buffer);
+  GtkWidget *widget = scm_to_pointer (pointer);
+
+  gtk_widget_destroy (widget);
   return SCM_UNSPECIFIED;
 }
 
@@ -181,13 +181,15 @@ tab_label_new (int id)
   return gtk_label_new (scm_to_locale_string (label));
 }
 
-SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0, (SCM pointer),
-            "Sets the current tab to the given pointer.")
+SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0, (SCM buffer),
+            "Sets the current tab to the given BUFFER")
 {
   gint page;
   GtkWidget *buf;
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   GtkNotebook *notebook = nomad_window_get_notebook (win);
+  SCM pointer = scm_call_1 (
+      scm_c_public_ref ("nomad buffer", "buffer-pointer"), buffer);
 
   if (SCM_POINTER_P (pointer))
     {
