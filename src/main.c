@@ -146,9 +146,15 @@ init_environment ()
   g_setenv ("GUILE_LOAD_COMPILED_PATH", ccache, TRUE);
 }
 
+static void
+inner_main_guile (void *closure, int argc, char **argv)
+{
+  scm_shell (argc, argv);
+}
+
 int
 main (int argc, char *argv[])
 {
   /* init_environment (); */
-  scm_boot_guile (argc, argv, inner_main, NULL);
+  scm_boot_guile (argc, argv, inner_main_guile, NULL);
 }
