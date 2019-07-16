@@ -42,11 +42,12 @@
     (close-port out)))
 
 (define (http-download url)
+  "Downloads URL to 'download-directory"
   (let* ((file (string-append (fluid-ref download-directory)
                               //
                               (uri->filename url))))
-    (receive (res body-port)
+    (receive (res port)
         (http-request url #:decode-body? #f #:streaming? #t)
       (if (= (response-code res) 200)
-          (write-port-to-file body-port file)
+          (write-port-to-file port file)
           #f))))

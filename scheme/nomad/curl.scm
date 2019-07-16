@@ -38,6 +38,7 @@
       response)))
 
 (define (curl-download url)
+  "Downloads URL to 'download-directory"
   (let* ((res (curl url))
          (file (string-append (fluid-ref download-directory)
                               //

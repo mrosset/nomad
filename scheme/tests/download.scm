@@ -32,6 +32,8 @@
                              (uri->filename url))))
     (when (file-exists? file)
       (delete-file file))
+    ;; FIXME: maybe download handlers should return status code?  also after
+    ;; downloading hash the file. Curl fails here why?
     (test-assert "download file - pass"
       (proc url))
     (test-assert "file exists"
@@ -43,6 +45,7 @@
 (test-begin "downloaders")
 
 (let ((dir "data/downloads-tests")
+      ;; TODO: use https
       (url "http://mirrors.kernel.org/gnu/hello/hello-2.9.tar.gz"))
   (test-equal "filename"
     "hello-2.9.tar.gz"
