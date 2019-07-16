@@ -146,9 +146,17 @@ init_environment ()
   g_setenv ("GUILE_LOAD_COMPILED_PATH", ccache, TRUE);
 }
 
+SCM_DEFINE(boot_nomad, "boot-nomad", 0, 0, 0, (),
+             "Boot Nomad app")
+{
+  inner_main(NULL, 0, NULL);
+  return 0;
+}
+
 static void
 inner_main_guile (void *closure, int argc, char **argv)
 {
+  scm_c_define_gsubr ("boot-nomad", 0, 0, 0, boot_nomad);
   scm_shell (argc, argv);
 }
 
