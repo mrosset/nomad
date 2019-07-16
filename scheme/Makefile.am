@@ -59,8 +59,12 @@ SOURCES =			\
 
 
 TESTS =			\
-	tests/webview.scm	\
-	tests/eval.scm
+	tests/download.scm	\
+	tests/eval.scm		\
+	tests/init.scm		\
+	tests/options.scm	\
+	tests/util.scm		\
+	tests/webview.scm
 
 TEST_EXTENSIONS = .scm
 
