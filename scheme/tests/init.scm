@@ -18,27 +18,35 @@
 
 (define-module (tests init)
   #:use-module (nomad init)
-  #:use-module (srfi srfi-64))
+  #:use-module (nomad util)
+  #:use-module (srfi srfi-64)
+  )
 
 (define home (getenv "HOME"))
 (define home-dir (string-append home file-name-separator-string))
-(define data "data/")
+(define data "data")
+(define down-dir (string-append data // "downloads"))
 (define nomad.d "data/nomad.d")
+
+(test-begin "init")
 
 (when (not (file-exists? data))
   (mkdir data #o755))
 
-(test-begin "init")
-
-
-(test-assert "data exists" (file-is-directory? test-data))
-
+(test-assert "data exists"
+  (file-is-directory? data))
 
 (with-fluid* user-nomad-directory nomad.d
-	     (lambda ()
-	       (test-equal "user-nomad-directory" "data/nomad.d"
-			   (fluid-ref user-nomad-directory))))
+             (lambda _
+               (test-equal "user-nomad-directory fluid" "data/nomad.d"
+                           (fluid-ref user-nomad-directory))))
 
+(with-fluid* download-directory
+  down-dir
+  (lambda _
+    (test-equal "download-directory fluid"
+      "data/downloads"
+      (fluid-ref download-directory))))
 
 (test-equal "user-init-file expands to $HOME/.nomad"
   user-init-file (string-append home-dir ".nomad"))
@@ -48,10 +56,10 @@
 
 
 (with-fluid* user-nomad-directory nomad.d
-	     (lambda ()
-	       (create-nomad-directory)
-	       (test-assert "user dir exists"
-			      (file-is-directory? (fluid-ref user-nomad-directory)))
-	       (rmdir (fluid-ref user-nomad-directory))))
+             (lambda ()
+               (create-nomad-directory)
+               (test-assert "user dir exists"
+                              (file-is-directory? (fluid-ref user-nomad-directory)))
+               (rmdir (fluid-ref user-nomad-directory))))
 
 (test-end)

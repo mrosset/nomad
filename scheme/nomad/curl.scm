@@ -21,13 +21,10 @@
   #:use-module (curl)
   #:use-module (ice-9 textual-ports)
   #:use-module (web uri)
+  #:use-module (nomad init)
   #:use-module (nomad util)
-  #:export (curl-download-directory
-            curl
+  #:export (curl
             curl-download))
-
-(define curl-download-directory
-  (make-fluid (~/ "download/")))
 
 (define (uri->filepath url)
   (string-join (split-and-decode-uri-path
@@ -48,7 +45,7 @@
 
 (define (curl-download url)
   (let ((res (curl url))
-        (file (string-append (fluid-ref curl-download-directory)
+        (file (string-append (fluid-ref download-directory)
                              (uri->filepath url))))
     (unless (string-null? res)
       (write-to-file file res))))
