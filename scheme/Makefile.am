@@ -39,7 +39,7 @@ SOURCES =			\
 	nomad/app.scm		\
 	nomad/bookmark.scm	\
 	nomad/buffer.scm	\
-	nomad/curl.scm 	\
+	nomad/curl.scm		\
 	nomad/doc.scm		\
 	nomad/eval.scm		\
 	nomad/events.scm	\

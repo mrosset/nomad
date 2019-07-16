@@ -52,7 +52,6 @@ PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
 PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-4])
 PKG_CHECK_MODULES(GLIB, [glib-2.0])
 
-
 dnl guile modules
 GUILE_MODULE_AVAILABLE([guile_readline], [(ice-9 readline)])
 if test "guile_readline" = "no"; then
