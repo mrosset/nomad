@@ -33,6 +33,7 @@
             user-init-file
             startup-hook
             user-nomad-directory
+            download-directory
             create-nomad-directory
             history
             history-file
@@ -49,6 +50,9 @@
 
 (define user-nomad-directory
   (make-fluid (~/ ".nomad.d")))
+
+(define download-directory
+  (make-fluid (~/ "downloads")))
 
 (define history '())
 
