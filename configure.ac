@@ -27,11 +27,12 @@ AM_INIT_AUTOMAKE([-Wall gnu silent-rules color-tests])
 AM_SILENT_RULES([yes])
 
 # programs
-AC_PROG_CXX
+AC_PROG_CC_C99
 AM_PROG_AR
 AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
+AC_PROG_LIBTOOL
 
 # libtool
 LT_INIT
@@ -51,6 +52,32 @@ PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
 PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-4])
 PKG_CHECK_MODULES(GLIB, [glib-2.0])
 
+
+dnl guile modules
+GUILE_MODULE_AVAILABLE([guile_readline], [(ice-9 readline)])
+if test "guile_readline" = "no"; then
+   AC_MSG_ERROR([guile-readline is missing; please install it.])
+fi
+
+GUILE_MODULE_AVAILABLE([emacsy], [(emacsy emacsy)])
+if test "$emacsy" = "no"; then
+   AC_MSG_ERROR([guile emacsy is missing; please install it.])
+fi
+
+GUILE_MODULE_AVAILABLE([guile_lib], [(debugging assert)])
+if test "$guile_lib" = "no"; then
+   AC_MSG_ERROR([guile-lib is missing; please install it.])
+fi
+
+GUILE_MODULE_AVAILABLE([guile_curl], [(curl)])
+if test "$guile_curl" = "no"; then
+   AC_MSG_ERROR([guile-curl is missing; please install it.])
+fi
+
+GUILE_MODULE_AVAILABLE([guile_shroud], [(shroud secret)])
+if test "$guile_shroud" = "no"; then
+   AC_MSG_ERROR([guile shroud is missing; please install it.])
+fi
 
 top_builddir_absolute=`pwd`
 AC_SUBST(top_builddir_absolute)
