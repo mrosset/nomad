@@ -37,7 +37,6 @@
 
 (define (webview-onload buffer uri)
   "Update BUFFER on webview load"
-  (format #t "NAME: ~a URI: ~a~%" (buffer-name buffer) uri)
   (with-buffer buffer
     (when (local-var 'update)
       (set-buffer-name! uri buffer)))
