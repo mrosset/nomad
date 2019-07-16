@@ -51,7 +51,6 @@
     dir
     (lambda _
       (test-downloader curl-download dir url)
-(test-downloader http-download dir url)
-      )))
+      (test-downloader http-download dir url))))
 
 (test-end)
