@@ -34,7 +34,8 @@
             startup-hook
             user-nomad-directory
             download-directory
-            create-nomad-directory
+            ensure-nomad-directory
+            ensure-download-directory
             history
             history-file
             read-history
@@ -106,16 +107,25 @@
 (define user-cookie-file
   (string-append (fluid-ref user-nomad-directory) // "cookies.db"))
 
-(define (create-nomad-directory)
-  (let ((dir (fluid-ref user-nomad-directory)))
+(define (ensure-fluid-directory path)
+  "Ensures fluid directory PATH is created"
+  (let ((dir (fluid-ref path)))
     (when (not (file-exists? dir))
       (info (format #f "creating ~a" dir))
       (mkdir dir #o755))))
 
+(define (ensure-nomad-directory)
+  "Ensures creation of user-nomad-directory"
+  (ensure-fluid-directory user-nomad-directory))
+
+(define (ensure-download-directory)
+  "Ensure creation of download-directory"
+  (ensure-fluid-directory download-directory))
+
 (define (init)
   (webview-init)
   (add-hook! event-hook debug-event)
-  (create-nomad-directory)
+  (ensure-nomad-directory)
   (when (file-exists? (fluid-ref history-file))
     (read-history))
   (when (file-exists? user-init-file)
