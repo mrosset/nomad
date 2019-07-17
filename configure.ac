@@ -58,8 +58,8 @@ if test "guile_readline" = "no"; then
    AC_MSG_ERROR([guile-readline is missing; please install it.])
 fi
 
-GUILE_MODULE_AVAILABLE([emacsy], [(emacsy emacsy)])
-if test "$emacsy" = "no"; then
+GUILE_MODULE_AVAILABLE([guile_emacsy], [(emacsy emacsy)])
+if test "$guile_emacsy" = "no"; then
    AC_MSG_ERROR([guile emacsy is missing; please install it.])
 fi
 
@@ -70,12 +70,17 @@ fi
 
 GUILE_MODULE_AVAILABLE([guile_curl], [(curl)])
 if test "$guile_curl" = "no"; then
-   AC_MSG_ERROR([guile-curl is missing; please install it.])
+   AC_MSG_WARN([not using guile-curl])
 fi
 
 GUILE_MODULE_AVAILABLE([guile_shroud], [(shroud secret)])
 if test "$guile_shroud" = "no"; then
    AC_MSG_ERROR([guile shroud is missing; please install it.])
+fi
+
+GUILE_MODULE_AVAILABLE([guile_gnutls], [(gnutls)])
+if test "$guile_gnutls" = "no"; then
+   AC_MSG_ERROR([guile gnutls is missing; please install it.])
 fi
 
 top_builddir_absolute=`pwd`
@@ -118,3 +123,25 @@ scheme/Makefile
 AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 
 AC_OUTPUT
+
+AC_MSG_NOTICE([summary of build options:
+
+  version:              ${VERSION}
+  Host/Target system:   ${host}
+  Build system:         ${build}
+  Install prefix:       ${prefix}
+  Compiler:             ${CC}
+  Valgrind:             $opt_valgrind_tests ${VALGRIND}
+  CFlags:               ${CFLAGS}
+  Library types:        Shared=${enable_shared}, Static=${enable_static}
+])
+
+AC_MSG_NOTICE([summary of guile libraries:
+
+  Emacsy:              ${guile_emacsy}
+  GnuTLS:              ${guile_gnutls}
+  Guile Library:       ${guile_lib}
+  Readline:            ${guile_readline}
+  Curl:                ${guile_curl}
+  Shroud:              ${guile_shroud}
+])

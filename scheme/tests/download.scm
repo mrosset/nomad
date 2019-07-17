@@ -18,7 +18,6 @@
 
 (define-module (tests eval)
   #:use-module (nomad download)
-  #:use-module (nomad curl)
   #:use-module (nomad init)
   #:use-module (nomad util)
   #:use-module (srfi srfi-64))
@@ -46,14 +45,15 @@
 
 (let ((dir "data/downloads-tests")
       ;; TODO: use https
-      (url "http://mirrors.kernel.org/gnu/hello/hello-2.9.tar.gz"))
+      (url "https://mirrors.kernel.org/gnu/hello/hello-2.9.tar.gz"))
   (test-equal "filename"
     "hello-2.9.tar.gz"
     (uri->filename url))
   (with-fluid* download-directory
     dir
     (lambda _
-      (test-downloader curl-download dir url)
-      (test-downloader http-download dir url))))
+      ;; (test-downloader curl-download dir url)
+      (test-downloader http-download dir url)
+      )))
 
 (test-end)
