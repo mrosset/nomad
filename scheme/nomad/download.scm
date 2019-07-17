@@ -27,6 +27,7 @@
   #:use-module (nomad util)
   #:use-module (nomad webview)
   #:export (uri->filename
+            url-fetch
             download-function
             write-port-to-file
             http-download))
@@ -53,6 +54,24 @@
       (put-bytevector out b))
     (close-port in-port)
     (close-port out)))
+
+(define (copy out in)
+  "Copies IN port to OUT port. Closing the ports should be managed by the caller"
+  (do ((b (get-bytevector-n in 16384)
+          (get-bytevector-n in 16384)))
+      ((eof-object? b))
+    (put-bytevector out b)))
+
+(define (url-fetch url)
+  "Retrieves URL synchronously and writes to current output port. If the http
+request fails it will return the http status code."
+  (receive (res body)
+      (http-request url #:decode-body? #f#:streaming? #t)
+    (if (= (response-code res) 200)
+        (begin (copy (current-output-port)
+                     body)
+               #t)
+        (response-code res))))
 
 (define (http-download url)
   "Downloads URL to 'download-directory"

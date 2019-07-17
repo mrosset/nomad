@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (tests download)
+  #:use-module (ice-9 receive)
   #:use-module (nomad download)
   ;; #:use-module (nomad curl)
   #:use-module (nomad init)
@@ -26,7 +27,6 @@
   #:use-module (srfi srfi-64))
 
 (define (test-downloader proc dir url)
-
   (let ((file (string-append dir
                              //
                              (uri->filename url))))
@@ -34,7 +34,7 @@
       (delete-file file))
     ;; FIXME: maybe download handlers should return status code?  also after
     ;; downloading hash the file. Curl fails here why?
-     (test-assert "download file"
+    (test-assert "download file"
       (proc url))
     (test-equal "hash file"
       (base16-string->bytevector "ecbb7a2214196c57ff9340aa71458e1559abd38f6d8d169666846935df191ea7")
@@ -46,6 +46,26 @@
     (proc "http://thou.shall/not/pass")))
 
 (test-begin "downloaders")
+
+(catch 'getaddrinfo-error
+  (lambda _
+    (getaddrinfo "mirrors.kernel.org" "http"))
+  (lambda (key code)
+    ;; if we get here no network, so disable online tests
+    (test-skip "url-fetch")
+    (test-skip "download file")
+    (test-skip "hash file")
+    (test-skip "file exists")))
+
+(test-equal "url-fetch"
+  (base16-string->bytevector "38ffd4972ae513a0c79a8be4573403edcd709f0f572105362b08ff50cf6de521")
+  (receive (port thunk)
+      (open-sha256-port)
+    (with-output-to-port port
+      (lambda _
+        (url-fetch "http://bufio.org")))
+    (close-port port)
+    (thunk)))
 
 (let ((dir "data/downloads-tests")
       (url "https://mirrors.kernel.org/gnu/hello/hello-2.9.tar.gz"))
@@ -60,14 +80,6 @@
       (test-assert "download dir exists "
         (begin (ensure-download-directory)
                (file-is-directory? dir)))
-      (catch 'getaddrinfo-error
-        (lambda _
-          (getaddrinfo "mirrors.kernel.org" "http"))
-        (lambda (key code)
-          ;; if we get here no network, so disable online tests
-          (test-skip "download file")
-          (test-skip "hash file")
-          (test-skip "file exists")))
       (test-downloader http-download dir url)
       ;; (test-downloader curl-download dir url)
       )))
