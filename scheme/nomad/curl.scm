@@ -40,11 +40,10 @@
 (define (curl-download url)
   "Downloads URL to 'download-directory"
   (let* ((res (curl url))
-         (file (string-append (fluid-ref download-directory)
-                              //
-                              (uri->filename url)))
-         (port (response-body-port res))
+         (file (download-path url))
+         (out (open-output-file file))
+         (in (response-body-port res))
          (status (response-code res)))
     (if (= status 200)
-        (write-port-to-file port file)
+        (copy-to-port out in)
         #f)))

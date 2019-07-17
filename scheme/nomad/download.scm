@@ -28,6 +28,7 @@
   #:use-module (nomad webview)
   #:export (uri->filename
             url-fetch
+            download-path
             download-function
             http-download))
 
