@@ -43,6 +43,8 @@
          (file (string-append (fluid-ref download-directory)
                               //
                               (uri->filename url)))
-         (port (response-body-port res)))
-    (if (= (response-code res) 200)
-        (write-port-to-file port file))))
+         (port (response-body-port res))
+         (status (response-code res)))
+    (if (= status 200)
+        (write-port-to-file port file)
+        #f)))
