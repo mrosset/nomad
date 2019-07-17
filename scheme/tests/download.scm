@@ -32,8 +32,8 @@
                              (uri->filename url))))
     (when (file-exists? file)
       (delete-file file))
-    ;; FIXME: maybe download handlers should return status code?  also after
-    ;; downloading hash the file. Curl fails here why?
+    ;; FIXME: maybe download handlers should return status code?. Curl
+    ;; hashes fails here why?
     (test-assert "download file"
       (proc url))
     (test-equal "hash file"
