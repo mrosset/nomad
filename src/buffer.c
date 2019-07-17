@@ -52,7 +52,14 @@ web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
               scm_from_locale_string (webkit_web_view_get_uri (priv->view)));
 }
 
-gboolean
+static gboolean
+web_view_download_request_cb (WebKitWebView *webView, WebKitDownload *download,
+                              gboolean *handled)
+{
+  return TRUE;
+}
+
+static gboolean
 decide_policy_cb (WebKitWebView *view, WebKitPolicyDecision *decision,
                   WebKitPolicyDecisionType dtype)
 {
@@ -67,6 +74,21 @@ decide_policy_cb (WebKitWebView *view, WebKitPolicyDecision *decision,
         SCM url = scm_from_locale_string (webkit_uri_request_get_uri (req));
         scm_nomad_make_buffer (url);
         return TRUE;
+      }
+    case WEBKIT_POLICY_DECISION_TYPE_RESPONSE:
+      {
+        /* WebKitResponsePolicyDecision *policy
+         *     = WEBKIT_RESPONSE_POLICY_DECISION (decision);
+         * WebKitURIResponse *response
+         *     = webkit_response_policy_decision_get_response (policy);
+         * if (!webkit_response_policy_decision_is_mime_type_supported
+         * (policy))
+         *   {
+         *     const gchar *uri = webkit_uri_response_get_uri (response);
+         *     scm_call_1 (
+         *         scm_c_public_ref ("nomad download", "download-function"),
+         *         scm_from_locale_string (uri));
+         *   } */
       }
     default:
       return FALSE;
@@ -90,6 +112,7 @@ nomad_buffer_init (NomadBuffer *self)
   gtk_box_pack_start (GTK_BOX (self), GTK_WIDGET (priv->view), TRUE, TRUE, 0);
   gtk_box_reorder_child (GTK_BOX (self), GTK_WIDGET (priv->view), 0);
 
+  // signals
   g_signal_connect (priv->view, "load-changed",
                     G_CALLBACK (web_view_load_changed), self);
   g_signal_connect (priv->view, "decide-policy", G_CALLBACK (decide_policy_cb),

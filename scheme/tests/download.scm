@@ -44,7 +44,6 @@
 (test-begin "downloaders")
 
 (let ((dir "data/downloads-tests")
-      ;; TODO: use https
       (url "https://mirrors.kernel.org/gnu/hello/hello-2.9.tar.gz"))
   (test-equal "filename"
     "hello-2.9.tar.gz"
