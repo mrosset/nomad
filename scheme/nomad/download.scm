@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad download)
+  #:use-module (emacsy emacsy)
   #:use-module (ice-9 receive)
   #:use-module (ice-9 binary-ports)
   #:use-module (web uri)
@@ -24,12 +25,24 @@
   #:use-module (web response)
   #:use-module (nomad init)
   #:use-module (nomad util)
+  #:use-module (nomad webview)
   #:export (uri->filename
+            download-function
             write-port-to-file
             http-download))
 
 (define (uri->filename url)
   (basename (uri-path (string->uri url))))
+
+(define (download-path url)
+  "Returns full path of URI download location"
+  (string-append (fluid-ref download-directory)
+                 //
+                 (uri->filename url)))
+
+(define (download-exists? url)
+  "Returns #t if download already exists"
+  (file-exists? (download-path url)))
 
 (define (write-port-to-file in-port file)
   "Writes IN-PORT to FILE path"
@@ -43,11 +56,26 @@
 
 (define (http-download url)
   "Downloads URL to 'download-directory"
-  (let* ((file (string-append (fluid-ref download-directory)
-                              //
-                              (uri->filename url))))
+  (let* ((file (download-path url)))
     (receive (res port)
         (http-request url #:decode-body? #f #:streaming? #t)
       (if (= (response-code res) 200)
           (write-port-to-file port file)
           #f))))
+
+(define download-function
+  (lambda (url)
+    (if (download-exists? url)
+        (format #t "download ~a exists.. skipping~%"
+                url)
+        (begin (format #t "downloading ~a~%" url)
+               (http-download url)
+               (format #t "download complete ~a~%" url)))))
+
+(define-interactive (download #:optional (url (read-from-minibuffer "Url: ")))
+  (let ((confirm (read-from-minibuffer (format #f
+                                               "~s is requesting to download ~s~% continue: y/n? "
+                                               (current-url)
+                                               url))))
+    (when (string= confirm "y")
+      (download-function url))))
