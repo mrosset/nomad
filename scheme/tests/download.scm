@@ -37,8 +37,8 @@
     (test-assert "download file"
       (proc url))
     (test-equal "hash file"
-      (base16-string->bytevector "ecbb7a2214196c57ff9340aa71458e1559abd38f6d8d169666846935df191ea7")
-      (file-sha256 file))
+      "ecbb7a2214196c57ff9340aa71458e1559abd38f6d8d169666846935df191ea7"
+      (bytevector->base16-string (file-sha256 file)))
     (test-assert "file exists"
       (file-exists? file)))
   (test-equal "download file - fail"
@@ -58,13 +58,13 @@
     (test-skip "file exists")))
 
 (test-equal "url-fetch"
-  (base16-string->bytevector "38ffd4972ae513a0c79a8be4573403edcd709f0f572105362b08ff50cf6de521")
+  "38ffd4972ae513a0c79a8be4573403edcd709f0f572105362b08ff50cf6de521"
   (receive (port thunk)
       (open-sha256-port)
     (with-output-to-port port
       (lambda _
         (url-fetch "http://bufio.org")))
-    (thunk)))
+    (bytevector->base16-string (thunk))))
 
 (let ((dir "data/downloads-tests")
       (url "https://mirrors.kernel.org/gnu/hello/hello-2.9.tar.gz"))
