@@ -29,7 +29,6 @@
   #:export (uri->filename
             url-fetch
             download-function
-            write-port-to-file
             http-download))
 
 (define (uri->filename url)
@@ -45,22 +44,14 @@
   "Returns #t if download already exists"
   (file-exists? (download-path url)))
 
-(define (write-port-to-file in-port file)
-  "Writes IN-PORT to FILE path"
-  (let* ((out (open-output-file file)))
-    (do ((b (get-bytevector-n in-port 16384)
-            (get-bytevector-n in-port 16384)))
-        ((eof-object? b))
-      (put-bytevector out b))
-    (close-port in-port)
-    (close-port out)))
-
-(define (copy out in)
-  "Copies IN port to OUT port. Closing the ports should be managed by the caller"
+(define (copy-to-port out in)
+  "Writes all of IN port to OUT port. Ports are closed when procedure returns"
   (do ((b (get-bytevector-n in 16384)
           (get-bytevector-n in 16384)))
       ((eof-object? b))
-    (put-bytevector out b)))
+    (put-bytevector out b))
+  (close-port in)
+  (close-port out))
 
 (define (url-fetch url)
   "Retrieves URL synchronously and writes to current output port. If the http
@@ -68,18 +59,19 @@ request fails it will return the http status code."
   (receive (res body)
       (http-request url #:decode-body? #f#:streaming? #t)
     (if (= (response-code res) 200)
-        (begin (copy (current-output-port)
+        (begin (copy-to-port (current-output-port)
                      body)
                #t)
         (response-code res))))
 
 (define (http-download url)
   "Downloads URL to 'download-directory"
-  (let* ((file (download-path url)))
-    (receive (res port)
+  (let* ((file (download-path url))
+         (out (open-output-file file)))
+    (receive (res in)
         (http-request url #:decode-body? #f #:streaming? #t)
       (if (= (response-code res) 200)
-          (write-port-to-file port file)
+          (copy-to-port out in)
           #f))))
 
 (define download-function
