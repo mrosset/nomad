@@ -64,7 +64,6 @@
     (with-output-to-port port
       (lambda _
         (url-fetch "http://bufio.org")))
-    (close-port port)
     (thunk)))
 
 (let ((dir "data/downloads-tests")
