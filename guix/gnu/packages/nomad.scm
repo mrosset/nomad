@@ -107,6 +107,7 @@
       (inputs
        `(("guile" ,guile-2.2)
          ("guile-lib" ,guile-lib)
+         ("guile-gcrypt" ,guile-gcrypt)
          ("guile-readline" ,guile-readline)
          ("gnutls" ,gnutls)
          ("shroud" ,shroud-0.1.2)

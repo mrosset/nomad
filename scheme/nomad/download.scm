@@ -47,8 +47,8 @@
 (define (write-port-to-file in-port file)
   "Writes IN-PORT to FILE path"
   (let* ((out (open-output-file file)))
-    (do ((b (get-bytevector-n in-port 1024)
-            (get-bytevector-n in-port 1024)))
+    (do ((b (get-bytevector-n in-port 16384)
+            (get-bytevector-n in-port 16384)))
         ((eof-object? b))
       (put-bytevector out b))
     (close-port in-port)
