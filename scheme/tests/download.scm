@@ -18,14 +18,15 @@
 
 (define-module (tests download)
   #:use-module (nomad download)
+  ;; #:use-module (nomad curl)
   #:use-module (nomad init)
   #:use-module (nomad util)
+  #:use-module (gcrypt hash)
+  #:use-module (gcrypt base16)
   #:use-module (srfi srfi-64))
 
 (define (test-downloader proc dir url)
-  (test-assert "download dir exists "
-    (begin (ensure-download-directory)
-           (file-is-directory? dir)))
+
   (let ((file (string-append dir
                              //
                              (uri->filename url))))
@@ -33,8 +34,11 @@
       (delete-file file))
     ;; FIXME: maybe download handlers should return status code?  also after
     ;; downloading hash the file. Curl fails here why?
-    (test-assert "download file - pass"
+     (test-assert "download file"
       (proc url))
+    (test-equal "hash file"
+      (base16-string->bytevector "ecbb7a2214196c57ff9340aa71458e1559abd38f6d8d169666846935df191ea7")
+      (file-sha256 file))
     (test-assert "file exists"
       (file-exists? file)))
   (test-equal "download file - fail"
@@ -45,14 +49,27 @@
 
 (let ((dir "data/downloads-tests")
       (url "https://mirrors.kernel.org/gnu/hello/hello-2.9.tar.gz"))
+  (when (not (file-exists? "data"))
+    (mkdir "data"))
   (test-equal "filename"
     "hello-2.9.tar.gz"
     (uri->filename url))
   (with-fluid* download-directory
     dir
     (lambda _
-      ;; (test-downloader curl-download dir url)
+      (test-assert "download dir exists "
+        (begin (ensure-download-directory)
+               (file-is-directory? dir)))
+      (catch 'getaddrinfo-error
+        (lambda _
+          (getaddrinfo "mirrors.kernel.org" "http"))
+        (lambda (key code)
+          ;; if we get here no network, so disable online tests
+          (test-skip "download file")
+          (test-skip "hash file")
+          (test-skip "file exists")))
       (test-downloader http-download dir url)
+      ;; (test-downloader curl-download dir url)
       )))
 
 (test-end)
