@@ -77,18 +77,16 @@ decide_policy_cb (WebKitWebView *view, WebKitPolicyDecision *decision,
       }
     case WEBKIT_POLICY_DECISION_TYPE_RESPONSE:
       {
-        /* WebKitResponsePolicyDecision *policy
-         *     = WEBKIT_RESPONSE_POLICY_DECISION (decision);
-         * WebKitURIResponse *response
-         *     = webkit_response_policy_decision_get_response (policy);
-         * if (!webkit_response_policy_decision_is_mime_type_supported
-         * (policy))
-         *   {
-         *     const gchar *uri = webkit_uri_response_get_uri (response);
-         *     scm_call_1 (
-         *         scm_c_public_ref ("nomad download", "download-function"),
-         *         scm_from_locale_string (uri));
-         *   } */
+        WebKitResponsePolicyDecision *policy
+            = WEBKIT_RESPONSE_POLICY_DECISION (decision);
+        WebKitURIResponse *response
+            = webkit_response_policy_decision_get_response (policy);
+        if (!webkit_response_policy_decision_is_mime_type_supported (policy))
+          {
+            const gchar *uri = webkit_uri_response_get_uri (response);
+            scm_call_1 (scm_c_public_ref ("nomad download", "download"),
+                        scm_from_locale_string (uri));
+          }
       }
     default:
       return FALSE;
