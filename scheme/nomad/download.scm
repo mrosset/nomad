@@ -76,6 +76,8 @@ request fails it will return the http status code."
           (copy-to-port out in)
           #f))))
 
+(define allow-downloads? #f)
+
 (define download-function
   (lambda (url)
     (if (download-exists? url)
@@ -90,5 +92,5 @@ request fails it will return the http status code."
                                                "~s is requesting to download ~s~% continue: y/n? "
                                                (current-url)
                                                url))))
-    (when (string= confirm "y")
+    (when (and (string= confirm "y") allow-downloads)
       (download-function url))))
