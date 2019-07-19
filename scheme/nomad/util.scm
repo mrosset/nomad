@@ -42,6 +42,8 @@
           object))
 
 (define log-info? (make-fluid #f))
+
+;; FIXME: maybe use the emacsy logger here instead?
 (define (info msg)
   "Prints info: MSG to current output port"
   (when (fluid-ref log-info?)
