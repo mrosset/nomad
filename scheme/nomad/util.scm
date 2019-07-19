@@ -51,7 +51,7 @@
 
 ;; Expands to current users home directory
 (define ~
-  (make-fluid (user-home)))
+  (make-fluid (getenv "HOME")))
 
 (define // file-name-separator-string)
 

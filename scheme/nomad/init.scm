@@ -123,7 +123,6 @@
   (ensure-fluid-directory download-directory))
 
 (define (init)
-  (webview-init)
   (add-hook! event-hook debug-event)
   (ensure-nomad-directory)
   (when (file-exists? (fluid-ref history-file))
