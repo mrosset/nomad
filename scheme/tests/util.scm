@@ -24,4 +24,11 @@
 (with-fluids ((~ "/tmp/home"))
   (test-equal "procedure ~  expands to $HOME" (fluid-ref ~) "/tmp/home")
   (test-equal "procedure ~/ expands to $HOME/child" (~/ "test") "/tmp/home/test"))
+(with-fluids ((log-info? #t))
+  (test-equal "info procedure"
+    (format #f
+            "~a INFO: test\n"
+            (current-thread))
+    (with-output-to-string (lambda _
+                             (info "test")))))
 (test-end)
