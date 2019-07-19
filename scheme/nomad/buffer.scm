@@ -33,7 +33,6 @@
             update-buffers
             buffers-contain?
             buffer-protected?
-            buffer-pointer
             buffer-uri
             buffers->uri))
 
@@ -47,11 +46,7 @@
 
 (define (webview-onload buffer uri)
   "Update BUFFER on webview load"
-  (with-buffer buffer
-    (when (local-var 'update)
-      (set-buffer-name! uri)))
-  (when (not (buffers-contain? (buffer-name buffer)))
-    (notebook-insert buffer 0)))
+  (buffer-sync buffer))
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
@@ -70,10 +65,6 @@
   "Returns the webview URI for BUFFER"
   (with-buffer buffer
     (local-var 'uri)))
-
-(define (buffer-pointer buffer)
-  (with-buffer buffer
-    (local-var 'web-buffer)))
 
 (define (buffers-contain? uri)
   "Returns #t of buffer-list contains URI"
@@ -106,33 +97,29 @@
   "Pretty prints the buffers to echo area"
   (message "~a" (with-output-to-string (lambda _ (pretty-print (buffer-list))))))
 
-(define (on-webview-enter)
-  (when (local-var 'web-buffer)
-    (format #t
-            "Setting GTK control to ~a~%"
-            (local-var 'web-buffer))
-    (set-web-buffer! (current-buffer))
-    (use-local-map webview-map)))
-
-(define (on-webview-kill)
-  (format #t
-          "Destroying web-view ~a~%"
-          (local-var 'web-buffer))
-  (destroy-web-buffer! (local-var 'web-buffer)))
+(define (set-webview-hooks buffer)
+  (add-hook! (buffer-enter-hook buffer)
+             webview-enter-hook)
+  (add-hook! (buffer-kill-hook buffer)
+             webview-kill-hook))
 
 (define-interactive (make-buffer-content #:optional (name (read-from-minibuffer "Name: "))(content (read-from-minibuffer "Content: ")))
   "Creates a new webview buffer with NAME and CONTENT"
-  (let ((buffer (switch-to-buffer name)))
-    (text-buffer->webview! buffer #f)
-    (on-webview-enter)
-    (load-content content)))
+  (let ((buffer (make-webcontent-buffer name content)))
+    (set! (buffer-pointer buffer)
+          (make-web-pointer))
+    (set-webview-hooks buffer)
+    (webview-enter-hook)
+    (buffer-render)))
 
 (define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
   "Creates a new webview-bufer with URL"
-  (let ((buffer (switch-to-buffer url)))
-     (text-buffer->webview! buffer #t)
-     (on-webview-enter)
-    (set-current-uri! (prefix-url url))))
+  (let ((buffer (make-webview-buffer url)))
+    (set! (buffer-pointer buffer)
+          (make-web-pointer))
+    (set-webview-hooks buffer)
+    (webview-enter-hook)
+    (set-buffer-uri! (prefix-url url))))
 
 (define (webview-buffer? buffer)
   (let ((iswebview #f))
@@ -145,44 +132,31 @@
           (set! iswebview #f))))
     iswebview))
 
-;; FIXME: use a webview-buffer class instead of converting text-buffers
-(define-public (text-buffer->webview! buffer update)
-  "converts in place a text BUFFER to webview buffer"
-  (with-buffer buffer
-               (set! (local-var 'web-buffer)
-                     (make-web-buffer))
-               (set! (local-var 'update)
-                     update)
-               (add-hook! (buffer-enter-hook buffer)
-                          on-webview-enter)
-               (add-hook! (buffer-kill-hook buffer)
-                          on-webview-kill)))
-
 ;; FIXME: This should probably not be needed. But if certain buffers
 ;; are killed then they are no longer webviews. And so can not be
 ;; switched to or managed properly. Also if a buffer has a webview
 ;; then we need to synchronize buffer names to it's current URL
-(define (update-buffers)
-  "Synchronizes buffers"
-  (for-each (lambda (buffer)
-              (with-buffer buffer
-                (when (and (or (string= (buffer-name (current-buffer))
-                                        "*Messages*")
-                               (string= (buffer-name (current-buffer))
-                                        "*scratch*"))
-                           (not (webview-buffer? (current-buffer))))
-                  (text-buffer->webview! buffer #f)
-                  (set! (buffer-modes (current-buffer))
-                        '())
-                  (when (not (notebook-contains buffer))
-                    (notebook-insert buffer 0))
-                  ;; FIXME: do not hard code HTML use SXML views to display *Messages* and
-                  ;; scratch and messages?
-                  (load-content (format #f
-                                        "<H2>~a<H2>"
-                                        (buffer-name (current-buffer)))))
-                ;; (when (and (webview-buffer? buffer)
-                ;;            (local-var 'update))
-                ;;   (set-buffer-name! (primitive-buffer-uri (local-var 'web-buffer))))
-                ))
-            (buffer-list)))
+;; (define (update-buffers)
+;;   "Synchronizes buffers"
+;;   (for-each (lambda (buffer)
+;;               (with-buffer buffer
+;;                 (when (and (or (string= (buffer-name (current-buffer))
+;;                                         "*Messages*")
+;;                                (string= (buffer-name (current-buffer))
+;;                                         "*scratch*"))
+;;                            (not (webview-buffer? (current-buffer))))
+;;                   (text-buffer->webview! buffer #f)
+;;                   (set! (buffer-modes (current-buffer))
+;;                         '())
+;;                   (when (not (notebook-contains buffer))
+;;                     (notebook-insert buffer 0))
+;;                   ;; FIXME: do not hard code HTML use SXML views to display *Messages* and
+;;                   ;; scratch and messages?
+;;                   (load-content (format #f
+;;                                         "<H2>~a<H2>"
+;;                                         (buffer-name (current-buffer)))))
+;;                 ;; (when (and (webview-buffer? buffer)
+;;                 ;;            (local-var 'update))
+;;                 ;;   (set-buffer-name! (primitive-buffer-uri (local-var 'web-buffer))))
+;;                 ))
+;;             (buffer-list)))

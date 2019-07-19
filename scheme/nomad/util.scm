@@ -41,15 +41,15 @@
           (class-of object)
           object))
 
-(define log-info? (make-fluid #f))
+(define log-info? (make-fluid #t))
 
 ;; FIXME: maybe use the emacsy logger here instead?
 (define (info msg)
   "Prints info: MSG to current output port"
   (when (fluid-ref log-info?)
     (format #t
-            "~a INFO: ~a\n"
-            (current-thread)
+            "INFO: ~a\n"
+            ;; (current-thread)
             msg)))
 
 (define (user-home)

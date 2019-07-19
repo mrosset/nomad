@@ -67,12 +67,14 @@ decide_policy_cb (WebKitWebView *view, WebKitPolicyDecision *decision,
     {
     case WEBKIT_POLICY_DECISION_TYPE_NEW_WINDOW_ACTION:
       {
-        WebKitNavigationAction *nav
-            = webkit_navigation_policy_decision_get_navigation_action (
-                WEBKIT_NAVIGATION_POLICY_DECISION (decision));
-        WebKitURIRequest *req = webkit_navigation_action_get_request (nav);
-        SCM url = scm_from_locale_string (webkit_uri_request_get_uri (req));
-        scm_nomad_make_buffer (url);
+        /* WebKitNavigationAction *nav
+         *     = webkit_navigation_policy_decision_get_navigation_action (
+         *         WEBKIT_NAVIGATION_POLICY_DECISION (decision)); */
+        /* WebKitURIRequest *req = webkit_navigation_action_get_request (nav);
+         */
+        /* SCM url = scm_from_locale_string (webkit_uri_request_get_uri (req));
+         */
+        /* scm_nomad_make_buffer (url); */
         return TRUE;
       }
     case WEBKIT_POLICY_DECISION_TYPE_RESPONSE:
@@ -171,7 +173,7 @@ idle_destroy (gpointer data)
   return FALSE;
 }
 
-SCM_DEFINE (scm_nomad_destroy_web_buffer, "destroy-web-buffer!", 1, 0, 0,
+SCM_DEFINE (scm_nomad_destroy_web_pointer, "destroy-pointer", 1, 0, 0,
             (SCM pointer), "Destroys widget POINTER")
 {
   GtkWidget *widget = scm_to_pointer (pointer);
@@ -185,7 +187,7 @@ SCM_DEFINE (scm_nomad_destroy_web_buffer, "destroy-web-buffer!", 1, 0, 0,
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE (scm_nomad_make_buffer, "make-web-buffer", 0, 0, 0, (),
+SCM_DEFINE (scm_nomad_make_pointer, "make-web-pointer", 0, 0, 0, (),
             "Returns a new scheme nomad buffer control")
 {
   NomadBuffer *buf = nomad_buffer_new ();
@@ -199,15 +201,13 @@ tab_label_new (int id)
   return gtk_label_new (scm_to_locale_string (label));
 }
 
-SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0, (SCM buffer),
-            "Sets the current tab to the given BUFFER")
+SCM_DEFINE (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
+            (SCM pointer), "Sets the current tab to the given POINTER")
 {
   gint page;
   GtkWidget *buf;
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   GtkNotebook *notebook = nomad_window_get_notebook (win);
-  SCM pointer = scm_call_1 (
-      scm_c_public_ref ("nomad buffer", "buffer-pointer"), buffer);
 
   if (SCM_POINTER_P (pointer))
     {
@@ -223,7 +223,7 @@ SCM_DEFINE (scm_set_web_view_x, "set-web-buffer!", 1, 0, 0, (SCM buffer),
       gtk_widget_show_all (buf);
     }
   else
-    g_warning ("warning: not given a pointer in set-web-buffer!\n");
+    g_warning ("warning: not given a pointer\n");
   return SCM_UNSPECIFIED;
 }
 
@@ -250,21 +250,17 @@ SCM_DEFINE (scm_nomad_buffer_title, "buffer-title", 1, 0, 0, (SCM buffer),
   return scm_from_locale_string (webkit_web_view_get_title (buf->view));
 }
 
-SCM_DEFINE (scm_nomad_set_current_uri_x, "set-buffer-uri!", 2, 0, 0,
-            (SCM buffer, SCM uri),
-            "Sets BUFFER URI. This causes the webview to load URI")
+SCM_DEFINE (scm_nomad_set_pointer_uri_x, "set-pointer-uri", 2, 0, 0,
+            (SCM pointer, SCM uri),
+            "Sets POINTER URI. This causes the webview to load URI")
 {
   NomadBuffer *buf;
-  SCM pointer;
   char *c_uri;
 
   scm_dynwind_begin (0);
 
   c_uri = scm_to_locale_string (uri);
   scm_dynwind_unwind_handler (free, c_uri, SCM_F_WIND_EXPLICITLY);
-
-  pointer = scm_call_1 (scm_c_public_ref ("nomad buffer", "buffer-pointer"),
-                        buffer);
 
   buf = scm_to_pointer (pointer);
   webkit_web_view_load_uri (buf->priv->view, c_uri);
@@ -273,20 +269,15 @@ SCM_DEFINE (scm_nomad_set_current_uri_x, "set-buffer-uri!", 2, 0, 0,
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE (scm_nomad_buffer_load_content, "set-buffer-content!", 3, 0, 0,
-            (SCM buffer, SCM content, SCM base_uri),
+SCM_DEFINE (scm_nomad_pointer_load_content, "set-pointer-content", 3, 0, 0,
+            (SCM pointer, SCM content, SCM base_uri),
             "Load CONTENT/HTML in BUFFER. (P.S. can also be used to "
             "load any other type of text.")
 {
   gchar *c_text;
   gchar *c_uri;
   NomadBuffer *buf;
-  SCM pointer;
-
   scm_dynwind_begin (0);
-
-  pointer = scm_call_1 (scm_c_public_ref ("nomad buffer", "buffer-pointer"),
-                        buffer);
 
   buf = scm_to_pointer (pointer);
   c_text = scm_to_locale_string (content);
@@ -306,8 +297,8 @@ SCM_DEFINE (scm_nomad_buffer_load_content, "set-buffer-content!", 3, 0, 0,
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_nomad_buffer_uri, "primitive-buffer-uri", 1, 0, 0,
-            (SCM pointer), "Returns buffer URI of BUFFER pointer")
+SCM_DEFINE (scm_nomad_buffer_uri, "pointer-uri", 1, 0, 0, (SCM pointer),
+            "Returns buffer URI of POINTER")
 {
   NomadBuffer *buf = NOMAD_BUFFER (scm_to_pointer (pointer));
   const char *c_uri = webkit_web_view_get_uri (buf->priv->view);
@@ -333,7 +324,7 @@ SCM_DEFINE (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   GtkNotebook *notebook = nomad_window_get_notebook (win);
   SCM pointer = scm_call_1 (
-      scm_c_public_ref ("nomad buffer", "buffer-pointer"), buffer);
+      scm_c_public_ref ("nomad webview", "buffer-pointer"), buffer);
   GtkWidget *widget = scm_to_pointer (pointer);
   gint page = gtk_notebook_page_num (notebook, widget);
 
@@ -370,9 +361,9 @@ nomad_buffer_register_functions (void *data)
 {
 #include "buffer.x"
   init_buffer_type ();
-  scm_c_export ("buffer-title", "primitive-buffer-uri", "make-web-buffer",
-                "set-web-buffer!", "destroy-web-buffer!", "set-buffer-uri!",
-                "set-buffer-content!", "number-tabs", "notebook-contains",
+  scm_c_export ("buffer-title", "pointer-uri", "set-pointer-uri",
+                "make-web-pointer", "switch-to-pointer", "destroy-pointer",
+                "set-pointer-content", "number-tabs", "notebook-contains",
                 "notebook-insert", NULL);
   return;
 }

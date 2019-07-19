@@ -18,12 +18,15 @@
 
 (define-module (nomad webview)
   #:use-module (emacsy emacsy)
+  #:use-module (ice-9 optargs)
   #:use-module (nomad buffer)
   #:use-module (nomad eval)
   #:use-module (nomad events)
   #:use-module (nomad util)
+  #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (system foreign)
   #:export (current-url
             scroll-down
             scroll-up
@@ -32,22 +35,104 @@
             default-home-page
             prefix-url
             search-provider-format
-            set-current-uri!
             history-forward
             webview-map
-            firefox-webview-map))
+            firefox-webview-map
+            webview-enter-hook
+            webview-kill-hook
+            ;; ;; classe contstructo
+            make-webview-buffer
+            make-webcontent-buffer
+            ;; <webview-buffer> accessors
+            buffer-sync
+            buffer-uri
+            set-buffer-uri!
+            buffer-pointer
+            ;; <webcontent-buffer> accessors
+            buffer-content
+            buffer-render
+            ))
 
-;; Provides emacs like key mappings for webview-mode
-(define webview-map (make-keymap))
+(define (webview-kill-hook)
+  (format #t
+          "Destroying web-view ~a~%"
+          (buffer-pointer (current-buffer)))
+  (destroy-pointer (buffer-pointer (current-buffer))))
 
-;; Provides firefox key mappings for webview-mode. This can be set as
-;; the default webview mode map by using (!set webview-map
-;; firefox-webview-map) in user-init-file
-(define firefox-webview-map (make-keymap))
+(define (webview-enter-hook)
+  (format #t
+          "Setting pointer to ~a~%"
+          (buffer-pointer (current-buffer)))
+  (switch-to-pointer (buffer-pointer (current-buffer))))
+
+;;; <webview-buffer> extends <buffer> class
+(define-class <webview-buffer>
+  (<buffer>)
+  (uri #:accessor buffer-uri #:init-keyword #:uri)
+  (update #:init-keyword #:update #:init-value #t)
+  (pointer #:accessor buffer-pointer #:init-keyword #:pointer #:init-value %null-pointer))
+
+(define-method (buffer-sync (buffer <buffer>))
+  (set-buffer-name! (buffer-uri buffer)) buffer)
+
+(define-method (buffer-uri (buffer <buffer>))
+  (slot-set! buffer
+             'uri
+             (pointer-uri buffer))
+  (slot-ref buffer 'uri))
+
+(define-method (set-buffer-uri! uri)
+  (set-buffer-uri! uri (current-buffer)))
+
+(define-method (set-buffer-uri! uri (buffer <webview-buffer>))
+  (info (format #f "setting buffer uri to ~a" uri))
+  (set-pointer-uri (buffer-pointer (current-buffer)) uri)
+  (slot-set! buffer 'uri (pointer-uri (buffer-pointer (current-buffer)))))
+
+;;; <webcontent-buffer> extends <webview-buffer> class
+(define-class <webcontent-buffer>
+  (<webview-buffer>)
+  (content #:accessor buffer-content  #:init-keyword #:content)
+  (update #:init-keyword #:update #:init-value #f))
+
+(define-method (buffer-render)
+  (buffer-render (current-buffer)))
+
+(define-method (buffer-render (buffer <webcontent-buffer>))
+  (set-pointer-content (buffer-pointer buffer) (buffer-content buffer) (buffer-uri buffer)))
+
+ (define* (make-webview-buffer #:optional (uri default-home-page))
+  "Constructs a new webview-buffer class"
+  (let ((buffer (make <webview-buffer> #:name uri #:uri uri #:keymap webview-map)))
+    (add-buffer! buffer)
+    buffer))
+
+(define* (make-webcontent-buffer name
+                                 #:optional (content (format #f "<h2>~a</h2>" name)))
+  "Constructs a new webcontent-buffer class"
+  (let ((buffer (make <webcontent-buffer>
+                  #:name name #:uri (format #f "nomad:///content/~a" name) #:content
+                  content
+                  #:keymap webview-map)))
+    (add-buffer! buffer)
+    buffer))
 
 (define search-provider-format "https://duckduckgo.com/?q=~a")
 
 (define default-home-page "https://www.gnu.org/software/guile")
+
+;; FIXME: use a webview-buffer class instead of converting text-buffers
+(define-public (buffer->webview buffer update)
+  "Setup local variables and hooks for webview-buffer BUFFER"
+  (with-buffer buffer
+               (set! (local-var 'web-buffer)
+                     (make-web-buffer))
+               (set! (local-var 'update)
+                     update)
+               (add-hook! (buffer-enter-hook buffer)
+                          on-webview-enter)
+               (add-hook! (buffer-kill-hook buffer)
+                          on-webview-kill)))
 
 (define (prefix-url url)
   "Returns a full protocol URI for domain URI.
@@ -65,13 +150,10 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
              (and (webview-go-back)
                   (history-forward (1+ x)))))))
 
-(define (set-current-uri! uri)
-  (set-buffer-uri! (current-buffer) uri))
-
 (define-interactive (browse #:optional (url (read-from-minibuffer "URL: ")))
   "Browse to URI. URI is prefixed with https:// if no protocol is
 specified. Returns the final URL passed to webkit"
-  (set-current-uri! (prefix-url url)))
+  (set-buffer-uri! (prefix-url url) (current-buffer)))
 
 (define-interactive (forward)
   "Go forward in browser history"
@@ -108,11 +190,7 @@ specified. Returns the final URL passed to webkit"
   (yank-string (webview-current-url))
   (message (webview-current-url)))
 
-(define-interactive (load-content #:optional (content (read-from-minibuffer "Content: ")))
-  "Load CONTENT into current buffer"
-  (set-buffer-content! (current-buffer) content "nomad://"))
-
-(define-public (tweak-url)
+(define-interactive (tweak-url)
   "Edit the current-url."
   (browse (read-from-minibuffer "Url: " (current-url))))
 
@@ -130,7 +208,9 @@ specified. Returns the final URL passed to webkit"
 
 (define-public cycle-search-provider (pick-search-provider))
 
-;; Firefox webview key mappings
+;; Provides firefox key mappings for webview-mode. This can be set as
+;; the default webview mode map by using (!set webview-map
+;; firefox-webview-map) in user-init-file
 (define firefox-webview-map
   (list->keymap '(("C-u" next-buffer)
                   ("C-m" prev-buffer)

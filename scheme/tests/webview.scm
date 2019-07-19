@@ -17,8 +17,11 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (tests webview)
+  #:use-module (emacsy emacsy)
   #:use-module (nomad webview)
-  #:use-module (srfi srfi-64))
+  #:use-module (srfi srfi-64)
+  #:use-module (system foreign)
+  )
 
 (test-begin "webview")
 
@@ -28,4 +31,27 @@
 
 (test-equal "don't prefix https" (prefix-url "https://127.0.0.1") "https://127.0.0.1")
 
+(test-group "webview class"
+            (let ((buffer (make-webview-buffer "https://gnu.org/")))
+              (test-equal "buffer-name"
+                "https://gnu.org/"
+                (buffer-name buffer))
+              (test-equal "buffer-url"
+                "https://gnu.org/"
+                (buffer-uri buffer))
+              (test-equal "buffer-pointer"
+                %null-pointer
+                (buffer-pointer buffer))))
+(test-group "webcontent class"
+1            (let ((buffer (make-webcontent-buffer "test-content")))
+              (test-equal "buffer-name"
+                "test-content"
+                (buffer-name buffer))
+              (test-equal "buffer-url"
+                "nomad:///content/test-content"
+                (buffer-uri buffer))
+              (test-equal "buffer-content" "<h2>test-content</h2>" (buffer-content buffer))
+              (test-equal "buffer-pointer"
+                %null-pointer
+                (buffer-pointer buffer))))
 (test-end)

@@ -88,7 +88,7 @@
   (test-equal "buffer name update"
     "https://gnu.org/"
     (begin (make-buffer "gnu.org")
-           (update-buffers)
+           (buffer-sync (current-buffer))
            (buffer-name (current-buffer))))
   (test-equal "notebook-contain"
     #t
@@ -110,7 +110,6 @@
               (next-buffer))
             (buffer-list))
   (kill-some-buffers)
-  (update-buffers)
   ;; total tabs equals total buffers
   (test-equal "tab and buffer synchronization"
     (length (buffer-list))
