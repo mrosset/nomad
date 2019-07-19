@@ -22,6 +22,7 @@
   #:use-module (ice-9 match)
   #:use-module (oop goops)
   #:export (info
+            log-info?
             list->keymap
             add-to-nomad-path
             ~ // ~/))
@@ -40,8 +41,14 @@
           (class-of object)
           object))
 
+(define log-info? (make-fluid #f))
 (define (info msg)
-  (format #t "INFO: ~a\n" msg))
+  "Prints info: MSG to current output port"
+  (when (fluid-ref log-info?)
+    (format #t
+            "~a INFO: ~a\n"
+            (current-thread)
+            msg)))
 
 (define (user-home)
   "Returns the current users home directory"
@@ -50,8 +57,10 @@
     (passwd:dir pw)))
 
 ;; Expands to current users home directory
-(define ~
-  (make-fluid (getenv "HOME")))
+;;
+;; FIXME: What's happening here? does this expand at compile time or runt
+;; time?
+(define ~ (make-fluid (getenv "HOME")))
 
 (define // file-name-separator-string)
 
