@@ -83,21 +83,22 @@
 (define-interactive (run-graphical-tests)
   (test-runner-factory html-simple-runner)
   (kill-some-buffers)
-  (update-buffers)
   (test-begin "graphical")
   ;; buffer-name
-  (test-equal "https://gnu.org/"
+  (test-equal "buffer name update"
+    "https://gnu.org/"
     (begin (make-buffer "gnu.org")
+           (update-buffers)
            (buffer-name (current-buffer))))
-  ;; notebook-contains
-  (test-equal #t
+  (test-equal "notebook-contain"
+    #t
     (notebook-contains (current-buffer)))
-  ;; kill-buffer
-  (test-equal "*scratch*"
+  (test-equal "kill-buffer"
+    "*scratch*"
     (begin (kill-buffer)
            (buffer-name (current-buffer))))
-  ;; total tabs equals total buffers
-  (test-equal (length (buffer-list))
+  (test-equal "tab and buffer synchronization"
+    (length (buffer-list))
     (number-tabs))
   (do ((i 0
           (+ 1 i)))
@@ -111,7 +112,8 @@
   (kill-some-buffers)
   (update-buffers)
   ;; total tabs equals total buffers
-  (test-equal (length (buffer-list))
+  (test-equal "tab and buffer synchronization"
+    (length (buffer-list))
     (number-tabs))
   (test-end)
   ;; Display test results in a content buffer

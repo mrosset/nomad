@@ -64,10 +64,4 @@ controls are accessible to scheme"
                             10)
   ;; Create one buffer
   (make-buffer default-home-page)
-  ;; Kill the scratch and messages buffer
-  (with-buffer scratch
-    (kill-buffer))
-  (with-buffer messages
-    (kill-buffer))
-  ;; Run user hooks
   (run-hook startup-hook))

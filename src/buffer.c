@@ -87,6 +87,7 @@ decide_policy_cb (WebKitWebView *view, WebKitPolicyDecision *decision,
             scm_call_1 (scm_c_public_ref ("nomad download", "download"),
                         scm_from_locale_string (uri));
           }
+        return TRUE;
       }
     default:
       return FALSE;
