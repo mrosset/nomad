@@ -27,6 +27,9 @@ nomad_DATA = init.el
 
 dist_doc_DATA = README
 
+clean-scheme:
+	$(MAKE) -C ./scheme clean
+
 test: check
 	$(MAKE) -C ./src test
 
