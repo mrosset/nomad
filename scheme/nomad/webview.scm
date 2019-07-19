@@ -130,26 +130,26 @@ specified. Returns the final URL passed to webkit"
 
 (define-public cycle-search-provider (pick-search-provider))
 
-(define (firefox-webview-map-init)
-  "Initializes firefox-webview-map"
-  ;; webview
-  (define-key firefox-webview-map (kbd "C-u") 'next-buffer)
-  (define-key firefox-webview-map (kbd "C-m") 'prev-buffer)
-  (define-key firefox-webview-map (kbd "M-n") 'forward)
-  (define-key firefox-webview-map (kbd "M-b") 'back)
-  (define-key firefox-webview-map (kbd "M-h") 'home)
-  (define-key firefox-webview-map (kbd "M-f") 'browse)
-  (define-key firefox-webview-map (kbd "M-g") 'reload)
-  (define-key firefox-webview-map (kbd "M-u") 'tweak-url)
-  (define-key firefox-webview-map (kbd "M-c") 'copy-current-url)
-  (define-key firefox-webview-map (kbd "C-s") 'query)
-  (define-key firefox-webview-map (kbd "M-s") 'cycle-search-provider)
-  (define-key firefox-webview-map (kbd "M-v") 'scroll-up)
-  (define-key firefox-webview-map (kbd "C-v") 'scroll-down)
-  (define-key firefox-webview-map (kbd "M-'") 'hints))
+;; Firefox webview key mappings
+(define firefox-webview-map
+  (list->keymap '(("C-u" next-buffer)
+                  ("C-m" prev-buffer)
+                  ("M-n" forward)
+                  ("M-b" back)
+                  ("M-h" home)
+                  ("M-f" browse)
+                  ("M-g" reload)
+                  ("M-u" tweak-url)
+                  ("M-c" copy-current-url)
+                  ("C-s" query)
+                  ("M-s" cycle-search-provider)
+                  ("M-v" scroll-up)
+                  ("C-v" scroll-down)
+                  ("M-'" hints))))
 
+;; Default webview key mappings
 (define-public webview-map
-  (list->keymap `(("C-u" back)
+  (list->keymap '(("C-u" back)
                   ("C-m" forward)
                   ("C-n" scroll-down)
                   ("C-p" scroll-up)
@@ -157,6 +157,3 @@ specified. Returns the final URL passed to webkit"
                   ("C-r" reload)
                   ("C-q" kill-buffer)
                   ("C-x C-f" query))))
-
-(define (webview-init)
-  (firefox-webview-map-init))
