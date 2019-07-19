@@ -103,14 +103,16 @@
   (add-hook! (buffer-kill-hook buffer)
              webview-kill-hook))
 
-(define-interactive (make-buffer-content #:optional (name (read-from-minibuffer "Name: "))(content (read-from-minibuffer "Content: ")))
+(define-interactive (make-content-buffer #:optional (name (read-from-minibuffer "Name: "))
+                                         (content (read-from-minibuffer "Content: ")))
   "Creates a new webview buffer with NAME and CONTENT"
   (let ((buffer (make-webcontent-buffer name content)))
     (set! (buffer-pointer buffer)
           (make-web-pointer))
     (set-webview-hooks buffer)
     (webview-enter-hook)
-    (buffer-render)))
+    (buffer-render)
+    buffer))
 
 (define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
   "Creates a new webview-bufer with URL"
@@ -119,7 +121,8 @@
           (make-web-pointer))
     (set-webview-hooks buffer)
     (webview-enter-hook)
-    (set-buffer-uri! (prefix-url url))))
+    (set-buffer-uri! (prefix-url url))
+    buffer))
 
 (define (webview-buffer? buffer)
   (let ((iswebview #f))

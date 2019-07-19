@@ -103,7 +103,7 @@
   (do ((i 0
           (+ 1 i)))
       ((> i 10))
-    (make-buffer-content (number->string i)
+    (make-content-buffer (number->string i)
                          (format #f "<h2>ID: ~a</h2>" i)))
   ;; visit each buffer
   (for-each (lambda (buffer)
@@ -119,6 +119,6 @@
   (let* ((log-file "graphical.log")
          (port (open-input-file log-file))
          (content (get-string-all port)))
-    (make-buffer-content log-file content)
+    (make-content-buffer log-file content)
     (close-port port)
     (delete-file log-file)))
