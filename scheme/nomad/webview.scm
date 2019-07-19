@@ -69,7 +69,6 @@
 (define-class <webview-buffer>
   (<buffer>)
   (uri #:accessor buffer-uri #:init-keyword #:uri)
-  (update #:init-keyword #:update #:init-value #t)
   (content #:accessor buffer-content  #:init-keyword #:content)
   (pointer #:accessor buffer-pointer #:init-keyword #:pointer #:init-value %null-pointer))
 
