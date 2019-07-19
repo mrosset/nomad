@@ -43,15 +43,20 @@
 (define (info msg)
   (format #t "INFO: ~a\n" msg))
 
+(define (user-home)
+  "Returns the current users home directory"
+  (let* ((user (getlogin))
+         (pw (getpw user)))
+    (passwd:dir pw)))
+
+;; Expands to current users home directory
 (define ~
-  (make-fluid (getenv "HOME")))
+  (make-fluid (user-home)))
 
 (define // file-name-separator-string)
 
 (define (~/ path)
-  "expands $HOME and joins path to the end"
-  (string-append (fluid-ref ~) // path))
-
-(define-public (completion-join lst)
-  "Joins completion list into a flat string separated by spaces"
-  (string-append lst))
+  "Expands to the full PATH within the current users home directory"
+  (string-append (fluid-ref ~)
+                 //
+                 path))
