@@ -62,6 +62,8 @@ G_DEFINE_TYPE_WITH_PRIVATE (NomadAppWindow, nomad_app_window,
                             GTK_TYPE_APPLICATION_WINDOW)
 
 // Declarations
+static gboolean idle_update_echo_area (void *user_data);
+
 gboolean read_line_key_press_event_cb (GtkWidget *widget, GdkEventKey *event,
                                        gpointer user_data);
 
@@ -136,8 +138,11 @@ window_key_press_cb (GtkWidget *widget, GdkEventKey *event)
              separately in Emacsy.  However, in this case, it's convenient
              to do some processing in the event handling here so we know
              whether or not to pass the event on to the browser.
+
+             So we call process_and_update_emacsy to actually do the
+             processing.
            */
-          flags = emacsy_tick ();
+          idle_update_echo_area (widget);
           flags = emacsy_tick ();
 
           if (flags & EMACSY_RAN_UNDEFINED_COMMAND_P)
@@ -381,14 +386,42 @@ nomad_app_window_overlay_init (NomadAppWindow *self)
 }
 
 static gboolean
-process_and_update_emacsy (void *user_data)
+idle_update_emacsy (void *user_data)
+{
+  if (emacsy_tick () & EMACSY_QUIT_APPLICATION_P)
+    {
+      return FALSE;
+    }
+  return TRUE;
+}
+
+static gboolean
+idle_update_modeline (void *user_data)
+{
+  NomadAppWindow *self;
+  GtkTextBuffer *mbuf;
+  char *modeline;
+
+  self = NOMAD_APP_WINDOW (user_data);
+  mbuf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (self->priv->modeline));
+
+  modeline = emacsy_mode_line ();
+
+  gtk_text_buffer_set_text (mbuf, modeline, -1);
+
+  g_free (modeline);
+  return TRUE;
+}
+
+static gboolean
+idle_update_echo_area (void *user_data)
 {
   int flags;
-  GtkTextBuffer *mbuf, *rbuf;
+  GtkTextBuffer *rbuf;
   NomadAppWindowPrivate *priv;
   NomadAppWindow *self;
   GtkWidget *webview;
-  char *modeline, *status;
+  char *status;
 
   // If user_data is NULL stop this idle process
   if (!user_data)
@@ -400,25 +433,21 @@ process_and_update_emacsy (void *user_data)
   priv = self->priv;
 
   flags = emacsy_tick ();
-  mbuf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->modeline));
   rbuf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->read_line));
 
   webview = GTK_WIDGET (nomad_app_window_get_webview (self));
 
-  // If there's been a request to quit, quit.
+  // If there's been a request to quit, stop this idle process.
   if (flags & EMACSY_QUIT_APPLICATION_P)
     {
       return FALSE;
     }
 
   // Update the status line.
-  modeline = emacsy_mode_line ();
   status = emacsy_message_or_echo_area ();
 
-  gtk_text_buffer_set_text (mbuf, modeline, -1);
   gtk_text_buffer_set_text (rbuf, status, -1);
 
-  g_free (modeline);
   g_free (status);
 
   if (scm_is_true (scm_c_public_ref ("emacsy minibuffer",
@@ -479,9 +508,11 @@ nomad_app_window_init (NomadAppWindow *self)
 
   // Signals
 
-  // While idle, process events in Emacsy and upate the echo-area.
-  g_timeout_add_full (G_PRIORITY_LOW, 50, process_and_update_emacsy, self,
-                      NULL);
+  // when idle, call emacsy-tick
+  g_timeout_add_full (G_PRIORITY_LOW, 50, idle_update_emacsy, NULL, NULL);
+  // While idle, update the modeline
+  g_timeout_add_full (G_PRIORITY_LOW, 50, idle_update_modeline, self, NULL);
+
   // Main keypress
   g_signal_connect (self, "key-press-event", G_CALLBACK (window_key_press_cb),
                     (gpointer)self);

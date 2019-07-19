@@ -49,7 +49,7 @@
   "Update BUFFER on webview load"
   (with-buffer buffer
     (when (local-var 'update)
-      (set-buffer-name! uri buffer)))
+      (set-buffer-name! uri)))
   (when (not (buffers-contain? (buffer-name buffer)))
     (notebook-insert buffer 0)))
 

@@ -42,7 +42,7 @@ static void
 web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
                        gpointer user_data)
 {
-  NomadBuffer *self = user_data;
+  NomadBuffer *self = NOMAD_BUFFER (user_data);
   NomadBufferPrivate *priv = self->priv;
   gtk_label_set_text (GTK_LABEL (priv->title),
                       webkit_web_view_get_title (priv->view));
