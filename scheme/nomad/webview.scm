@@ -72,13 +72,10 @@
   (content #:accessor buffer-content  #:init-keyword #:content)
   (pointer #:accessor buffer-pointer #:init-keyword #:pointer #:init-value %null-pointer))
 
-(define-method (buffer-sync (buffer <buffer>))
+(define-method (buffer-sync (buffer <webview-buffer>))
   (set-buffer-name! (buffer-uri buffer)) buffer)
 
-(define-method (buffer-uri (buffer <buffer>))
-  (slot-set! buffer
-             'uri
-             (pointer-uri buffer))
+(define-method (buffer-uri (buffer <webview-buffer>))
   (slot-ref buffer 'uri))
 
 (define-method (set-buffer-uri! uri)
@@ -87,7 +84,7 @@
 (define-method (set-buffer-uri! uri (buffer <webview-buffer>))
   (info (format #f "setting buffer uri to ~a" uri))
   (set-pointer-uri (buffer-pointer (current-buffer)) uri)
-  (slot-set! buffer 'uri (pointer-uri (buffer-pointer (current-buffer)))))
+  (slot-set! buffer 'uri uri))
 
 (define-method (buffer-render)
   (buffer-render (current-buffer)))
