@@ -17,23 +17,33 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad buffer)
-  #:use-module (emacsy emacsy)
   #:use-module (emacsy buffer)
+  #:use-module (emacsy emacsy)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
-  #:use-module (nomad webview)
-  #:use-module (nomad views)
   #:use-module (nomad eval)
   #:use-module (nomad minibuffer)
-  #:use-module (nomad window)
   #:use-module (nomad repl)
+  #:use-module (nomad views)
+  #:use-module (nomad webview)
+  #:use-module (nomad window)
+  #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
             webview-onload
             update-buffers
             buffers-contain?
+            buffer-protected?
             buffer-pointer
             buffer-uri
             buffers->uri))
+
+(define protected-buffers '("*scratch*" "*Messages*"))
+
+(define (buffer-protected? buffer)
+  "Returns true if buffer is protected and should not be deleted."
+  (find (lambda (item)
+          (equal? item (buffer-name buffer)))
+        protected-buffers))
 
 (define (webview-onload buffer uri)
   "Update BUFFER on webview load"
@@ -51,8 +61,9 @@
 (define-interactive (kill-some-buffers)
   "Kill all buffers but the message buffer"
   (for-each (lambda (buffer)
-              (switch-to-buffer buffer)
-              (kill-buffer))
+              (unless (buffer-protected? buffer)
+                (switch-to-buffer buffer)
+                (kill-buffer)))
             (buffer-list)))
 
 (define (buffer-uri buffer)
@@ -147,8 +158,12 @@
                (add-hook! (buffer-kill-hook buffer)
                           on-webview-kill)))
 
+;; FIXME: This should probably not be needed. But if certain buffers
+;; are killed then they are no longer webviews. And so can not be
+;; switched to or managed properly. Also if a buffer has a webview
+;; then we need to synchronize buffer names to it's current URL
 (define (update-buffers)
-  "Updates scratch and messages buffers"
+  "Synchronizes buffers"
   (for-each (lambda (buffer)
               (with-buffer buffer
                 (when (and (or (string= (buffer-name (current-buffer))
@@ -157,11 +172,17 @@
                                         "*scratch*"))
                            (not (webview-buffer? (current-buffer))))
                   (text-buffer->webview! buffer #f)
+                  (set! (buffer-modes (current-buffer))
+                        '())
                   (when (not (notebook-contains buffer))
                     (notebook-insert buffer 0))
                   ;; FIXME: do not hard code HTML use SXML views to display *Messages* and
                   ;; scratch and messages?
                   (load-content (format #f
                                         "<H2>~a<H2>"
-                                        (buffer-name (current-buffer)))))))
+                                        (buffer-name (current-buffer)))))
+                ;; (when (and (webview-buffer? buffer)
+                ;;            (local-var 'update))
+                ;;   (set-buffer-name! (primitive-buffer-uri (local-var 'web-buffer))))
+                ))
             (buffer-list)))
