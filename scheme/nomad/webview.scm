@@ -40,7 +40,7 @@
             firefox-webview-map
             webview-enter-hook
             webview-kill-hook
-            ;; ;; classe contstructo
+            ;; ;; class constructors
             make-webview-buffer
             make-webcontent-buffer
             ;; <webview-buffer> accessors
@@ -70,6 +70,7 @@
   (<buffer>)
   (uri #:accessor buffer-uri #:init-keyword #:uri)
   (update #:init-keyword #:update #:init-value #t)
+  (content #:accessor buffer-content  #:init-keyword #:content)
   (pointer #:accessor buffer-pointer #:init-keyword #:pointer #:init-value %null-pointer))
 
 (define-method (buffer-sync (buffer <buffer>))
@@ -89,19 +90,13 @@
   (set-pointer-uri (buffer-pointer (current-buffer)) uri)
   (slot-set! buffer 'uri (pointer-uri (buffer-pointer (current-buffer)))))
 
-;;; <webcontent-buffer> extends <webview-buffer> class
-(define-class <webcontent-buffer>
-  (<webview-buffer>)
-  (content #:accessor buffer-content  #:init-keyword #:content)
-  (update #:init-keyword #:update #:init-value #f))
-
 (define-method (buffer-render)
   (buffer-render (current-buffer)))
 
-(define-method (buffer-render (buffer <webcontent-buffer>))
+(define-method (buffer-render (buffer <webview-buffer>))
   (set-pointer-content (buffer-pointer buffer) (buffer-content buffer) (buffer-uri buffer)))
 
- (define* (make-webview-buffer #:optional (uri default-home-page))
+(define* (make-webview-buffer #:optional (uri default-home-page))
   "Constructs a new webview-buffer class"
   (let ((buffer (make <webview-buffer> #:name uri #:uri uri #:keymap webview-map)))
     (add-buffer! buffer)
@@ -110,7 +105,7 @@
 (define* (make-webcontent-buffer name
                                  #:optional (content (format #f "<h2>~a</h2>" name)))
   "Constructs a new webcontent-buffer class"
-  (let ((buffer (make <webcontent-buffer>
+  (let ((buffer (make <webview-buffer>
                   #:name name #:uri (format #f "nomad:///content/~a" name) #:content
                   content
                   #:keymap webview-map)))

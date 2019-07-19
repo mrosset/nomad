@@ -26,9 +26,7 @@
   (test-equal "procedure ~/ expands to $HOME/child" (~/ "test") "/tmp/home/test"))
 (with-fluids ((log-info? #t))
   (test-equal "info procedure"
-    (format #f
-            "~a INFO: test\n"
-            (current-thread))
+    (format #f "INFO: test\n")
     (with-output-to-string (lambda _
                              (info "test")))))
 (test-end)
