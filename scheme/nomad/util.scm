@@ -16,12 +16,23 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;; FIXME: merge util module into app?
 (define-module (nomad util)
+  #:use-module (emacsy emacsy)
+  #:use-module (ice-9 match)
   #:use-module (oop goops)
   #:export (info
+            list->keymap
             add-to-nomad-path
             ~ // ~/))
 
+(define (list->keymap lst)
+  "Creates a new keymap from LST"
+  (let ((keymap (make-keymap)))
+    (for-each (match-lambda ((key command)
+                             (define-key keymap key command)))
+              lst)
+    keymap))
 
 (define-public (debug-object object)
   (format #t
@@ -40,9 +51,6 @@
 (define (~/ path)
   "expands $HOME and joins path to the end"
   (string-append (fluid-ref ~) // path))
-
-(define (add-to-nomad-path path)
-  (add-to-load-path path))
 
 (define-public (completion-join lst)
   "Joins completion list into a flat string separated by spaces"

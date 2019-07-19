@@ -202,6 +202,5 @@ nomad_webview_register_functions (void *data)
 {
 #include "webview.x"
   scm_c_export ("webview-go-back", "webview-go-forward", "webview-reload",
-                "webview-current-url", "scroll-up", "scroll-down", "hints",
-                NULL);
+                "webview-current-url", NULL);
 }

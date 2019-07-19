@@ -17,14 +17,17 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad webview)
-  #:use-module (srfi srfi-1)
   #:use-module (emacsy emacsy)
-  #:use-module (ice-9 optargs)
   #:use-module (nomad buffer)
   #:use-module (nomad eval)
   #:use-module (nomad events)
   #:use-module (nomad util)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:export (current-url
+            scroll-down
+            scroll-up
+            hints
             webview-init
             default-home-page
             prefix-url
@@ -145,20 +148,15 @@ specified. Returns the final URL passed to webkit"
   (define-key firefox-webview-map (kbd "C-v") 'scroll-down)
   (define-key firefox-webview-map (kbd "M-'") 'hints))
 
-(define (webview-map-init)
-  "Initializes webview-map"
-  (let ((pairs '(("C-u" . back)
-                 ("C-m" . forward)
-                 ("C-n" . scroll-down)
-                 ("C-p" . scroll-up)
-                 ("C-f" . hints)
-                 ("C-r" . reload)
-                 ("C-q" . kill-buffer)
-                 ("C-x C-f" . query))))
-    (for-each (lambda (pair)
-                (define-key webview-map (car pair) (cdr pair)))
-              pairs)))
+(define-public webview-map
+  (list->keymap `(("C-u" back)
+                  ("C-m" forward)
+                  ("C-n" scroll-down)
+                  ("C-p" scroll-up)
+                  ("C-f" hints)
+                  ("C-r" reload)
+                  ("C-q" kill-buffer)
+                  ("C-x C-f" query))))
 
 (define (webview-init)
-  (firefox-webview-map-init)
-  (webview-map-init))
+  (firefox-webview-map-init))
