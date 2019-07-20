@@ -48,7 +48,7 @@
                 "test-content"
                 (buffer-name buffer))
               (test-equal "buffer-url"
-                "nomad:///content/test-content"
+                "test-content"
                 (buffer-uri buffer))
               (test-equal "buffer-content" "<h2>test-content</h2>" (buffer-content buffer))
               (test-equal "buffer-pointer"

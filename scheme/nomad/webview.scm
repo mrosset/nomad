@@ -43,14 +43,15 @@
             ;; ;; class constructors
             make-webview-buffer
             make-webcontent-buffer
-            ;; <webview-buffer> accessors
+            buffer-pointer
+            ;;methods
+            set-buffer-hooks!
+            set-buffer-pointer!
+            buffer-content
+            buffer-render
             buffer-sync
             buffer-uri
             set-buffer-uri!
-            buffer-pointer
-            ;; <webcontent-buffer> accessors
-            buffer-content
-            buffer-render
             ))
 
 (define (webview-kill-hook)
@@ -66,25 +67,41 @@
   (switch-to-pointer (buffer-pointer (current-buffer))))
 
 ;;; <webview-buffer> extends <buffer> class
-(define-class <webview-buffer>
+(define-class-public <webview-buffer>
   (<buffer>)
-  (uri #:accessor buffer-uri #:init-keyword #:uri)
   (content #:accessor buffer-content  #:init-keyword #:content)
-  (pointer #:accessor buffer-pointer #:init-keyword #:pointer #:init-value %null-pointer))
+  (pointer #:getter buffer-pointer #:setter set-buffer-pointer! #:init-keyword #:pointer #:init-value %null-pointer))
+
+(define-method (set-buffer-hooks!)
+  (set-buffer-hooks! (current-buffer)))
+
+(define-method (set-buffer-hooks! (buffer <webview-buffer>))
+  (add-hook! (buffer-enter-hook buffer)
+             webview-enter-hook)
+  (add-hook! (buffer-kill-hook buffer)
+             webview-kill-hook))
+
+(define-method (set-buffer-pointer! pointer)
+  (set-buffer-pointer! (current-buffer)
+                       pointer))
 
 (define-method (buffer-sync (buffer <webview-buffer>))
   (set-buffer-name! (buffer-uri buffer)) buffer)
 
 (define-method (buffer-uri (buffer <webview-buffer>))
-  (slot-ref buffer 'uri))
+  (let ((pointer (buffer-pointer buffer)))
+    ;; if the pointer is null fall back to the buffer name
+    (if (null-pointer? pointer)
+        (buffer-name buffer)
+        (pointer-uri pointer))))
 
 (define-method (set-buffer-uri! uri)
   (set-buffer-uri! uri (current-buffer)))
 
 (define-method (set-buffer-uri! uri (buffer <webview-buffer>))
-  (info (format #f "setting buffer uri to ~a" uri))
   (set-pointer-uri (buffer-pointer (current-buffer)) uri)
-  (slot-set! buffer 'uri uri))
+  ;; (slot-set! buffer 'uri uri)
+  )
 
 (define-method (buffer-render)
   (buffer-render (current-buffer)))

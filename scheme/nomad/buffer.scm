@@ -97,31 +97,26 @@
   "Pretty prints the buffers to echo area"
   (message "~a" (with-output-to-string (lambda _ (pretty-print (buffer-list))))))
 
-(define (set-webview-hooks buffer)
-  (add-hook! (buffer-enter-hook buffer)
-             webview-enter-hook)
-  (add-hook! (buffer-kill-hook buffer)
-             webview-kill-hook))
-
 (define-interactive (make-content-buffer #:optional (name (read-from-minibuffer "Name: "))
                                          (content (read-from-minibuffer "Content: ")))
   "Creates a new webview buffer with NAME and CONTENT"
   (let ((buffer (make-webcontent-buffer name content)))
-    (set! (buffer-pointer buffer)
-          (make-web-pointer))
-    (set-webview-hooks buffer)
-    (webview-enter-hook)
-    (buffer-render)
+    (with-buffer buffer
+      (set-buffer-pointer! buffer
+                           (make-web-pointer))
+      (set-buffer-hooks!)
+      (buffer-render)
+      (webview-enter-hook))
     buffer))
 
 (define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
   "Creates a new webview-bufer with URL"
   (let ((buffer (make-webview-buffer url)))
-    (set! (buffer-pointer buffer)
-          (make-web-pointer))
-    (set-webview-hooks buffer)
+    (with-buffer buffer
+      (set-buffer-pointer! (make-web-pointer))
+      (set-buffer-hooks!)
+      (set-buffer-uri! (prefix-url url)))
     (webview-enter-hook)
-    (set-buffer-uri! (prefix-url url))
     buffer))
 
 (define (webview-buffer? buffer)
