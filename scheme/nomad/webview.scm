@@ -55,15 +55,13 @@
             ))
 
 (define (webview-kill-hook)
-  (format #t
-          "Destroying web-view ~a~%"
-          (buffer-pointer (current-buffer)))
+  (info (format #f "Destroying web-view ~a" (buffer-pointer)))
   (destroy-pointer (buffer-pointer (current-buffer))))
 
 (define (webview-enter-hook)
-  (format #t
-          "Setting pointer to ~a~%"
-          (buffer-pointer (current-buffer)))
+  (info (format #f
+                 "Setting pointer to ~a"
+                 (buffer-pointer)))
   (switch-to-pointer (buffer-pointer (current-buffer))))
 
 ;;; <webview-buffer> extends <buffer> class
@@ -71,6 +69,9 @@
   (<buffer>)
   (content #:accessor buffer-content  #:init-keyword #:content)
   (pointer #:getter buffer-pointer #:setter set-buffer-pointer! #:init-keyword #:pointer #:init-value %null-pointer))
+
+(define-method (buffer-pointer)
+  (buffer-pointer (current-buffer)))
 
 (define-method (set-buffer-hooks!)
   (set-buffer-hooks! (current-buffer)))

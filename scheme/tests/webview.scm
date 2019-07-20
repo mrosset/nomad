@@ -42,7 +42,7 @@
               (test-equal "buffer-pointer"
                 %null-pointer
                 (buffer-pointer buffer))))
-(test-group "webcontent class"
+(test-group "webcontent buffer"
 1            (let ((buffer (make-webcontent-buffer "test-content")))
               (test-equal "buffer-name"
                 "test-content"
