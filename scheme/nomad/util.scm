@@ -44,13 +44,11 @@
 (define log-info? (make-fluid #t))
 
 ;; FIXME: maybe use the emacsy logger here instead?
-(define (info msg)
-  "Prints info: MSG to current output port"
+(define (info fmt . args)
+  "Formats ARGS with FMT to current output port"
   (when (fluid-ref log-info?)
-    (format #t
-            "INFO: ~a\n"
-            ;; (current-thread)
-            msg)))
+    (let ((ifmt (format #f "INFO: ~a~%" fmt)))
+      (apply format #t ifmt args))))
 
 (define (user-home)
   "Returns the current users home directory"
