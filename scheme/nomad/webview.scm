@@ -98,10 +98,10 @@
 (define-method (set-buffer-uri! uri)
   (set-buffer-uri! uri (current-buffer)))
 
-(define-method (set-buffer-uri! uri (buffer <webview-buffer>))
-  (set-pointer-uri (buffer-pointer (current-buffer)) uri)
-  ;; (slot-set! buffer 'uri uri)
-  )
+(define-method (set-buffer-uri! uri
+                                (buffer <webview-buffer>))
+  (set-pointer-uri (buffer-pointer (current-buffer))
+                   uri))
 
 (define-method (buffer-render)
   (buffer-render (current-buffer)))
