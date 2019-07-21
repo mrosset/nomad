@@ -102,8 +102,7 @@
   "Creates a new webview buffer with NAME and CONTENT"
   (let ((buffer (make-webcontent-buffer name content)))
     (with-buffer buffer
-      (set-buffer-pointer! buffer
-                           (make-web-pointer))
+      (set-buffer-pointer! (make-web-pointer))
       (set-buffer-hooks!)
       (buffer-render)
       (webview-enter-hook))
