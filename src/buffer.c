@@ -342,7 +342,7 @@ SCM_DEFINE (scm_nomad_notebook_insert, "notebook-insert", 2, 0, 0,
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   GtkNotebook *notebook = nomad_window_get_notebook (win);
   SCM pointer = scm_call_1 (
-      scm_c_public_ref ("nomad buffer", "buffer-pointer"), buffer);
+      scm_c_public_ref ("nomad webview", "buffer-pointer"), buffer);
   GtkWidget *widget = scm_to_pointer (pointer);
   gint page
       = gtk_notebook_insert_page (notebook, widget, tab_label_new (0), 0);

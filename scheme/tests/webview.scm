@@ -19,6 +19,7 @@
 (define-module (tests webview)
   #:use-module (emacsy emacsy)
   #:use-module (nomad webview)
+  #:use-module (oop goops)
   #:use-module (srfi srfi-64)
   #:use-module (system foreign)
   )
@@ -31,6 +32,16 @@
 
 (test-equal "don't prefix https" (prefix-url "https://127.0.0.1") "https://127.0.0.1")
 
+(test-group "scratch messages conversion"
+            (for-each (lambda (buffer)
+                        (test-equal "buffer type"
+                          <text-buffer>
+                          (class-of buffer))
+                        (test-equal "buffer conversion"
+                          <webview-buffer>
+                          (buffer->webview-buffer buffer)))
+                      (list scratch messages)))
+
 (test-group "webview class"
             (let ((buffer (make-webview-buffer "https://gnu.org/")))
               (test-equal "buffer-name"
@@ -42,8 +53,9 @@
               (test-equal "buffer-pointer"
                 %null-pointer
                 (buffer-pointer buffer))))
+
 (test-group "webcontent buffer"
-1            (let ((buffer (make-webcontent-buffer "test-content")))
+            (let ((buffer (make-webcontent-buffer "test-content")))
               (test-equal "buffer-name"
                 "test-content"
                 (buffer-name buffer))

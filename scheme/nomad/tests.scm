@@ -97,6 +97,7 @@
     "*scratch*"
     (begin (kill-buffer)
            (buffer-name (current-buffer))))
+  (update-buffers)
   (test-equal "tab and buffer synchronization"
     (length (buffer-list))
     (number-tabs))

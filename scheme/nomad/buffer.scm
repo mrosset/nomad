@@ -26,6 +26,7 @@
   #:use-module (nomad repl)
   #:use-module (nomad views)
   #:use-module (nomad webview)
+  #:use-module (oop goops)
   #:use-module (nomad window)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
@@ -129,31 +130,15 @@
           (set! iswebview #f))))
     iswebview))
 
-;; FIXME: This should probably not be needed. But if certain buffers
-;; are killed then they are no longer webviews. And so can not be
-;; switched to or managed properly. Also if a buffer has a webview
-;; then we need to synchronize buffer names to it's current URL
-;; (define (update-buffers)
-;;   "Synchronizes buffers"
-;;   (for-each (lambda (buffer)
-;;               (with-buffer buffer
-;;                 (when (and (or (string= (buffer-name (current-buffer))
-;;                                         "*Messages*")
-;;                                (string= (buffer-name (current-buffer))
-;;                                         "*scratch*"))
-;;                            (not (webview-buffer? (current-buffer))))
-;;                   (text-buffer->webview! buffer #f)
-;;                   (set! (buffer-modes (current-buffer))
-;;                         '())
-;;                   (when (not (notebook-contains buffer))
-;;                     (notebook-insert buffer 0))
-;;                   ;; FIXME: do not hard code HTML use SXML views to display *Messages* and
-;;                   ;; scratch and messages?
-;;                   (load-content (format #f
-;;                                         "<H2>~a<H2>"
-;;                                         (buffer-name (current-buffer)))))
-;;                 ;; (when (and (webview-buffer? buffer)
-;;                 ;;            (local-var 'update))
-;;                 ;;   (set-buffer-name! (primitive-buffer-uri (local-var 'web-buffer))))
-;;                 ))
-;;             (buffer-list)))
+;; FIXME: This should probably not be needed. But if certain buffers are
+;; killed then they are no longer webviews. And so can not be switched to or
+;; managed properly.
+(define (update-buffers)
+  "Converts buffers to <webview-buffer>"
+  (for-each (lambda (buffer)
+              (unless (eq? <webview-buffer> (class-of buffer))
+                (buffer->webview-buffer buffer)
+                (set-buffer-pointer! buffer (make-web-pointer))
+                (buffer-render buffer)
+                (notebook-insert buffer 0)))
+            (buffer-list)))

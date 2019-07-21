@@ -32,14 +32,14 @@
                       (dynamic-func "gtk_widget_destroy" libgtk)
                       '(*)))
 
-;;; webview constructor procedure
+;;; webview constructor function
 (define webkit-new
   (pointer->procedure '*
                       (dynamic-func "webkit_web_view_new" libwebkit)
                       '()))
 
 (define (webkit-uri view)
-  "Return VIEW's uri"
+  "Return VIEW's uri. If webkview does not have a uri returns #f"
   (let* ((proc (pointer->procedure '*
                                    (dynamic-func "webkit_web_view_get_uri" libwebkit)
                                    '(*)))

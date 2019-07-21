@@ -59,13 +59,9 @@ controls are accessible to scheme"
                (add-hook! shutdown-hook
                           (lambda _
                             (format #t "running shutdown hook...\n"))))
-  ;; (agenda-schedule-interval (lambda _
-  ;;                             (update-buffers))
-  ;;                           10)
+  (agenda-schedule-interval (lambda _
+                              (update-buffers))
+                            10)
   ;; Create one buffer
   (make-buffer default-home-page)
-  ;; (with-buffer scratch
-  ;;   (kill-buffer))
-  ;; (with-buffer messages
-  ;;   (kill-buffer))
   (run-hook startup-hook))
