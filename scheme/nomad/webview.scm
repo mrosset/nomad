@@ -90,6 +90,9 @@
 (define-method (buffer-sync (buffer <webview-buffer>))
   (set-buffer-name! (buffer-uri buffer)) buffer)
 
+(define-method (buffer-uri)
+  (buffer-uri (current-buffer)))
+
 (define-method (buffer-uri (buffer <webview-buffer>))
   (let ((pointer (buffer-pointer buffer)))
     ;; if the pointer is null fall back to the buffer name
@@ -121,8 +124,7 @@
                                  #:optional (content (format #f "<h2>~a</h2>" name)))
   "Constructs a new webcontent-buffer class"
   (let ((buffer (make <webview-buffer>
-                  #:name name #:uri (format #f "nomad:///content/~a" name) #:content
-                  content
+                  #:name name #:content content
                   #:keymap webview-map)))
     (add-buffer! buffer)
     buffer))
