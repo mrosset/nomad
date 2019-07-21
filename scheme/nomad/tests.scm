@@ -85,11 +85,14 @@
   (kill-some-buffers)
   (test-begin "graphical")
   ;; buffer-name
-  (test-equal "buffer name update"
-    "https://gnu.org/"
+  (test-equal "buffer name"
+    "gnu.org"
     (begin (make-buffer "gnu.org")
-           (buffer-sync (current-buffer))
            (buffer-name (current-buffer))))
+  (test-equal "browse"
+    "https://gnu.org/"
+    (begin (browse "gnu.org")
+           (buffer-uri)))
   (test-equal "notebook-contain"
     #t
     (notebook-contains (current-buffer)))
