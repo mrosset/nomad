@@ -58,7 +58,7 @@
 
 ;; Expands to current users home directory
 ;;
-;; FIXME: What's happening here? does this expand at compile time or runt
+;; FIXME: What's happening here? does this expand at compile time or run
 ;; time?
 (define ~ (make-fluid (getenv "HOME")))
 
