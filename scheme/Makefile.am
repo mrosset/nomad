@@ -65,6 +65,7 @@ TESTS =			\
 	tests/init.scm		\
 	tests/options.scm	\
 	tests/util.scm		\
+	tests/webkit.scm	\
 	tests/webview.scm
 
 TEST_EXTENSIONS = .scm
