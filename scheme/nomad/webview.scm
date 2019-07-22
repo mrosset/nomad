@@ -135,7 +135,7 @@
 
 ;; FIXME: use a webview-buffer class instead of converting text-buffers
 (define-public (buffer->webview-buffer buffer)
-  "Modify <text-buffer. object BUFFER to <webview-buffer> class. Returns the new class type"
+  "Modify <text-buffer> object BUFFER to <webview-buffer> class. Returns the new class type"
   (change-class buffer <webview-buffer>)
   (set-buffer-hooks! buffer)
   (set! (buffer-content buffer) (format #f "<h2>~a</h2>" (buffer-name buffer)))
