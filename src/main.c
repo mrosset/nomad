@@ -82,14 +82,15 @@ void
 inner_main (void *data, int argc, char **argv)
 {
   int err;
-  SCM socket, exists, url;
+  SCM socket, exists, url, app_id;
 
   err = emacsy_initialize (EMACSY_INTERACTIVE);
   if (err)
     exit (err);
 
   register_c_modules ();
-  app = nomad_app_new ();
+  app_id = scm_c_eval_string ("(option-app-id (command-line))");
+  app = nomad_app_new (scm_to_locale_string (app_id));
 
   // App signals
   g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
