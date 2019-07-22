@@ -36,8 +36,6 @@ struct _NomadBufferPrivate
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadBuffer, nomad_buffer, GTK_TYPE_BOX)
 
-SCM scm_nomad_make_buffer ();
-
 static void
 web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
                        gpointer user_data)

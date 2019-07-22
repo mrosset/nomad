@@ -32,11 +32,6 @@
 static void
 startup (GApplication *app, gpointer data)
 {
-
-  SCM socket = scm_c_eval_string ("(option-listen (command-line))");
-  // FIXME: users can start REPL via user-init-hook in $HOME/.nomad. Add
-  // documentation for $HOME/.nomad
-  scm_call_1 (scm_c_public_ref ("nomad repl", "server-start-coop"), socket);
 }
 
 static void
@@ -78,52 +73,26 @@ register_c_modules ()
   scm_c_use_module ("nomad repl");
 }
 
-void
+static void
 inner_main (void *data, int argc, char **argv)
 {
   int err;
-  SCM socket, exists, url, app_id;
 
   err = emacsy_initialize (EMACSY_INTERACTIVE);
   if (err)
     exit (err);
 
   register_c_modules ();
-  app_id = scm_c_eval_string ("(option-app-id (command-line))");
-  app = nomad_app_new (scm_to_locale_string (app_id));
+
+  app = nomad_app_new ();
 
   // App signals
   g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
   g_signal_connect (app, "shutdown", G_CALLBACK (shutdown), NULL);
-
   // We need to call init for so things like GDK_SCALE are used by our
   // GApplication
   scm_call_0 (scm_c_public_ref ("nomad init", "init"));
-
-  socket = scm_c_eval_string ("(option-listen (command-line))");
-  exists = scm_call_1 (scm_c_private_ref ("nomad repl", "socket-exists?"),
-                       socket);
-  url = scm_c_eval_string ("(option-url (command-line))");
-
-  // When requesting a client start a terminal REPL
-  if (scm_c_eval_string ("(option-client (command-line))") == SCM_BOOL_T)
-    {
-      scm_call_1 (scm_c_private_ref ("nomad repl", "client-start"), socket);
-      return;
-    }
-
-  // If a socket server exists already. Then reuse the existing nomad
-  // instance
-  if (exists == SCM_BOOL_T)
-    {
-      // FIXME: Convert this to use DBUS so running a REPL socket is not a
-      // requirement
-      scm_call_2 (scm_c_public_ref ("nomad buffer", "make-buffer-socket"), url,
-                  socket);
-      sleep (1);
-      return;
-    }
-  exit (g_application_run (G_APPLICATION (app), 0, NULL));
+  exit (g_application_run (G_APPLICATION (app), argc, argv));
 }
 
 static void

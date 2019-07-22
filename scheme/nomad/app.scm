@@ -34,8 +34,6 @@
 
 (define (shutdown)
   "Cleans up after guile and runs user shutdown hooks"
-  (format #t "shutting down repl...\n")
-  (server-force-delete (option-listen (command-line)))
   (run-hook shutdown-hook))
 
 (define (app-init)

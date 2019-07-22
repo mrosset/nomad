@@ -41,8 +41,7 @@
             read-history
             nomad-write-history
             add-to-history
-            session-file
-            shutdown))
+            session-file))
 
 (define startup-hook (make-hook))
 

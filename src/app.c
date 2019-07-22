@@ -31,6 +31,9 @@
 #define BUS_INTERFACE_NAME "org.gnu.nomad.webview"
 #define BUS_INTERFACE_PATH "/org/gnu/nomad/webview"
 
+// Declarations
+static void nomad_app_activate_cb (GApplication *self);
+
 static GDBusConnection *connection;
 static GDBusInterfaceInfo *interface;
 static guint bus_id;
@@ -58,10 +61,22 @@ struct _NomadApp
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadApp, nomad_app, GTK_TYPE_APPLICATION);
 
+// FIXME: if the application is not running this will get called and fail
+static void
+nomad_app_open_cb (GApplication *application, GFile **files, gint n_files,
+                   gchar *hint, gpointer user_data)
+{
+  const char *uri = g_file_get_uri (files[0]);
+  scm_call_1 (scm_c_public_ref ("nomad buffer", "make-buffer"),
+              scm_from_locale_string (uri));
+}
+
 static void
 nomad_app_init (NomadApp *self)
 {
   self->priv = nomad_app_get_instance_private (self);
+  g_signal_connect (G_APPLICATION (self), "open",
+                    G_CALLBACK (nomad_app_open_cb), NULL);
 }
 
 static void
@@ -113,29 +128,43 @@ on_name_lost (GDBusConnection *connection, const gchar *name)
 }
 
 static void
-nomad_app_activate (GApplication *self)
+nomad_app_activate_cb (GApplication *self)
 {
 
-  NomadAppWindow *win = nomad_app_window_new (NOMAD_APP (self));
-  gtk_window_present (GTK_WINDOW (win));
+  NomadAppWindow *win;
+  GList *windows = gtk_application_get_windows (GTK_APPLICATION (self));
+
+  // We can only have one window
+  if (g_list_length (windows) > 0)
+    {
+      g_warning ("application already started\n");
+      return;
+    }
+
+  win = nomad_app_window_new (NOMAD_APP (self));
+
   g_bus_own_name (G_BUS_TYPE_SESSION, BUS_INTERFACE_NAME,
                   G_BUS_NAME_OWNER_FLAGS_NONE,
                   (GBusAcquiredCallback)on_bus_acquired, NULL,
                   (GBusNameLostCallback)on_name_lost, NULL, NULL);
+
+  gtk_window_present (GTK_WINDOW (win));
   scm_call_0 (scm_c_public_ref ("nomad app", "app-init"));
 }
 
 static void
 nomad_app_class_init (NomadAppClass *class)
 {
-  G_APPLICATION_CLASS (class)->activate = nomad_app_activate;
+  G_APPLICATION_CLASS (class)->activate = nomad_app_activate_cb;
+  /* G_APPLICATION_CLASS (class)->open = nomad_app_open_cb; */
 }
 
 NomadApp *
-nomad_app_new (const char *id)
+nomad_app_new ()
 {
-  return g_object_new (NOMAD_APP_TYPE, "application-id", id, "flags",
-                       G_APPLICATION_HANDLES_OPEN, NULL);
+  return g_object_new (
+      NOMAD_APP_TYPE, "application-id", "org.gnu.nomad", "flags",
+      G_APPLICATION_HANDLES_OPEN | G_APPLICATION_CAN_OVERRIDE_APP_ID, NULL);
 }
 
 GtkWidget *
