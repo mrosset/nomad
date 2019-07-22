@@ -132,10 +132,10 @@ nomad_app_class_init (NomadAppClass *class)
 }
 
 NomadApp *
-nomad_app_new (void)
+nomad_app_new (const char *id)
 {
-  return g_object_new (NOMAD_APP_TYPE, "application-id", "org.gnu.nomad",
-                       "flags", G_APPLICATION_HANDLES_OPEN, NULL);
+  return g_object_new (NOMAD_APP_TYPE, "application-id", id, "flags",
+                       G_APPLICATION_HANDLES_OPEN, NULL);
 }
 
 GtkWidget *
@@ -312,11 +312,18 @@ SCM_DEFINE (scm_nomad_dbus_test, "dbus-test", 0, 0, 0, (),
   return SCM_UNDEFINED;
 }
 
+SCM_DEFINE (scm_nomad_application_id, "application-id", 0, 0, 0, (),
+            "Return string id of nomad application instance")
+{
+  return scm_from_locale_string (
+      g_application_get_application_id (G_APPLICATION (app)));
+}
+
 void
 nomad_app_register_functions (void *data)
 {
 #include "app.x"
   scm_c_export ("nomad-version", "start-browser", "restart-nomad",
                 "kill-nomad", "buffer-alist", "main-thread", "dbus-test",
-                NULL);
+                "application-id", NULL);
 }

@@ -23,7 +23,7 @@
 
 (define test-command-line '("./nomad" "https://gnu.org" "--listen" "/tmp/test"))
 (define test-arg0 '("./nomad"))
-(define test-client '("./nomad" "-c"))
+(define test-client '("./nomad" "--app-id" "org.devel.nomad" "-c"))
 
 (test-begin "options")
 
@@ -31,6 +31,10 @@
 
 (test-equal "option url"
   (option-url test-command-line) "https://gnu.org")
+
+(test-equal "appid" "org.gnu.nomad" (option-app-id test-arg0))
+
+(test-equal "devel app id" "org.devel.nomad" (option-app-id test-client))
 
 (test-assert "option client" (option-client test-client))
 
