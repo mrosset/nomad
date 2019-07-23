@@ -28,7 +28,10 @@
 ;;; options
 (define option-spec
        '((version (single-char #\v) (value #f))
-         (help    (single-char #\h) (value #f))))
+         (help (single-char #\h) (value #f))
+         (listen (single-char #\L) (value #f))
+         (client (single-char #\c) (value #f))
+         (app-id (single-char #\I) (value #f))))
 
 (define options (getopt-long (command-line) option-spec))
 
@@ -42,7 +45,7 @@
   (let ((help (option-ref options 'help #f))
         (version (option-ref options 'version #f)))
     (cond
-     (version (display "2\n"))
+     (version (display "0.9\n"))
      (help (display "This is alpha software; there is no help. You're
 welcome!\n"))
      (#t
