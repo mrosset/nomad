@@ -1,3 +1,6 @@
+#!/home/nly/.guix-profile/bin/guile -s
+!#
+
 ;; Nomad --- Extensible web browser
 
 ;; Copyright (C) 2019  Amar Singh
@@ -22,15 +25,32 @@
 (define-module (nomad)
   #:use-module (ice-9 getopt-long))
 
+;;; options
+(define option-spec
+       '((version (single-char #\v) (value #f))
+         (help    (single-char #\h) (value #f))))
+
+(define options (getopt-long (command-line) option-spec))
+
 (define scm (current-filename))
 
 (define src (dirname (dirname scm)))
 
 (define (src/ str) (string-append src "/" str))
 
-(system (string-join (list (src/ "pre-inst-env") (src/ "src/nomad") "-c '(boot-nomad)'")
-                     " "))
+(define* (main #:optional args)
+  (let ((help (option-ref options 'help #f))
+        (version (option-ref options 'version #f)))
+    (cond
+     (version (display "2\n"))
+     (help (display "This is alpha software; there is no help. You're
+welcome!\n"))
+     (#t
+      (begin
+        (system (string-join (list (src/ "src/nomad") "-c '(boot-nomad)'")
+                             " "))
+        ;; test
+        (display (command-line))
+        (newline))))))
 
-;;; test
-(display (command-line))
-(newline)
+(main)
