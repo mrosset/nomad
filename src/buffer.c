@@ -217,9 +217,12 @@ SCM_DEFINE (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
               notebook, view,
               tab_label_new (gtk_notebook_get_n_pages (notebook)));
         }
-      g_print ("%d SWITCH: %p\n", page, view);
-      gtk_notebook_set_current_page (notebook, page);
       gtk_widget_show_all (view);
+      gtk_notebook_set_current_page (notebook, page);
+      if (page != gtk_notebook_get_current_page (notebook))
+        {
+          g_warning ("Paged not switched to %d", page);
+        }
     }
   else
     g_warning ("warning: not given a pointer\n");
