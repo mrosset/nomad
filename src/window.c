@@ -634,12 +634,9 @@ nomad_app_window_new (NomadApp *app)
 WebKitWebView *
 nomad_app_window_get_webview (NomadAppWindow *self)
 {
-  NomadBuffer *buf = nomad_app_window_get_buffer (self);
-  if (!buf)
-    {
-      return NULL;
-    }
-  return nomad_buffer_get_view (buf);
+  GtkNotebook *notebook = nomad_window_get_notebook (self);
+  int page = gtk_notebook_get_current_page (notebook);
+  return WEBKIT_WEB_VIEW (gtk_notebook_get_nth_page (notebook, page));
 }
 
 SCM_DEFINE (scm_nomad_window_focus, "webview-focus", 0, 0, 0, (),
