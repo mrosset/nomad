@@ -16,37 +16,27 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIRS = guile scheme ext src
+##ACLOCAL_AMFLAG = -I m4
 
-ACLOCAL_AMFLAGS = -I m4
+AM_CFLAGS = -Wall -Werror
 
-EXTRA_DIST = init.el
-## FIXME this is hackish. promote init.el to emacs package
-nomaddir = "$(datadir)/nomad"
-nomad_DATA = init.el
+libguile_nomad_LTLIBRARIES = libguile-nomad.la
+libguile_nomaddir = $(libexecdir)/nomad/
+libguile_nomad_la_SOURCES = extension.c
+libguile_nomad_la_CFLAGS = $(AM_CFLAGS) $(GUILE_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS)
+libguile_nomad_la_LIBADD = $(GUILE_LIBS) $(GLIB_LIBS) $(GTK_LIBS)
+libguile_nomad_la_LDFLAGS = -module -avoid-version -no-undefined
 
-dist_doc_DATA = README
+DOT_X_FILES = extension.x
 
-clean-scheme:
-	$(MAKE) -C ./scheme clean
+BUILT_SOURCES = $(DOT_X_FILES)
 
-test: check
-	$(MAKE) -C ./src test
+CLEANFILES = $(DOT_X_FILES)
 
-test-local-guix:
-	guix build -f ./guix-local.scm
+snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(AM_CFLAGS) $(libguile_nomad_la_CFLAGS)
 
-format:
-	$(MAKE) -C src format
+SUFFIXES = .x
 
-rebuild: clean all
-
-CLEANFILES =		\
-	check-guile.log \
-	check-guile.trs \
-	test-suite.log
-
-DISTCLEANFILES = check-guile.log
-
-attach:
-	$(MAKE) -C docker attach
+.c.x:
+	@echo "  SNARF" $@;
+	@$(GUILE_SNARF) -o $@ $< $(snarfcppopts)

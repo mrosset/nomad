@@ -59,6 +59,7 @@ SOURCES =			\
 
 
 TESTS =			\
+	tests/lib.scm		\
 	tests/buffer.scm	\
 	tests/download.scm	\
 	tests/eval.scm		\
