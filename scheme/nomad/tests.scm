@@ -84,7 +84,7 @@
   (test-runner-factory html-simple-runner)
   (kill-some-buffers)
   (test-begin "graphical")
-  ;; buffer-name
+  buffer-name
   (test-equal "buffer name"
     "gnu.org"
     (begin (make-buffer "gnu.org")
@@ -100,24 +100,6 @@
     "*scratch*"
     (begin (kill-buffer)
            (buffer-name (current-buffer))))
-  (update-buffers)
-  (test-equal "tab and buffer synchronization"
-    (length (buffer-list))
-    (number-tabs))
-  (do ((i 0
-          (+ 1 i)))
-      ((> i 10))
-    (make-content-buffer (number->string i)
-                         (format #f "<h2>ID: ~a</h2>" i)))
-  ;; visit each buffer
-  (for-each (lambda (buffer)
-              (next-buffer))
-            (buffer-list))
-  (kill-some-buffers)
-  ;; total tabs equals total buffers
-  (test-equal "tab and buffer synchronization"
-    (length (buffer-list))
-    (number-tabs))
   (test-end)
   ;; Display test results in a content buffer
   (let* ((log-file "graphical.log")

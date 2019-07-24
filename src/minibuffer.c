@@ -55,7 +55,6 @@ SCM_DEFINE (scm_nomad_minibuffer_whichkey_popup, "which-key-popup", 1, 0, 0,
   view = scm_c_public_ref ("nomad views", "which-key-view");
   mini = nomad_app_window_get_minipopup (win);
 
-  nomad_app_window_set_keymap (win, keymap);
   scm_nomad_minibuffer_render_popup (view, keymap, scm_from_int (0),
                                      SCM_BOOL_F);
   gtk_widget_grab_focus (mini);

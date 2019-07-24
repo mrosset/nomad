@@ -38,7 +38,7 @@ typedef struct _NomadAppWindowPrivate NomadAppWindowPrivate;
 
 struct _NomadAppWindowPrivate
 {
-  GtkBox *box;
+  GtkWidget *box;
   GtkWidget *notebook;
   GtkWidget *pane;
   GtkWidget *read_line;
@@ -48,8 +48,6 @@ struct _NomadAppWindowPrivate
   GtkWidget *mini_popup;
   GtkWidget *mini_frame;
   GtkWidget *overlay;
-  SCM keymap;
-  WebKitWebView *web_view;
 };
 
 struct _NomadAppWindow
@@ -189,104 +187,6 @@ initialize_web_extensions (WebKitWebContext *context, gpointer user_data)
       context, g_variant_new_uint32 (unique_id++));
 }
 
-void
-pane_size_allocate_cb (GtkWidget *widget, gpointer data)
-{
-  gint h = gtk_widget_get_allocated_height (widget);
-  gtk_paned_set_position (GTK_PANED (widget), (h - (h / 5)));
-}
-
-gboolean
-minipopup_focus_out_event_cb (GtkWidget *widget, GdkEvent *event,
-                              gpointer user_data)
-{
-  NomadAppWindowPrivate *priv;
-  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
-  gtk_widget_hide (widget);
-  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
-  return FALSE;
-}
-
-gboolean
-minipopup_focus_in_event_cb (GtkWidget *widget, GdkEvent *event,
-                             gpointer user_data)
-{
-  NomadAppWindowPrivate *priv;
-  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
-
-  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "C-g");
-  gtk_widget_show (widget);
-  return FALSE;
-}
-
-gboolean
-read_line_focus_in_event_cb (GtkWidget *widget, GdkEvent *event,
-                             gpointer user_data)
-{
-  NomadAppWindowPrivate *priv;
-  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
-
-  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "M-x ");
-  clear_read_line_buffer (widget);
-
-  return FALSE;
-}
-
-gboolean
-read_line_focus_out_event_cb (GtkWidget *widget, GdkEvent *event,
-                              gpointer user_data)
-{
-  NomadAppWindowPrivate *priv;
-  priv = nomad_app_window_get_instance_private (NOMAD_APP_WINDOW (user_data));
-  if (gtk_widget_is_focus (priv->mini_popup))
-    {
-      return TRUE;
-    }
-  gtk_label_set_text (GTK_LABEL (priv->mini_buffer_label), "");
-  /* gtk_widget_hide (priv->mini_popup); */
-
-  /* g_timeout_add (3500, clear_read_line_buffer, (gpointer)widget); */
-  return FALSE;
-}
-
-void
-read_line_eval (GtkWidget *widget, gpointer user_data)
-{
-  SCM results;
-  SCM msg;
-  GtkTextBuffer *buf;
-  GtkTextIter start, end;
-  gchar *input;
-
-  scm_dynwind_begin (0);
-  buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
-
-  gtk_text_buffer_get_start_iter (buf, &start);
-  gtk_text_buffer_get_end_iter (buf, &end);
-
-  input = gtk_text_buffer_get_text (buf, &start, &end, TRUE);
-
-  results = scm_call_1 (scm_c_public_ref ("nomad eval", "input-eval"),
-                        scm_from_locale_string (input));
-
-  if (scm_is_string (scm_c_value_ref (results, 1)))
-    {
-      msg = scm_c_value_ref (results, 1);
-    }
-  else
-    {
-      msg = scm_c_value_ref (results, 0);
-    }
-
-  gtk_text_buffer_set_text (GTK_TEXT_BUFFER (buf), scm_to_locale_string (msg),
-                            -1);
-
-  nomad_buffer_grab_view (
-      nomad_app_window_get_buffer (NOMAD_APP_WINDOW (user_data)));
-
-  scm_dynwind_end ();
-}
-
 GtkSourceBuffer *
 text_buffer_new (const char *theme, const char *lang)
 {
@@ -305,17 +205,6 @@ text_buffer_new (const char *theme, const char *lang)
   gtk_source_buffer_set_language (buf, sl);
   gtk_source_buffer_set_style_scheme (buf, ss);
   return buf;
-}
-
-static void
-mini_popup_clear (GtkWidget *widget)
-{
-  GList *children, *iter;
-  children = gtk_container_get_children (GTK_CONTAINER (widget));
-  for (iter = children; iter != NULL; iter = g_list_next (iter))
-    gtk_widget_destroy (GTK_WIDGET (iter->data));
-  g_list_free (children);
-  scm_c_eval_string ("(set! selected 0)");
 }
 
 gboolean
@@ -471,33 +360,22 @@ idle_update_echo_area (void *user_data)
 static void
 nomad_app_window_init (NomadAppWindow *self)
 {
-  NomadAppWindowPrivate *priv;
-  WebKitCookieManager *cookie_manager;
-  char *c_home_page, *c_user_cookie_file;
-
-  gtk_widget_init_template (GTK_WIDGET (self));
-
-  priv = nomad_app_window_get_instance_private (self);
+  NomadAppWindowPrivate *priv = nomad_app_window_get_instance_private (self);
   self->priv = priv;
 
-  scm_dynwind_begin (0);
+  // init fields
+  priv->overlay = gtk_overlay_new ();
+  priv->box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  priv->notebook = gtk_notebook_new ();
+  priv->modeline = gtk_source_view_new ();
+  priv->read_line = gtk_source_view_new ();
 
-  priv->keymap = SCM_BOOL_F;
+  // tabs
+  gtk_notebook_set_show_tabs (GTK_NOTEBOOK (priv->notebook), FALSE);
 
-  c_home_page = scm_to_locale_string (
-      scm_c_public_ref ("nomad webview", "default-home-page"));
+  // modeline and readline
+  gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (priv->modeline), FALSE);
 
-  c_user_cookie_file = scm_to_locale_string (
-      scm_c_public_ref ("nomad init", "user-cookie-file"));
-
-  // Connect web extension signals before any new WebViews
-  g_signal_connect (webkit_web_context_get_default (),
-                    "initialize-web-extensions",
-                    G_CALLBACK (initialize_web_extensions), NULL);
-
-  nomad_app_window_overlay_init (self);
-
-  // Minbuf
   gtk_text_view_set_buffer (
       GTK_TEXT_VIEW (priv->read_line),
       GTK_TEXT_BUFFER (text_buffer_new ("classic", "scheme")));
@@ -506,30 +384,26 @@ nomad_app_window_init (NomadAppWindow *self)
       GTK_TEXT_VIEW (priv->modeline),
       GTK_TEXT_BUFFER (text_buffer_new ("oblivion", "scheme")));
 
-  // Signals
+  // add controls
+  gtk_container_add (GTK_CONTAINER (self), priv->overlay);
+  gtk_container_add (GTK_CONTAINER (priv->overlay), priv->box);
+
+  gtk_box_pack_start (GTK_BOX (priv->box), priv->notebook, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (priv->box), priv->modeline, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (priv->box), priv->read_line, FALSE, FALSE, 0);
+
+  // processes
 
   // when idle, call emacsy-tick
   g_timeout_add_full (G_PRIORITY_LOW, 50, idle_update_emacsy, NULL, NULL);
   // While idle, update the modeline
   g_timeout_add_full (G_PRIORITY_LOW, 50, idle_update_modeline, self, NULL);
 
-  // Main keypress
+  // signals
   g_signal_connect (self, "key-press-event", G_CALLBACK (window_key_press_cb),
                     (gpointer)self);
 
-  // Cookies
-  cookie_manager = webkit_web_context_get_cookie_manager (
-      webkit_web_context_get_default ());
-
-  webkit_cookie_manager_set_persistent_storage (
-      cookie_manager, c_user_cookie_file,
-      WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE);
-
-  gtk_widget_show (priv->read_line);
-  // Unwind
-  scm_dynwind_free (c_home_page);
-  scm_dynwind_free (c_user_cookie_file);
-  scm_dynwind_end ();
+  gtk_widget_show_all (GTK_WIDGET (self));
 }
 
 GtkNotebook *
@@ -571,40 +445,6 @@ nomad_app_window_get_buffer (NomadAppWindow *self)
   return NOMAD_BUFFER (w);
 }
 
-void
-nomad_app_window_set_keymap (NomadAppWindow *self, SCM keymap)
-{
-  self->priv->keymap = keymap;
-}
-
-void
-nomad_app_window_remove_buffer (NomadAppWindow *self)
-{
-  GtkNotebook *notebook = GTK_NOTEBOOK (self->priv->notebook);
-  if (gtk_notebook_get_n_pages (notebook) > 1)
-    {
-      gtk_notebook_remove_page (notebook,
-                                gtk_notebook_get_current_page (notebook));
-    }
-}
-
-gint
-nomad_app_window_add_buffer (NomadAppWindow *self, NomadBuffer *buf)
-{
-  NomadAppWindowPrivate *priv = self->priv;
-  gint page = gtk_notebook_append_page (GTK_NOTEBOOK (priv->notebook),
-                                        GTK_WIDGET (buf), NULL);
-  gtk_widget_show_all (GTK_WIDGET (buf));
-  gtk_notebook_set_current_page (GTK_NOTEBOOK (priv->notebook), page);
-  return page;
-}
-
-GList *
-nomad_window_get_tabs (NomadAppWindow *self)
-{
-  return gtk_container_get_children (GTK_CONTAINER (self->priv->notebook));
-}
-
 static void
 nomad_app_window_class_init (NomadAppWindowClass *class)
 {
@@ -639,18 +479,6 @@ nomad_app_window_get_webview (NomadAppWindow *self)
   return WEBKIT_WEB_VIEW (gtk_notebook_get_nth_page (notebook, page));
 }
 
-SCM_DEFINE (scm_nomad_window_focus, "webview-focus", 0, 0, 0, (),
-            "Switch focus to WebView")
-{
-  GtkWidget *view = GTK_WIDGET (nomad_app_get_webview (app));
-  if (gtk_widget_has_focus (view))
-    {
-      return SCM_BOOL_F;
-    }
-  gtk_widget_grab_focus (view);
-  return SCM_BOOL_T;
-}
-
 SCM_DEFINE (scm_nomad_window_show_tabs, "toggle-tabs", 0, 0, 0, (),
             "Turns notebook tabs on or off")
 {
@@ -666,6 +494,6 @@ void
 nomad_window_register_functions (void *data)
 {
 #include "window.x"
-  scm_c_export ("webview-focus", "toggle-tabs", NULL);
+  scm_c_export ("toggle-tabs", NULL);
   scm_c_register_interactive ("toggle-tabs");
 }

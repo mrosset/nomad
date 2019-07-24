@@ -98,14 +98,14 @@
     ;; if the pointer is null fall back to the buffer name
     (if (null-pointer? pointer)
         (buffer-name buffer)
-        (pointer-uri pointer))))
+        (webkit-uri pointer))))
 
 (define-method (set-buffer-uri! uri)
   (set-buffer-uri! uri (current-buffer)))
 
 (define-method (set-buffer-uri! uri
                                 (buffer <webview-buffer>))
-  (set-pointer-uri (buffer-pointer (current-buffer))
+  (webkit-load-uri (buffer-pointer (current-buffer))
                    uri))
 
 (define-method (buffer-render)

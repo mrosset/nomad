@@ -256,25 +256,6 @@ nomad_app_remove_buffer (NomadApp *app, NomadBuffer *buf)
 {
 }
 
-SCM
-nomad_app_get_buffers (NomadApp *app)
-{
-  SCM list = scm_c_eval_string ("(make-list 0)");
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  GList *tabs = nomad_window_get_tabs (win);
-  int count = 0;
-
-  for (GList *l = tabs; l != NULL; l = l->next)
-    {
-      SCM obj = nomad_app_make_buffer (l->data);
-      SCM pair = scm_cons (scm_from_int (count), obj);
-      list = scm_append (scm_list_2 (list, scm_list_1 (pair)));
-      count++;
-    }
-
-  return list;
-}
-
 // scheme
 SCM_DEFINE (scm_nomad_version, "nomad-version", 0, 0, 0, (),
             "Return string describing the version of Nomad that is running")
@@ -315,12 +296,6 @@ SCM_DEFINE (scm_nomad_get_main_thread, "main-thread", 0, 0, 0, (),
 
   wait_for_response (request);
   return request->response;
-}
-
-SCM_DEFINE (scm_nomad_buffer_list, "buffer-alist", 0, 0, 0, (),
-            "Return an alist of existing buffers.")
-{
-  return nomad_app_get_buffers (app);
 }
 
 // FIXME: invoke on main thread?

@@ -203,42 +203,27 @@ SCM_DEFINE (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
             (SCM pointer), "Sets the current tab to the given POINTER")
 {
   gint page;
-  GtkWidget *buf;
+  GtkWidget *view;
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
   GtkNotebook *notebook = nomad_window_get_notebook (win);
 
   if (SCM_POINTER_P (pointer))
     {
-      buf = GTK_WIDGET (scm_to_pointer (pointer));
-      page = gtk_notebook_page_num (notebook, buf);
+      view = scm_to_pointer (pointer);
+      page = gtk_notebook_page_num (notebook, view);
       if (page < 0)
         {
           page = gtk_notebook_append_page (
-              notebook, buf,
+              notebook, view,
               tab_label_new (gtk_notebook_get_n_pages (notebook)));
         }
+      g_print ("%d SWITCH: %p\n", page, view);
       gtk_notebook_set_current_page (notebook, page);
-      gtk_widget_show_all (buf);
+      gtk_widget_show_all (view);
     }
   else
     g_warning ("warning: not given a pointer\n");
   return SCM_UNSPECIFIED;
-}
-
-gboolean
-next_buffer_invoke (void *data)
-{
-  nomad_app_next_buffer (NOMAD_APP (app));
-  return FALSE;
-}
-
-gboolean
-prev_buffer_invoke (void *data)
-{
-  struct request *request = data;
-  nomad_app_prev_buffer (NOMAD_APP (app));
-  request->done = TRUE;
-  return FALSE;
 }
 
 SCM_DEFINE (scm_nomad_buffer_title, "buffer-title", 1, 0, 0, (SCM buffer),
@@ -312,7 +297,7 @@ SCM_DEFINE (scm_nomad_number_tabs, "number-tabs", 0, 0, 0, (),
             "Return the total number of tabs")
 {
   NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
-  GtkNotebook *notebook = nomad_window_get_notebook (win);
+  GtkNotebook *notebook = GTK_NOTEBOOK (nomad_window_get_notebook (win));
   return scm_from_int (gtk_notebook_get_n_pages (notebook));
 }
 

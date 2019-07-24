@@ -37,8 +37,9 @@
                 (pointer? view))
               (test-assert "view is not null"
                 (not (null-pointer? view)))
-              (test-assert "no uri"
-                (not (webkit-uri view)))
+              (test-equal "no uri"
+                "NULL"
+                (webkit-uri view))
               (test-equal "load uri"
                 "https://gnu.org/"
                 (begin (webkit-load-uri view "https://gnu.org")

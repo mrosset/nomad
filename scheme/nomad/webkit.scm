@@ -45,7 +45,7 @@
                                    '(*)))
          (return-p (proc view)))
     (if (null-pointer? return-p)
-        #f
+        "NULL"
         (pointer->string return-p))))
 
 (define (webkit-load-uri view uri)

@@ -17,7 +17,6 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad buffer)
-  #:use-module (emacsy buffer)
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
@@ -25,16 +24,16 @@
   #:use-module (nomad minibuffer)
   #:use-module (nomad repl)
   #:use-module (nomad views)
+  #:use-module (nomad webkit)
   #:use-module (nomad webview)
-  #:use-module (oop goops)
   #:use-module (nomad window)
+  #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
             webview-onload
             update-buffers
             buffers-contain?
             buffer-protected?
-            buffer-uri
             buffers->uri))
 
 (define protected-buffers '("*scratch*" "*Messages*"))
@@ -61,11 +60,6 @@
                 (switch-to-buffer buffer)
                 (kill-buffer)))
             (buffer-list)))
-
-(define (buffer-uri buffer)
-  "Returns the webview URI for BUFFER"
-  (with-buffer buffer
-    (local-var 'uri)))
 
 (define (buffers-contain? uri)
   "Returns #t of buffer-list contains URI"
@@ -113,10 +107,10 @@
   "Creates a new webview-bufer with URL"
   (let ((buffer (make-webview-buffer url)))
     (with-buffer buffer
-      (set-buffer-pointer! (make-web-pointer))
-      (set-buffer-hooks!)
-      (set-buffer-uri! (prefix-url url)))
-    (webview-enter-hook)
+                 (set-buffer-pointer! (webkit-new))
+                 (set-buffer-hooks!)
+                 (set-buffer-uri! (prefix-url url))
+                 (switch-to-buffer buffer))
     buffer))
 
 (define (webview-buffer? buffer)
