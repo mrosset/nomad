@@ -36,6 +36,7 @@ SUFFIXES = .scm .go
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILD) compile $(GUILE_WARNINGS) -o "$@" "$<"
 
 SOURCES =			\
+	nomad/lib.scm		\
 	nomad/app.scm		\
 	nomad/bookmark.scm	\
 	nomad/buffer.scm	\
@@ -43,7 +44,7 @@ SOURCES =			\
 	nomad/doc.scm		\
 	nomad/eval.scm		\
 	nomad/events.scm	\
-	nomad/frame.scm	\
+	nomad/frame.scm		\
 	nomad/html.scm		\
 	nomad/init.scm		\
 	nomad/minibuffer.scm	\
@@ -51,9 +52,9 @@ SOURCES =			\
 	nomad/repl.scm		\
 	nomad/shroud.scm	\
 	nomad/server.scm	\
-	nomad/tests.scm	\
+	nomad/tests.scm		\
 	nomad/util.scm		\
-	nomad/views.scm	\
+	nomad/views.scm		\
 	nomad/webview.scm	\
 	nomad/window.scm
 
