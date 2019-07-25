@@ -440,20 +440,9 @@ static void
 nomad_app_window_class_init (NomadAppWindowClass *class)
 {
 
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
-                                               "/org/gnu/nomad/window.ui");
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, pane);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, box);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, read_line);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, modeline);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, notebook);
-  gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
-                                                NomadAppWindow, overlay);
+  /* gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
+   *                                              "/org/gnu/nomad/window.ui");
+   */
 }
 
 NomadAppWindow *
