@@ -18,12 +18,10 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "app.h"
-#include "buffer.h"
-#include "emacsy.h"
-#include "frame.h"
-#include "minibuffer.h"
-#include "util.h"
+#include "../guile/app.h"
+#include "../guile/frame.h"
+#include "../guile/util.h"
+#include <emacsy.h>
 #include <gtk/gtk.h>
 #include <libguile.h>
 #include <libguile/hooks.h>
@@ -44,17 +42,6 @@ register_c_modules ()
 {
   // Modules that are used before defining have a scheme file. This
   // allows mixing pure scheme with C scheme.
-  scm_c_use_module ("nomad app");
-  scm_c_define_module ("nomad app", nomad_app_register_functions, NULL);
-
-  scm_c_use_module ("nomad frame");
-  scm_c_define_module ("nomad frame", nomad_frame_register_functions, NULL);
-
-  scm_c_use_module ("nomad minibuffer");
-  scm_c_define_module ("nomad minibuffer", nomad_minibuffer_register_functions,
-                       NULL);
-
-  scm_c_define_module ("nomad util", nomad_util_register_functions, NULL);
 
   // Use essential modules
   scm_c_use_module ("nomad init");

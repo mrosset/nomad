@@ -30,7 +30,7 @@ dist_doc_DATA = README
 clean-scheme:
 	$(MAKE) -C ./scheme clean
 
-test: check
+test: all
 	$(MAKE) -C ./src test
 
 test-local-guix:

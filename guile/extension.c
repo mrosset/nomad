@@ -19,6 +19,8 @@
  */
 
 #include "frame.h"
+#include "minibuffer.h"
+#include "util.h"
 #include "webkit.h"
 #include <glib.h>
 #include <gtk/gtk.h>
@@ -43,6 +45,10 @@ void
 init_guile_nomad ()
 {
   scm_c_define_module ("nomad lib", register_function, NULL);
+  scm_c_define_module ("nomad app", nomad_app_register_function, NULL);
   scm_c_define_module ("nomad webkit", nomad_webkit_register_function, NULL);
   scm_c_define_module ("nomad frame", nomad_frame_register_function, NULL);
+  /* scm_c_define_module ("nomad minibuffer",
+   * nomad_minibuffer_register_function, NULL); */
+  scm_c_define_module ("nomad util", nomad_util_register_function, NULL);
 }

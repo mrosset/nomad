@@ -21,7 +21,6 @@
 #ifndef __NOMADAPP_H
 #define __NOMADAPP_H
 
-#include "buffer.h"
 #include <gtk/gtk.h>
 #include <libguile.h>
 #include <webkit2/webkit2.h>
@@ -36,5 +35,5 @@ GtkWindow *nomad_app_get_frame ();
 GtkWidget *nomad_app_get_first_buffer (NomadApp *app);
 SCM nomad_app_get_buffers (NomadApp *app);
 GList *nomad_app_get_buffer_list (NomadApp *app);
-void nomad_app_register_functions (void *data);
+void nomad_app_register_function (void *data);
 #endif /* __NOMADAPP_H */

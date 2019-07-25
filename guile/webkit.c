@@ -18,8 +18,7 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../src/app.h"
-#include "request.h"
+#include "app.h"
 #include <libguile.h>
 #include <webkit2/webkit2.h>
 
@@ -100,44 +99,6 @@ SCM_DEFINE_PUBLIC (scm_nomad_scroll_down, "scroll-down", 0, 0, 0, (), "")
 {
   g_main_context_invoke (NULL, scroll_down_invoke, NULL);
   return SCM_UNDEFINED;
-}
-
-gboolean
-web_view_back_invoke (void *data)
-{
-  struct request *request = data;
-  NomadApp *app = nomad_app_get_default ();
-
-  WebKitWebView *web_view = nomad_app_get_webview (app);
-
-  if (web_view == NULL)
-    {
-      request->done = TRUE;
-      return FALSE;
-    }
-
-  if (!webkit_web_view_can_go_back (web_view))
-    {
-      request->done = TRUE;
-      return FALSE;
-    }
-  webkit_web_view_go_back (web_view);
-  request->response = SCM_BOOL_T;
-  request->done = TRUE;
-  return FALSE;
-}
-
-SCM_DEFINE_PUBLIC (
-    scm_nomad_webkit_go_back, "webview-go-back", 0, 0, 0, (),
-    "Request WebKitView to go back in history. If WebView can not be found or "
-    "there is no back history then it return #f. Otherwise it returns #t.")
-{
-  struct request *request
-      = &(struct request){ .response = SCM_BOOL_F, .done = FALSE };
-
-  g_main_context_invoke (NULL, web_view_back_invoke, request);
-  wait_for_response (request);
-  return request->response;
 }
 
 // FIXME: invoke on main thread

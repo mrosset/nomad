@@ -79,7 +79,7 @@ scm_c_make_command (const char *key)
 }
 
 void
-nomad_util_register_functions (void *data)
+nomad_util_register_function (void *data)
 {
 #ifndef SCM_MAGIC_SNARFER
 #include "util.x"

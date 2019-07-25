@@ -18,65 +18,55 @@
 
 AUTOMAKE_OPTIONS = gnu
 
-bin_PROGRAMS = nomad
+## bin_PROGRAMS = nomad
 
-.PHONY: format
+bin_SCRIPTS = nomad
 
-G_RESOURCES = gresource.xml window.ui buffer.ui
-EXTRA_DIST = $(G_RESOURCES)
+CLEANFILES = resources.c
+
+G_RESOURCES = gresource.xml
+EXTRA_DIST = $(G_RESOURCES) nomad.in
+
+do_subst = sed -e 's,[@]GUILE[@],$(GUILE),g'
+
+nomad: nomad.in Makefile
+	$(do_subst) < $(srcdir)/nomad.in > $@
+	chmod +x nomad
 
 nodist_nomad_SOURCES = resources.c
 
-nomad_SOURCES =		\
-	app.c		\
-	buffer.c	\
-	main.c		\
-	minibuffer.c	\
-	util.c		\
-	frame.c
+nomad_SOURCES =	main.c
 
 moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
 
 ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 
 AM_CFLAGS = -Wall -Werror -Wno-unused-function -Wdeclaration-after-statement	\
-	-Wno-deprecated-declarations						\
-	$(EMACSY_CFLAGS)							\
+	-Wno-deprecated-declarations
+
+nomad_CFLAGS= $(EMACSY_CFLAGS)							\
 	$(GTK_CFLAGS)								\
 	$(GUILE_CFLAGS)								\
 	$(WEBKIT_CFLAGS)							\
 	$(GTK_SOURCEVIEW_CFLAGS)						\
-	-DNOMAD_SOCKET_FILE=\""/tmp/nomad-socket"\"				\
 	-DNOMAD_GUILE_LOAD_PATH=\""$(moddir)"\"					\
 	-DNOMAD_GUILE_LOAD_COMPILED_PATH=\""$(ccachedir)"\"			\
 	-DNOMAD_WEB_EXTENSIONS_DIR=\""$(libexecdir)/nomad/"\"			\
 	-DNOMAD_DATAROOT_DIR=\""$(datarootdir)/nomad/"\"
 
-AM_LDFLAGS = -export-dynamic
+AM_LDFLAGS = -export-dynamic -lguile-nomad
 
-nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(EMACSY_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
+nomad_LDADD = -L../guile/.libs $(GTK_LIBS) $(GUILE_LIBS) $(EMACSY_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
 
+BUILT_SOURCES = resources.c
 
-DOT_X_FILES = app.x buffer.x frame.x util.x minibuffer.x
-
-BUILT_SOURCES = $(DOT_X_FILES) resources.c
-
-CLEANFILES = $(DOT_X_FILES) resources.c
+.PHONY: format
 
 format:
 	 clang-format -i *.c *.h
 
 resources.c: $(G_RESOURCES)
 	$(GLIB_COMPILE_R) $< --target=$@ --generate-source
-
-snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(AM_CFLAGS)
-
-SUFFIXES = .x
-.c.x:
-	@echo "  SNARF" $@;
-	@$(GUILE_SNARF) -o $@ $< $(snarfcppopts)
-
-DEVEL_SOCKET  = /tmp/nomad-devel
 
 test: all
 	-rm $(DEVEL_SOCKET)

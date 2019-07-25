@@ -23,10 +23,8 @@
 #include <libguile.h>
 
 #include "../config.h"
-#include "../guile/request.h"
+#include "../guile/frame.h"
 #include "app.h"
-#include "buffer.h"
-#include "frame.h"
 
 #define BUS_INTERFACE_NAME "org.gnu.nomad.webview"
 #define BUS_INTERFACE_PATH "/org/gnu/nomad/webview"
@@ -260,15 +258,6 @@ SCM_DEFINE_PUBLIC (scm_nomad_kill, "kill-nomad", 0, 0, 0, (), "Exits Nomad.")
   return SCM_UNDEFINED;
 }
 
-gboolean
-get_main_thread_invoke (void *data)
-{
-  struct request *request = data;
-  request->response = scm_c_eval_string ("(current-thread)");
-  request->done = TRUE;
-  return FALSE;
-}
-
 // FIXME: invoke on main thread?
 SCM_DEFINE_PUBLIC (scm_nomad_dbus_test, "dbus-test", 0, 0, 0, (),
                    "Shows WebView html links.")
@@ -296,7 +285,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_application_id, "application-id", 0, 0, 0, (),
 }
 
 void
-nomad_app_register_functions (void *data)
+nomad_app_register_function (void *data)
 {
 #ifndef SCM_MAGIC_SNARFER
 #include "app.x"

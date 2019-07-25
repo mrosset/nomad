@@ -22,12 +22,27 @@ AM_CFLAGS = -Wall -Werror
 
 libguile_nomad_LTLIBRARIES = libguile-nomad.la
 libguile_nomaddir = $(libexecdir)/nomad/
-libguile_nomad_la_SOURCES = extension.c webkit.c frame.c
-libguile_nomad_la_CFLAGS = $(AM_CFLAGS) $(GUILE_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS) $(WEBKIT_CFLAGS)
-libguile_nomad_la_LIBADD = $(GUILE_LIBS) $(GLIB_LIBS) $(GTK_LIBS) $(WEBKIT_LIBS)
+libguile_nomad_la_SOURCES = extension.c webkit.c frame.c app.c util.c minibuffer.c
+
+libguile_nomad_la_CFLAGS = $(AM_CFLAGS)			\
+			$(EMACSY_CFLAGS)		\
+			$(GUILE_CFLAGS)			\
+			$(GLIB_CFLAGS)			\
+			$(GTK_CFLAGS)			\
+			$(WEBKIT_CFLAGS)		\
+			$(GTK_SOURCEVIEW_CFLAGS)
+
+libguile_nomad_la_LIBADD = $(GUILE_LIBS)		\
+			$(EMACSY_LIBS)			\
+			$(GLIB_LIBS)			\
+			$(GTK_LIBS)			\
+			$(WEBKIT_LIBS)			\
+			$(GTK_SOURCEVIEW_LIBS)
+
+
 libguile_nomad_la_LDFLAGS = -module -avoid-version -no-undefined
 
-DOT_X_FILES = extension.x webkit.x frame.x
+DOT_X_FILES = extension.x webkit.x frame.x app.x util.x minibuffer.x
 
 BUILT_SOURCES = $(DOT_X_FILES)
 
