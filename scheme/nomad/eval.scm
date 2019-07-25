@@ -18,15 +18,14 @@
 
 (define-module (nomad eval)
   #:use-module (ice-9 session)
-  #:use-module (nomad events)
   #:export (input-eval))
 
 (define (input-eval input)
   (let ((result #nil)
-	 (error #nil))
+         (error #nil))
     (catch #t
       (lambda ()
-	(set! result (format #f "~a" (eval-string input))))
+        (set! result (format #f "~a" (eval-string input))))
       (lambda (key . parameters)
-	    (set! error (format #f "Uncaught throw to '~a: ~a\n" key parameters))))
+            (set! error (format #f "Uncaught throw to '~a: ~a\n" key parameters))))
     (values result error)))

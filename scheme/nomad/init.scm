@@ -17,7 +17,6 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad init)
-  #:use-module (nomad events)
   #:use-module (nomad util)
   #:use-module (emacsy emacsy)
   #:use-module (nomad eval)
