@@ -21,7 +21,6 @@
   #:use-module (ice-9 optargs)
   #:use-module (nomad buffer)
   #:use-module (nomad eval)
-  #:use-module (nomad events)
   #:use-module (nomad util)
   #:use-module (nomad webkit)
   #:use-module (nomad window)

@@ -43,7 +43,6 @@ SOURCES =			\
 	nomad/download.scm	\
 	nomad/doc.scm		\
 	nomad/eval.scm		\
-	nomad/events.scm	\
 	nomad/frame.scm		\
 	nomad/html.scm		\
 	nomad/init.scm		\
@@ -55,8 +54,8 @@ SOURCES =			\
 	nomad/tests.scm		\
 	nomad/util.scm		\
 	nomad/views.scm		\
-	nomad/webview.scm	\
-	nomad/window.scm
+	nomad/webview.scm
+
 
 
 TESTS =			\
