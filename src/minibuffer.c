@@ -24,9 +24,9 @@
 #include <gtk/gtk.h>
 #include <libguile.h>
 
-SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 1, 0,
-            (SCM view_proc, SCM lst, SCM selection, SCM proc),
-            "Renders the current popup state")
+SCM_DEFINE_PUBLIC (scm_nomad_minibuffer_render_popup, "render-popup", 3, 1, 0,
+                   (SCM view_proc, SCM lst, SCM selection, SCM proc),
+                   "Renders the current popup state")
 {
 
   NomadAppFrame *frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
@@ -45,8 +45,8 @@ SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 1, 0,
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE (scm_nomad_minibuffer_whichkey_popup, "which-key-popup", 1, 0, 0,
-            (SCM keymap), "Show whichkey popup for 'KEY MAP")
+SCM_DEFINE_PUBLIC (scm_nomad_minibuffer_whichkey_popup, "which-key-popup", 1,
+                   0, 0, (SCM keymap), "Show whichkey popup for 'KEY MAP")
 {
   SCM view;
   GtkWidget *mini;
@@ -62,8 +62,8 @@ SCM_DEFINE (scm_nomad_minibuffer_whichkey_popup, "which-key-popup", 1, 0, 0,
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE (scm_nomad_minibuffer_popup_hide, "hide-minibuffer-popup", 0, 0, 0,
-            (), "Hides the minibuffer popup")
+SCM_DEFINE_PUBLIC (scm_nomad_minibuffer_popup_hide, "hide-minibuffer-popup", 0,
+                   0, 0, (), "Hides the minibuffer popup")
 {
   NomadAppFrame *frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
   nomad_app_frame_hide_minipopup (frame);
@@ -72,8 +72,7 @@ SCM_DEFINE (scm_nomad_minibuffer_popup_hide, "hide-minibuffer-popup", 0, 0, 0,
 void
 nomad_minibuffer_register_functions (void *data)
 {
+#ifndef SCM_MAGIC_SNARFER
 #include "minibuffer.x"
-  scm_c_export ("render-popup", "hide-minibuffer-popup", "which-key-popup",
-                NULL);
-  scm_c_register_interactive ("hide-minibuffer-popup");
+#endif
 }

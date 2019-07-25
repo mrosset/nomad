@@ -237,14 +237,15 @@ nomad_app_get_webview (NomadApp *app)
 }
 
 // scheme
-SCM_DEFINE (scm_nomad_version, "nomad-version", 0, 0, 0, (),
-            "Return string describing the version of Nomad that is running")
+SCM_DEFINE_PUBLIC (
+    scm_nomad_version, "nomad-version", 0, 0, 0, (),
+    "Return string describing the version of Nomad that is running")
 {
   return scm_from_utf8_string (VERSION);
 }
 
-SCM_DEFINE (scm_nomad_start, "start-browser", 0, 0, 0, (),
-            "Start a G_APPLIACTION instance.")
+SCM_DEFINE_PUBLIC (scm_nomad_start, "start-browser", 0, 0, 0, (),
+                   "Start a G_APPLIACTION instance.")
 {
   NomadApp *app = nomad_app_new ();
   intmax_t status;
@@ -252,7 +253,7 @@ SCM_DEFINE (scm_nomad_start, "start-browser", 0, 0, 0, (),
   return scm_from_intmax (status);
 }
 
-SCM_DEFINE (scm_nomad_kill, "kill-nomad", 0, 0, 0, (), "Exits Nomad.")
+SCM_DEFINE_PUBLIC (scm_nomad_kill, "kill-nomad", 0, 0, 0, (), "Exits Nomad.")
 {
   NomadApp *app = nomad_app_get_default ();
   g_application_quit (G_APPLICATION (app));
@@ -268,8 +269,8 @@ get_main_thread_invoke (void *data)
   return FALSE;
 }
 
-SCM_DEFINE (scm_nomad_get_main_thread, "main-thread", 0, 0, 0, (),
-            "Return the main GApplication thread")
+SCM_DEFINE_PUBLIC (scm_nomad_get_main_thread, "main-thread", 0, 0, 0, (),
+                   "Return the main GApplication thread")
 {
   struct request *request
       = &(struct request){ .response = SCM_BOOL_F, .done = FALSE };
@@ -281,8 +282,8 @@ SCM_DEFINE (scm_nomad_get_main_thread, "main-thread", 0, 0, 0, (),
 }
 
 // FIXME: invoke on main thread?
-SCM_DEFINE (scm_nomad_dbus_test, "dbus-test", 0, 0, 0, (),
-            "Shows WebView html links.")
+SCM_DEFINE_PUBLIC (scm_nomad_dbus_test, "dbus-test", 0, 0, 0, (),
+                   "Shows WebView html links.")
 {
 
   GError *error = NULL;
@@ -298,8 +299,8 @@ SCM_DEFINE (scm_nomad_dbus_test, "dbus-test", 0, 0, 0, (),
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE (scm_nomad_application_id, "application-id", 0, 0, 0, (),
-            "Return string id of nomad application instance")
+SCM_DEFINE_PUBLIC (scm_nomad_application_id, "application-id", 0, 0, 0, (),
+                   "Return string id of nomad application instance")
 {
   NomadApp *app = nomad_app_get_default ();
   return scm_from_locale_string (
@@ -309,8 +310,7 @@ SCM_DEFINE (scm_nomad_application_id, "application-id", 0, 0, 0, (),
 void
 nomad_app_register_functions (void *data)
 {
+#ifndef SCM_MAGIC_SNARFER
 #include "app.x"
-  scm_c_export ("nomad-version", "start-browser", "restart-nomad",
-                "kill-nomad", "buffer-alist", "main-thread", "dbus-test",
-                "application-id", NULL);
+#endif
 }

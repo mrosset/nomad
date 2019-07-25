@@ -459,8 +459,8 @@ nomad_app_frame_get_webview (NomadAppFrame *self)
   return WEBKIT_WEB_VIEW (gtk_notebook_get_nth_page (notebook, page));
 }
 
-SCM_DEFINE (scm_nomad_frame_show_tabs, "toggle-tabs", 0, 0, 0, (),
-            "Turns notebook tabs on or off")
+SCM_DEFINE_PUBLIC (scm_nomad_frame_show_tabs, "toggle-tabs", 0, 0, 0, (),
+                   "Turns notebook tabs on or off")
 {
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
   GtkNotebook *notebook = nomad_frame_get_notebook (win);
@@ -478,8 +478,8 @@ idle_destroy (gpointer data)
 }
 
 // scheme
-SCM_DEFINE (scm_nomad_destroy_web_pointer, "destroy-pointer", 1, 0, 0,
-            (SCM pointer), "Destroys widget POINTER")
+SCM_DEFINE_PUBLIC (scm_nomad_destroy_web_pointer, "destroy-pointer", 1, 0, 0,
+                   (SCM pointer), "Destroys widget POINTER")
 {
   GtkWidget *widget = scm_to_pointer (pointer);
 
@@ -499,8 +499,8 @@ tab_label_new (int id)
   return gtk_label_new (scm_to_locale_string (label));
 }
 
-SCM_DEFINE (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
-            (SCM pointer), "Sets the current tab to the given POINTER")
+SCM_DEFINE_PUBLIC (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
+                   (SCM pointer), "Sets the current tab to the given POINTER")
 {
   gint page;
   GtkWidget *view;
@@ -529,16 +529,16 @@ SCM_DEFINE (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE (scm_nomad_number_tabs, "number-tabs", 0, 0, 0, (),
-            "Return the total number of tabs")
+SCM_DEFINE_PUBLIC (scm_nomad_number_tabs, "number-tabs", 0, 0, 0, (),
+                   "Return the total number of tabs")
 {
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
   GtkNotebook *notebook = GTK_NOTEBOOK (nomad_frame_get_notebook (win));
   return scm_from_int (gtk_notebook_get_n_pages (notebook));
 }
 
-SCM_DEFINE (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
-            (SCM buffer), "Return #t if notebook contains BUFFER")
+SCM_DEFINE_PUBLIC (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
+                   (SCM buffer), "Return #t if notebook contains BUFFER")
 {
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
   GtkNotebook *notebook = nomad_frame_get_notebook (win);
@@ -555,8 +555,9 @@ SCM_DEFINE (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
   return SCM_BOOL_F;
 }
 
-SCM_DEFINE (scm_nomad_notebook_insert, "notebook-insert", 2, 0, 0,
-            (SCM buffer, SCM INDEX), "Inserts BUFFER into notebook at INDEX")
+SCM_DEFINE_PUBLIC (scm_nomad_notebook_insert, "notebook-insert", 2, 0, 0,
+                   (SCM buffer, SCM INDEX),
+                   "Inserts BUFFER into notebook at INDEX")
 {
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
   GtkNotebook *notebook = nomad_frame_get_notebook (win);
@@ -575,13 +576,20 @@ SCM_DEFINE (scm_nomad_notebook_insert, "notebook-insert", 2, 0, 0,
   return SCM_BOOL_F;
 }
 
+SCM_DEFINE_PUBLIC (scm_nomad_frame_new, "frame-new", 0, 0, 0, (),
+                   "Creates a new frame. *warn* this should not be used")
+{
+  NomadAppFrame *win = nomad_app_frame_new (nomad_app_get_default ());
+  return scm_from_pointer (win, NULL);
+}
+
 void
 nomad_frame_register_functions (void *data)
 {
 #include "frame.x"
-  scm_c_export ("buffer-title", "pointer-uri", "set-pointer-uri",
-                "make-web-pointer", "switch-to-pointer", "destroy-pointer",
-                "set-pointer-content", "number-tabs", "notebook-contains",
-                "notebook-insert", "toggle-tabs", NULL);
-  scm_c_register_interactive ("toggle-tabs");
+  /*  scm_c_export ("buffer-title", "pointer-uri", "set-pointer-uri",
+   *               "make-web-pointer", "switch-to-pointer", "destroy-pointer",
+   *               "set-pointer-content", "number-tabs", "notebook-contains",
+   *               "notebook-insert", "toggle-tabs", NULL);
+   * scm_c_register_interactive ("toggle-tabs"); */
 }

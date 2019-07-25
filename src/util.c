@@ -44,8 +44,8 @@ scm_to_argv (SCM list, char **argv)
   argv[len] = NULL;
 }
 
-SCM_DEFINE (scm_nomad_yank_string, "yank-string", 1, 0, 0, (SCM string),
-            "Grabs STRING to primary clipboard")
+SCM_DEFINE_PUBLIC (scm_nomad_yank_string, "yank-string", 1, 0, 0, (SCM string),
+                   "Grabs STRING to primary clipboard")
 {
 
   GtkClipboard *clip = gtk_clipboard_get_default (gdk_display_get_default ());
@@ -81,6 +81,7 @@ scm_c_make_command (const char *key)
 void
 nomad_util_register_functions (void *data)
 {
+#ifndef SCM_MAGIC_SNARFER
 #include "util.x"
-  scm_c_export ("yank-string", NULL);
+#endif
 }
