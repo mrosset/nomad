@@ -21,12 +21,4 @@
 #ifndef __NOMAD_BUFFER_H__
 #define __NOMAD_BUFFER_H__
 
-#include <gtk/gtk.h>
-#include <libguile.h>
-#include <webkit2/webkit2.h>
-
-G_BEGIN_DECLS
-void nomad_buffer_register_functions (void *data);
-G_END_DECLS
-
 #endif /* __NOMAD_BUFFER_H__ */

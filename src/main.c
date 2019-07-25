@@ -48,9 +48,6 @@ register_c_modules ()
   scm_c_use_module ("nomad app");
   scm_c_define_module ("nomad app", nomad_app_register_functions, NULL);
 
-  scm_c_use_module ("nomad buffer");
-  scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
-
   scm_c_use_module ("nomad webview");
   scm_c_define_module ("nomad webview", nomad_webview_register_functions,
                        NULL);

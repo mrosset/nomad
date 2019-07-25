@@ -23,11 +23,12 @@
   #:use-module (nomad eval)
   #:use-module (nomad events)
   #:use-module (nomad util)
+  #:use-module (nomad webkit)
+  #:use-module (nomad window)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (system foreign)
-  #:use-module (nomad webkit)
   #:export (current-url
             scroll-down
             scroll-up

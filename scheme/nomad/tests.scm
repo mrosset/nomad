@@ -20,6 +20,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
   #:use-module (nomad webview)
+  #:use-module (nomad window)
   #:use-module (ice-9 format)
   #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-64))

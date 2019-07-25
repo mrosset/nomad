@@ -23,6 +23,7 @@
 
 #include "buffer.h"
 #include <gtk/gtk.h>
+#include <libguile.h>
 #include <webkit2/webkit2.h>
 
 #define NOMAD_APP_TYPE (nomad_app_get_type ())
