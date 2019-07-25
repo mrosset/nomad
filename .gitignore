@@ -29,6 +29,7 @@
 /src/resources.c
 /stamp-h1
 /pre-inst-env
+/scheme/nomad/lib.scm
 
 # multiple
 .deps
