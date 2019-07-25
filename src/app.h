@@ -35,9 +35,5 @@ GtkWindow *nomad_app_get_window ();
 GtkWidget *nomad_app_get_first_buffer (NomadApp *app);
 SCM nomad_app_get_buffers (NomadApp *app);
 GList *nomad_app_get_buffer_list (NomadApp *app);
-void nomad_app_remove_buffer (NomadApp *app, NomadBuffer *buf);
-void nomad_app_next_buffer (NomadApp *app);
-void nomad_app_prev_buffer (NomadApp *app);
 void nomad_app_register_functions (void *data);
-SCM nomad_app_make_buffer (NomadBuffer *buf);
 #endif /* __NOMADAPP_H */

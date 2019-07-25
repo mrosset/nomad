@@ -236,23 +236,6 @@ nomad_app_get_webview (NomadApp *app)
   return nomad_app_window_get_webview (win);
 }
 
-SCM
-nomad_app_make_buffer (NomadBuffer *buf)
-{
-  struct buffer *fo_buf
-      = (struct buffer *)scm_gc_malloc (sizeof (struct buffer), "buffer");
-
-  fo_buf->view = nomad_buffer_get_view (buf);
-  fo_buf->buffer = buf;
-
-  return scm_make_foreign_object_1 (buffer_type, fo_buf);
-}
-
-void
-nomad_app_remove_buffer (NomadApp *app, NomadBuffer *buf)
-{
-}
-
 // scheme
 SCM_DEFINE (scm_nomad_version, "nomad-version", 0, 0, 0, (),
             "Return string describing the version of Nomad that is running")

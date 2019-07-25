@@ -436,15 +436,6 @@ nomad_app_window_get_readline (NomadAppWindow *self)
   return self->priv->read_line;
 }
 
-NomadBuffer *
-nomad_app_window_get_buffer (NomadAppWindow *self)
-{
-  GtkNotebook *notebook = GTK_NOTEBOOK (self->priv->notebook);
-  gint i = gtk_notebook_get_current_page (notebook);
-  GtkWidget *w = gtk_notebook_get_nth_page (notebook, i);
-  return NOMAD_BUFFER (w);
-}
-
 static void
 nomad_app_window_class_init (NomadAppWindowClass *class)
 {

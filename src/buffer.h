@@ -26,40 +26,6 @@
 #include <webkit2/webkit2.h>
 
 G_BEGIN_DECLS
-
-#define NOMAD_TYPE_BUFFER nomad_buffer_get_type ()
-G_DECLARE_FINAL_TYPE (NomadBuffer, nomad_buffer, NOMAD, BUFFER, GtkBox)
-
-typedef struct _NomadBuffer NomadBuffer;
-typedef struct _NomadBufferPrivate NomadBufferPrivate;
-
-struct _NomadBuffer
-{
-  GtkBox parent;
-
-  NomadBufferPrivate *priv;
-};
-
-struct _NomadBufferClass
-{
-  GtkBoxClass parent_class;
-};
-
-struct buffer
-{
-  WebKitWebView *view;
-  NomadBuffer *buffer;
-};
-
-SCM buffer_type;
-
-GType nomad_buffer_get_type (void) G_GNUC_CONST;
-
-NomadBuffer *nomad_buffer_new (void);
-WebKitWebView *nomad_buffer_get_view (NomadBuffer *buf);
-void nomad_buffer_grab_view (NomadBuffer *buf);
-GtkLabel *nomad_buffer_get_status (NomadBuffer *buf);
-GtkWidget *nomad_buffer_get_title (NomadBuffer *buf);
 void nomad_buffer_register_functions (void *data);
 G_END_DECLS
 
