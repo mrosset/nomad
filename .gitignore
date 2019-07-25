@@ -30,6 +30,8 @@
 /stamp-h1
 /pre-inst-env
 /scheme/nomad/lib.scm
+/check-guile
+/scheme/data
 
 # multiple
 .deps
