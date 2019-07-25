@@ -204,7 +204,7 @@ SCM_DEFINE (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
 {
   gint page;
   GtkWidget *view;
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   GtkNotebook *notebook = nomad_window_get_notebook (win);
 
   if (SCM_POINTER_P (pointer))
@@ -299,7 +299,7 @@ SCM_DEFINE (scm_nomad_buffer_uri, "pointer-uri", 1, 0, 0, (SCM pointer),
 SCM_DEFINE (scm_nomad_number_tabs, "number-tabs", 0, 0, 0, (),
             "Return the total number of tabs")
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   GtkNotebook *notebook = GTK_NOTEBOOK (nomad_window_get_notebook (win));
   return scm_from_int (gtk_notebook_get_n_pages (notebook));
 }
@@ -307,7 +307,7 @@ SCM_DEFINE (scm_nomad_number_tabs, "number-tabs", 0, 0, 0, (),
 SCM_DEFINE (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
             (SCM buffer), "Return #t if notebook contains BUFFER")
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   GtkNotebook *notebook = nomad_window_get_notebook (win);
   SCM pointer = scm_call_1 (
       scm_c_public_ref ("nomad webview", "buffer-pointer"), buffer);
@@ -325,7 +325,7 @@ SCM_DEFINE (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
 SCM_DEFINE (scm_nomad_notebook_insert, "notebook-insert", 2, 0, 0,
             (SCM buffer, SCM INDEX), "Inserts BUFFER into notebook at INDEX")
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   GtkNotebook *notebook = nomad_window_get_notebook (win);
   SCM pointer = scm_call_1 (
       scm_c_public_ref ("nomad webview", "buffer-pointer"), buffer);

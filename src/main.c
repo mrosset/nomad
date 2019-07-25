@@ -46,7 +46,7 @@ register_c_modules ()
   // Modules that are used before defining have a scheme file. This
   // allows mixing pure scheme with C scheme.
   scm_c_use_module ("nomad app");
-  scm_c_define_module ("nomad app", nomad_app_register_functions, app);
+  scm_c_define_module ("nomad app", nomad_app_register_functions, NULL);
 
   scm_c_use_module ("nomad buffer");
   scm_c_define_module ("nomad buffer", nomad_buffer_register_functions, NULL);
@@ -77,6 +77,7 @@ static void
 inner_main (void *data, int argc, char **argv)
 {
   int err;
+  NomadApp *app;
 
   err = emacsy_initialize (EMACSY_INTERACTIVE);
   if (err)

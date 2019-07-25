@@ -482,7 +482,7 @@ nomad_app_window_get_webview (NomadAppWindow *self)
 SCM_DEFINE (scm_nomad_window_show_tabs, "toggle-tabs", 0, 0, 0, (),
             "Turns notebook tabs on or off")
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   GtkNotebook *notebook = nomad_window_get_notebook (win);
 
   gtk_notebook_set_show_tabs (notebook,

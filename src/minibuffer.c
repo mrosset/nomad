@@ -28,7 +28,8 @@ SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 1, 0,
             (SCM view_proc, SCM lst, SCM selection, SCM proc),
             "Renders the current popup state")
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   GtkWidget *popup = nomad_app_window_get_minipopup (win);
   SCM view;
   char *c_view;
@@ -51,7 +52,7 @@ SCM_DEFINE (scm_nomad_minibuffer_whichkey_popup, "which-key-popup", 1, 0, 0,
   GtkWidget *mini;
   NomadAppWindow *win;
 
-  win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   view = scm_c_public_ref ("nomad views", "which-key-view");
   mini = nomad_app_window_get_minipopup (win);
 
@@ -64,7 +65,7 @@ SCM_DEFINE (scm_nomad_minibuffer_whichkey_popup, "which-key-popup", 1, 0, 0,
 SCM_DEFINE (scm_nomad_minibuffer_popup_hide, "hide-minibuffer-popup", 0, 0, 0,
             (), "Hides the minibuffer popup")
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   nomad_app_window_hide_minipopup (win);
   return SCM_UNSPECIFIED;
 }

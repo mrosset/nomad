@@ -27,6 +27,8 @@ gboolean
 scroll_up_invoke (void *data)
 {
   WebKitWebView *web_view;
+  NomadApp *app = nomad_app_get_default ();
+
   web_view = nomad_app_get_webview (NOMAD_APP (app));
   webkit_web_view_run_javascript (web_view, "window.scrollBy(0, -25)", NULL,
                                   NULL, NULL);
@@ -44,6 +46,8 @@ gboolean
 scroll_down_invoke (void *data)
 {
   WebKitWebView *web_view;
+  NomadApp *app = nomad_app_get_default ();
+
   web_view = nomad_app_get_webview (NOMAD_APP (app));
   webkit_web_view_run_javascript (web_view, "window.scrollBy(0, 25)", NULL,
                                   NULL, NULL);
@@ -60,6 +64,7 @@ gboolean
 web_view_back_invoke (void *data)
 {
   struct request *request = data;
+  NomadApp *app = nomad_app_get_default ();
 
   WebKitWebView *web_view = nomad_app_get_webview (app);
 
@@ -101,6 +106,7 @@ SCM_DEFINE (
     "returns #t. TODO: maybe provide a callback for load-change signal.")
 {
   WebKitWebView *web_view;
+  NomadApp *app = nomad_app_get_default ();
 
   web_view = nomad_app_get_webview (NOMAD_APP (app));
 
@@ -124,6 +130,7 @@ SCM_DEFINE (scm_nomad_webkit_reload, "webview-reload", 0, 1, 0, (SCM nocache),
             "webkit. Probably only (reload) in this case.")
 {
   WebKitWebView *web_view;
+  NomadApp *app = nomad_app_get_default ();
 
   web_view = nomad_app_get_webview (NOMAD_APP (app));
 
@@ -151,6 +158,7 @@ SCM_DEFINE (scm_nomad_get_current_url, "webview-current-url", 0, 0, 0, (),
             "see https://danielmiessler.com/study/url-uri/ on the distinction "
             "of URI vs URL")
 {
+  NomadApp *app = nomad_app_get_default ();
   WebKitWebView *web_view;
   const char *uri;
   SCM result;
@@ -188,7 +196,7 @@ run_hints_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 SCM_DEFINE (scm_nomad_show_hints, "hints", 0, 0, 0, (),
             "Shows WebView html links.")
 {
-
+  NomadApp *app = nomad_app_get_default ();
   WebKitWebView *view = nomad_app_get_webview (app);
 
   webkit_web_view_run_javascript_from_gresource (

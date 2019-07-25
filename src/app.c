@@ -61,6 +61,12 @@ struct _NomadApp
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadApp, nomad_app, GTK_TYPE_APPLICATION);
 
+NomadApp *
+nomad_app_get_default ()
+{
+  return NOMAD_APP (g_application_get_default ());
+}
+
 // FIXME: if the application is not running this will get called and fail
 static void
 nomad_app_open_cb (GApplication *application, GFile **files, gint n_files,
@@ -170,32 +176,23 @@ nomad_app_new ()
 GtkWidget *
 nomad_app_get_first_buffer (NomadApp *app)
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   GtkNotebook *nbook = nomad_window_get_notebook (win);
 
   return gtk_notebook_get_nth_page (nbook, 0);
 }
 
-GtkWidget *
-nomad_app_get_window (NomadApp *app)
+GtkWindow *
+nomad_app_get_window ()
 {
-
-  GList *windows;
-
-  windows = gtk_application_get_windows (GTK_APPLICATION (app));
-
-  if (!windows)
-    {
-      g_critical ("could not find window");
-      return NULL;
-    }
-  return GTK_WIDGET (windows->data);
+  NomadApp *app = nomad_app_get_default ();
+  return gtk_application_get_active_window (GTK_APPLICATION (app));
 }
 
 void
 nomad_app_next_buffer (NomadApp *app)
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   GtkNotebook *nbook = nomad_window_get_notebook (win);
 
   // If this is the last tab goto the first tab
@@ -214,7 +211,7 @@ nomad_app_next_buffer (NomadApp *app)
 void
 nomad_app_prev_buffer (NomadApp *app)
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   GtkNotebook *nbook = nomad_window_get_notebook (win);
 
   // If this is the first tab goto the last tab
@@ -235,7 +232,7 @@ nomad_app_get_webview (NomadApp *app)
 {
   NomadAppWindow *win;
 
-  win = NOMAD_APP_WINDOW (nomad_app_get_window (app));
+  win = NOMAD_APP_WINDOW (nomad_app_get_window ());
   return nomad_app_window_get_webview (win);
 }
 
@@ -266,6 +263,7 @@ SCM_DEFINE (scm_nomad_version, "nomad-version", 0, 0, 0, (),
 SCM_DEFINE (scm_nomad_start, "start-browser", 0, 0, 0, (),
             "Start a G_APPLIACTION instance.")
 {
+  NomadApp *app = nomad_app_new ();
   intmax_t status;
   status = g_application_run (G_APPLICATION (app), 0, NULL);
   return scm_from_intmax (status);
@@ -273,6 +271,7 @@ SCM_DEFINE (scm_nomad_start, "start-browser", 0, 0, 0, (),
 
 SCM_DEFINE (scm_nomad_kill, "kill-nomad", 0, 0, 0, (), "Exits Nomad.")
 {
+  NomadApp *app = nomad_app_get_default ();
   g_application_quit (G_APPLICATION (app));
   return SCM_UNDEFINED;
 }
@@ -319,6 +318,7 @@ SCM_DEFINE (scm_nomad_dbus_test, "dbus-test", 0, 0, 0, (),
 SCM_DEFINE (scm_nomad_application_id, "application-id", 0, 0, 0, (),
             "Return string id of nomad application instance")
 {
+  NomadApp *app = nomad_app_get_default ();
   return scm_from_locale_string (
       g_application_get_application_id (G_APPLICATION (app)));
 }
