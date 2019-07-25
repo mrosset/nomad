@@ -18,27 +18,27 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NOMADAPPWIN_H
-#define __NOMADAPPWIN_H
+#ifndef __NOMADAPPFRAME_H
+#define __NOMADAPPFRAME_H
 
 #include <gtk/gtk.h>
 #include <webkit2/webkit2.h>
 
 #include "app.h"
 
-#define NOMAD_APP_WINDOW_TYPE (nomad_app_window_get_type ())
+#define NOMAD_APP_FRAME_TYPE (nomad_app_frame_get_type ())
 
-G_DECLARE_FINAL_TYPE (NomadAppWindow, nomad_app_window, NOMAD, APP_WINDOW,
+G_DECLARE_FINAL_TYPE (NomadAppFrame, nomad_app_frame, NOMAD, APP_FRAME,
                       GtkApplicationWindow)
 
-NomadAppWindow *nomad_app_window_new (NomadApp *app);
-WebKitWebView *nomad_app_window_get_webview (NomadAppWindow *win);
-GtkNotebook *nomad_window_get_notebook (NomadAppWindow *win);
-GtkWidget *nomad_app_window_get_minipopup (NomadAppWindow *win);
-GtkWidget *nomad_app_window_get_readline (NomadAppWindow *self);
-void nomad_app_window_set_keymap (NomadAppWindow *self, SCM keymap);
-void nomad_app_window_show_minipopup (NomadAppWindow *self);
-void nomad_app_window_hide_minipopup (NomadAppWindow *self);
-void nomad_window_register_functions (void *data);
-GList *nomad_window_get_tabs (NomadAppWindow *win);
+NomadAppFrame *nomad_app_frame_new (NomadApp *app);
+WebKitWebView *nomad_app_frame_get_webview (NomadAppFrame *win);
+GtkNotebook *nomad_frame_get_notebook (NomadAppFrame *win);
+GtkWidget *nomad_app_frame_get_minipopup (NomadAppFrame *win);
+GtkWidget *nomad_app_frame_get_readline (NomadAppFrame *self);
+void nomad_app_frame_set_keymap (NomadAppFrame *self, SCM keymap);
+void nomad_app_frame_show_minipopup (NomadAppFrame *self);
+void nomad_app_frame_hide_minipopup (NomadAppFrame *self);
+void nomad_frame_register_functions (void *data);
+GList *nomad_frame_get_tabs (NomadAppFrame *win);
 #endif /* __NOMADAPPWIN_H */

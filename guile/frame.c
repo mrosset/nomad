@@ -18,14 +18,14 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "../src/frame.h"
 #include "../src/app.h"
-#include "../src/window.h"
 #include <libguile.h>
 
 SCM_DEFINE_PUBLIC (scm_nomad_frame_new, "frame-new", 0, 0, 0, (),
                    "Creates a new frame. *warn* this should not be used")
 {
-  NomadAppWindow *win = nomad_app_window_new (nomad_app_get_default ());
+  NomadAppFrame *win = nomad_app_frame_new (nomad_app_get_default ());
   return scm_from_pointer (win, NULL);
 }
 

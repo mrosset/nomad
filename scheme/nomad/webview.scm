@@ -23,7 +23,7 @@
   #:use-module (nomad eval)
   #:use-module (nomad util)
   #:use-module (nomad webkit)
-  #:use-module (nomad window)
+  #:use-module (nomad frame)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)

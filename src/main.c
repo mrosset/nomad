@@ -21,10 +21,10 @@
 #include "app.h"
 #include "buffer.h"
 #include "emacsy.h"
+#include "frame.h"
 #include "minibuffer.h"
 #include "util.h"
 #include "webview.h"
-#include "window.h"
 #include <gtk/gtk.h>
 #include <libguile.h>
 #include <libguile/hooks.h>
@@ -52,7 +52,8 @@ register_c_modules ()
   scm_c_define_module ("nomad webview", nomad_webview_register_functions,
                        NULL);
 
-  scm_c_define_module ("nomad window", nomad_window_register_functions, NULL);
+  scm_c_use_module ("nomad frame");
+  scm_c_define_module ("nomad frame", nomad_frame_register_functions, NULL);
 
   scm_c_use_module ("nomad minibuffer");
   scm_c_define_module ("nomad minibuffer", nomad_minibuffer_register_functions,
@@ -64,7 +65,6 @@ register_c_modules ()
   scm_c_use_module ("nomad init");
   scm_c_use_module ("emacsy emacsy");
   scm_c_use_module ("nomad util");
-  scm_c_use_module ("nomad window");
   scm_c_use_module ("nomad views");
   scm_c_use_module ("nomad options");
   scm_c_use_module ("nomad repl");

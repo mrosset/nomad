@@ -26,7 +26,7 @@
   #:use-module (nomad views)
   #:use-module (nomad webkit)
   #:use-module (nomad webview)
-  #:use-module (nomad window)
+  #:use-module (nomad frame)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket

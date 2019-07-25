@@ -19,8 +19,8 @@
  */
 
 #include "app.h"
+#include "frame.h"
 #include "util.h"
-#include "window.h"
 #include <gtk/gtk.h>
 #include <libguile.h>
 
@@ -29,8 +29,8 @@ SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 1, 0,
             "Renders the current popup state")
 {
 
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
-  GtkWidget *popup = nomad_app_window_get_minipopup (win);
+  NomadAppFrame *frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
+  GtkWidget *popup = nomad_app_frame_get_minipopup (frame);
   SCM view;
   char *c_view;
 
@@ -39,7 +39,7 @@ SCM_DEFINE (scm_nomad_minibuffer_render_popup, "render-popup", 3, 1, 0,
   c_view = scm_to_locale_string (view);
   webkit_web_view_load_html (WEBKIT_WEB_VIEW (popup), c_view, "nomad://");
 
-  nomad_app_window_show_minipopup (win);
+  nomad_app_frame_show_minipopup (frame);
   scm_dynwind_free (c_view);
   scm_dynwind_end ();
   return SCM_BOOL_T;
@@ -50,11 +50,11 @@ SCM_DEFINE (scm_nomad_minibuffer_whichkey_popup, "which-key-popup", 1, 0, 0,
 {
   SCM view;
   GtkWidget *mini;
-  NomadAppWindow *win;
+  NomadAppFrame *frame;
 
-  win = NOMAD_APP_WINDOW (nomad_app_get_window ());
+  frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
   view = scm_c_public_ref ("nomad views", "which-key-view");
-  mini = nomad_app_window_get_minipopup (win);
+  mini = nomad_app_frame_get_minipopup (frame);
 
   scm_nomad_minibuffer_render_popup (view, keymap, scm_from_int (0),
                                      SCM_BOOL_F);
@@ -65,8 +65,8 @@ SCM_DEFINE (scm_nomad_minibuffer_whichkey_popup, "which-key-popup", 1, 0, 0,
 SCM_DEFINE (scm_nomad_minibuffer_popup_hide, "hide-minibuffer-popup", 0, 0, 0,
             (), "Hides the minibuffer popup")
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
-  nomad_app_window_hide_minipopup (win);
+  NomadAppFrame *frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
+  nomad_app_frame_hide_minipopup (frame);
   return SCM_UNSPECIFIED;
 }
 void

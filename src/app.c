@@ -25,8 +25,8 @@
 #include "../config.h"
 #include "app.h"
 #include "buffer.h"
+#include "frame.h"
 #include "request.h"
-#include "window.h"
 
 #define BUS_INTERFACE_NAME "org.gnu.nomad.webview"
 #define BUS_INTERFACE_PATH "/org/gnu/nomad/webview"
@@ -137,24 +137,24 @@ static void
 nomad_app_activate_cb (GApplication *self)
 {
 
-  NomadAppWindow *win;
-  GList *windows = gtk_application_get_windows (GTK_APPLICATION (self));
+  NomadAppFrame *frame;
+  GList *frames = gtk_application_get_windows (GTK_APPLICATION (self));
 
-  // We can only have one window
-  if (g_list_length (windows) > 0)
+  // We can only have one frame
+  if (g_list_length (frames) > 0)
     {
       g_warning ("application already started\n");
       return;
     }
 
-  win = nomad_app_window_new (NOMAD_APP (self));
+  frame = nomad_app_frame_new (NOMAD_APP (self));
 
   g_bus_own_name (G_BUS_TYPE_SESSION, BUS_INTERFACE_NAME,
                   G_BUS_NAME_OWNER_FLAGS_NONE,
                   (GBusAcquiredCallback)on_bus_acquired, NULL,
                   (GBusNameLostCallback)on_name_lost, NULL, NULL);
 
-  gtk_window_present (GTK_WINDOW (win));
+  gtk_window_present (GTK_WINDOW (frame));
   scm_call_0 (scm_c_public_ref ("nomad app", "app-init"));
 }
 
@@ -176,14 +176,14 @@ nomad_app_new ()
 GtkWidget *
 nomad_app_get_first_buffer (NomadApp *app)
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
-  GtkNotebook *nbook = nomad_window_get_notebook (win);
+  NomadAppFrame *frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
+  GtkNotebook *nbook = nomad_frame_get_notebook (frame);
 
   return gtk_notebook_get_nth_page (nbook, 0);
 }
 
 GtkWindow *
-nomad_app_get_window ()
+nomad_app_get_frame ()
 {
   NomadApp *app = nomad_app_get_default ();
   return gtk_application_get_active_window (GTK_APPLICATION (app));
@@ -192,8 +192,8 @@ nomad_app_get_window ()
 void
 nomad_app_next_buffer (NomadApp *app)
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
-  GtkNotebook *nbook = nomad_window_get_notebook (win);
+  NomadAppFrame *frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
+  GtkNotebook *nbook = nomad_frame_get_notebook (frame);
 
   // If this is the last tab goto the first tab
   if (gtk_notebook_get_n_pages (nbook) - 1
@@ -211,8 +211,8 @@ nomad_app_next_buffer (NomadApp *app)
 void
 nomad_app_prev_buffer (NomadApp *app)
 {
-  NomadAppWindow *win = NOMAD_APP_WINDOW (nomad_app_get_window ());
-  GtkNotebook *nbook = nomad_window_get_notebook (win);
+  NomadAppFrame *frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
+  GtkNotebook *nbook = nomad_frame_get_notebook (frame);
 
   // If this is the first tab goto the last tab
   if (gtk_notebook_get_current_page (nbook) == 0)
@@ -230,10 +230,10 @@ nomad_app_prev_buffer (NomadApp *app)
 WebKitWebView *
 nomad_app_get_webview (NomadApp *app)
 {
-  NomadAppWindow *win;
+  NomadAppFrame *frame;
 
-  win = NOMAD_APP_WINDOW (nomad_app_get_window ());
-  return nomad_app_window_get_webview (win);
+  frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
+  return nomad_app_frame_get_webview (frame);
 }
 
 // scheme

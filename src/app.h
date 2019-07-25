@@ -32,7 +32,7 @@ G_DECLARE_FINAL_TYPE (NomadApp, nomad_app, NOMAD, APP, GtkApplication)
 NomadApp *nomad_app_new ();
 NomadApp *nomad_app_get_default ();
 WebKitWebView *nomad_app_get_webview (NomadApp *app);
-GtkWindow *nomad_app_get_window ();
+GtkWindow *nomad_app_get_frame ();
 GtkWidget *nomad_app_get_first_buffer (NomadApp *app);
 SCM nomad_app_get_buffers (NomadApp *app);
 GList *nomad_app_get_buffer_list (NomadApp *app);

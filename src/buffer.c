@@ -22,9 +22,9 @@
 
 #include "app.h"
 #include "buffer.h"
+#include "frame.h"
 #include "request.h"
 #include "util.h"
-#include "window.h"
 
 static void
 web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
