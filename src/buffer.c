@@ -20,10 +20,10 @@
 
 #include <webkit2/webkit2.h>
 
+#include "../guile/request.h"
 #include "app.h"
 #include "buffer.h"
 #include "frame.h"
-#include "request.h"
 #include "util.h"
 
 static void

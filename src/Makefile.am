@@ -32,9 +32,7 @@ nomad_SOURCES =		\
 	buffer.c	\
 	main.c		\
 	minibuffer.c	\
-	request.c	\
 	util.c		\
-	webview.c	\
 	frame.c
 
 moddir=$(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
@@ -59,7 +57,7 @@ AM_LDFLAGS = -export-dynamic
 nomad_LDADD = $(GTK_LIBS) $(GUILE_LIBS) $(EMACSY_LIBS) $(WEBKIT_LIBS) $(GTK_SOURCEVIEW_LIBS)
 
 
-DOT_X_FILES = app.x buffer.x webview.x frame.x util.x minibuffer.x
+DOT_X_FILES = app.x buffer.x frame.x util.x minibuffer.x
 
 BUILT_SOURCES = $(DOT_X_FILES) resources.c
 

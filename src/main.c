@@ -24,7 +24,6 @@
 #include "frame.h"
 #include "minibuffer.h"
 #include "util.h"
-#include "webview.h"
 #include <gtk/gtk.h>
 #include <libguile.h>
 #include <libguile/hooks.h>
@@ -47,10 +46,6 @@ register_c_modules ()
   // allows mixing pure scheme with C scheme.
   scm_c_use_module ("nomad app");
   scm_c_define_module ("nomad app", nomad_app_register_functions, NULL);
-
-  scm_c_use_module ("nomad webview");
-  scm_c_define_module ("nomad webview", nomad_webview_register_functions,
-                       NULL);
 
   scm_c_use_module ("nomad frame");
   scm_c_define_module ("nomad frame", nomad_frame_register_functions, NULL);

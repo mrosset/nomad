@@ -23,10 +23,10 @@
 #include <libguile.h>
 
 #include "../config.h"
+#include "../guile/request.h"
 #include "app.h"
 #include "buffer.h"
 #include "frame.h"
-#include "request.h"
 
 #define BUS_INTERFACE_NAME "org.gnu.nomad.webview"
 #define BUS_INTERFACE_PATH "/org/gnu/nomad/webview"
@@ -267,18 +267,6 @@ get_main_thread_invoke (void *data)
   request->response = scm_c_eval_string ("(current-thread)");
   request->done = TRUE;
   return FALSE;
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_get_main_thread, "main-thread", 0, 0, 0, (),
-                   "Return the main GApplication thread")
-{
-  struct request *request
-      = &(struct request){ .response = SCM_BOOL_F, .done = FALSE };
-
-  g_main_context_invoke (NULL, get_main_thread_invoke, request);
-
-  wait_for_response (request);
-  return request->response;
 }
 
 // FIXME: invoke on main thread?
