@@ -69,8 +69,7 @@ resources.c: $(G_RESOURCES)
 	$(GLIB_COMPILE_R) $< --target=$@ --generate-source
 
 test: all
-	-rm $(DEVEL_SOCKET)
-	../pre-inst-env ./nomad --gapplication-app-id "org.devel.nomad"
+	$(top_builddir)/pre-inst-env ./nomad --gapplication-app-id "org.devel.nomad"
 
 test-url: all
 	echo "test url"

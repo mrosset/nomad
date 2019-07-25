@@ -17,16 +17,19 @@
 
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
-(use-modules (nomad app)
+
+(use-modules (emacsy emacsy)
              (nomad init)
-             (nomad webview)
-             (emacsy emacsy))
+             (nomad lib)
+             (nomad app))
+
+(emacsy-initialize #t)
 (format #t
         "~a~%"
         (nomad-version))
-(emacsy-initialize #t)
 (init)
 (start-browser)
+
 ;; Local Variables:
 ;; mode: scheme
 ;; End:

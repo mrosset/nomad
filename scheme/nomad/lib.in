@@ -18,4 +18,14 @@
 
 (define-module (nomad lib))
 
-(load-extension "libguile-nomad" "init_guile_nomad")
+;; FIXE: catch the right exception here
+(catch #t
+  (lambda _
+    (load-extension "libguile-nomad" "init_guile_nomad"))
+  (lambda (key . param)
+    (load-extension "@LIBEXEC@/nomad/libguile-nomad.so" "init_guile_nomad")))
+
+
+;; Local Variables:
+;; mode: scheme
+;; End:

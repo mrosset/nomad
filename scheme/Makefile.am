@@ -25,7 +25,7 @@ nobase_mod_DATA = $(SOURCES) $(NOCOMP_SOURCES)
 nobase_ccache_DATA = $(GOBJECTS)
 
 EXTRA_DIST = $(SOURCES) $(NOCOMP_SOURCES)
-CLEANFILES = $(GOBJECTS)
+CLEANFILES = $(GOBJECTS) nomad/lib.scm
 
 guile_install_go_files = install-nobase_ccacheDATA
 $(guile_install_go_files): install-nobase_modDATA
@@ -34,6 +34,12 @@ SUFFIXES = .scm .go
 
 .scm.go:
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILD) compile $(GUILE_WARNINGS) -o "$@" "$<"
+
+do_subst = sed -e 's,[@]GUILE[@],$(GUILE),g' \
+		-e 's,[@]LIBEXEC[@],$(libexecdir),g'
+
+nomad/lib.scm: nomad/lib.in Makefile
+	$(do_subst) < $(srcdir)/$< > $@
 
 SOURCES =			\
 	nomad/lib.scm		\

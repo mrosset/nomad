@@ -16,7 +16,7 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIRS = guile scheme ext src
+SUBDIRS = guile scheme src
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -32,6 +32,9 @@ clean-scheme:
 
 test: all
 	$(MAKE) -C ./src test
+
+test-install: install
+	nomad
 
 test-local-guix:
 	guix build -f ./guix-local.scm
