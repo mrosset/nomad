@@ -128,11 +128,11 @@
 ;; killed then they are no longer webviews. And so can not be switched to or
 ;; managed properly.
 (define (update-buffers)
-  "Converts buffers to <webview-buffer>"
+  "Converts buffers to <webview-buffer> and inserts them into notebook"
   (for-each (lambda (buffer)
               (unless (eq? <webview-buffer> (class-of buffer))
                 (buffer->webview-buffer buffer)
-                (set-buffer-pointer! buffer (make-web-pointer))
+                (set-buffer-pointer! buffer (webkit-new))
                 (buffer-render buffer)
                 (notebook-insert buffer 0)))
             (buffer-list)))

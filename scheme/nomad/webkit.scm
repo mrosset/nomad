@@ -18,40 +18,4 @@
 
 (define-module (nomad webkit)
   #:use-module (system foreign)
-  #:export (webkit-new
-            webkit-uri
-            webkit-load-uri
-            gtk-destroy))
-
-(define libwebkit (dynamic-link "libwebkit2gtk-4.0"))
-(define libgtk (dynamic-link "libgtk-3"))
-
-;; gtk destroy widget procedure
-(define gtk-destroy
-  (pointer->procedure void
-                      (dynamic-func "gtk_widget_destroy" libgtk)
-                      '(*)))
-
-;;; webview constructor function
-(define webkit-new
-  (pointer->procedure '*
-                      (dynamic-func "webkit_web_view_new" libwebkit)
-                      '()))
-
-(define (webkit-uri view)
-  "Return VIEW's uri. If webkview does not have a uri returns #f"
-  (let* ((proc (pointer->procedure '*
-                                   (dynamic-func "webkit_web_view_get_uri" libwebkit)
-                                   '(*)))
-         (return-p (proc view)))
-    (if (null-pointer? return-p)
-        "NULL"
-        (pointer->string return-p))))
-
-(define (webkit-load-uri view uri)
-  "Sets VIEW's uri"
-  (let ((proc (pointer->procedure void
-                                      (dynamic-func "webkit_web_view_load_uri" libwebkit)
-                                      '(* *))))
-    (proc view
-              (string->pointer uri))))
+  #:use-module (nomad lib))

@@ -39,7 +39,12 @@
                           (class-of buffer))
                         (test-equal "buffer conversion"
                           <webview-buffer>
-                          (buffer->webview-buffer buffer)))
+                          (buffer->webview-buffer buffer))
+                        (test-equal "buffer content"
+                          (format #f
+                                  "<h2>~a</h2>"
+                                  (buffer-name buffer))
+                          (buffer-content buffer)))
                       (list scratch messages)))
 
 (test-group "webview class"

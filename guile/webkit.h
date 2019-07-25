@@ -1,5 +1,5 @@
 /*
- * extention.c
+ * webkit.c
  * Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
  *
  * This file is part of Nomad
@@ -18,29 +18,9 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "webkit.h"
-#include <glib.h>
-#include <gtk/gtk.h>
-#include <libguile.h>
+#ifndef __GUILE_NOMAD_WEBKIT_H
+#define __GUILE_NOMAD_WEBKIT_H
 
-SCM_DEFINE_PUBLIC (scm_nomad_temp, "guile-nomad-available", 0, 0, 0, (),
-                   "Test function")
-{
-  g_print ("temp");
-  return SCM_BOOL_T;
-}
+void nomad_webkit_register_function (void *data);
 
-void
-register_function (void *data)
-{
-#ifndef SCM_MAGIC_SNARFER
-#include "extension.x"
 #endif
-}
-
-void
-init_guile_nomad ()
-{
-  scm_c_define_module ("nomad lib", register_function, NULL);
-  scm_c_define_module ("nomad webkit", nomad_webkit_register_function, NULL);
-}

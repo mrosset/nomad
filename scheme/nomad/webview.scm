@@ -112,7 +112,7 @@
   (buffer-render (current-buffer)))
 
 (define-method (buffer-render (buffer <webview-buffer>))
-  (set-pointer-content (buffer-pointer buffer) (buffer-content buffer) (buffer-uri buffer)))
+  (webkit-load-html (buffer-pointer buffer) (buffer-content buffer)))
 
 (define* (make-webview-buffer #:optional (uri default-home-page))
   "Constructs a new webview-buffer class"
