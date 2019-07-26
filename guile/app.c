@@ -142,7 +142,6 @@ nomad_app_activate_cb (GApplication *self)
   if (g_list_length (frames) > 0)
     {
       g_warning ("application already started\n");
-      return;
     }
 
   frame = nomad_app_frame_new (NOMAD_APP (self));
