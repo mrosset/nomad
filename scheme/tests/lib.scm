@@ -17,7 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test lib)
-  #:use-module (nomad lib)
+  ;; #:use-module (nomad lib)
   #:use-module (srfi srfi-64))
 
-(test-assert "loaded" (guile-nomad-available))
+;; (test-assert "loaded" (guile-nomad-available))
