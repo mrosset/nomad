@@ -30,6 +30,8 @@
             shutdown
             app-init))
 
+(load-extension "libguile-nomad" "init_guile_nomad_app")
+
 (define shutdown-hook (make-hook 0))
 
 (define (shutdown)
