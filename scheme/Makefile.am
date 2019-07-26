@@ -59,7 +59,9 @@ SOURCES =			\
 	nomad/server.scm	\
 	nomad/tests.scm	\
 	nomad/util.scm		\
-	nomad/views.scm
+	nomad/views.scm		\
+	nomad/webview.scm
+
 
 
 
