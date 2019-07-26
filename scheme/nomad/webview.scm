@@ -41,6 +41,7 @@
             firefox-webview-map
             webview-enter-hook
             webview-kill-hook
+            webview-onload
             ;; ;; class constructors
             make-webview-buffer
             make-webcontent-buffer
@@ -87,8 +88,9 @@
   (set-buffer-pointer! (current-buffer)
                        pointer))
 
-(define-method (buffer-sync (buffer <webview-buffer>))
-  (set-buffer-name! (buffer-uri buffer)) buffer)
+(define (webview-onload)
+  "Update BUFFER on webview load"
+  (set-buffer-name! (buffer-uri (current-buffer))))
 
 (define-method (buffer-uri)
   (buffer-uri (current-buffer)))

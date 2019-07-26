@@ -22,10 +22,20 @@
 #include <libguile.h>
 #include <webkit2/webkit2.h>
 
+static void
+web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
+                       gpointer user_data)
+{
+  scm_call_0 (scm_c_public_ref ("nomad webview", "webview-onload"));
+}
+
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_new, "webkit-new", 0, 0, 0, (SCM pointer),
                    "Returns a newly initialized webkit view")
 {
   GtkWidget *view = webkit_web_view_new ();
+
+  g_signal_connect (view, "load-changed", G_CALLBACK (web_view_load_changed),
+                    NULL);
   return scm_from_pointer (view, NULL);
 }
 

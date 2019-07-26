@@ -21,8 +21,7 @@
   #:use-module (nomad webview)
   #:use-module (oop goops)
   #:use-module (srfi srfi-64)
-  #:use-module (system foreign)
-  )
+  #:use-module (system foreign))
 
 (test-begin "webview")
 
@@ -48,12 +47,12 @@
                       (list scratch messages)))
 
 (test-group "webview class"
-            (let ((buffer (make-webview-buffer "https://gnu.org/")))
+            (let ((buffer (make-webview-buffer "gnu.org")))
               (test-equal "buffer-name"
-                "https://gnu.org/"
+                "gnu.org"
                 (buffer-name buffer))
               (test-equal "buffer-url"
-                "https://gnu.org/"
+                "gnu.org"
                 (buffer-uri buffer))
               (test-equal "buffer-pointer"
                 %null-pointer
@@ -71,4 +70,5 @@
               (test-equal "buffer-pointer"
                 %null-pointer
                 (buffer-pointer buffer))))
+
 (test-end)

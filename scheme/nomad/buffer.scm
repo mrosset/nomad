@@ -30,7 +30,6 @@
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
-            webview-onload
             update-buffers
             buffers-contain?
             buffer-protected?
@@ -43,10 +42,6 @@
   (find (lambda (item)
           (equal? item (buffer-name buffer)))
         protected-buffers))
-
-(define (webview-onload buffer uri)
-  "Update BUFFER on webview load"
-  (buffer-sync buffer))
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
