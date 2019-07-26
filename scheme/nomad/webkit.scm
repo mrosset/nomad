@@ -15,6 +15,7 @@
 
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
-(define-module (nomad webkit))
+(define-module (nomad webkit)
+  #:use-module (nomad lib))
 
-(load-extension "libguile-nomad" "init_guile_nomad_webkit")
+(load-extension (dynamic-path) "init_guile_nomad_webkit")

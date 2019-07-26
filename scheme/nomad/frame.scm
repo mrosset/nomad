@@ -18,9 +18,10 @@
 
 (define-module (nomad frame)
   #:use-module (nomad repl)
+  #:use-module (nomad lib)
   #:export (make-frame-socket))
 
-(load-extension "libguile-nomad" "init_guile_nomad_frame")
+(load-extension (dynamic-path) "init_guile_nomad_frame")
 
 (define (make-frame-socket url socket)
   "Write `make-frame' comand with arg URL to a SOCKET."

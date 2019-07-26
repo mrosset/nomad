@@ -23,6 +23,7 @@
   #:use-module (nomad init)
   #:use-module (nomad options)
   #:use-module (nomad repl)
+  #:use-module (nomad lib)
   #:use-module (nomad views)
   #:use-module (nomad webview)
   #:export (emacs-init-file
@@ -30,7 +31,7 @@
             shutdown
             app-init))
 
-(load-extension "libguile-nomad" "init_guile_nomad_app")
+(load-extension (dynamic-path) "init_guile_nomad_app")
 
 (define shutdown-hook (make-hook 0))
 
