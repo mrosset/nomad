@@ -17,8 +17,6 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test webkit)
-  #:use-module (nomad lib)
-  #:use-module (nomad webkit)
   #:use-module (system foreign)
   #:use-module (srfi srfi-64))
 
@@ -28,10 +26,11 @@
 ;; ERROR: In procedure dynamic-link:
 ;; In procedure dynamic-link: file: "libwebkit2gtk-4.0", message: "file not found"
 
-;; (if (string= (getenv "HOME")
-;;                 "/homeless-shelter") #t
-;;     (test-skip "webkit")
-;;     (use-modules (nomad webkit)))
+(if (string= (getenv "HOME")
+             "/homeless-shelter")
+    (test-skip "webkit")
+    (begin (use-modules (nomad lib))
+           (use-modules (nomad webkit))))
 
 (test-group "webkit"
             (let* ((view (webkit-new)))
