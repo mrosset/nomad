@@ -20,14 +20,12 @@
 (define-module (nomad doc)
   #:use-module (ice-9 documentation)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad webview)
   #:use-module (nomad buffer)
   #:export (describe-symbol))
 
 (define-interactive (describe-symbol #:optional (var (read-from-minibuffer "Variable: ")))
   "Open variable documentation in new buffer."
-  (make-buffer "*help*")
-  (webview-load-content (object-documentation
+  (make-content-buffer "*help"
+   (object-documentation
                          (eval (string->symbol var)
-                               (interaction-environment)))
-                        "*help*"))
+                               (interaction-environment)))))
