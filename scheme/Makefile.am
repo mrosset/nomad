@@ -36,7 +36,10 @@ SUFFIXES = .scm .go
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILD) compile $(GUILE_WARNINGS) -o "$@" "$<"
 
 do_subst = sed -e 's,[@]GUILE[@],$(GUILE),g' \
-		-e 's,[@]LIBEXEC[@],$(libexecdir),g'
+		-e 's,[@]LIBEXEC[@],$(libexecdir),g' \
+		-e 's,[@]TOPBUILD[@],$(abs_top_builddir),g'
+
+
 
 nomad/lib.scm: nomad/lib.in Makefile
 	$(do_subst) < $(srcdir)/$< > $@

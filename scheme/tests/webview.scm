@@ -54,7 +54,7 @@
               (test-equal "buffer-url"
                 "gnu.org"
                 (buffer-uri buffer))
-              (test-equal "buffer-pointer"
+              (test-equal "null buffer pointer?"
                 %null-pointer
                 (buffer-pointer buffer))))
 
