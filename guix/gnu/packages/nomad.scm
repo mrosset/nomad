@@ -96,7 +96,7 @@
                 (sha256
                  (base32
                   "0lbqr1rm94w341vyv7nvpxmcl4arlac36b2k7z40af89d451m78k"))))
-      (build-system glib-or-gtk-build-system)
+      (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
@@ -125,7 +125,6 @@
       (arguments
        `(#:tests? #t
          #:modules ((guix build gnu-build-system)
-                    (guix build glib-or-gtk-build-system)
                     (guix build utils)
                     (ice-9 popen)
                     (ice-9 rdelim)
@@ -135,6 +134,8 @@
            (add-after 'install 'wrap-binaries
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
+                      (gio-deps (map (cut assoc-ref inputs <>) '("glib-networking" "glib")))
+                      (gio-mod-path (map (cut string-append <> "/lib/gio/modules") gio-deps))
                       (effective (read-line (open-pipe* OPEN_READ
                                                         "guile" "-c"
                                                         "(display (effective-version))")))
@@ -149,6 +150,7 @@
                       (progs (map (cut string-append out "/bin/" <>)
                                   '("nomad"))))
                  (map (cut wrap-program <>
+                           `("GIO_EXTRA_MODULES" ":" prefix ,gio-mod-path)
                            `("GUILE_LOAD_PATH" ":" prefix ,scm-path)
                            `("GUILE_LOAD_COMPILED_PATH" ":"
                              prefix ,go-path))
