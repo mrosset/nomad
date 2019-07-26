@@ -59,12 +59,11 @@ SOURCES =			\
 	nomad/server.scm	\
 	nomad/tests.scm	\
 	nomad/util.scm		\
-	nomad/views.scm	\
-	nomad/webview.scm
+	nomad/views.scm
 
 
 
-TESTS =			\
+TESTS =				\
 	tests/lib.scm		\
 	tests/buffer.scm	\
 	tests/download.scm	\

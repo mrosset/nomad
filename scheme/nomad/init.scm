@@ -121,9 +121,6 @@
   (ensure-fluid-directory download-directory))
 
 (define (init)
-  (add-hook! event-hook debug-event)
   (ensure-nomad-directory)
-  (when (file-exists? (fluid-ref history-file))
-    (read-history))
   (when (file-exists? user-init-file)
     (load user-init-file)))
