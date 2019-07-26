@@ -20,6 +20,8 @@
   #:use-module (nomad repl)
   #:export (make-frame-socket))
 
+(load-extension "libguile-nomad" "init_guile_nomad_frame")
+
 (define (make-frame-socket url socket)
   "Write `make-frame' comand with arg URL to a SOCKET."
   (write-socket (format #f "~S" `(make-frame ,url)) socket))

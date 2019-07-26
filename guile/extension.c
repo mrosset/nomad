@@ -47,6 +47,18 @@ init_guile_nomad_webkit ()
 }
 
 void
+init_guile_nomad_app ()
+{
+  scm_c_define_module ("nomad app", nomad_app_register_function, NULL);
+}
+
+void
+init_guile_nomad_frame ()
+{
+  scm_c_define_module ("nomad frame", nomad_frame_register_function, NULL);
+}
+
+void
 init_guile_nomad_lib ()
 {
   /*
@@ -59,10 +71,6 @@ init_guile_nomad_lib ()
    *
    */
   scm_c_define_module ("nomad lib", register_function, NULL);
-  scm_c_define_module ("nomad frame", nomad_frame_register_function, NULL);
-
-  scm_c_use_module ("nomad app");
-  scm_c_define_module ("nomad app", nomad_app_register_function, NULL);
 
   /* scm_c_define_module ("nomad minibuffer",
    * nomad_minibuffer_register_function, NULL); */

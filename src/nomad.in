@@ -20,7 +20,6 @@
 
 (use-modules (emacsy emacsy)
              (nomad init)
-             (nomad lib)
              (nomad app))
 
 (emacsy-initialize #t)

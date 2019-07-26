@@ -17,7 +17,6 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad app)
-  #:use-module (nomad lib)
   #:use-module (emacsy buffer)
   #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
