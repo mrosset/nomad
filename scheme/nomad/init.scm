@@ -28,6 +28,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (init
+            use-cookies?
             user-cookie-file
             user-init-file
             startup-hook
@@ -101,6 +102,8 @@
          (buffers (buffers->uri)))
     (pretty-print buffers port)
     (close-port port)))
+
+(define use-cookies? #t)
 
 (define user-cookie-file
   (string-append (fluid-ref user-nomad-directory) // "cookies.db"))
