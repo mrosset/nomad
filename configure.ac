@@ -58,14 +58,14 @@ if test "guile_readline" = "no"; then
    AC_MSG_ERROR([guile-readline is missing; please install it.])
 fi
 
-GUILE_MODULE_AVAILABLE([guile_emacsy], [(emacsy emacsy)])
-if test "$guile_emacsy" = "no"; then
-   AC_MSG_ERROR([guile emacsy is missing; please install it.])
-fi
-
 GUILE_MODULE_AVAILABLE([guile_lib], [(debugging assert)])
 if test "$guile_lib" = "no"; then
    AC_MSG_ERROR([guile-lib is missing; please install it.])
+fi
+
+GUILE_MODULE_AVAILABLE([guile_emacsy], [(emacsy emacsy)])
+if test "$guile_emacsy" = "no"; then
+   AC_MSG_ERROR([guile emacsy is missing; please install it.])
 fi
 
 GUILE_MODULE_AVAILABLE([guile_curl], [(curl)])
