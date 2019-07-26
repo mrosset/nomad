@@ -30,7 +30,7 @@ dist_doc_DATA = README
 clean-scheme:
 	$(MAKE) -C ./scheme clean
 
-test: all
+test: check
 	$(MAKE) -C ./src test
 
 test-install: install
