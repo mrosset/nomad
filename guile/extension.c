@@ -29,7 +29,6 @@
 SCM_DEFINE_PUBLIC (scm_nomad_temp, "guile-nomad-available", 0, 0, 0, (),
                    "Test function")
 {
-  g_print ("temp");
   return SCM_BOOL_T;
 }
 
