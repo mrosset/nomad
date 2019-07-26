@@ -29,7 +29,7 @@
 (if (string= (getenv "HOME")
              "/homeless-shelter")
     (test-skip "webkit")
-    (begin (use-modules (nomad lib))
+    (begin
            (use-modules (nomad webkit))))
 
 (test-group "webkit"
