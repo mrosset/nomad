@@ -20,12 +20,14 @@
 
 #ifndef __NOMAD_UTIL_H__
 #define __NOMAD_UTIL_H__
+#include <libguile.h>
 
 void scm_to_argv (SCM list, char **argv);
 SCM scm_c_make_command (const char *key);
 SCM scm_c_register_interactive (const char *c_name);
 void scm_c_debug_object (SCM object);
 SCM scm_c_current_buffer ();
+char scm_list_to_c_list (SCM list);
 
 void nomad_util_register_function (void *data);
 
