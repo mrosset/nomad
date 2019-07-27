@@ -21,6 +21,13 @@
 #ifndef __GUILE_NOMAD_WEBKIT_H
 #define __GUILE_NOMAD_WEBKIT_H
 
+#include <gtk/gtk.h>
+
+#define NOMAD_WEB_VIEW_TYPE (nomad_web_view_get_type ())
+G_DECLARE_FINAL_TYPE (NomadWebView, nomad_web_view, NOMAD, WEB_VEW, GObject)
+
+/* NomadWebView *nomad_web_view_new (); */
+
 void nomad_webkit_register_function (void *data);
 
 #endif

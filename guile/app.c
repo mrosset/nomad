@@ -23,8 +23,8 @@
 #include <libguile.h>
 
 #include "../config.h"
-#include "../guile/frame.h"
 #include "app.h"
+#include "frame.h"
 
 #define BUS_INTERFACE_NAME "org.gnu.nomad.webview"
 #define BUS_INTERFACE_PATH "/org/gnu/nomad/webview"

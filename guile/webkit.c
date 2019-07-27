@@ -18,15 +18,51 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "webkit.h"
 #include "app.h"
+/* #include <glib-object.h> */
 #include <libguile.h>
 #include <webkit2/webkit2.h>
+
+typedef struct _NomadWebViewPrivate NomadWebViewPrivate;
+
+struct _NomadWebViewPrivate
+{
+  SCM buffer;
+  GtkWidget *view;
+};
+
+struct _NomadWebView
+{
+  GObject parent;
+  NomadWebViewPrivate *priv;
+};
+
+G_DEFINE_TYPE_WITH_PRIVATE (NomadWebView, nomad_web_view, G_TYPE_OBJECT);
+
+static void
+nomad_web_view_init (NomadWebView *self)
+{
+  self->priv = nomad_web_view_get_instance_private (self);
+  self->priv->view = webkit_web_view_new ();
+}
+
+static void
+nomad_web_view_class_init (NomadWebViewClass *class)
+{
+}
 
 static void
 web_view_load_changed (WebKitWebView *view, WebKitLoadEvent load_event,
                        gpointer user_data)
 {
   scm_call_0 (scm_c_public_ref ("nomad webview", "webview-onload"));
+}
+
+NomadWebView *
+nomad_web_view_new ()
+{
+  return g_object_new (NOMAD_WEB_VIEW_TYPE, NULL);
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_new, "webkit-new", 0, 0, 0, (SCM pointer),
