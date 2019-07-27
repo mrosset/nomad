@@ -86,7 +86,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_make_proxy, "webkit-make-proxy", 2, 0, 0, (S
   scm_to_argv(ignore,  c_ignore);
   /* FIXME: ignore is not a string but a list of strings like example.com or
      *.foo.org etc. The code above is obviously wrong. */
-  webkit_network_proxy_settings_new (c_proxy, c_ignore);
+  webkit_network_proxy_settings_new (c_proxy, (const char * const*) c_ignore);
   g_free (c_proxy);
   /* g_free (c_ignore); */
   return SCM_UNSPECIFIED;
