@@ -22,7 +22,7 @@ AM_CFLAGS = -Wall -Werror
 
 libguile_nomad_LTLIBRARIES = libguile-nomad.la
 libguile_nomaddir = $(libexecdir)/nomad/
-libguile_nomad_la_SOURCES = extension.c webkit.c frame.c app.c util.c minibuffer.c
+libguile_nomad_la_SOURCES = extension.c webkit.c frame.c app.c util.c minibuffer.c resources.c
 
 libguile_nomad_la_CFLAGS = $(AM_CFLAGS)			\
 			$(EMACSY_CFLAGS)		\
@@ -42,11 +42,15 @@ libguile_nomad_la_LIBADD = $(GUILE_LIBS)		\
 
 libguile_nomad_la_LDFLAGS = -module -avoid-version -no-undefined
 
+G_RESOURCES = gresource.xml
+
+EXTRA_DIST = $(G_RESOURCES)
+
 DOT_X_FILES = extension.x webkit.x frame.x app.x util.x minibuffer.x
 
-BUILT_SOURCES = $(DOT_X_FILES)
+BUILT_SOURCES = $(DOT_X_FILES) $(G_RESOURCES)
 
-CLEANFILES = $(DOT_X_FILES)
+CLEANFILES = $(BUILT_SOURCES)
 
 snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(AM_CFLAGS) $(libguile_nomad_la_CFLAGS)
 
@@ -55,3 +59,6 @@ SUFFIXES = .x
 .c.x:
 	@echo "  SNARF" $@;
 	@$(GUILE_SNARF) -o $@ $< $(snarfcppopts)
+
+resources.c: $(G_RESOURCES)
+	$(GLIB_COMPILE_R) $< --target=$@ --generate-source

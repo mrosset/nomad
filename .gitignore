@@ -26,7 +26,7 @@
 /libtool
 /m4
 /src/nomad
-/src/resources.c
+/guile/resources.c
 /stamp-h1
 /pre-inst-env
 /scheme/nomad/lib.scm
