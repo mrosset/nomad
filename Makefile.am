@@ -36,7 +36,7 @@ test: check
 test-install: install
 	nomad
 
-test-local-guix:
+guix-local:
 	guix build -f ./guix-local.scm
 
 format:
