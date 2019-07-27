@@ -31,7 +31,7 @@
     (test-skip "webkit")
     (use-modules (nomad webkit)))
 
-(test-group "webkit "
+(test-group "webkit"
             (let* ((view (webkit-new)))
               (test-assert "webview is pointer?"
                 (pointer? view))
