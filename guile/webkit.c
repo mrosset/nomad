@@ -80,16 +80,18 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_new,
                    "webkit_network_proxy_settings_new", 2, 0, 0, (SCM proxy, SCM ignore),
                    "Returns a newly initialized webkit proxy settings.")
 {
-  gchar *c_proxy = scm_to_locale_string (proxy);
   size_t len = scm_to_int (scm_length (ignore));
 
   gchar* c_ignore[len];
   scm_to_argv(ignore,  c_ignore);
   /* FIXME: ignore is not a string but a list of strings like example.com or
      *.foo.org etc. The code above is obviously wrong. */
-  webkit_network_proxy_settings_new (c_proxy, (const char * const*) c_ignore);
-  g_free (c_proxy);
+  /* g_free (c_proxy); */
   /* g_free (c_ignore); */
+  return scm_from_pointer (webkit_network_proxy_settings_new
+                           (scm_to_locale_string (proxy), (const char * const*) c_ignore),
+                           NULL);
+}
   return SCM_UNSPECIFIED;
 }
 
