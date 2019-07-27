@@ -75,6 +75,19 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_new, "webkit-new", 0, 0, 0, (SCM pointer),
   return scm_from_pointer (view, NULL);
 }
 
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_make_proxy, "webkit-make-proxy", 2, 0, 0, (SCM proxy, SCM ignore),
+                   "Returns a newly initialized webkit proxy settings.")
+{
+  gchar *c_proxy = scm_to_locale_string (proxy);
+  /* const gchar * const *c_ignore = scm_to_locale_string (ignore); */
+  /* FIXME: ignore is not a string but a list of strings like example.com or
+     *.foo.org etc. The code above is obviously wrong. */
+  webkit_network_proxy_settings_new (c_proxy, NULL);
+  g_free (c_proxy);
+  /* g_free (c_ignore); */
+  return SCM_UNSPECIFIED;
+}
+
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_uri, "webkit-uri", 1, 0, 0, (SCM pointer),
                    "Returns the current uri for a webkit view pointer. If "
                    "webview has not uri it returns #f")
