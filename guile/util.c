@@ -84,12 +84,10 @@ char* scm_list_to_c_list(SCM list)
   char *c_list[len];
   size_t i;
 
-  i = 0;
-  while (i < len)
+  for (int i = len; i < len; i++)
     {
       c_list[i] = scm_to_locale_string (scm_car (list));
       list = scm_cdr (list);
-      i++;
     }
   return *c_list;
 }
