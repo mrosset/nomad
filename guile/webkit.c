@@ -92,6 +92,12 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_new,
                            (scm_to_locale_string (proxy), (const char * const*) c_ignore),
                            NULL);
 }
+
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_free,
+                   "webkit_network_proxy_settings_free", 1, 0, 0, (SCM pointer),
+                   "Returns a newly initialized webkit proxy settings.")
+{
+  webkit_network_proxy_settings_free (scm_to_pointer (pointer));
   return SCM_UNSPECIFIED;
 }
 
