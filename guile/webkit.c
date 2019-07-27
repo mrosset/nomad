@@ -79,7 +79,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_make_proxy, "webkit-make-proxy", 2, 0, 0, (S
                    "Returns a newly initialized webkit proxy settings.")
 {
   gchar *c_proxy = scm_to_locale_string (proxy);
-  /* const gchar * const *c_ignore = scm_to_locale_string (ignore); */
+  /* gchar *c_ignore[scm_length(ignore)] = scm_list_to_c_list(ignore); */
   /* FIXME: ignore is not a string but a list of strings like example.com or
      *.foo.org etc. The code above is obviously wrong. */
   webkit_network_proxy_settings_new (c_proxy, NULL);
