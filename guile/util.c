@@ -78,20 +78,6 @@ scm_c_make_command (const char *key)
                      scm_string_to_symbol (scm_from_utf8_string (key)));
 }
 
-char* scm_list_to_c_list(SCM list)
-{
-  size_t len = scm_to_int(scm_length (list));
-  char *c_list[len];
-  size_t i;
-
-  for (int i = len; i < len; i++)
-    {
-      c_list[i] = scm_to_locale_string (scm_car (list));
-      list = scm_cdr (list);
-    }
-  return *c_list;
-}
-
 void
 nomad_util_register_function (void *data)
 {
