@@ -26,22 +26,22 @@
 ;; ERROR: In procedure dynamic-link:
 ;; In procedure dynamic-link: file: "libwebkit2gtk-4.0", message: "file not found"
 
+
 (if (string= (getenv "HOME")
              "/homeless-shelter")
     (test-skip "webkit")
-    (begin
-           (use-modules (nomad webkit))))
+    (begin (use-modules (nomad webkit))))
 
-(test-group "webkit"
-            (let* ((view (webkit-new)))
-              (test-assert "webview is pointer?"
-                (pointer? view))
-              (test-assert "view is not null"
-                (not (null-pointer? view)))
-              (test-equal "no uri"
-                "NULL"
-                (webkit-uri view))
-              (test-equal "load uri"
-                "https://gnu.org/"
-                (begin (webkit-load-uri view "https://gnu.org/")
-                       (webkit-uri view)))))
+
+(let* ((view (webkit-new)))
+  (test-assert "webview is pointer?"
+    (pointer? view))
+  (test-assert "view is not null"
+    (not (null-pointer? view)))
+  (test-equal "no uri"
+    "NULL"
+    (webkit-uri view))
+  (test-equal "load uri"
+    "https://gnu.org/"
+    (begin (webkit-load-uri view "https://gnu.org")
+           (webkit-uri view))))

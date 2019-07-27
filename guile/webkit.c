@@ -111,28 +111,25 @@ SCM_DEFINE_PUBLIC (scm_nomad_scroll_down, "scroll-down", 0, 0, 0, (), "")
   return SCM_UNDEFINED;
 }
 
-// FIXME: invoke on main thread
-SCM_DEFINE_PUBLIC (
-    scm_nomad_webkit_go_foward, "webview-go-forward", 0, 0, 0, (),
-    "Internal request WebKitView to go forward in history. If WebView can not "
-    "be found or there is no forward history then it returns #f. Otherwise it "
-    "returns #t. TODO: maybe provide a callback for load-change signal.")
+// FIXME: invoke on main thread?
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_foward, "webkit-forward", 1, 0, 0,
+                   (SCM pointer),
+                   "Request WebKitView POINTER to go forward in history. ")
+
 {
-  WebKitWebView *web_view;
-  NomadApp *app = nomad_app_get_default ();
+  WebKitWebView *view = scm_to_pointer (pointer);
+  webkit_web_view_go_forward (view);
+  return SCM_BOOL_T;
+}
 
-  web_view = nomad_app_get_webview (NOMAD_APP (app));
+// FIXME: invoke on main thread?
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_back, "webkit-back", 1, 0, 0,
+                   (SCM pointer),
+                   "Request WebKitView POINTER to go back in history. ")
 
-  if (web_view == NULL)
-    {
-      return SCM_BOOL_F;
-    }
-
-  if (!webkit_web_view_can_go_forward (web_view))
-    {
-      return SCM_BOOL_F;
-    }
-  webkit_web_view_go_forward (web_view);
+{
+  WebKitWebView *view = scm_to_pointer (pointer);
+  webkit_web_view_go_back (view);
   return SCM_BOOL_T;
 }
 

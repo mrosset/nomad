@@ -49,6 +49,8 @@
             ;;methods
             set-buffer-hooks!
             set-buffer-pointer!
+            buffer-back
+            buffer-foward
             buffer-content
             buffer-render
             buffer-sync
@@ -71,6 +73,18 @@
   (<buffer>)
   (content #:accessor buffer-content  #:init-keyword #:content)
   (pointer #:getter buffer-pointer #:setter set-buffer-pointer! #:init-keyword #:pointer #:init-value %null-pointer))
+
+(define-method (buffer-back)
+  (webkit-back (buffer-pointer (current-buffer))))
+
+(define-method (buffer-back (buffer <webview-buffer>))
+  (webkit-back (buffer-pointer buffer)))
+
+(define-method (buffer-forward)
+  (webkit-forward (buffer-pointer (current-buffer))))
+
+(define-method (buffer-forward (buffer <webview-buffer>))
+  (webkit-forward (buffer-pointer buffer)))
 
 (define-method (buffer-pointer)
   (buffer-pointer (current-buffer)))
@@ -166,19 +180,19 @@ specified. Returns the final URL passed to webkit"
 
 (define-interactive (forward)
   "Go forward in browser history"
-  (webview-go-forward))
-
-(define-interactive (home)
-  "Load default home page"
-  (webview-load-uri default-home-page))
-
-(define-interactive (reload)
-  "Reload current URI"
-  (webview-reload))
+  (buffer-forward))
 
 (define-interactive (back)
   "Browse backwards in history"
-  (webview-go-back))
+  (buffer-back))
+
+(define-interactive (home)
+  "Load default home page"
+  (set-buffer-uri! default-home-page))
+
+(define-interactive (reload)
+  "Reload current URI"
+  (buffer-reload))
 
 (define-interactive (make-query #:optional (q (read-from-minibuffer "Query: ")))
   "Makes a new buffer and queries ARG using 'search-provider-format"
