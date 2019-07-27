@@ -59,6 +59,17 @@ struct _NomadApp
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadApp, nomad_app, GTK_TYPE_APPLICATION);
 
+static void
+startup (GApplication *app, gpointer data)
+{
+}
+
+static void
+shutdown (GApplication *app, gpointer data)
+{
+  scm_call_0 (scm_c_public_ref ("nomad app", "shutdown"));
+}
+
 NomadApp *
 nomad_app_get_default ()
 {
@@ -268,6 +279,10 @@ SCM_DEFINE_PUBLIC (scm_nomad_start, "start-browser", 0, 0, 0, (),
   NomadApp *app = nomad_app_new ();
   intmax_t status;
   status = g_application_run (G_APPLICATION (app), 0, NULL);
+
+  g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
+  g_signal_connect (app, "shutdown", G_CALLBACK (shutdown), NULL);
+
   return scm_from_intmax (status);
 }
 
