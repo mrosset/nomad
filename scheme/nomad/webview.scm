@@ -74,6 +74,15 @@
   (content #:accessor buffer-content  #:init-keyword #:content)
   (pointer #:getter buffer-pointer #:setter set-buffer-pointer! #:init-keyword #:pointer #:init-value %null-pointer))
 
+(define-method (buffer-hints)
+  (webkit-hints (buffer-pointer (current-buffer))))
+
+(define-method (buffer-scroll-up)
+  (webkit-scroll-up (buffer-pointer (current-buffer))))
+
+(define-method (buffer-scroll-down)
+  (webkit-scroll-down (buffer-pointer (current-buffer))))
+
 (define-method (buffer-back)
   (webkit-back (buffer-pointer (current-buffer))))
 
@@ -163,6 +172,8 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
   (if (string-contains url "://") url
       (string-append "https://" url)))
 
+;; FIXME: sorry nly I broke this. This should now use the buffer-forward and
+;; buffer-backward API.
 (define* (history-forward #:optional x)
   (if (not x) (webview-go-forward)
       (cond ((zero? x) #f)
@@ -177,6 +188,17 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
   "Browse to URI. URI is prefixed with https:// if no protocol is
 specified. Returns the final URL passed to webkit"
   (set-buffer-uri! (prefix-url url) (current-buffer)))
+
+(define-interactive (hints)
+  (buffer-hints))
+
+(define-interactive (scroll-up)
+  "Scroll buffer up"
+  (buffer-scroll-up))
+
+(define-interactive (scroll-down)
+  "Scroll buffer down"
+  (buffer-scroll-down))
 
 (define-interactive (forward)
   "Go forward in browser history"

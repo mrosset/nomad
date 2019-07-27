@@ -113,37 +113,36 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_load_html, "webkit-load-html", 2, 0, 0,
 gboolean
 scroll_up_invoke (void *data)
 {
-  WebKitWebView *web_view;
-  NomadApp *app = nomad_app_get_default ();
+  WebKitWebView *view = (WebKitWebView *)data;
 
-  web_view = nomad_app_get_webview (NOMAD_APP (app));
-  webkit_web_view_run_javascript (web_view, "window.scrollBy(0, -25)", NULL,
-                                  NULL, NULL);
+  webkit_web_view_run_javascript (view, "window.scrollBy(0, -25)", NULL, NULL,
+                                  NULL);
   return FALSE;
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_scroll_up, "scroll-up", 0, 0, 0, (),
-                   "Internal procedure to scroll WebView up")
-{
-  g_main_context_invoke (NULL, scroll_up_invoke, NULL);
-  return SCM_UNDEFINED;
 }
 
 gboolean
 scroll_down_invoke (void *data)
 {
-  WebKitWebView *web_view;
-  NomadApp *app = nomad_app_get_default ();
+  WebKitWebView *view = (WebKitWebView *)data;
 
-  web_view = nomad_app_get_webview (NOMAD_APP (app));
-  webkit_web_view_run_javascript (web_view, "window.scrollBy(0, 25)", NULL,
-                                  NULL, NULL);
+  webkit_web_view_run_javascript (view, "window.scrollBy(0, 25)", NULL, NULL,
+                                  NULL);
   return FALSE;
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_scroll_down, "scroll-down", 0, 0, 0, (), "")
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_scroll_up, "webkit-scroll-up", 1, 0, 0,
+                   (SCM pointer),
+                   "Internal procedure to scroll WebView POINTER up")
 {
-  g_main_context_invoke (NULL, scroll_down_invoke, NULL);
+  g_main_context_invoke (NULL, scroll_up_invoke, scm_to_pointer (pointer));
+  return SCM_UNDEFINED;
+}
+
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_scroll_down, "webkit-scroll-down", 1, 0, 0,
+                   (SCM pointer),
+                   "Internal procedure to scroll WebView POINTER down")
+{
+  g_main_context_invoke (NULL, scroll_down_invoke, scm_to_pointer (pointer));
   return SCM_UNDEFINED;
 }
 
@@ -241,11 +240,10 @@ run_hints_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 }
 
 // FIXME: invoke on main thread?
-SCM_DEFINE_PUBLIC (scm_nomad_show_hints, "hints", 0, 0, 0, (),
-                   "Shows WebView html links.")
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_hints, "webkit-hints", 1, 0, 0,
+                   (SCM pointer), "Shows WebView html links for POINTER")
 {
-  NomadApp *app = nomad_app_get_default ();
-  WebKitWebView *view = nomad_app_get_webview (app);
+  WebKitWebView *view = (WebKitWebView *)scm_to_pointer (pointer);
 
   webkit_web_view_run_javascript_from_gresource (
       view, "/org/gnu/nomad/hints.js", NULL, run_hints_cb, view);
