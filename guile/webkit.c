@@ -76,7 +76,8 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_new, "webkit-new", 0, 0, 0, (SCM pointer),
   return scm_from_pointer (view, NULL);
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_make_proxy, "webkit-make-proxy", 2, 0, 0, (SCM proxy, SCM ignore),
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_new,
+                   "webkit_network_proxy_settings_new", 2, 0, 0, (SCM proxy, SCM ignore),
                    "Returns a newly initialized webkit proxy settings.")
 {
   gchar *c_proxy = scm_to_locale_string (proxy);
