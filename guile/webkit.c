@@ -120,32 +120,29 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_add_proxy_for_scheme,
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_web_context_set_network_proxy_settings,
-                   "webkit_web_context_set_network_proxy_settings", 1, 1, 0,
-                   (SCM mode, SCM pointer), "Activate proxy.")
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_web_context_set_network_proxy_settings_custom,
+                   "webkit_web_context_set_network_proxy_settings_custom", 1, 0, 0,
+                   (SCM pointer), "Activate custom proxy pointer points to.")
 {
-  /* FIXME: API */
-  /* (proxy-start #t) -> use system proxy, (proxy-start #f) -> no proxy,
-   * (proxy-start #t pointer) -> apply the proxy pointer points to. Good? */
+  webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
+                                                        WEBKIT_NETWORK_PROXY_MODE_CUSTOM,
+                                                        scm_to_pointer (pointer));
+  return SCM_UNSPECIFIED;}
 
-  /* for proxy mode we have a few options:
-   * WEBKIT_NETWORK_PROXY_MODE_DEFAULT
-   * WEBKIT_NETWORK_PROXY_MODE_NO_PROXY
-   * WEBKIT_NETWORK_PROXY_MODE_CUSTOM
-   * In case of custom mode, proxy-settings has to be a valid proxy,
-   * otherwise has to be NULL.*/
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_web_context_set_network_proxy_settings_default,
+                   "webkit_web_context_set_network_proxy_settings_default", 0, 0, 0,
+                   (), "Activate system default proxy.")
+{
+  webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
+                                                 WEBKIT_NETWORK_PROXY_MODE_DEFAULT, NULL);
+  return SCM_UNSPECIFIED;}
 
-  if (scm_is_false (mode))
-    {webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
-                                                    WEBKIT_NETWORK_PROXY_MODE_NO_PROXY, NULL);}
-  else
-    {if (scm_is_true (pointer))
-        {webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
-                                                        WEBKIT_NETWORK_PROXY_MODE_CUSTOM, scm_to_pointer (pointer));}
-      else
-        {webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
-                                                        WEBKIT_NETWORK_PROXY_MODE_DEFAULT, NULL);}}
-
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_web_context_set_network_proxy_settings_no_proxy,
+                   "webkit_web_context_set_network_proxy_settings_no_proxy", 0, 0, 0,
+                   (), "Activate system default proxy.")
+{
+  webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
+                                                 WEBKIT_NETWORK_PROXY_MODE_NO_PROXY, NULL);
   return SCM_UNSPECIFIED;}
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_uri, "webkit-uri", 1, 0, 0, (SCM pointer),
