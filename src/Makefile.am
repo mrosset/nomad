@@ -33,9 +33,11 @@ nomad: nomad.in Makefile
 format:
 	 clang-format -i *.c *.h
 
+devel_flags = --gapplication-app-id "org.devel.nomad"
+
 test: all
-	$(top_builddir)/pre-inst-env ./nomad --gapplication-app-id "org.devel.nomad"
+	$(top_builddir)/pre-inst-env ./nomad $(devel_flags)
 
 test-url: all
 	echo "test url"
-	$(top_builddir)/pre-inst-env ./nomad "https://bufio.org" --listen $(DEVEL_SOCKET)
+	$(top_builddir)/pre-inst-env ./nomad "https://bufio.org" $(devel_flags)

@@ -27,7 +27,7 @@
         "~a~%"
         (nomad-version))
 (init)
-(exit (start-browser))
+(exit (start-nomad (command-line)))
 
 ;; Local Variables:
 ;; mode: scheme

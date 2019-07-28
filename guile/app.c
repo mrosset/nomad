@@ -25,6 +25,7 @@
 #include "../config.h"
 #include "app.h"
 #include "frame.h"
+#include "util.h"
 
 #define BUS_INTERFACE_NAME "org.gnu.nomad.webview"
 #define BUS_INTERFACE_PATH "/org/gnu/nomad/webview"
@@ -273,15 +274,20 @@ SCM_DEFINE_PUBLIC (
   return scm_from_utf8_string (VERSION);
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_start, "start-browser", 0, 0, 0, (),
-                   "Start a G_APPLIACTION instance.")
+SCM_DEFINE_PUBLIC (scm_nomad_start, "start-nomad", 1, 0, 0, (SCM lst),
+                   "Starts nomad application with LST as program arguments")
 {
-  NomadApp *app = nomad_app_new ();
   intmax_t status;
-  status = g_application_run (G_APPLICATION (app), 0, NULL);
+  NomadApp *app = nomad_app_new ();
+  int argc = scm_to_int (scm_length (lst));
+  SCM ptr = scm_nomad_list_to_argv (lst);
+
+  char **argv = g_strdupv (scm_to_pointer (ptr));
 
   g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
   g_signal_connect (app, "shutdown", G_CALLBACK (shutdown), NULL);
+
+  status = g_application_run (G_APPLICATION (app), argc, argv);
 
   return scm_from_intmax (status);
 }
