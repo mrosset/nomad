@@ -101,6 +101,14 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_free,
   return SCM_UNSPECIFIED;
 }
 
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_copy,
+                   "webkit_network_proxy_settings_copy", 1, 0, 0, (SCM pointer),
+                   "Copies a webkit proxy settings.")
+{
+  return scm_from_pointer (webkit_network_proxy_settings_copy
+                           (scm_to_pointer (pointer)), NULL);
+}
+
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_uri, "webkit-uri", 1, 0, 0, (SCM pointer),
                    "Returns the current uri for a webkit view pointer. If "
                    "webview has not uri it returns #f")
