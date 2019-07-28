@@ -77,7 +77,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_new, "webkit-new", 0, 0, 0, (SCM pointer),
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_new,
-                   "webkit_network_proxy_settings_new", 2, 0, 0, (SCM proxy, SCM ignore),
+                   "webkit-proxy-settings-new", 2, 0, 0, (SCM proxy, SCM ignore),
                    "Returns a newly initialized webkit proxy settings.")
 {
   size_t len = scm_to_int (scm_length (ignore));
@@ -94,7 +94,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_new,
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_free,
-                   "webkit_network_proxy_settings_free", 1, 0, 0, (SCM pointer),
+                   "webkit-proxy-settings-free", 1, 0, 0, (SCM pointer),
                    "Frees up a webkit proxy settings.")
 {
   webkit_network_proxy_settings_free (scm_to_pointer (pointer));
@@ -102,7 +102,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_free,
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_copy,
-                   "webkit_network_proxy_settings_copy", 1, 0, 0, (SCM pointer),
+                   "webkit-proxy-settings-copy", 1, 0, 0, (SCM pointer),
                    "Copies a webkit proxy settings.")
 {
   return scm_from_pointer (webkit_network_proxy_settings_copy
@@ -110,7 +110,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_copy,
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_add_proxy_for_scheme,
-                   "webkit_network_proxy_settings_add_proxy_for_scheme"
+                   "webkit-proxy-settings-add-proxy-for-scheme"
                    , 3, 0, 0, (SCM pointer, SCM scheme, SCM proxy),
                    "Adds a URI-scheme-specific proxy. URIs whose scheme matches scheme will be proxied via proxy.")
 {
@@ -121,7 +121,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_add_proxy_for_scheme,
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_web_context_set_network_proxy_settings_custom,
-                   "webkit_web_context_set_network_proxy_settings_custom", 1, 0, 0,
+                   "webkit-set-proxy-settings-custom", 1, 0, 0,
                    (SCM pointer), "Activate custom proxy pointer points to.")
 {
   webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
@@ -130,7 +130,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_web_context_set_network_proxy_settings_custo
   return SCM_UNSPECIFIED;}
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_web_context_set_network_proxy_settings_default,
-                   "webkit_web_context_set_network_proxy_settings_default", 0, 0, 0,
+                   "webkit-set-proxy-settings-default", 0, 0, 0,
                    (), "Activate system default proxy.")
 {
   webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
@@ -138,7 +138,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_web_context_set_network_proxy_settings_defau
   return SCM_UNSPECIFIED;}
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_web_context_set_network_proxy_settings_no_proxy,
-                   "webkit_web_context_set_network_proxy_settings_no_proxy", 0, 0, 0,
+                   "webkit-set-proxy-settings-no-proxy", 0, 0, 0,
                    (), "Activate system default proxy.")
 {
   webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
