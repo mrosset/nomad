@@ -109,6 +109,17 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_copy,
                            (scm_to_pointer (pointer)), NULL);
 }
 
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_add_proxy_for_scheme,
+                   "webkit_network_proxy_settings_add_proxy_for_scheme"
+                   , 3, 0, 0, (SCM pointer, SCM scheme, SCM proxy),
+                   "Adds a URI-scheme-specific proxy. URIs whose scheme matches scheme will be proxied via proxy.")
+{
+  webkit_network_proxy_settings_add_proxy_for_scheme
+    (scm_to_pointer (pointer), scm_to_locale_string (scheme),
+     scm_to_locale_string (scheme));
+  return SCM_UNSPECIFIED;
+}
+
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_uri, "webkit-uri", 1, 0, 0, (SCM pointer),
                    "Returns the current uri for a webkit view pointer. If "
                    "webview has not uri it returns #f")
