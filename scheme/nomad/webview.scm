@@ -36,7 +36,6 @@
             default-home-page
             prefix-url
             search-provider-format
-            history-forward
             webview-map
             firefox-webview-map
             webview-enter-hook
@@ -171,18 +170,6 @@
 e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
   (if (string-contains url "://") url
       (string-append "https://" url)))
-
-;; FIXME: sorry nly I broke this. This should now use the buffer-forward and
-;; buffer-backward API.
-(define* (history-forward #:optional x)
-  (if (not x) (webview-go-forward)
-      (cond ((zero? x) #f)
-            ((positive? x)
-             (and (webview-go-forward)
-                  (history-forward (1- x))))
-            ((negative? x)
-             (and (webview-go-back)
-                  (history-forward (1+ x)))))))
 
 (define-interactive (browse #:optional (url (read-from-minibuffer "URL: ")))
   "Browse to URI. URI is prefixed with https:// if no protocol is
