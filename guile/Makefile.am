@@ -48,7 +48,7 @@ EXTRA_DIST = $(G_RESOURCES)
 
 DOT_X_FILES = extension.x webkit.x frame.x app.x util.x minibuffer.x
 
-BUILT_SOURCES = $(DOT_X_FILES) $(G_RESOURCES)
+BUILT_SOURCES = $(DOT_X_FILES)
 
 CLEANFILES = $(BUILT_SOURCES)
 
