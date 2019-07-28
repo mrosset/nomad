@@ -39,18 +39,19 @@ scm_nomad_free_argv (void *data)
   g_strfreev (data);
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_scm_to_argv, "list->argv", 1, 0, 0, (SCM lst),
+SCM_DEFINE_PUBLIC (scm_nomad_list_to_argv, "list->argv", 1, 0, 0, (SCM lst),
                    "Converts LST to char **argv and returns SCM pointer")
 {
   int len;
   gchar **argv;
 
   len = scm_to_int (scm_length (lst));
-  argv = malloc (sizeof (char *) * len);
+  argv = malloc (sizeof (char *) * len + 1);
 
   for (int i = 0; i < len; i++)
     {
-      argv[i] = scm_to_locale_string (scm_list_ref (lst, scm_from_int (i)));
+      SCM item = scm_list_ref (lst, scm_from_int (i));
+      argv[i] = scm_to_locale_string (item);
     }
 
   argv[len] = NULL;
@@ -60,7 +61,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_scm_to_argv, "list->argv", 1, 0, 0, (SCM lst),
 
 SCM_DEFINE_PUBLIC (scm_nomad_argv_to_list, "argv->list", 1, 0, 0,
                    (SCM pointer),
-                   "Converts char **argv pointer to string LIST")
+                   "Converts char **argv SCM pointer to string LIST")
 {
   char **argv = scm_to_pointer (pointer);
   int len = g_strv_length (argv);
@@ -73,6 +74,14 @@ SCM_DEFINE_PUBLIC (scm_nomad_argv_to_list, "argv->list", 1, 0, 0,
     }
 
   return lst;
+}
+
+SCM_DEFINE_PUBLIC (scm_nomad_argv_length, "argv-length", 1, 0, 0,
+                   (SCM pointer),
+                   "Returns the number of strings in argv POINTER")
+{
+  char **argv = scm_to_pointer (pointer);
+  return scm_from_int (g_strv_length (argv));
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_yank_string, "yank-string", 1, 0, 0, (SCM string),

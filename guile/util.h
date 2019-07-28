@@ -23,6 +23,7 @@
 #include <libguile.h>
 
 void scm_to_argv (SCM list, char **argv);
+SCM scm_nomad_list_to_argv (SCM list);
 SCM scm_c_make_command (const char *key);
 SCM scm_c_register_interactive (const char *c_name);
 void scm_c_debug_object (SCM object);
