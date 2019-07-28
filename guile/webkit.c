@@ -120,6 +120,25 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_add_proxy_for_scheme,
   return SCM_UNSPECIFIED;
 }
 
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_web_context_set_network_proxy_settings,
+                   "webkit_web_context_set_network_proxy_settings", 1, 1, 0,
+                   (SCM mode, SCM pointer), "Activate proxy.")
+{
+  /* FIXME: API */
+  /* (proxy-start #t) -> use system proxy, (proxy-start #f) -> no proxy,
+   * (proxy-start #t pointer) -> apply the proxy pointer points to. Good? */
+
+  /* for proxy mode we have a few options:
+   * WEBKIT_NETWORK_PROXY_MODE_DEFAULT
+   * WEBKIT_NETWORK_PROXY_MODE_NO_PROXY
+   * WEBKIT_NETWORK_PROXY_MODE_CUSTOM
+   * In case of custom mode, proxy-settings has to be a valid proxy,
+   * otherwise has to be NULL.*/
+
+  /* webkit_web_context_set_network_proxy_settings(context, proxy-mode, proxy-settings); */
+  return SCM_UNSPECIFIED;
+}
+
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_uri, "webkit-uri", 1, 0, 0, (SCM pointer),
                    "Returns the current uri for a webkit view pointer. If "
                    "webview has not uri it returns #f")
