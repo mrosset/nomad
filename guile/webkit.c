@@ -135,9 +135,18 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_web_context_set_network_proxy_settings,
    * In case of custom mode, proxy-settings has to be a valid proxy,
    * otherwise has to be NULL.*/
 
-  /* webkit_web_context_set_network_proxy_settings(context, proxy-mode, proxy-settings); */
-  return SCM_UNSPECIFIED;
-}
+  if (scm_is_false (mode))
+    {webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
+                                                    WEBKIT_NETWORK_PROXY_MODE_NO_PROXY, NULL);}
+  else
+    {if (scm_is_true (pointer))
+        {webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
+                                                        WEBKIT_NETWORK_PROXY_MODE_CUSTOM, scm_to_pointer (pointer));}
+      else
+        {webkit_web_context_set_network_proxy_settings (webkit_web_context_get_default(),
+                                                        WEBKIT_NETWORK_PROXY_MODE_DEFAULT, NULL);}}
+
+  return SCM_UNSPECIFIED;}
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_uri, "webkit-uri", 1, 0, 0, (SCM pointer),
                    "Returns the current uri for a webkit view pointer. If "
