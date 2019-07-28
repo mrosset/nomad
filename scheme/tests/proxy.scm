@@ -22,6 +22,12 @@
   #:use-module (srfi srfi-64)
   #:use-module (system foreign))
 
+;;; FIXME: TODO:
+;;; 1. fix these tests
+;;; 2. build the tests in makefile
+;;; 3. use scm_nomad_scm_to_argv in *-webkit-proxy-new
+;;; 4. add proxy-settings to WebContext(actually use proxy)
+
 (test-begin "proxy")
 
 (define proxy (webkit_network_proxy_settings_new "http://localhost:9050"
