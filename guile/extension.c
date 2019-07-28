@@ -59,22 +59,16 @@ init_guile_nomad_frame ()
 }
 
 void
+init_guile_nomad_util ()
+{
+  scm_c_define_module ("nomad util", nomad_util_register_function, NULL);
+}
+
+void
 init_guile_nomad_lib ()
 {
-  /*
-   * Define our C scheme modules.
-   *
-   * NOTE: Order is important here when it comes to mixing scheme and C
-   * code. The scheme code needs to be used first before defining C
-   * modules. And scheme modules that use C modules need to have the C module
-   * defined first.
-   *
-   */
   scm_c_define_module ("nomad lib", register_function, NULL);
 
   /* scm_c_define_module ("nomad minibuffer",
    * nomad_minibuffer_register_function, NULL); */
-
-  scm_c_use_module ("nomad util");
-  scm_c_define_module ("nomad util", nomad_util_register_function, NULL);
 }

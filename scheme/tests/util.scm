@@ -29,4 +29,9 @@
     (format #f "INFO: test\n")
     (with-output-to-string (lambda _
                              (info "test")))))
+(test-equal "list->argv"
+  '("one" "two" "three")
+  (let ((argv (list->argv '("one" "two" "three"))))
+    (argv->list argv)))
+
 (test-end)

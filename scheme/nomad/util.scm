@@ -18,6 +18,7 @@
 
 ;; FIXME: merge util module into app?
 (define-module (nomad util)
+  #:use-module (nomad lib)
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 match)
   #:use-module (oop goops)
@@ -26,6 +27,8 @@
             list->keymap
             add-to-nomad-path
             ~ // ~/))
+
+(load-extension (dynamic-path) "init_guile_nomad_util")
 
 (define (list->keymap lst)
   "Creates a new keymap from LST"
