@@ -61,7 +61,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_list_to_argv, "list->argv", 1, 0, 0, (SCM lst),
 
 SCM_DEFINE_PUBLIC (scm_nomad_argv_to_list, "argv->list", 1, 0, 0,
                    (SCM pointer),
-                   "Converts char **argv SCM pointer to string LIST")
+                   "Converts char **argv SCM POINTER to string list")
 {
   char **argv = scm_to_pointer (pointer);
   int len = g_strv_length (argv);

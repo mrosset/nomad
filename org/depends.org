@@ -2,6 +2,9 @@
 ** Ubuntu 19.04
 #+begin_src shell :results output silent
 sudo apt install -y \
+guile-2.2 \
+guile-2.2-dev \
+guile-library \
 libgtk-3-dev \
 libwebkit2gtk-4.0-dev \
 libgtksourceview-4-dev
