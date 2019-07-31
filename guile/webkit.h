@@ -29,6 +29,7 @@ G_DECLARE_FINAL_TYPE (NomadWebView, nomad_web_view, NOMAD, WEB_VIEW,
                       WebKitWebView)
 
 GtkWidget *nomad_web_view_new ();
+void nomad_web_view_switch_to_buffer (NomadWebView *view);
 void nomad_webkit_register_function (void *data);
 
 #endif

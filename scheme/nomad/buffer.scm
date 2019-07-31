@@ -108,16 +108,12 @@
     (switch-to-buffer buffer)
     buffer))
 
-(define (webview-buffer? buffer)
-  (let ((iswebview #f))
-    (with-buffer buffer
-      (catch 'no-such-local-variable
-        (lambda _
-          (when (local-var 'web-buffer)
-            (set! iswebview #t)))
-        (lambda (key . param)
-          (set! iswebview #f))))
-    iswebview))
+(define-public (switch-if-not-current buffer)
+  "Switch to buffer if it's not the current buffer already. Returns #t if buffer switched"
+  (if (eq? buffer (current-buffer))
+      #f
+      (begin (switch-to-buffer buffer)
+             #t)))
 
 ;; FIXME: This should probably not be needed. But if certain buffers are
 ;; killed then they are no longer webviews. And so can not be switched to or

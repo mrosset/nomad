@@ -19,6 +19,7 @@
 (define-module (tests buffer)
   #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
+  #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64))
 
@@ -34,3 +35,13 @@
   (begin (switch-to-buffer "*bar*")
          (kill-some-buffers)
          (length (buffer-list))))
+
+(test-equal "don't switch on current"
+  #f
+  (let ((buffer (switch-to-buffer "*bar*")))
+    (switch-if-not-current buffer)))
+
+(test-assert "switch when not current"
+  (let ((buffer (switch-to-buffer "*bar*")))
+    (switch-to-buffer "*baz*")
+    (switch-if-not-current buffer)))

@@ -69,6 +69,13 @@ nomad_web_view_new ()
   return g_object_new (NOMAD_WEB_VIEW_TYPE, NULL);
 }
 
+void
+nomad_web_view_switch_to_buffer (NomadWebView *view)
+{
+  scm_call_1 (scm_c_public_ref ("nomad buffer", "switch-if-not-current"),
+              view->priv->buffer);
+}
+
 SCM_DEFINE_PUBLIC (
     scm_nomad_webkit_new, "webkit-new", 1, 0, 0, (SCM buffer),
     "Returns a newly initialized webkit view with its parent buffer as BUFFER")

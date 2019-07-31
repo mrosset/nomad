@@ -32,6 +32,7 @@
 #include "frame.h"
 #include "minibuffer.h"
 #include "util.h"
+#include "webkit.h"
 
 typedef struct _NomadAppFramePrivate NomadAppFramePrivate;
 
@@ -161,6 +162,13 @@ frame_key_press_cb (GtkWidget *widget, GdkEventKey *event)
     }
 
   return FALSE;
+}
+
+static void
+switch_page_cb (GtkNotebook *notebook, GtkWidget *page, guint page_num,
+                gpointer user_data)
+{
+  nomad_web_view_switch_to_buffer (NOMAD_WEB_VIEW (page));
 }
 
 /* static void
@@ -389,6 +397,9 @@ nomad_app_frame_init (NomadAppFrame *self)
 
   // signals
   g_signal_connect (self, "key-press-event", G_CALLBACK (frame_key_press_cb),
+                    (gpointer)self);
+
+  g_signal_connect (priv->notebook, "switch-page", G_CALLBACK (switch_page_cb),
                     (gpointer)self);
 
   gtk_widget_show_all (GTK_WIDGET (self));
