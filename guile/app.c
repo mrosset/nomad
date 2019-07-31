@@ -63,6 +63,26 @@ G_DEFINE_TYPE_WITH_PRIVATE (NomadApp, nomad_app, GTK_TYPE_APPLICATION);
 static void
 startup (GApplication *app, gpointer data)
 {
+  WebKitCookieManager *cookie_manager;
+  char *c_cookie_file;
+  SCM cookie_file = scm_variable_ref (scm_c_lookup ("user-cookie-file"));
+  SCM use_cookies = scm_variable_ref (scm_c_lookup ("use-cookies?"));
+
+  // Cookies
+
+  c_cookie_file = scm_to_locale_string (cookie_file);
+
+  if (scm_is_true (use_cookies))
+    {
+      cookie_manager = webkit_web_context_get_cookie_manager (
+          webkit_web_context_get_default ());
+
+      webkit_cookie_manager_set_persistent_storage (
+          cookie_manager, c_cookie_file,
+          WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE);
+    }
+
+  g_free (c_cookie_file);
 }
 
 static void
@@ -90,27 +110,6 @@ nomad_app_open_cb (GApplication *application, GFile **files, gint n_files,
 static void
 nomad_app_init (NomadApp *self)
 {
-  WebKitCookieManager *cookie_manager;
-  char *c_cookie_file;
-  SCM cookie_file = scm_variable_ref (scm_c_lookup ("user-cookie-file"));
-  SCM use_cookies = scm_variable_ref (scm_c_lookup ("use-cookies?"));
-
-  // Cookies
-
-  c_cookie_file = scm_to_locale_string (cookie_file);
-
-  if (scm_is_true (use_cookies))
-    {
-      cookie_manager = webkit_web_context_get_cookie_manager (
-          webkit_web_context_get_default ());
-
-      webkit_cookie_manager_set_persistent_storage (
-          cookie_manager, c_cookie_file,
-          WEBKIT_COOKIE_PERSISTENT_STORAGE_SQLITE);
-    }
-
-  g_free (c_cookie_file);
-
   self->priv = nomad_app_get_instance_private (self);
   g_signal_connect (G_APPLICATION (self), "open",
                     G_CALLBACK (nomad_app_open_cb), NULL);
