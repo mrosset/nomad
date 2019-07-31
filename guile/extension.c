@@ -26,8 +26,8 @@
 #include <gtk/gtk.h>
 #include <libguile.h>
 
-SCM_DEFINE_PUBLIC (scm_nomad_temp, "guile-nomad-available", 0, 0, 0, (),
-                   "Test function")
+SCM_DEFINE_PUBLIC (scm_nomad_libguile_nomad_available, "libguile-nomad?", 0, 0,
+                   0, (), "Returns true if libguile-nomad is loaded")
 {
   return SCM_BOOL_T;
 }

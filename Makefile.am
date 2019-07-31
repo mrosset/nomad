@@ -39,6 +39,9 @@ test-install: install
 guix-local:
 	guix build -f ./guix-local.scm
 
+install-guix-local:
+	guix package -f ./guix-local.scm
+
 format:
 	$(MAKE) -C src format
 

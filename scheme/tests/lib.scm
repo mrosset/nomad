@@ -20,4 +20,4 @@
   #:use-module (nomad lib)
   #:use-module (srfi srfi-64))
 
-(test-assert "loaded" (guile-nomad-available))
+(test-assert "loaded" (libguile-nomad?))

@@ -19,19 +19,18 @@
 (define-module (nomad lib)
   #:export (dynamic-path))
 
-(define (dynamic-path)
-  (let ((devel "@TOPBUILD@/guile/.libs/libguile-nomad.so")
-        (installed "@LIBEXEC@/nomad/libguile-nomad.so"))
-    (cond
-     ((file-exists? devel) devel)
-     ((file-exists? installed) installed))))
-
 ;; FIXE: catch the right exception here
 (catch #t
   (lambda _
     (load-extension "libguile-nomad" "init_guile_nomad_lib"))
   (lambda (key . param)
-    (load-extension "@LIBEXEC@/nomad/libguile-nomad.so" "init_guile_nomad_lib")))
+    (load-extension "@LIBEXEC@/nomad/libguile-nomad.so"
+                    "init_guile_nomad_lib")))
+
+(define (dynamic-path)
+  (if (libguile-nomad?)
+      "libguile-nomad"
+      "@LIBEXEC@/nomad/libguile-nomad.so"))
 
 ;; Local Variables:
 ;; mode: scheme
