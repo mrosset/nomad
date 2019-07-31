@@ -18,6 +18,8 @@
 
 (define-module (test webkit)
   #:use-module (system foreign)
+  #:use-module (emacsy emacsy)
+  #:use-module (oop goops)
   #:use-module (srfi srfi-64))
 
 ;; FIXME: this is a dirty hack. fix this so that guix can find the webkit
@@ -31,8 +33,9 @@
     (test-skip "webkit")
     (use-modules (nomad webkit)))
 
+(test-skip "webkit")
 (test-group "webkit"
-            (let* ((view (webkit-new)))
+            (let* ((buffer (make <buffer>)) (view (webkit-new buffer)))
               (test-assert "webview is pointer?"
                 (pointer? view))
               (test-assert "view is not null"

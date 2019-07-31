@@ -92,7 +92,7 @@
   "Creates a new webview buffer with NAME and CONTENT"
   (let ((buffer (make-webcontent-buffer name content)))
     (with-buffer buffer
-                 (set-buffer-pointer! (webkit-new))
+                 (set-buffer-pointer! (webkit-new buffer))
                  (set-buffer-hooks!)
                  (buffer-render))
     (switch-to-buffer buffer)
@@ -102,7 +102,7 @@
   "Creates a new webview-bufer with URL"
   (let ((buffer (make-webview-buffer url)))
     (with-buffer buffer
-                 (set-buffer-pointer! (webkit-new))
+                 (set-buffer-pointer! (webkit-new buffer))
                  (set-buffer-hooks!)
                  (set-buffer-uri! (prefix-url url)))
     (switch-to-buffer buffer)
@@ -127,7 +127,8 @@
   (for-each (lambda (buffer)
               (unless (eq? <webview-buffer> (class-of buffer))
                 (buffer->webview-buffer buffer)
-                (set-buffer-pointer! buffer (webkit-new))
+                (set-buffer-pointer! buffer
+                                     (webkit-new buffer))
                 (buffer-render buffer)
                 (notebook-insert buffer 0)))
             (buffer-list)))
