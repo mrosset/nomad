@@ -64,7 +64,8 @@ SOURCES =			\
 	nomad/util.scm		\
 	nomad/views.scm		\
 	nomad/webview.scm	\
-	nomad/webkit.scm
+	nomad/webkit.scm	\
+	nomad/webkit-settings.scm
 
 
 

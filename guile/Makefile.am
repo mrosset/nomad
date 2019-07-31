@@ -22,7 +22,16 @@ AM_CFLAGS = -Wall -Werror
 
 libguile_nomad_LTLIBRARIES = libguile-nomad.la
 libguile_nomaddir = $(libexecdir)/nomad/
-libguile_nomad_la_SOURCES = extension.c webkit.c frame.c app.c util.c minibuffer.c resources.c
+
+libguile_nomad_la_SOURCES =	app.c		\
+				frame.c		\
+				minibuffer.c	\
+				resources.c	\
+				util.c		\
+				webkit.c	\
+				webkitsettings.c	\
+				extension.c
+
 
 libguile_nomad_la_CFLAGS = $(AM_CFLAGS)			\
 			$(EMACSY_CFLAGS)		\
@@ -46,7 +55,7 @@ G_RESOURCES = gresource.xml
 
 EXTRA_DIST = $(G_RESOURCES)
 
-DOT_X_FILES = extension.x webkit.x frame.x app.x util.x minibuffer.x
+DOT_X_FILES = extension.x webkit.x frame.x app.x util.x minibuffer.x webkitsettings.x
 
 BUILT_SOURCES = $(DOT_X_FILES)
 
