@@ -273,6 +273,18 @@ SCM_DEFINE_PUBLIC (
   return scm_from_utf8_string (VERSION);
 }
 
+SCM_DEFINE_PUBLIC (scm_nomad_gtk_init, "gtk-init", 0, 0, 0, (),
+                   "Initialize GTK and returns #t on success. *NOTE* this "
+                   "should only be used for "
+                   "testing, start-nomad will initialize GTK. Returns ")
+{
+  if (gtk_init_check (0, NULL))
+    {
+      return SCM_BOOL_T;
+    }
+  return SCM_BOOL_F;
+}
+
 SCM_DEFINE_PUBLIC (scm_nomad_start, "start-nomad", 1, 0, 0, (SCM lst),
                    "Starts nomad application with LST as program arguments")
 {

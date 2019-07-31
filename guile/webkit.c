@@ -69,8 +69,9 @@ nomad_web_view_new ()
   return g_object_new (NOMAD_WEB_VIEW_TYPE, NULL);
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_new, "webkit-new", 1, 0, 0, (SCM buffer),
-                   "Returns a newly initialized webkit view")
+SCM_DEFINE_PUBLIC (
+    scm_nomad_webkit_new, "webkit-new", 1, 0, 0, (SCM buffer),
+    "Returns a newly initialized webkit view with its parent buffer as BUFFER")
 {
   GtkWidget *view = nomad_web_view_new ();
   NomadWebViewPrivate *priv

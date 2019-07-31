@@ -22,7 +22,9 @@
  (gnu packages pkg-config)
  (gnu packages tls)
  (gnu packages webkit)
- (gnu packages xdisorg))
+ (gnu packages xdisorg)
+ (gnu packages xorg)
+)
 
 (define-public emacsy-git
   (let ((commit "ed88cfbe57d5a40ea4e1604bfdc61f10ff750626"))
@@ -121,7 +123,8 @@
           ,gsettings-desktop-schemas)
          ("gtk+" ,gtk+)
          ("gtksourceview" ,gtksourceview)
-         ("webkitgtk" ,webkitgtk)))
+         ("webkitgtk" ,webkitgtk)
+         ("xorg-server" ,xorg-server)))
       (arguments
        `(#:tests? #t
          #:modules ((guix build gnu-build-system)
@@ -131,6 +134,13 @@
                     (srfi srfi-26))
          #:phases
          (modify-phases %standard-phases
+           (add-before 'check 'start-xorg-server
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       ;; The test suite requires a running X server.
+                       (system (format #f "~a/bin/Xvfb :1 &"
+                                       (assoc-ref inputs "xorg-server")))
+                       (setenv "DISPLAY" ":1")
+                       #t))
            (add-after 'install 'wrap-binaries
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
