@@ -19,6 +19,7 @@
 (define-module (nomad webview)
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 optargs)
+  #:use-module (nomad buffer)
   #:use-module (nomad eval)
   #:use-module (nomad pointer)
   #:use-module (nomad util)
@@ -193,7 +194,7 @@ specified. Returns the final URL passed to webkit"
 (define-interactive (current-url)
   "Returns the current url"
   (message "~a"
-           (webview-current-url)))
+           (buffer-uri (current-buffer))))
 
 (define-interactive (copy-current-url)
   "Copy current url to clipboard"

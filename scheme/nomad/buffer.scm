@@ -124,5 +124,8 @@
   "Converts text-buffers to <pointer-buffer> and inserts them into notebook"
   (for-each (lambda (buffer)
               (when (eq? <text-buffer> (class-of buffer))
-                (text-buffer->pointer-buffer buffer)))
+                (text-buffer->pointer-buffer buffer))
+              (when (eq? <nomad-text-buffer> (class-of buffer))
+                (set-source-text (buffer-pointer buffer)
+                                 (buffer:buffer-string buffer))))
             (buffer-list)))

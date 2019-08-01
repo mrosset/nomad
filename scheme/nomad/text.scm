@@ -27,14 +27,17 @@
 
 (load-extension (dynamic-path) "init_guile_nomad_text")
 
+(define-class-public <nomad-text-buffer> (<pointer-buffer>))
+
 (define-public (text-buffer->pointer-buffer buffer)
   "Converts a <text-buffer> class to a pointer-buffer."
-  (change-class buffer <pointer-buffer>)
+  (change-class buffer <nomad-text-buffer>)
   (set-buffer-pointer! buffer
                       (source-new))
   (add-hook! (buffer-enter-hook buffer)
              pointer-enter-hook)
   (add-hook! (buffer-kill-hook buffer)
              pointer-kill-hook)
+
   (notebook-insert buffer 0)
 )

@@ -45,17 +45,33 @@ source_buffer_new (const char *theme, const char *lang)
 SCM_DEFINE_PUBLIC (scm_nomad_source_new, "source-new", 0, 0, 0, (),
                    "Returns a newly initialized gtksource view SCM pointer")
 {
-  GtkWidget *source = gtk_source_view_new ();
+  GtkWidget *source = gtk_source_view_new_with_buffer (
+      source_buffer_new ("classic", "scheme"));
 
-  gtk_text_view_set_buffer (
-      GTK_TEXT_VIEW (source),
-      GTK_TEXT_BUFFER (text_buffer_new ("classic", "scheme")));
-  /* GtkWidget *view = nomad_web_view_new ();
-   * NomadWebViewPrivate *priv
-   *     = nomad_web_view_get_instance_private (NOMAD_WEB_VIEW (view));
-   *
-   * priv->buffer = buffer; */
   return scm_from_pointer (source, NULL);
+}
+
+SCM_DEFINE_PUBLIC (scm_nomad_set_source_text, "set-source-text", 2, 0, 0,
+                   (SCM pointer, SCM text),
+                   "Sets source view POINTER text to TEXT")
+{
+  GtkWidget *source = scm_to_pointer (pointer);
+  GtkTextBuffer *buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source));
+  gtk_text_buffer_set_text (buf, scm_to_locale_string (text), -1);
+  return SCM_UNDEFINED;
+}
+
+SCM_DEFINE_PUBLIC (scm_nomad_set_point, "set-source-point", 2, 0, 0,
+                   (SCM pointer, SCM point),
+                   "Sets source view POINTER cursor point to POINT")
+{
+  /* GtkWidget *source = scm_to_pointer (pointer);
+   * GtkTextBuffer *buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source));
+   *
+   * gtk_text_buffer_place_cursor (buf, const GtkTextIter *where); */
+  /* GtkTextBuffer *buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source)); */
+  /* gtk_text_buffer_set_text (buf, scm_to_locale_string (text), -1); */
+  return SCM_UNDEFINED;
 }
 
 void
