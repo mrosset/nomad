@@ -26,12 +26,6 @@
 #include <webkit2/webkit2.h>
 
 
-SCM_DEFINE_PUBLIC (scm_nomad_say_meow, "say-meow", 0, 0, 0, (),
-                   "Test if this module is working.")
-{
-  return SCM_BOOL_T;
-}
-
 SCM_DEFINE_PUBLIC (
                    scm_nomad_webkit_settings_new , "webkit_settings_new",
                    0, 0, 0, (),
