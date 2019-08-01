@@ -60,7 +60,7 @@
   (let ((bookmark-file (or file bookmark-file)))
     (let* ((out (open-output-file bookmark-file))
            (sexp (map bookmark->alist bookmarks)))
-      (write sexp out)
+      (pretty-print sexp out)
       (close-port out))))
 
 (define (bookmark-init)

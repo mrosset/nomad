@@ -198,12 +198,21 @@ specified. Returns the final URL passed to webkit"
 
 (define-interactive (copy-current-url)
   "Copy current url to clipboard"
-  (yank-string (webview-current-url))
+  (yank-string (current-url))
   (message (webview-current-url)))
 
 (define-interactive (tweak-url)
   "Edit the current-url."
   (browse (read-from-minibuffer "Url: " (current-url))))
+
+(define current-search  #f)
+
+(define-interactive
+  (isearch-forward #:optional
+                   (text (or current-search (read-from-minibuffer "I-search: "))))
+  (set! current-search text)
+  (webkit-find (buffer-pointer (current-buffer)) text)
+  (message "I-search: ~a" text))
 
 ;; search providers
 (define search-providers
@@ -219,11 +228,19 @@ specified. Returns the final URL passed to webkit"
 
 (define-public cycle-search-provider (pick-search-provider))
 
+(define-interactive (webview-keyboard-quit)
+  (when current-search
+    (set! current-search #f)
+    (webkit-find-finish (buffer-pointer (current-buffer))))
+  (keyboard-quit))
+
 ;; Provides firefox key mappings for webview-mode. This can be set as
 ;; the default webview mode map by using (!set webview-map
 ;; firefox-webview-map) in user-init-file
 (define firefox-webview-map
-  (list->keymap '(("C-u" next-buffer)
+  (list->keymap '(("C-g" webview-keyboard-quit)
+                  ("C-f" isearch-forward)
+                  ("C-u" next-buffer)
                   ("C-m" prev-buffer)
                   ("M-n" forward)
                   ("M-b" back)
@@ -246,5 +263,7 @@ specified. Returns the final URL passed to webkit"
                   ("C-p" scroll-up)
                   ("C-f" hints)
                   ("C-r" reload)
+                  ("C-g" webview-keyboard-quit)
+                  ("C-s" isearch-forward)
                   ("C-q" kill-buffer)
                   ("C-x C-f" query))))

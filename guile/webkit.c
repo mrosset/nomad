@@ -323,6 +323,31 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_hints, "webkit-hints", 1, 0, 0,
   return SCM_UNDEFINED;
 }
 
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_find, "webkit-find", 2, 0, 0,
+                   (SCM pointer, SCM text),
+                   "Finds TEXT string in  webview POINTER page")
+{
+  WebKitWebView *view = (WebKitWebView *)scm_to_pointer (pointer);
+  WebKitFindController *controller
+      = webkit_web_view_get_find_controller (view);
+
+  webkit_find_controller_search (controller, scm_to_locale_string (text),
+                                 WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE, -1);
+  return SCM_UNDEFINED;
+}
+
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_find_finish, "webkit-find-finish", 1, 0, 0,
+                   (SCM pointer, SCM text),
+                   "Finishes the current find for webview POINTER")
+{
+  WebKitWebView *view = (WebKitWebView *)scm_to_pointer (pointer);
+  WebKitFindController *controller
+      = webkit_web_view_get_find_controller (view);
+
+  webkit_find_controller_search_finish (controller);
+  return SCM_UNDEFINED;
+}
+
 void
 nomad_webkit_register_function (void *data)
 {
