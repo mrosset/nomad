@@ -23,7 +23,7 @@
 
 #include <gtksourceview/gtksource.h>
 
-GtkSourceBuffer *text_buffer_new (const char *theme, const char *lang);
+GtkSourceBuffer *source_buffer_new (const char *theme, const char *lang);
 void nomad_text_register_function (void *data);
 
 #endif

@@ -280,13 +280,14 @@ idle_update_modeline (void *user_data)
 }
 
 static gboolean
-idle_update_echo_area (void *user_data)
+idle_update_echo_area (gpointer user_data)
 {
   int flags;
   GtkTextBuffer *rbuf;
   NomadAppFramePrivate *priv;
   NomadAppFrame *self;
   char *status;
+  gint page;
 
   // If user_data is NULL stop this idle process
   if (!user_data)
@@ -295,9 +296,10 @@ idle_update_echo_area (void *user_data)
     }
 
   self = NOMAD_APP_FRAME (user_data);
-  priv = self->priv;
+  priv = nomad_app_frame_get_instance_private (self);
 
   flags = emacsy_tick ();
+
   rbuf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->read_line));
 
   // If there's been a request to quit, stop this idle process.
@@ -320,6 +322,14 @@ idle_update_echo_area (void *user_data)
       return TRUE;
     }
 
+  page = gtk_notebook_get_current_page (GTK_NOTEBOOK (priv->notebook));
+  if (page > 0)
+    {
+      gtk_widget_grab_focus (
+          gtk_notebook_get_nth_page (GTK_NOTEBOOK (priv->notebook), page));
+      return TRUE;
+    }
+
   gtk_widget_grab_focus (priv->modeline);
   return TRUE;
 }
@@ -334,22 +344,17 @@ nomad_app_frame_init (NomadAppFrame *self)
   priv->overlay = gtk_overlay_new ();
   priv->box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   priv->notebook = gtk_notebook_new ();
-  priv->modeline = gtk_source_view_new ();
-  priv->read_line = gtk_source_view_new ();
+
+  priv->modeline = gtk_source_view_new_with_buffer (
+      source_buffer_new ("oblivion", "scheme"));
+  priv->read_line = gtk_source_view_new_with_buffer (
+      source_buffer_new ("classic", "scheme"));
 
   // tabs
   gtk_notebook_set_show_tabs (GTK_NOTEBOOK (priv->notebook), FALSE);
 
   // modeline and readline
   gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (priv->modeline), FALSE);
-
-  gtk_text_view_set_buffer (
-      GTK_TEXT_VIEW (priv->read_line),
-      GTK_TEXT_BUFFER (text_buffer_new ("classic", "scheme")));
-
-  gtk_text_view_set_buffer (
-      GTK_TEXT_VIEW (priv->modeline),
-      GTK_TEXT_BUFFER (text_buffer_new ("oblivion", "scheme")));
 
   // add controls
   gtk_container_add (GTK_CONTAINER (self), priv->overlay);

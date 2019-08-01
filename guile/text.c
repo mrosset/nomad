@@ -22,7 +22,7 @@
 #include <libguile.h>
 
 GtkSourceBuffer *
-text_buffer_new (const char *theme, const char *lang)
+source_buffer_new (const char *theme, const char *lang)
 {
   GtkSourceLanguageManager *lm;
   GtkSourceLanguage *sl;
