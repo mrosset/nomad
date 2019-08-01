@@ -41,26 +41,68 @@ struct _NomadWebView
 G_DEFINE_TYPE_WITH_PRIVATE (NomadWebView, nomad_web_view,
                             WEBKIT_TYPE_WEB_VIEW);
 
-static void
-nomad_web_view_init (NomadWebView *self)
+static gboolean
+decide_policy_cb (WebKitWebView *view, WebKitPolicyDecision *decision,
+                  WebKitPolicyDecisionType dtype)
 {
-  self->priv = nomad_web_view_get_instance_private (self);
+  switch (dtype)
+    {
+    case WEBKIT_POLICY_DECISION_TYPE_NEW_WINDOW_ACTION:
+      {
+        WebKitNavigationAction *nav
+            = webkit_navigation_policy_decision_get_navigation_action (
+                WEBKIT_NAVIGATION_POLICY_DECISION (decision));
+        WebKitURIRequest *req = webkit_navigation_action_get_request (nav);
+        SCM url = scm_from_locale_string (webkit_uri_request_get_uri (req));
+        scm_call_1 (scm_c_public_ref ("nomad buffer", "make-buffer"), url);
+        return TRUE;
+      }
+      /*     case WEBKIT_POLICY_DECISION_TYPE_RESPONSE:
+       *       {
+       *         WebKitResponsePolicyDecision *policy
+       *             = WEBKIT_RESPONSE_POLICY_DECISION (decision);
+       *         WebKitURIResponse *response
+       *             = webkit_response_policy_decision_get_response (policy);
+       *         if (!webkit_response_policy_decision_is_mime_type_supported
+       * (policy))
+       *           {
+       *             const gchar *uri = webkit_uri_response_get_uri (response);
+       *             scm_call_1 (scm_c_public_ref ("nomad download",
+       * "download"), scm_from_locale_string (uri));
+       *           }
+       *         return TRUE;
+       *       } */
+    default:
+      return FALSE;
+    }
+
+  return TRUE;
 }
 
 static void
-nomad_web_view_class_init (NomadWebViewClass *class)
-{
-}
-
-static void
-web_view_load_changed (NomadWebView *view, WebKitLoadEvent load_event,
-                       gpointer user_data)
+load_changed_cb (NomadWebView *view, WebKitLoadEvent load_event,
+                 gpointer user_data)
 {
   NomadWebViewPrivate *priv = nomad_web_view_get_instance_private (view);
   scm_call_2 (scm_c_public_ref ("emacsy emacsy", "set-buffer-name!"),
               scm_from_locale_string (
                   webkit_web_view_get_uri (WEBKIT_WEB_VIEW (view))),
               priv->buffer);
+}
+
+static void
+nomad_web_view_init (NomadWebView *self)
+{
+  self->priv = nomad_web_view_get_instance_private (self);
+  // signals
+  g_signal_connect (self, "load-changed", G_CALLBACK (load_changed_cb), NULL);
+  g_signal_connect (self, "decide-policy", G_CALLBACK (decide_policy_cb),
+                    NULL);
+}
+
+static void
+nomad_web_view_class_init (NomadWebViewClass *class)
+{
 }
 
 GtkWidget *
@@ -86,8 +128,6 @@ SCM_DEFINE_PUBLIC (
 
   priv->buffer = buffer;
 
-  g_signal_connect (view, "load-changed", G_CALLBACK (web_view_load_changed),
-                    NULL);
   return scm_from_pointer (view, NULL);
 }
 
