@@ -19,11 +19,11 @@
 (define-module (nomad webview)
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 optargs)
-  #:use-module (nomad buffer)
+  #:use-module (nomad pointer)
   #:use-module (nomad eval)
+  #:use-module (nomad frame)
   #:use-module (nomad util)
   #:use-module (nomad webkit)
-  #:use-module (nomad frame)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -44,10 +44,9 @@
             ;; ;; class constructors
             make-webview-buffer
             make-webcontent-buffer
-            buffer-pointer
+
             ;;methods
             set-buffer-hooks!
-            set-buffer-pointer!
             buffer-back
             buffer-foward
             buffer-content
@@ -69,9 +68,8 @@
 
 ;;; <webview-buffer> extends <buffer> class
 (define-class-public <webview-buffer>
-  (<buffer>)
-  (content #:accessor buffer-content  #:init-keyword #:content)
-  (pointer #:getter buffer-pointer #:setter set-buffer-pointer! #:init-keyword #:pointer #:init-value %null-pointer))
+  (<pointer-buffer>)
+  (content #:accessor buffer-content #:init-keyword #:content))
 
 (define-method (buffer-hints)
   (webkit-hints (buffer-pointer (current-buffer))))
@@ -94,9 +92,6 @@
 (define-method (buffer-forward (buffer <webview-buffer>))
   (webkit-forward (buffer-pointer buffer)))
 
-(define-method (buffer-pointer)
-  (buffer-pointer (current-buffer)))
-
 (define-method (set-buffer-hooks!)
   (set-buffer-hooks! (current-buffer)))
 
@@ -105,10 +100,6 @@
              webview-enter-hook)
   (add-hook! (buffer-kill-hook buffer)
              webview-kill-hook))
-
-(define-method (set-buffer-pointer! pointer)
-  (set-buffer-pointer! (current-buffer)
-                       pointer))
 
 (define (webview-onload)
   "Update BUFFER on webview load"

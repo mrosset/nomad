@@ -542,7 +542,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
   GtkNotebook *notebook = nomad_frame_get_notebook (win);
   SCM pointer = scm_call_1 (
-      scm_c_public_ref ("nomad webview", "buffer-pointer"), buffer);
+      scm_c_public_ref ("nomad pointer", "buffer-pointer"), buffer);
   GtkWidget *widget = scm_to_pointer (pointer);
   gint page = gtk_notebook_page_num (notebook, widget);
 
@@ -561,7 +561,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_notebook_insert, "notebook-insert", 2, 0, 0,
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
   GtkNotebook *notebook = nomad_frame_get_notebook (win);
   SCM pointer = scm_call_1 (
-      scm_c_public_ref ("nomad webview", "buffer-pointer"), buffer);
+      scm_c_public_ref ("nomad pointer", "buffer-pointer"), buffer);
   GtkWidget *widget = scm_to_pointer (pointer);
   gint page
       = gtk_notebook_insert_page (notebook, widget, tab_label_new (0), 0);

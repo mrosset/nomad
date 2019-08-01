@@ -57,6 +57,7 @@ SOURCES =			\
 	nomad/init.scm		\
 	nomad/minibuffer.scm	\
 	nomad/options.scm	\
+	nomad/pointer.scm	\
 	nomad/repl.scm		\
 	nomad/shroud.scm	\
 	nomad/server.scm	\

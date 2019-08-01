@@ -19,6 +19,7 @@
 (define-module (tests webview)
   #:use-module (emacsy emacsy)
   #:use-module (nomad webview)
+  #:use-module (nomad pointer)
   #:use-module (oop goops)
   #:use-module (srfi srfi-64)
   #:use-module (system foreign))
