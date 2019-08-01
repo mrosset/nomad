@@ -20,6 +20,7 @@
 
 #include "frame.h"
 #include "minibuffer.h"
+#include "text.h"
 #include "util.h"
 #include "webkit.h"
 #include <glib.h>
@@ -62,6 +63,12 @@ void
 init_guile_nomad_util ()
 {
   scm_c_define_module ("nomad util", nomad_util_register_function, NULL);
+}
+
+void
+init_guile_nomad_text ()
+{
+  scm_c_define_module ("nomad text", nomad_text_register_function, NULL);
 }
 
 void

@@ -23,11 +23,12 @@
   #:use-module (nomad eval)
   #:use-module (nomad frame)
   #:use-module (nomad minibuffer)
+  #:use-module (nomad pointer)
   #:use-module (nomad repl)
+  #:use-module (nomad text)
   #:use-module (nomad views)
   #:use-module (nomad webkit)
   #:use-module (nomad webview)
-  #:use-module (nomad pointer)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
@@ -120,12 +121,8 @@
 ;; killed then they are no longer webviews. And so can not be switched to or
 ;; managed properly.
 (define (update-buffers)
-  "Converts buffers to <webview-buffer> and inserts them into notebook"
+  "Converts text-buffers to <pointer-buffer> and inserts them into notebook"
   (for-each (lambda (buffer)
-              (unless (eq? <webview-buffer> (class-of buffer))
-                (buffer->webview-buffer buffer)
-                (set-buffer-pointer! buffer
-                                     (webkit-new buffer))
-                (buffer-render buffer)
-                (notebook-insert buffer 0)))
+              (when (eq? <text-buffer> (class-of buffer))
+                (text-buffer->pointer-buffer buffer)))
             (buffer-list)))

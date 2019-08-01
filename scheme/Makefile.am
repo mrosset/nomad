@@ -62,13 +62,11 @@ SOURCES =			\
 	nomad/shroud.scm	\
 	nomad/server.scm	\
 	nomad/tests.scm		\
+	nomad/text.scm		\
 	nomad/util.scm		\
 	nomad/views.scm		\
 	nomad/webview.scm	\
 	nomad/webkit.scm
-
-
-
 
 TESTS =			\
 	tests/lib.scm		\
@@ -77,6 +75,7 @@ TESTS =			\
 	tests/eval.scm		\
 	tests/init.scm		\
 	tests/options.scm	\
+	tests/text.scm		\
 	tests/util.scm		\
 	tests/webkit.scm	\
 	tests/webview.scm

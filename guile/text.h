@@ -1,5 +1,5 @@
 /*
- * app.h
+ * text.h
  * Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
  *
  * This file is part of Nomad
@@ -18,21 +18,12 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NOMADAPP_H
-#define __NOMADAPP_H
+#ifndef __GUILE_NOMAD_TEXT_H
+#define __GUILE_NOMAD_TEXT_H
 
-#include <gtk/gtk.h>
-#include <libguile.h>
-#include <webkit2/webkit2.h>
+#include <gtksourceview/gtksource.h>
 
-#define NOMAD_APP_TYPE (nomad_app_get_type ())
-G_DECLARE_FINAL_TYPE (NomadApp, nomad_app, NOMAD, APP, GtkApplication)
+GtkSourceBuffer *text_buffer_new (const char *theme, const char *lang);
+void nomad_text_register_function (void *data);
 
-NomadApp *nomad_app_new ();
-NomadApp *nomad_app_get_default ();
-GtkWindow *nomad_app_get_frame ();
-GtkWidget *nomad_app_get_first_buffer (NomadApp *app);
-SCM nomad_app_get_buffers (NomadApp *app);
-GList *nomad_app_get_buffer_list (NomadApp *app);
-void nomad_app_register_function (void *data);
-#endif /* __NOMADAPP_H */
+#endif

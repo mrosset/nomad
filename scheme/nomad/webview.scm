@@ -19,9 +19,8 @@
 (define-module (nomad webview)
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 optargs)
-  #:use-module (nomad pointer)
   #:use-module (nomad eval)
-  #:use-module (nomad frame)
+  #:use-module (nomad pointer)
   #:use-module (nomad util)
   #:use-module (nomad webkit)
   #:use-module (oop goops)
@@ -38,8 +37,6 @@
             search-provider-format
             webview-map
             firefox-webview-map
-            webview-enter-hook
-            webview-kill-hook
             webview-onload
             ;; ;; class constructors
             make-webview-buffer
@@ -55,16 +52,6 @@
             buffer-uri
             set-buffer-uri!
             ))
-
-(define (webview-kill-hook)
-  (info (format #f "Destroying web-view ~a" (buffer-pointer)))
-  (destroy-pointer (buffer-pointer (current-buffer))))
-
-(define (webview-enter-hook)
-  (info (format #f
-                 "Setting pointer to ~a"
-                 (buffer-pointer)))
-  (switch-to-pointer (buffer-pointer (current-buffer))))
 
 ;;; <webview-buffer> extends <buffer> class
 (define-class-public <webview-buffer>
@@ -97,9 +84,9 @@
 
 (define-method (set-buffer-hooks! (buffer <webview-buffer>))
   (add-hook! (buffer-enter-hook buffer)
-             webview-enter-hook)
+             pointer-enter-hook)
   (add-hook! (buffer-kill-hook buffer)
-             webview-kill-hook))
+             pointer-kill-hook))
 
 (define (webview-onload)
   "Update BUFFER on webview load"

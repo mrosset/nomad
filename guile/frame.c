@@ -31,6 +31,7 @@
 #include "app.h"
 #include "frame.h"
 #include "minibuffer.h"
+#include "text.h"
 #include "util.h"
 #include "webkit.h"
 
@@ -164,12 +165,12 @@ frame_key_press_cb (GtkWidget *widget, GdkEventKey *event)
   return FALSE;
 }
 
-static void
-switch_page_cb (GtkNotebook *notebook, GtkWidget *page, guint page_num,
-                gpointer user_data)
-{
-  nomad_web_view_switch_to_buffer (NOMAD_WEB_VIEW (page));
-}
+/* static void
+ * switch_page_cb (GtkNotebook *notebook, GtkWidget *page, guint page_num,
+ *                 gpointer user_data)
+ * {
+ *   nomad_web_view_switch_to_buffer (page);
+ * } */
 
 /* static void
  * initialize_web_extensions (WebKitWebContext *context, gpointer user_data)
@@ -182,26 +183,6 @@ switch_page_cb (GtkNotebook *notebook, GtkWidget *page, guint page_num,
  *   webkit_web_context_set_web_extensions_initialization_user_data (
  *       context, g_variant_new_uint32 (unique_id++));
  * } */
-
-GtkSourceBuffer *
-text_buffer_new (const char *theme, const char *lang)
-{
-  GtkSourceLanguageManager *lm;
-  GtkSourceLanguage *sl;
-  GtkSourceStyleSchemeManager *sm;
-  GtkSourceStyleScheme *ss;
-  GtkSourceBuffer *buf;
-
-  buf = gtk_source_buffer_new (NULL);
-  sm = gtk_source_style_scheme_manager_new ();
-  ss = gtk_source_style_scheme_manager_get_scheme (sm, theme);
-  lm = gtk_source_language_manager_new ();
-  sl = gtk_source_language_manager_get_language (lm, lang);
-
-  gtk_source_buffer_set_language (buf, sl);
-  gtk_source_buffer_set_style_scheme (buf, ss);
-  return buf;
-}
 
 gboolean
 draw_border_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
@@ -305,7 +286,6 @@ idle_update_echo_area (void *user_data)
   GtkTextBuffer *rbuf;
   NomadAppFramePrivate *priv;
   NomadAppFrame *self;
-  GtkWidget *webview;
   char *status;
 
   // If user_data is NULL stop this idle process
@@ -319,8 +299,6 @@ idle_update_echo_area (void *user_data)
 
   flags = emacsy_tick ();
   rbuf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->read_line));
-
-  webview = GTK_WIDGET (nomad_app_frame_get_webview (self));
 
   // If there's been a request to quit, stop this idle process.
   if (flags & EMACSY_QUIT_APPLICATION_P)
@@ -342,14 +320,7 @@ idle_update_echo_area (void *user_data)
       return TRUE;
     }
 
-  if (webview)
-    {
-      gtk_widget_grab_focus (webview);
-    }
-  else
-    {
-      gtk_widget_grab_focus (priv->modeline);
-    }
+  gtk_widget_grab_focus (priv->modeline);
   return TRUE;
 }
 
@@ -399,8 +370,8 @@ nomad_app_frame_init (NomadAppFrame *self)
   g_signal_connect (self, "key-press-event", G_CALLBACK (frame_key_press_cb),
                     (gpointer)self);
 
-  g_signal_connect (priv->notebook, "switch-page", G_CALLBACK (switch_page_cb),
-                    (gpointer)self);
+  /* g_signal_connect (priv->notebook, "switch-page", G_CALLBACK
+   * (switch_page_cb), (gpointer)self); */
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }
@@ -502,21 +473,21 @@ SCM_DEFINE_PUBLIC (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
                    (SCM pointer), "Sets the current tab to the given POINTER")
 {
   gint page;
-  GtkWidget *view;
+  GtkWidget *widget;
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
   GtkNotebook *notebook = nomad_frame_get_notebook (win);
 
   if (SCM_POINTER_P (pointer))
     {
-      view = scm_to_pointer (pointer);
-      page = gtk_notebook_page_num (notebook, view);
+      widget = scm_to_pointer (pointer);
+      page = gtk_notebook_page_num (notebook, widget);
       if (page < 0)
         {
           page = gtk_notebook_append_page (
-              notebook, view,
+              notebook, widget,
               tab_label_new (gtk_notebook_get_n_pages (notebook)));
         }
-      gtk_widget_show_all (view);
+      gtk_widget_show_all (widget);
       gtk_notebook_set_current_page (notebook, page);
       if (page != gtk_notebook_get_current_page (notebook))
         {

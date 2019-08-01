@@ -32,7 +32,6 @@ G_DECLARE_FINAL_TYPE (NomadAppFrame, nomad_app_frame, NOMAD, APP_FRAME,
                       GtkApplicationWindow)
 
 NomadAppFrame *nomad_app_frame_new (NomadApp *app);
-WebKitWebView *nomad_app_frame_get_webview (NomadAppFrame *win);
 GtkNotebook *nomad_frame_get_notebook (NomadAppFrame *win);
 GtkWidget *nomad_app_frame_get_minipopup (NomadAppFrame *win);
 GtkWidget *nomad_app_frame_get_readline (NomadAppFrame *self);

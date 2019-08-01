@@ -1,4 +1,4 @@
-;; frame.scm
+;; text.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,12 +16,16 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad frame)
-  #:use-module (nomad lib)
-  #:export (make-frame-socket))
+(define-module (test text)
+  #:use-module (nomad app)
+  #:use-module (nomad text)
+  #:use-module (srfi srfi-64)
+  #:use-module (system foreign)
+  )
 
-(load-extension (dynamic-path) "init_guile_nomad_frame")
+(let ((gtk? (gtk-init)))
+  (test-assert "GTK init" gtk?)
+  (unless gtk?
+    (test-skip webkit)))
 
-(define (make-frame-socket url socket)
-  "Write `make-frame' comand with arg URL to a SOCKET."
-  (write-socket (format #f "~S" `(make-frame ,url)) socket))
+(test-assert "text is pointer?" (source-new))

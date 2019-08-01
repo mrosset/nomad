@@ -1,4 +1,4 @@
-;; frame.scm
+;; text.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,12 +16,25 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad frame)
+(define-module (nomad text)
+  #:use-module (emacsy emacsy)
+  #:use-module (nomad frame)
   #:use-module (nomad lib)
-  #:export (make-frame-socket))
+  #:use-module (nomad pointer)
+  #:use-module (oop goops)
+  #:use-module (system foreign)
+  )
 
-(load-extension (dynamic-path) "init_guile_nomad_frame")
+(load-extension (dynamic-path) "init_guile_nomad_text")
 
-(define (make-frame-socket url socket)
-  "Write `make-frame' comand with arg URL to a SOCKET."
-  (write-socket (format #f "~S" `(make-frame ,url)) socket))
+(define-public (text-buffer->pointer-buffer buffer)
+  "Converts a <text-buffer> class to a pointer-buffer."
+  (change-class buffer <pointer-buffer>)
+  (set-buffer-pointer! buffer
+                      (source-new))
+  (add-hook! (buffer-enter-hook buffer)
+             pointer-enter-hook)
+  (add-hook! (buffer-kill-hook buffer)
+             pointer-kill-hook)
+  (notebook-insert buffer 0)
+)

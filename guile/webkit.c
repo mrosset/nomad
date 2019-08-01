@@ -297,63 +297,6 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_back, "webkit-back", 1, 0, 0,
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE_PUBLIC (
-    scm_nomad_webkit_reload, "webview-reload", 0, 1, 0, (SCM nocache),
-    "Internally reloads WebKitView, if nocache is #t then bypass "
-    "WebKit cache. This procedure should almost never be called "
-    "directly. TODO: detail higher level procedures for reloading "
-    "webkit. Probably only (reload) in this case.")
-{
-  WebKitWebView *web_view;
-  NomadApp *app = nomad_app_get_default ();
-
-  web_view = nomad_app_get_webview (NOMAD_APP (app));
-
-  if (web_view == NULL)
-    {
-      return SCM_BOOL_F;
-    }
-
-  if (scm_is_true (nocache))
-    {
-      webkit_web_view_reload_bypass_cache (web_view);
-    }
-  else
-    {
-      webkit_web_view_reload (web_view);
-    }
-  return SCM_BOOL_T;
-}
-
-SCM_DEFINE_PUBLIC (
-    scm_nomad_get_current_url, "webview-current-url", 0, 0, 0, (),
-    "Return's the WebView's current URL. This calls webkit's "
-    "webkit_web_view_get_uri. Note: this function can potentially "
-    "return a URI that is not a URL. Since the API is directed "
-    "towards end users, we use URL since it's the more common term, "
-    "see https://danielmiessler.com/study/url-uri/ on the distinction "
-    "of URI vs URL")
-{
-  NomadApp *app = nomad_app_get_default ();
-  WebKitWebView *web_view;
-  const char *uri;
-  SCM result;
-
-  web_view = nomad_app_get_webview (NOMAD_APP (app));
-  uri = webkit_web_view_get_uri (web_view);
-
-  if (uri == NULL)
-    {
-      result = scm_from_utf8_string ("URI not loaded");
-    }
-  else
-    {
-      result = scm_from_locale_string (uri);
-    }
-
-  return result;
-}
-
 void
 run_hints_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {

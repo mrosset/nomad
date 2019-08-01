@@ -21,9 +21,11 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
   #:use-module (nomad init)
+  #:use-module (nomad lib)
   #:use-module (nomad options)
   #:use-module (nomad repl)
-  #:use-module (nomad lib)
+  #:use-module (nomad text)
+  #:use-module (nomad util)
   #:use-module (nomad views)
   #:use-module (nomad webview)
   #:export (emacs-init-file
@@ -59,7 +61,7 @@ controls are accessible to scheme"
                ;;            hide-minibuffer-popup)
                (add-hook! shutdown-hook
                           (lambda _
-                            (format #t "running shutdown hook...\n"))))
+                            (info "running shutdown hook..."))))
   (agenda-schedule-interval (lambda _
                               (update-buffers))
                             10)
@@ -67,6 +69,8 @@ controls are accessible to scheme"
   (make-buffer default-home-page)
 
   ;; Kill scratch and messages buffers
-  (with-buffer scratch (kill-buffer))
-  (with-buffer messages (kill-buffer))
+  ;; (with-buffer scratch (kill-buffer))
+  ;; (text-buffer->pointer-buffer scratch)
+  ;; (text-buffer->pointer-buffer messages)
+  ;; (with-buffer messages (kill-buffer))
   (run-hook startup-hook))
