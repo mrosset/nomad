@@ -27,6 +27,25 @@
 
 
 SCM_DEFINE_PUBLIC (
+                   scm_nomad_webkit_web_view_get_settings , "webkit_web_view_get_settings",
+                   1, 0, 0, (SCM pointer),
+                   "Get webkit-web-view settings from webkit-web-view pointer.")
+{
+  return scm_from_pointer
+    (webkit_web_view_get_settings (scm_to_pointer (pointer)), NULL);
+}
+
+SCM_DEFINE_PUBLIC (
+                   scm_nomad_webkit_web_view_set_settings , "webkit_web_view_set_settings",
+                   2, 0, 0, (SCM pointer, SCM settings),
+                   "Set webkit-web-view settings for view pointer to settings pointer.")
+{
+  webkit_web_view_set_settings
+    (scm_to_pointer (pointer), scm_to_pointer (settings));
+  return SCM_UNSPECIFIED;
+}
+
+SCM_DEFINE_PUBLIC (
                    scm_nomad_webkit_settings_new , "webkit_settings_new",
                    0, 0, 0, (),
                    "Return a pointer to freshly created webkit-settings.")
