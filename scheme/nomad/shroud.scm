@@ -59,6 +59,8 @@
     (if (not key) e
         (secret-ref e key))))
 
-(define-interactive (shroud-find-password #:optional (entry (read-from-minibuffer "Entry: ")))
+(define-interactive (shroud-find-password
+                     #:optional (entry (completing-read "Entry: "
+                                                        (shroud--list))))
   "Show password/secrets entry"
-  (yank-string (shroud-show-entry (car (shroud-find-entries entry)) "password")))
+  (yank-string (shroud-show-entry entry "password")))
