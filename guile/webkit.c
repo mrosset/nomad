@@ -131,6 +131,15 @@ SCM_DEFINE_PUBLIC (
   return scm_from_pointer (view, NULL);
 }
 
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_reload, "webkit-reload", 1, 0, 0,
+                   (SCM pointer), "Reloads the webkit POINTER uri")
+{
+
+  GtkWidget *view = scm_to_pointer (pointer);
+  webkit_web_view_reload (WEBKIT_WEB_VIEW (view));
+  return SCM_UNDEFINED;
+}
+
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_new,
                    "webkit-proxy-settings-new", 2, 0, 0,
                    (SCM proxy, SCM ignore),

@@ -59,6 +59,9 @@
   (<pointer-buffer>)
   (content #:accessor buffer-content #:init-keyword #:content))
 
+(define-method (buffer-reload)
+  (webkit-reload (buffer-pointer (current-buffer))))
+
 (define-method (buffer-hints)
   (webkit-hints (buffer-pointer (current-buffer))))
 
