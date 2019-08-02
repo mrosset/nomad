@@ -22,10 +22,10 @@
 
 (load-extension (dynamic-path) "init_guile_nomad_webkitproxy")
 
-(define* (proxy-set! choice #:optional proxy-settings)
-  "Set Nomad default frame proxy, if choice is #t then use default system proxy.
+(define* (webkit-proxy-set! choice #:optional proxy-settings)
+  "Set default Nomad proxy, if choice is #t then use default system proxy.
 If optional proxy-settings is present(a pointer to proxy-settings) use it as
-the proxy. Otherwise if bool is #f Disable proxy."
+the proxy. Otherwise if bool is #f disable proxy."
   (if choice
       (if proxy-settings
           (webkit-set-proxy-settings-custom proxy-settings)
