@@ -126,6 +126,13 @@
   (make-buffer (bookmark-contents
                 (car (bookmark-find str)))))
 
+(define-interactive (find-bookmark)
+  "Opens bookmark using completing-read in current buffer"
+  (make-buffer (bookmark-contents
+                (car (bookmark-find
+                      (completing-read "Bookmark: " (bookmark-list bookmarks))
+                      bookmarks)))))
+
 (define-interactive (save-bookmark #:optional (key (read-from-minibuffer "Key: ")) (url (or (current-url) (read-from-minibuffer "URL: "))))
   "Makes a bookmark by 'KEY in a new buffer"
   (let ((book (make-bookmark key url)))
