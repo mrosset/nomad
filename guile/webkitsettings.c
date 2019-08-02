@@ -45,7 +45,7 @@ SCM_DEFINE_PUBLIC (
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE_PUBLIC (
+SCM_DEFINE (
                    scm_nomad_webkit_settings_new , "webkit-settings-new",
                    0, 0, 0, (),
                    "Return a pointer to freshly created webkit-settings.")

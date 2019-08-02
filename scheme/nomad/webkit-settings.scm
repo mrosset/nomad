@@ -23,12 +23,14 @@
 
 (load-extension (dynamic-path) "init_guile_nomad_webkitsettings")
 
+(define webkit-settings-old webkit-settings-new)
+
 (define (make-webkit-settings lst)
   " Usage example:
 (define my-webkit-settings
  '((webkit-settings-set-auto-load-images #t)))
 (make-webkit-settings my-webkit-settings) "
-  (let* ((settings (webkit-settings-new))
+  (let* ((settings (webkit-settings-old))
         (module (resolve-module '(nomad webkit-settings)))
         (setter (lambda (pair settings)
                   (apply (module-ref module (car pair)) settings (cdr pair)))))
@@ -37,3 +39,10 @@
     settings))
 (export make-webkit-settings)
 
+(define webkit-settings-default
+  '((webkit-settings-set-enable-javascript #t)))
+
+(define* (webkit-settings-new #:optional #:key webkit-settings)
+  "webkit-settings is an alist of setters and values."
+  (make-webkit-settings webkit-settings-default))
+(export webkit-settings-new)
