@@ -46,7 +46,7 @@ SCM_DEFINE_PUBLIC (
 }
 
 SCM_DEFINE_PUBLIC (
-                   scm_nomad_webkit_settings_new , "webkit_settings_new",
+                   scm_nomad_webkit_settings_new , "webkit-settings-new",
                    0, 0, 0, (),
                    "Return a pointer to freshly created webkit-settings.")
 {

@@ -16,6 +16,12 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 (define-module (nomad webkit)
-  #:use-module (nomad lib))
+  #:use-module (nomad lib)
+  #:use-module (nomad webkit-settings))
 
 (load-extension (dynamic-path) "init_guile_nomad_webkit")
+
+(define webkit-new* webkit-new)
+(define* (webkit-new buffer #:optional #:key (settings (webkit-settings-new)))
+  (webkit-new* buffer settings))
+(export webkit-new)
