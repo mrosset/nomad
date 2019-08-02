@@ -19,7 +19,9 @@
 
 (define-module (nomad webkit-settings)
   #:use-module (nomad lib)
-  #:use-module (srfi srfi-26))
+  #:use-module (srfi srfi-26)
+  #:export (make-webkit-settings
+            webkit-settings-default))
 
 (load-extension (dynamic-path) "init_guile_nomad_webkitsettings")
 
@@ -37,7 +39,6 @@
     (for-each (cut setter <> settings)
          lst)
     settings))
-(export make-webkit-settings)
 
 (define webkit-settings-default
   '((webkit-settings-set-enable-javascript #t)))
