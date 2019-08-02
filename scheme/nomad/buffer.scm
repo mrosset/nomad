@@ -116,15 +116,25 @@
       (begin (switch-to-buffer buffer)
              #t)))
 
-;; FIXME: This should probably not be needed. But if certain buffers are
-;; killed then they are no longer webviews. And so can not be switched to or
-;; managed properly.
-(define (update-buffers)
-  "Converts text-buffers to <pointer-buffer> and inserts them into notebook"
+(define-public (redisplay-minibuffer)
+  "Set the minibuffer graphical control to emacsy buffer state"
+  (emacsy-tick)
+  (if emacsy-display-minibuffer?
+      (grab-readline)
+      (grab-notebook))
+  (set-source-text! (get-echo-area)
+                    (emacsy-message-or-echo-area))
+  (set-source-point! (get-echo-area) (buffer:point minibuffer)))
+
+(define-public (redisplay-buffers)
+  "Converts text-buffers to <pointer-buffer> and inserts them into
+notebook. Also updates buffer contents and buffer points"
   (for-each (lambda (buffer)
               (when (eq? <text-buffer> (class-of buffer))
                 (text-buffer->pointer-buffer buffer))
               (when (eq? <nomad-text-buffer> (class-of buffer))
-                (set-source-text (buffer-pointer buffer)
-                                 (buffer:buffer-string buffer))))
+                (set-source-text! (buffer-pointer buffer)
+                                  (buffer:buffer-string buffer))
+                (set-source-point! (buffer-pointer buffer)
+                                   (buffer:point buffer))))
             (buffer-list)))

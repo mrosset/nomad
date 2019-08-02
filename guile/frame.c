@@ -122,6 +122,9 @@ frame_key_press_cb (GtkWidget *widget, GdkEventKey *event)
           scm_call_0 (
               scm_c_public_ref ("nomad buffer", "redisplay-minibuffer"));
 
+          // Redplay buffers
+          scm_call_0 (scm_c_public_ref ("nomad buffer", "redisplay-buffers"));
+
           flags = emacsy_tick ();
 
           if (flags & EMACSY_RAN_UNDEFINED_COMMAND_P)
