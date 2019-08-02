@@ -84,10 +84,10 @@ SCM_DEFINE_PUBLIC (scm_nomad_argv_length, "argv-length", 1, 0, 0,
   return scm_from_int (g_strv_length (argv));
 }
 
+// FIXME: emacsy has its own yanking use emacsy primitives here
 SCM_DEFINE_PUBLIC (scm_nomad_yank_string, "yank-string", 1, 0, 0, (SCM string),
                    "Grabs STRING to primary clipboard")
 {
-
   GtkClipboard *clip = gtk_clipboard_get_default (gdk_display_get_default ());
   int len = scm_to_int (scm_string_length (string));
   char *c_text = scm_to_locale_string (string);

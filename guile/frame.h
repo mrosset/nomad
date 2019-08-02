@@ -35,9 +35,7 @@ NomadAppFrame *nomad_app_frame_new (NomadApp *app);
 GtkNotebook *nomad_frame_get_notebook (NomadAppFrame *win);
 GtkWidget *nomad_app_frame_get_minipopup (NomadAppFrame *win);
 GtkWidget *nomad_app_frame_get_readline (NomadAppFrame *self);
-void nomad_app_frame_set_keymap (NomadAppFrame *self, SCM keymap);
 void nomad_app_frame_show_minipopup (NomadAppFrame *self);
 void nomad_app_frame_hide_minipopup (NomadAppFrame *self);
 void nomad_frame_register_function (void *data);
-GList *nomad_frame_get_tabs (NomadAppFrame *win);
 #endif /* __NOMADAPPWIN_H */

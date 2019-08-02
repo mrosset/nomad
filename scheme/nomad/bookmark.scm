@@ -121,7 +121,7 @@
   (filter (compose (cut string-match key <>) bookmark-id)
           (or books bookmarks)))
 
-(define-interactive (open-bookmark #:optional (str (read-from-minibuffer "Bookmark: ")))
+(define-interactive (open-bookmark #:optional (str (completing-read "Bookmark: " (map bookmark-id bookmarks))))
   "Opens bookmark by key in current buffer"
   (make-buffer (bookmark-contents
                 (car (bookmark-find str)))))

@@ -51,7 +51,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_source_new, "source-new", 0, 0, 0, (),
   return scm_from_pointer (source, NULL);
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_set_source_text, "set-source-text", 2, 0, 0,
+SCM_DEFINE_PUBLIC (scm_nomad_set_source_text, "set-source-text!", 2, 0, 0,
                    (SCM pointer, SCM text),
                    "Sets source view POINTER text to TEXT")
 {
@@ -61,16 +61,18 @@ SCM_DEFINE_PUBLIC (scm_nomad_set_source_text, "set-source-text", 2, 0, 0,
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_set_point, "set-source-point", 2, 0, 0,
+SCM_DEFINE_PUBLIC (scm_nomad_set_point, "set-source-point!", 2, 0, 0,
                    (SCM pointer, SCM point),
                    "Sets source view POINTER cursor point to POINT")
 {
-  /* GtkWidget *source = scm_to_pointer (pointer);
-   * GtkTextBuffer *buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source));
-   *
-   * gtk_text_buffer_place_cursor (buf, const GtkTextIter *where); */
-  /* GtkTextBuffer *buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source)); */
-  /* gtk_text_buffer_set_text (buf, scm_to_locale_string (text), -1); */
+  GtkWidget *source = scm_to_pointer (pointer);
+  GtkTextBuffer *buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source));
+  GtkTextIter start;
+
+  gtk_text_buffer_get_start_iter (buf, &start);
+  gtk_text_iter_forward_chars (&start, scm_to_int (point) - 1);
+
+  gtk_text_buffer_place_cursor (GTK_TEXT_BUFFER (buf), &start);
   return SCM_UNDEFINED;
 }
 

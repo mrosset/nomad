@@ -32,7 +32,6 @@
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
-            update-buffers
             buffers-contain?
             buffer-protected?
             buffers->uri))
