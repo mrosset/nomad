@@ -18,7 +18,22 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 (define-module (nomad webkit-settings)
-  #:use-module (nomad lib))
+  #:use-module (nomad lib)
+  #:use-module (srfi srfi-26))
 
 (load-extension (dynamic-path) "init_guile_nomad_webkitsettings")
+
+(define (make-webkit-settings lst)
+  " Usage example:
+(define my-webkit-settings
+ '((webkit-settings-set-auto-load-images #t)))
+(make-webkit-settings my-webkit-settings) "
+  (let* ((settings (webkit-settings-new))
+        (module (resolve-module '(nomad webkit-settings)))
+        (setter (lambda (pair settings)
+                  (apply (module-ref module (car pair)) settings (cdr pair)))))
+    (for-each (cut setter <> settings)
+         lst)
+    settings))
+(export make-webkit-settings)
 
