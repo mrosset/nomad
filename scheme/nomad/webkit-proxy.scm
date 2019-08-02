@@ -22,6 +22,12 @@
 
 (load-extension (dynamic-path) "init_guile_nomad_webkitproxy")
 
+(define (webkit-proxy-new proxy ignore-urls)
+  "Create a new network-proxy-setting with proxy as the proxy-url and
+ignore-urls and return a pointer to it."
+  (webkit-proxy-settings-new proxy ignore-urls))
+(export webkit-proxy-new)
+
 (define* (webkit-proxy-set! choice #:optional proxy-settings)
   "Set default Nomad proxy, if choice is #t then use default system proxy.
 If optional proxy-settings is present(a pointer to proxy-settings) use it as
