@@ -43,7 +43,7 @@ install-guix-local:
 	guix package -f ./guix-local.scm
 
 format:
-	$(MAKE) -C src format
+	$(MAKE) -C guile format
 
 rebuild: clean all
 

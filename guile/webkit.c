@@ -108,9 +108,7 @@ nomad_web_view_class_init (NomadWebViewClass *class)
 GtkWidget *
 nomad_web_view_new (WebKitSettings *settings)
 {
-  return g_object_new (NOMAD_WEB_VIEW_TYPE,
-                       "settings", settings,
-                       NULL);
+  return g_object_new (NOMAD_WEB_VIEW_TYPE, "settings", settings, NULL);
 }
 
 void
@@ -121,7 +119,7 @@ nomad_web_view_switch_to_buffer (NomadWebView *view)
 }
 
 SCM_DEFINE (
-                   scm_nomad_webkit_new, "webkit-new", 2, 0, 0, (SCM buffer, SCM settings),
+    scm_nomad_webkit_new, "webkit-new", 2, 0, 0, (SCM buffer, SCM settings),
     "Returns a newly initialized webkit view with its parent buffer as BUFFER")
 {
   GtkWidget *view = nomad_web_view_new (scm_to_pointer (settings));

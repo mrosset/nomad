@@ -32,11 +32,6 @@ nomad: nomad.in Makefile
 	$(do_subst) < $(srcdir)/nomad.in > $@
 	chmod +x nomad
 
-.PHONY: format
-
-format:
-	 clang-format -i *.c *.h
-
 devel_flags = --gapplication-app-id "org.devel.nomad"
 
 test: all
