@@ -56,7 +56,7 @@ G_RESOURCES = gresource.xml
 
 EXTRA_DIST = $(G_RESOURCES)
 
-DOT_X_FILES = extension.x webkit.x frame.x app.x util.x minibuffer.x webkitsettings.x webkitproxy.x
+DOT_X_FILES = webkit.x webkitsettings.x webkitproxy.x frame.x app.x util.x minibuffer.x extension.x
 
 BUILT_SOURCES = $(DOT_X_FILES)
 

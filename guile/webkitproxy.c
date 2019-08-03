@@ -19,9 +19,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "webkit.h"
 #include "util.h"
-#include "app.h"
 #include <libguile.h>
 #include <webkit2/webkit2.h>
 

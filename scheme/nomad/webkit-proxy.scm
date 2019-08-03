@@ -18,7 +18,9 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 (define-module (nomad webkit-proxy)
-  #:use-module (nomad lib))
+  #:use-module (nomad lib)
+  #:export (webkit-proxy-new
+            webkit-proxy-set!))
 
 (load-extension (dynamic-path) "init_guile_nomad_webkitproxy")
 
@@ -26,7 +28,6 @@
   "Create a new network-proxy-setting with proxy as the proxy-url and
 ignore-urls and return a pointer to it."
   (webkit-proxy-settings-new proxy ignore-urls))
-(export webkit-proxy-new)
 
 (define* (webkit-proxy-set! choice #:optional proxy-settings)
   "Set default Nomad proxy, if choice is #t then use default system proxy.
@@ -37,5 +38,4 @@ the proxy. Otherwise if bool is #f disable proxy."
           (webkit-set-proxy-settings-custom proxy-settings)
           (webkit-set-proxy-settings-default))
       (webkit-set-proxy-settings-no-proxy)))
-(export proxy-set!)
 
