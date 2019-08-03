@@ -46,6 +46,7 @@
 
 ;;; Taken from Emacsy
 (define (re-export-modules . modules)
+  "Re-export modules"
   (define (re-export-module module)
     (module-for-each
      (lambda (sym var)

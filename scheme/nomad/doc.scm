@@ -19,13 +19,28 @@
 
 (define-module (nomad doc)
   #:use-module (ice-9 documentation)
-  #:use-module (emacsy emacsy)
-  #:use-module (nomad buffer)
-  #:export (describe-symbol))
+  #:use-module (emacsy command)
+  #:use-module (emacsy minibuffer)
+  #:use-module (emacsy klecl)
+  #:use-module (emacsy self-doc)
+  #:export (doc-names
+            doc-object
+            doc-get
+            halp
+            describe-symbol))
 
-(define-interactive (describe-symbol #:optional (var (read-from-minibuffer "Variable: ")))
-  "Open variable documentation in new buffer."
-  (make-content-buffer "*help"
-   (object-documentation
-                         (eval (string->symbol var)
-                               (interaction-environment)))))
+(define (doc-names module kind depth)
+  (emacsy-collect-kind (resolve-module module) kind depth))
+
+(define (doc-object module name)
+  (module-ref (resolve-module module) name))
+
+(define (doc-get module name)
+  (object-documentation (doc-object module name)))
+
+(define-interactive (help
+                     #:optional (var (completing-read "Var: "
+                                                      (doc-names '(nomad nomad) #f 1)
+                                                      #:to-string symbol->string)))
+  "Get doc."
+  (message "~a" (doc-get '(nomad nomad) var)))
