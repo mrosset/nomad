@@ -32,70 +32,57 @@
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
-	    buffers-contain?
-	    buffer-protected?
-	    buffers->uri))
-
-(define protected-buffers '("*scratch*" "*Messages*"))
-
-(define (buffer-protected? buffer)
-  "Returns true if buffer is protected and should not be deleted."
-  (find (lambda (item)
-	  (equal? item (buffer-name buffer)))
-	protected-buffers))
+            buffers->uri))
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
   (write-socket (format #f "~S" `(make-buffer ,url))
-		   socket))
+                   socket))
 
 (define-interactive (kill-some-buffers)
   "Kill all buffers but the message buffer"
   (for-each (lambda (buffer)
-	      (unless (buffer-protected? buffer)
-		(switch-to-buffer buffer)
-		(kill-buffer)))
-	    (buffer-list)))
+              (switch-to-buffer buffer)
+              (kill-buffer))
+            (buffer-list)))
 
 (define (buffers-contain? uri)
   "Returns #t of buffer-list contains URI"
   (let ((contains #f))
     (for-each (lambda (buffer)
-		(when (string= uri
-			       (buffer-name buffer))
-		  (set! contains #t)))
-	      (buffer-list))
+                (when (string= uri
+                               (buffer-name buffer))
+                  (set! contains #t)))
+              (buffer-list))
     contains))
 
 (define (buffers->uri)
   "Returns a list of uri's for all buffers"
-  (map (lambda (buffer)
-	 (with-buffer buffer
-	   (let ((uri (buffer-name buffer)))
-	     (when (and uri
-			(not (string= uri "nomad://")))
-	       uri))))
-       (buffer-list)))
+  (filter-map (lambda (buffer)
+                (if (eq? (class-of buffer) <webview-buffer>)
+                    (buffer-name buffer)
+                    #f))
+              (buffer-list)))
 
 (define-interactive (show-buffers)
   "Displays buffers in minipopup"
   (begin (render-popup completion-view
-		       (buffers->uri)
-		       -1)
-	 (length (buffers->uri))))
+                       (buffers->uri)
+                       -1)
+         (length (buffers->uri))))
 
 (define-interactive (message-buffers)
   "Pretty prints the buffers to echo area"
   (message "~a" (with-output-to-string (lambda _ (pretty-print (buffer-list))))))
 
 (define-interactive (make-content-buffer #:optional (name (read-from-minibuffer "Name: "))
-					 (content (read-from-minibuffer "Content: ")))
+                                         (content (read-from-minibuffer "Content: ")))
   "Creates a new webview buffer with NAME and CONTENT"
   (let ((buffer (make-webcontent-buffer name content)))
     (with-buffer buffer
-		 (set-buffer-pointer! (webkit-new buffer))
-		 (set-buffer-hooks!)
-		 (buffer-render))
+                 (set-buffer-pointer! (webkit-new buffer))
+                 (set-buffer-hooks!)
+                 (buffer-render))
     (switch-to-buffer buffer)
     buffer))
 
@@ -103,9 +90,9 @@
   "Creates a new webview-bufer with URL"
   (let ((buffer (make-webview-buffer url)))
     (with-buffer buffer
-		 (set-buffer-pointer! (webkit-new buffer))
-		 (set-buffer-hooks!)
-		 (set-buffer-uri! (prefix-url url)))
+                 (set-buffer-pointer! (webkit-new buffer))
+                 (set-buffer-hooks!)
+                 (set-buffer-uri! (prefix-url url)))
     (switch-to-buffer buffer)
     buffer))
 
@@ -114,7 +101,7 @@
   (if (eq? buffer (current-buffer))
       #f
       (begin (switch-to-buffer buffer)
-	     #t)))
+             #t)))
 
 (define-public (redisplay-minibuffer)
   "Set the minibuffer graphical control to emacsy buffer state"
@@ -123,27 +110,27 @@
       (grab-readline)
       (grab-notebook))
   (set-source-text! (get-echo-area)
-		    (emacsy-message-or-echo-area))
+                    (emacsy-message-or-echo-area))
   (set-source-point! (get-echo-area)
-		     (buffer:point minibuffer)))
+                     (buffer:point minibuffer)))
 
 (define-public (redisplay-buffers)
   "Converts text-buffers to <pointer-buffer> and inserts them into
 notebook. Also updates buffer contents and buffer points"
   (for-each (lambda (buffer)
-	      (when (eq? <text-buffer> (class-of buffer))
-		(text-buffer->pointer-buffer buffer))
-	      (when (eq? <nomad-text-buffer> (class-of buffer))
-		(set-source-text! (buffer-pointer buffer)
-				  (buffer:buffer-string buffer))
-		(set-source-point! (buffer-pointer buffer)
-				   (buffer:point buffer))))
-	    (buffer-list)))
+              (when (eq? <text-buffer> (class-of buffer))
+                (text-buffer->pointer-buffer buffer))
+              (when (eq? <nomad-text-buffer> (class-of buffer))
+                (set-source-text! (buffer-pointer buffer)
+                                  (buffer:buffer-string buffer))
+                (set-source-point! (buffer-pointer buffer)
+                                   (buffer:point buffer))))
+            (buffer-list)))
 
 (define-interactive (eval-buffer #:optional (buffer (current-buffer)))
   (catch #t
     (lambda _
       (message "~a"
-	       (eval-string (buffer:buffer-string buffer))))
+               (eval-string (buffer:buffer-string buffer))))
     (lambda (key . vals)
       (message "Error: key: ~a value: ~a" key vals))))

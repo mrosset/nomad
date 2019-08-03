@@ -30,11 +30,6 @@
 
 (test-assert "interactive?" emacsy-interactive?)
 (test-equal "scratch and messages?" 2 (length (buffer-list)))
-(test-equal "protect buffers"
-  2
-  (begin (switch-to-buffer "*bar*")
-         (kill-some-buffers)
-         (length (buffer-list))))
 
 (test-equal "don't switch on current"
   #f
