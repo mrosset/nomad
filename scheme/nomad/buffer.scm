@@ -32,6 +32,7 @@
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
+            buffers-contain?
             buffers->uri))
 
 (define (make-buffer-socket url socket)
