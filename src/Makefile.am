@@ -22,7 +22,11 @@ bin_SCRIPTS = nomad
 
 EXTRA_DIST = nomad.in
 
-do_subst = sed -e 's,[@]GUILE[@],$(GUILE),g'
+ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
+
+do_subst = sed -e 's,[@]GUILE[@],$(GUILE),g'	\
+		-e 's,[@]LIBDIR[@],$(libdir),g' \
+		-e 's,[@]CCACHEDIR[@],$(ccachedir),g'
 
 nomad: nomad.in Makefile
 	$(do_subst) < $(srcdir)/nomad.in > $@
