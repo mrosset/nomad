@@ -16,17 +16,12 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 (define-module (nomad webkit)
-  #:use-module (nomad lib))
+  #:use-module (nomad lib)
+  #:use-module (nomad webkit-settings))
 
 (load-extension (dynamic-path) "init_guile_nomad_webkit")
 
-(define* (proxy-set! choice #:optional proxy-settings)
-  "Set Nomad default frame proxy, if choice is #t then use default system proxy.
-If optional proxy-settings is present(a pointer to proxy-settings) use it as
-the proxy. Otherwise if bool is #f Disable proxy."
-  (if choice
-      (if proxy-settings
-          (webkit-set-proxy-settings-custom proxy-settings)
-          (webkit-set-proxy-settings-default))
-      (webkit-set-proxy-settings-no-proxy)))
-(export proxy-set!)
+(define webkit-new* webkit-new)
+(define* (webkit-new buffer #:optional #:key (settings (webkit-settings-new)))
+  (webkit-new* buffer settings))
+(export webkit-new)

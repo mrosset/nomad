@@ -106,9 +106,11 @@ nomad_web_view_class_init (NomadWebViewClass *class)
 }
 
 GtkWidget *
-nomad_web_view_new ()
+nomad_web_view_new (WebKitSettings *settings)
 {
-  return g_object_new (NOMAD_WEB_VIEW_TYPE, NULL);
+  return g_object_new (NOMAD_WEB_VIEW_TYPE,
+                       "settings", settings,
+                       NULL);
 }
 
 void
@@ -118,11 +120,11 @@ nomad_web_view_switch_to_buffer (NomadWebView *view)
               view->priv->buffer);
 }
 
-SCM_DEFINE_PUBLIC (
-    scm_nomad_webkit_new, "webkit-new", 1, 0, 0, (SCM buffer),
+SCM_DEFINE (
+                   scm_nomad_webkit_new, "webkit-new", 2, 0, 0, (SCM buffer, SCM settings),
     "Returns a newly initialized webkit view with its parent buffer as BUFFER")
 {
-  GtkWidget *view = nomad_web_view_new ();
+  GtkWidget *view = nomad_web_view_new (scm_to_pointer (settings));
   NomadWebViewPrivate *priv
       = nomad_web_view_get_instance_private (NOMAD_WEB_VIEW (view));
 
@@ -138,79 +140,6 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_reload, "webkit-reload", 1, 0, 0,
   GtkWidget *view = scm_to_pointer (pointer);
   webkit_web_view_reload (WEBKIT_WEB_VIEW (view));
   return SCM_UNDEFINED;
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_new,
-                   "webkit-proxy-settings-new", 2, 0, 0,
-                   (SCM proxy, SCM ignore),
-                   "Returns a newly initialized webkit proxy settings.")
-{
-  return scm_from_pointer (
-      webkit_network_proxy_settings_new (
-          scm_to_locale_string (proxy),
-          scm_to_pointer (scm_nomad_list_to_argv (ignore))),
-      NULL);
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_free,
-                   "webkit-proxy-settings-free", 1, 0, 0, (SCM pointer),
-                   "Frees up a webkit proxy settings.")
-{
-  webkit_network_proxy_settings_free (scm_to_pointer (pointer));
-  return SCM_UNSPECIFIED;
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_settings_copy,
-                   "webkit-proxy-settings-copy", 1, 0, 0, (SCM pointer),
-                   "Copies a webkit proxy settings.")
-{
-  return scm_from_pointer (
-      webkit_network_proxy_settings_copy (scm_to_pointer (pointer)), NULL);
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_network_proxy_add_proxy_for_scheme,
-                   "webkit-proxy-settings-add-proxy-for-scheme", 3, 0, 0,
-                   (SCM pointer, SCM scheme, SCM proxy),
-                   "Adds a URI-scheme-specific proxy. URIs whose scheme "
-                   "matches scheme will be proxied via proxy.")
-{
-  webkit_network_proxy_settings_add_proxy_for_scheme (
-      scm_to_pointer (pointer), scm_to_locale_string (scheme),
-      scm_to_locale_string (scheme));
-  return SCM_UNSPECIFIED;
-}
-
-SCM_DEFINE_PUBLIC (
-    scm_nomad_webkit_web_context_set_network_proxy_settings_custom,
-    "webkit-set-proxy-settings-custom", 1, 0, 0, (SCM pointer),
-    "Activate custom proxy pointer points to.")
-{
-  webkit_web_context_set_network_proxy_settings (
-      webkit_web_context_get_default (), WEBKIT_NETWORK_PROXY_MODE_CUSTOM,
-      scm_to_pointer (pointer));
-  return SCM_UNSPECIFIED;
-}
-
-SCM_DEFINE_PUBLIC (
-    scm_nomad_webkit_web_context_set_network_proxy_settings_default,
-    "webkit-set-proxy-settings-default", 0, 0, 0, (),
-    "Activate system default proxy.")
-{
-  webkit_web_context_set_network_proxy_settings (
-      webkit_web_context_get_default (), WEBKIT_NETWORK_PROXY_MODE_DEFAULT,
-      NULL);
-  return SCM_UNSPECIFIED;
-}
-
-SCM_DEFINE_PUBLIC (
-    scm_nomad_webkit_web_context_set_network_proxy_settings_no_proxy,
-    "webkit-set-proxy-settings-no-proxy", 0, 0, 0, (),
-    "Activate system default proxy.")
-{
-  webkit_web_context_set_network_proxy_settings (
-      webkit_web_context_get_default (), WEBKIT_NETWORK_PROXY_MODE_NO_PROXY,
-      NULL);
-  return SCM_UNSPECIFIED;
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_uri, "webkit-uri", 1, 0, 0, (SCM pointer),

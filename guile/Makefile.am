@@ -30,7 +30,10 @@ libguile_nomad_la_SOURCES =	app.c		\
 				text.c		\
 				util.c		\
 				webkit.c	\
+				webkitsettings.c	\
+				webkitproxy.c	\
 				extension.c
+
 
 libguile_nomad_la_CFLAGS = $(AM_CFLAGS)			\
 			$(EMACSY_CFLAGS)		\
@@ -54,7 +57,7 @@ G_RESOURCES = gresource.xml
 
 EXTRA_DIST = $(G_RESOURCES)
 
-DOT_X_FILES = extension.x webkit.x frame.x app.x util.x minibuffer.x text.x
+DOT_X_FILES = extension.x webkit.x frame.x app.x util.x minibuffer.x text.x webkitsettings.x webkitproxy.x
 
 BUILT_SOURCES = $(DOT_X_FILES)
 

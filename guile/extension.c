@@ -23,6 +23,8 @@
 #include "text.h"
 #include "util.h"
 #include "webkit.h"
+#include "webkitsettings.h"
+#include "webkitproxy.h"
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <libguile.h>
@@ -45,6 +47,18 @@ void
 init_guile_nomad_webkit ()
 {
   scm_c_define_module ("nomad webkit", nomad_webkit_register_function, NULL);
+}
+
+void
+init_guile_nomad_webkitsettings ()
+{
+  scm_c_define_module ("nomad webkit-settings", nomad_webkitsettings_register_function, NULL);
+}
+
+void
+init_guile_nomad_webkitproxy ()
+{
+  scm_c_define_module ("nomad webkit-proxy", nomad_webkitproxy_register_function, NULL);
 }
 
 void
