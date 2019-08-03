@@ -267,6 +267,4 @@ specified. Returns the final URL passed to webkit"
                   ("C-f" hints)
                   ("C-r" reload)
                   ("C-g" webview-keyboard-quit)
-                  ("C-s" isearch-forward)
-                  ("C-q" kill-buffer)
-                  ("C-x C-f" query))))
+                  ("C-s" isearch-forward))))
