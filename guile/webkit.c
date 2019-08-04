@@ -84,16 +84,20 @@ load_changed_cb (NomadWebView *view, WebKitLoadEvent load_event,
                  gpointer user_data)
 {
   NomadWebViewPrivate *priv = nomad_web_view_get_instance_private (view);
-  scm_call_2 (scm_c_public_ref ("emacsy emacsy", "set-buffer-name!"),
-              scm_from_locale_string (
-                  webkit_web_view_get_uri (WEBKIT_WEB_VIEW (view))),
-              priv->buffer);
+  if (scm_is_true (priv->buffer))
+    {
+      scm_call_2 (scm_c_public_ref ("emacsy emacsy", "set-buffer-name!"),
+                  scm_from_locale_string (
+                      webkit_web_view_get_uri (WEBKIT_WEB_VIEW (view))),
+                  priv->buffer);
+    }
 }
 
 static void
 nomad_web_view_init (NomadWebView *self)
 {
   self->priv = nomad_web_view_get_instance_private (self);
+  self->priv->buffer = SCM_BOOL_F;
   // signals
   g_signal_connect (self, "load-changed", G_CALLBACK (load_changed_cb), NULL);
   g_signal_connect (self, "decide-policy", G_CALLBACK (decide_policy_cb),
