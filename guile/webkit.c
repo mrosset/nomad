@@ -98,6 +98,7 @@ nomad_web_view_init (NomadWebView *self)
 {
   self->priv = nomad_web_view_get_instance_private (self);
   self->priv->buffer = SCM_BOOL_F;
+
   // signals
   g_signal_connect (self, "load-changed", G_CALLBACK (load_changed_cb), NULL);
   g_signal_connect (self, "decide-policy", G_CALLBACK (decide_policy_cb),

@@ -35,7 +35,7 @@ AC_PROG_MKDIR_P
 AC_PROG_LIBTOOL
 
 # libtool
-LT_INIT
+LT_INIT([dlopen])
 
 # Guile
 GUILE_PKG([3.0 2.2 2.0])
@@ -131,6 +131,8 @@ AC_SUBST(GLIB_COMPILE_R)
 if test "$GLIB_COMPILE_R" = "no"; then
    AC_MSG_ERROR([program glib-compile-resources is required])
 fi
+
+GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
 AC_CONFIG_FILES([
 Makefile
