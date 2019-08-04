@@ -18,6 +18,7 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <emacsy.h>
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <libguile.h>
@@ -301,6 +302,13 @@ SCM_DEFINE_PUBLIC (scm_nomad_start, "start-nomad", 1, 0, 0, (SCM lst),
   status = g_application_run (G_APPLICATION (app), argc, argv);
 
   return scm_from_intmax (status);
+}
+
+void
+nomad_app_run ()
+{
+  SCM lst = scm_call_0 (scm_c_public_ref ("guile", "command-line"));
+  scm_nomad_start (lst);
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_kill, "kill-nomad", 0, 0, 0, (), "Exits Nomad.")

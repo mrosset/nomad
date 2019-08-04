@@ -16,9 +16,9 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-##ACLOCAL_AMFLAG = -I m4
+## ACLOCAL_AMFLAG = -I m4
 
-AM_CFLAGS = -Wall -Werror
+AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement
 
 libguile_nomad_LTLIBRARIES = libguile-nomad.la
 libguile_nomaddir = $(libexecdir)/nomad/
@@ -51,7 +51,7 @@ libguile_nomad_la_LIBADD += $(WEBKIT_LIBS)
 libguile_nomad_la_LIBADD += $(GTK_SOURCEVIEW_LIBS)
 
 
-libguile_nomad_la_LDFLAGS = -module -avoid-version -no-undefined
+libguile_nomad_la_LDFLAGS = -avoid-version -no-undefined
 
 G_RESOURCES = gresource.xml
 
@@ -67,9 +67,38 @@ snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(AM_CFLAGS) $(libguile_nomad_la_CFLAGS)
 
 SUFFIXES = .x
 
+.PHONY: format
+
 .c.x:
 	@echo "  SNARF" $@;
 	@$(GUILE_SNARF) -o $@ $< $(snarfcppopts)
 
 resources.c: $(G_RESOURCES)
 	$(GLIB_COMPILE_R) $< --target=$@ --generate-source
+
+format:
+	 clang-format -i *.c *.h
+
+-include $(INTROSPECTION_MAKEFILE)
+INTROSPECTION_GIRS =
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all --include Gtk-3.0 --include GObject-2.0
+INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
+
+if HAVE_INTROSPECTION
+introspection_sources = app.h frame.h webkit.h
+
+Nomad-1.0.gir: libguile-nomad.la
+Nomad_1_0_INCLUDES =
+Nomad_1_0_gir_CFLAGS = $(libguile_nomad_la_CFLAGS)
+Nomad_1_0_gir_LIBS = libguile-nomad.la
+Nomad_1_0_gir_FILES = $(introspection_sources)
+INTROSPECTION_GIRS += Nomad-1.0.gir
+
+girdir = $(datadir)/gir-1.0
+gir_DATA = $(INTROSPECTION_GIRS)
+
+typelibdir = $(libdir)/girepository-1.0
+typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
+
+CLEANFILES += $(gir_DATA) $(typelib_DATA)
+endif

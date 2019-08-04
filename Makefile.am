@@ -18,10 +18,14 @@
 
 SUBDIRS = guile scheme src doc
 
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+
+DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
 
 EXTRA_DIST = build-aux/test-driver.scm
 ## FIXME this is hackish. promote init.el to emacs package
+EXTRA_DIST = init.el m4/introspection.m4
+
 nomaddir = "$(datadir)/nomad"
 nomad_DATA = ## init.el
 
@@ -29,6 +33,9 @@ dist_doc_DATA = README
 
 clean-scheme:
 	$(MAKE) -C ./scheme clean
+
+clean-guile:
+	$(MAKE) -C ./guile clean
 
 test: check
 	$(MAKE) -C ./src test
