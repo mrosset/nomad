@@ -26,6 +26,7 @@
 #include "../config.h"
 #include "app.h"
 #include "frame.h"
+#include "text.h"
 #include "util.h"
 
 #define BUS_INTERFACE_NAME "org.gnu.nomad.webview"
@@ -207,7 +208,7 @@ GtkWidget *
 nomad_app_get_first_buffer (NomadApp *app)
 {
   NomadAppFrame *frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *nbook = nomad_frame_get_notebook (frame);
+  GtkNotebook *nbook = nomad_app_frame_get_notebook (frame);
 
   return gtk_notebook_get_nth_page (nbook, 0);
 }
@@ -223,7 +224,7 @@ void
 nomad_app_next_buffer (NomadApp *app)
 {
   NomadAppFrame *frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *nbook = nomad_frame_get_notebook (frame);
+  GtkNotebook *nbook = nomad_app_frame_get_notebook (frame);
 
   // If this is the last tab goto the first tab
   if (gtk_notebook_get_n_pages (nbook) - 1
@@ -242,7 +243,7 @@ void
 nomad_app_prev_buffer (NomadApp *app)
 {
   NomadAppFrame *frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *nbook = nomad_frame_get_notebook (frame);
+  GtkNotebook *nbook = nomad_app_frame_get_notebook (frame);
 
   // If this is the first tab goto the last tab
   if (gtk_notebook_get_current_page (nbook) == 0)
@@ -263,18 +264,6 @@ SCM_DEFINE_PUBLIC (
     "Return string describing the version of Nomad that is running")
 {
   return scm_from_utf8_string (VERSION);
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_gtk_init, "gtk-init", 0, 0, 0, (),
-                   "Initialize GTK and returns #t on success. *NOTE* this "
-                   "should only be used for "
-                   "testing, start-nomad will initialize GTK. Returns ")
-{
-  if (gtk_init_check (0, NULL))
-    {
-      return SCM_BOOL_T;
-    }
-  return SCM_BOOL_F;
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_start, "start-nomad", 1, 0, 0, (SCM lst),
@@ -305,9 +294,10 @@ SCM_DEFINE_PUBLIC (scm_nomad_start, "start-nomad", 1, 0, 0, (SCM lst),
 }
 
 void
-nomad_app_run ()
+nomad_app_run (NomadApp *app)
 {
   SCM lst = scm_call_0 (scm_c_public_ref ("guile", "command-line"));
+
   scm_nomad_start (lst);
 }
 

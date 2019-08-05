@@ -81,11 +81,11 @@ format:
 
 -include $(INTROSPECTION_MAKEFILE)
 INTROSPECTION_GIRS =
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all --include Gtk-3.0 --include GObject-2.0
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all --include Gtk-3.0 --include GObject-2.0 --include GtkSource-4
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 
 if HAVE_INTROSPECTION
-introspection_sources = app.h frame.h webkit.h
+introspection_sources = app.h frame.h webkit.h text.h
 
 Nomad-1.0.gir: libguile-nomad.la
 Nomad_1_0_INCLUDES =

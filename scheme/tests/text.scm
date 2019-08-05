@@ -17,15 +17,18 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test text)
+  #:use-module (g-golf)
   #:use-module (nomad app)
   #:use-module (nomad text)
   #:use-module (srfi srfi-64)
-  #:use-module (system foreign)
-  )
+  #:use-module (system foreign))
 
-(let ((gtk? (gtk-init)))
+(gi-import "Gtk")
+(gi-import "GtkSource")
+
+(let ((gtk? (gtk-init-check #f #f)))
   (test-assert "GTK init" gtk?)
   (unless gtk?
-    (test-skip webkit)))
+    (test-skip "source is pointer?")))
 
-(test-assert "text is pointer?" (source-new))
+(test-assert "source is source view?" (equal? (class-of (make <gtk-source-view>)) <gtk-source-view>))

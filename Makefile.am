@@ -37,7 +37,7 @@ clean-scheme:
 clean-guile:
 	$(MAKE) -C ./guile clean
 
-test: check
+test: all
 	$(MAKE) -C ./src test
 
 test-install: install

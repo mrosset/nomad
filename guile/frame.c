@@ -285,9 +285,9 @@ nomad_app_frame_init (NomadAppFrame *self)
   priv->notebook = gtk_notebook_new ();
 
   priv->modeline = gtk_source_view_new_with_buffer (
-      source_buffer_new ("oblivion", "scheme"));
+      nomad_app_source_buffer_new ("oblivion", "scheme"));
   priv->read_line = gtk_source_view_new_with_buffer (
-      source_buffer_new ("classic", "scheme"));
+      nomad_app_source_buffer_new ("classic", "scheme"));
 
   // tabs
   gtk_notebook_set_show_tabs (GTK_NOTEBOOK (priv->notebook), FALSE);
@@ -321,9 +321,20 @@ nomad_app_frame_init (NomadAppFrame *self)
 }
 
 GtkNotebook *
-nomad_frame_get_notebook (NomadAppFrame *self)
+nomad_app_frame_get_notebook (NomadAppFrame *self)
 {
   return GTK_NOTEBOOK (self->priv->notebook);
+}
+
+gint
+nomad_app_frame_notebook_insert (GtkWidget *widget, const gchar *name,
+                                 gint pos)
+{
+  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
+  GtkNotebook *notebook = nomad_app_frame_get_notebook (win);
+
+  return gtk_notebook_insert_page (notebook, widget, gtk_label_new (name),
+                                   pos);
 }
 
 GtkWidget *
@@ -368,7 +379,7 @@ nomad_app_frame_new (NomadApp *app)
 WebKitWebView *
 nomad_app_frame_get_webview (NomadAppFrame *self)
 {
-  GtkNotebook *notebook = nomad_frame_get_notebook (self);
+  GtkNotebook *notebook = nomad_app_frame_get_notebook (self);
   int page = gtk_notebook_get_current_page (notebook);
   return WEBKIT_WEB_VIEW (gtk_notebook_get_nth_page (notebook, page));
 }
@@ -377,7 +388,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_frame_show_tabs, "toggle-tabs", 0, 0, 0, (),
                    "Turns notebook tabs on or off")
 {
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *notebook = nomad_frame_get_notebook (win);
+  GtkNotebook *notebook = nomad_app_frame_get_notebook (win);
 
   gtk_notebook_set_show_tabs (notebook,
                               !gtk_notebook_get_show_tabs (notebook));
@@ -461,7 +472,7 @@ SCM_DEFINE_PUBLIC (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
   gint page;
   GtkWidget *widget;
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *notebook = nomad_frame_get_notebook (win);
+  GtkNotebook *notebook = nomad_app_frame_get_notebook (win);
 
   if (SCM_POINTER_P (pointer))
     {
@@ -489,7 +500,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_number_tabs, "number-tabs", 0, 0, 0, (),
                    "Return the total number of tabs")
 {
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *notebook = GTK_NOTEBOOK (nomad_frame_get_notebook (win));
+  GtkNotebook *notebook = GTK_NOTEBOOK (nomad_app_frame_get_notebook (win));
   return scm_from_int (gtk_notebook_get_n_pages (notebook));
 }
 
@@ -497,7 +508,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
                    (SCM buffer), "Return #t if notebook contains BUFFER")
 {
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *notebook = nomad_frame_get_notebook (win);
+  GtkNotebook *notebook = nomad_app_frame_get_notebook (win);
   SCM pointer = scm_call_1 (
       scm_c_public_ref ("nomad pointer", "buffer-pointer"), buffer);
   GtkWidget *widget = scm_to_pointer (pointer);
@@ -511,14 +522,14 @@ SCM_DEFINE_PUBLIC (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
   return SCM_BOOL_F;
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_notebook_insert, "notebook-insert", 2, 0, 0,
+SCM_DEFINE_PUBLIC (scm_nomad_notebook_insert, "notebook-insert-old", 2, 0, 0,
                    (SCM buffer, SCM index),
                    "Inserts BUFFER into notebook at INDEX")
 {
   gint page;
   const char *c_name;
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *notebook = nomad_frame_get_notebook (win);
+  GtkNotebook *notebook = nomad_app_frame_get_notebook (win);
   SCM pointer = scm_call_1 (
       scm_c_public_ref ("nomad pointer", "buffer-pointer"), buffer);
   GtkWidget *widget = scm_to_pointer (pointer);

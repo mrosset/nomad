@@ -32,10 +32,20 @@ G_DECLARE_FINAL_TYPE (NomadAppFrame, nomad_app_frame, NOMAD, APP_FRAME,
                       GtkApplicationWindow)
 
 NomadAppFrame *nomad_app_frame_new (NomadApp *app);
-GtkNotebook *nomad_frame_get_notebook (NomadAppFrame *win);
+
+GtkNotebook *nomad_app_frame_get_notebook (NomadAppFrame *win);
+
+gint nomad_app_frame_notebook_insert (GtkWidget *widget, const gchar *name,
+                                      gint pos);
+
 GtkWidget *nomad_app_frame_get_minipopup (NomadAppFrame *win);
+
 GtkWidget *nomad_app_frame_get_readline (NomadAppFrame *self);
+
 void nomad_app_frame_show_minipopup (NomadAppFrame *self);
+
 void nomad_app_frame_hide_minipopup (NomadAppFrame *self);
+
 void nomad_frame_register_function (void *data);
+
 #endif /* __NOMADAPPWIN_H */

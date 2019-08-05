@@ -22,7 +22,7 @@
 #include <libguile.h>
 
 GtkSourceBuffer *
-source_buffer_new (const char *theme, const char *lang)
+nomad_app_source_buffer_new (const char *theme, const char *lang)
 {
   GtkSourceLanguageManager *lm;
   GtkSourceLanguage *sl;
@@ -40,6 +40,14 @@ source_buffer_new (const char *theme, const char *lang)
   gtk_source_buffer_set_style_scheme (buf, ss);
 
   return buf;
+}
+
+void
+nomad_app_source_view_set_buffer (GtkTextView *view, const char *theme,
+                                  const char *lang)
+{
+  gtk_text_view_set_buffer (
+      view, GTK_TEXT_BUFFER (nomad_app_source_buffer_new (theme, lang)));
 }
 
 static GtkWidget *
@@ -60,11 +68,17 @@ SCM_DEFINE_PUBLIC (scm_nomad_source_new, "source-new", 0, 0, 0, (),
 {
   GtkWidget *scroll = gtk_scrolled_window_new (NULL, NULL);
   GtkWidget *source = gtk_source_view_new_with_buffer (
-      source_buffer_new ("classic", "scheme"));
+      nomad_app_source_buffer_new ("classic", "scheme"));
 
   gtk_container_add (GTK_CONTAINER (scroll), source);
   gtk_widget_grab_focus (source);
   return scm_from_pointer (scroll, NULL);
+}
+
+GtkWidget *
+nomad_app_source_view_new ()
+{
+  return (GtkWidget *)scm_to_pointer (scm_nomad_source_new ());
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_set_source_text, "set-source-text!", 2, 0, 0,

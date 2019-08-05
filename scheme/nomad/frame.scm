@@ -17,10 +17,21 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad frame)
+  #:use-module (emacsy emacsy)
   #:use-module (nomad lib)
+  #:use-module (g-golf)
   #:export (make-frame-socket))
 
 (load-extension (dynamic-path) "init_guile_nomad_frame")
+
+(gi-import "Gtk")
+
+(define-public (notebook-insert buffer pos)
+  (let ((widget (slot-ref buffer 'widget)))
+    (nomad-app-frame-notebook-insert widget
+                                     (buffer-name buffer)
+                                     pos)
+    (gtk-widget-show-all widget)))
 
 (define (make-frame-socket url socket)
   "Write `make-frame' comand with arg URL to a SOCKET."

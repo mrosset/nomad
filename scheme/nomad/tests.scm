@@ -101,7 +101,7 @@
     "*scratch*"
     (begin (kill-buffer)
            (buffer-name (current-buffer))))
-  (update-buffers)
+  (redisplay-buffers)
   (test-equal "tab and buffer synchronization"
     (length (buffer-list))
     (number-tabs))
@@ -114,8 +114,8 @@
   (for-each (lambda (buffer)
               (next-buffer))
             (buffer-list))
-  (update-buffers)
   (kill-some-buffers)
+  (redisplay-buffers)
   ;; total tabs equals total buffers
   (test-equal "tab and buffer synchronization"
     (length (buffer-list))

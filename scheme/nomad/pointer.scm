@@ -18,21 +18,34 @@
 
 (define-module (nomad pointer)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad frame)
-  #:use-module (nomad util)
   #:use-module (oop goops)
+  #:use-module (nomad frame)
+  #:use-module (g-golf)
+  #:use-module (nomad util)
   #:use-module (system foreign)
   )
 
-(define-class-public <pointer-buffer> (<text-buffer>)
-  (pointer #:getter buffer-pointer #:setter set-buffer-pointer! #:init-keyword #:pointer #:init-value %null-pointer))
+;; (gi-import "Gtk")
+
+(define-class-public <widget-buffer>
+  (<text-buffer>)
+  (widget #:accessor !widget #:init-keyword #:widget)
+  (pointer #:accessor !pointer #:init-keyword #:pointer #:init-value %null-pointer))
+
+(define-method (get-pointer (buffer <widget-buffer>))
+  (let* ((widget (slot-ref buffer 'widget))
+         (pointer (slot-ref widget 'g-inst)))
+    pointer))
+
+(define-method-public (buffer-pointer (buffer <widget-buffer>))
+  (get-pointer buffer))
 
 (define-method-public (buffer-pointer)
   (buffer-pointer (current-buffer)))
 
-(define-method-public (set-buffer-pointer! pointer)
-  (set-buffer-pointer! (current-buffer)
-                       pointer))
+;; (define-method-public (set-buffer-pointer! pointer)
+;;   (set-buffer-pointer! (current-buffer)
+;;                        pointer))
 
 (define-public (pointer-kill-hook)
   (info "Destroying pointer ~a"
@@ -42,4 +55,6 @@
 (define-public (pointer-enter-hook)
   (info "Setting pointer to ~a"
         (buffer-pointer))
-  (switch-to-pointer (buffer-pointer (current-buffer))))
+  (switch-to-pointer (buffer-pointer (current-buffer)))
+  (gtk-widget-grab-focus (slot-ref (current-buffer)
+                                    'widget)))

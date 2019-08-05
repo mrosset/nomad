@@ -81,19 +81,17 @@
   "Creates a new webview buffer with NAME and CONTENT"
   (let ((buffer (make-webcontent-buffer name content)))
     (with-buffer buffer
-                 (set-buffer-pointer! (webkit-new buffer))
                  (set-buffer-hooks!)
                  (buffer-render))
     (switch-to-buffer buffer)
     buffer))
 
 (define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
-  "Creates a new webview-bufer with URL"
+  "Creates a new webview-buffer with URL"
   (let ((buffer (make-webview-buffer url)))
-    (with-buffer buffer
-                 (set-buffer-pointer! (webkit-new buffer))
-                 (set-buffer-hooks!)
-                 (set-buffer-uri! (prefix-url url)))
+    (set-buffer-hooks! buffer)
+    (set-buffer-uri! buffer
+                     (prefix-url url))
     (switch-to-buffer buffer)
     buffer))
 
@@ -107,9 +105,8 @@
 (define-public (redisplay-minibuffer)
   "Set the minibuffer graphical control to emacsy buffer state"
   (emacsy-tick)
-  (if emacsy-display-minibuffer?
-      (grab-readline)
-      (grab-notebook))
+  (when emacsy-display-minibuffer?
+    (grab-readline))
   (set-source-text! (get-echo-area)
                     (emacsy-message-or-echo-area))
   (set-source-point! (get-echo-area)

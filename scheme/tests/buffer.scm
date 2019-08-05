@@ -19,9 +19,16 @@
 (define-module (tests buffer)
   #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
+  #:use-module (nomad webview)
   #:use-module (oop goops)
+  #:use-module (g-golf)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64))
+
+(gi-import "Gtk")
+
+(let ((gtk? (gtk-init-check #f #f)))
+  (test-assert "Gtk init?" gtk?))
 
 (test-begin "buffers")
 
