@@ -33,6 +33,11 @@ G_DECLARE_FINAL_TYPE (NomadAppFrame, nomad_app_frame, NOMAD, APP_FRAME,
 
 NomadAppFrame *nomad_app_frame_new (NomadApp *app);
 
+/**
+ * nomad_app_frame_get_notebook:
+ *
+ * Returns: (transfer full):
+ */
 GtkNotebook *nomad_app_frame_get_notebook (NomadAppFrame *win);
 
 gint nomad_app_frame_notebook_insert (GtkWidget *widget, const gchar *name,
