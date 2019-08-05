@@ -30,7 +30,19 @@ G_DECLARE_FINAL_TYPE (NomadApp, nomad_app, NOMAD, APP, GtkApplication)
 
 NomadApp *nomad_app_new ();
 void nomad_app_run ();
+
+/**
+ * nomad_app_get_default:
+ *
+ * Returns: (transfer full):
+ */
 NomadApp *nomad_app_get_default ();
+
+/**
+ * nomad_app_get_frame:
+ *
+ * Returns: (transfer full):
+ */
 GtkWindow *nomad_app_get_frame ();
 void nomad_app_register_function (void *data);
 
