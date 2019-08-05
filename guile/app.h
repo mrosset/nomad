@@ -33,4 +33,5 @@ void nomad_app_run ();
 NomadApp *nomad_app_get_default ();
 GtkWindow *nomad_app_get_frame ();
 void nomad_app_register_function (void *data);
+
 #endif /* __NOMADAPP_H */

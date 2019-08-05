@@ -18,7 +18,10 @@
 
 (define-module (nomad text)
   #:use-module (emacsy emacsy)
+  #:use-module (g-golf)
+  #:use-module (ice-9 optargs)
   #:use-module (nomad frame)
+  #:use-module (nomad util)
   #:use-module (nomad lib)
   #:use-module (nomad pointer)
   #:use-module (oop goops)
@@ -27,17 +30,30 @@
 
 (load-extension (dynamic-path) "init_guile_nomad_text")
 
-(define-class-public <nomad-text-buffer> (<pointer-buffer>))
+(gi-import "GtkSource")
+
+(define default-source-language "scheme")
+(define default-source-theme "classic")
+
+(define-class-public <nomad-text-buffer> (<widget-buffer>))
+
+(define* (make-source-view #:optional theme language)
+  (let ((view (make <gtk-source-view>))
+        (t (or theme default-source-theme))
+        (l (or language default-source-language)))
+    (nomad-app-source-view-set-buffer view t
+                                      l)
+    view))
 
 (define-public (text-buffer->pointer-buffer buffer)
   "Converts a <text-buffer> class to a pointer-buffer."
   (change-class buffer <nomad-text-buffer>)
-  (set-buffer-pointer! buffer
-                      (source-new))
+  (info "converting ~a" buffer)
+  (slot-set! buffer
+             'widget
+             (make-source-view))
   (add-hook! (buffer-enter-hook buffer)
              pointer-enter-hook)
   (add-hook! (buffer-kill-hook buffer)
              pointer-kill-hook)
-
-  (notebook-insert buffer 0)
-)
+  (notebook-insert buffer 0))

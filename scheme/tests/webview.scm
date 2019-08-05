@@ -21,8 +21,14 @@
   #:use-module (nomad webview)
   #:use-module (nomad pointer)
   #:use-module (oop goops)
+  #:use-module (g-golf)
   #:use-module (srfi srfi-64)
   #:use-module (system foreign))
+
+(gi-import "Gtk")
+
+(let ((gtk? (gtk-init-check #f #f)))
+  (test-assert "Gtk init?" gtk?))
 
 (test-begin "webview")
 
@@ -67,11 +73,15 @@
                 "gnu.org"
                 (buffer-name buffer))
               (test-equal "buffer-url"
-                "gnu.org"
+                #f
                 (buffer-uri buffer))
-              (test-equal "null buffer pointer?"
-                %null-pointer
-                (buffer-pointer buffer))))
+              (test-equal "not null buffer pointer?"
+                #f
+                (null-pointer? (buffer-pointer buffer)))
+              (test-equal "load uri"
+                "https://gnu.org/"
+                (begin (set-buffer-uri! buffer "https://gnu.org")
+                       (buffer-uri buffer)))))
 
 (test-group "webcontent buffer"
             (let ((buffer (make-webcontent-buffer "test-content")))
@@ -79,11 +89,13 @@
                 "test-content"
                 (buffer-name buffer))
               (test-equal "buffer-url"
-                "test-content"
+                #f
                 (buffer-uri buffer))
-              (test-equal "buffer-content" "<h2>test-content</h2>" (buffer-content buffer))
+              (test-equal "buffer-content"
+                "<h2>test-content</h2>"
+                (buffer-content buffer))
               (test-equal "buffer-pointer"
-                %null-pointer
-                (buffer-pointer buffer))))
+                #f
+                (null-pointer? (buffer-pointer buffer)))))
 
 (test-end)

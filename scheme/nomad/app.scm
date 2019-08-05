@@ -25,6 +25,7 @@
   #:use-module (nomad options)
   #:use-module (nomad repl)
   #:use-module (nomad text)
+  #:use-module (g-golf)
   #:use-module (nomad util)
   #:use-module (nomad views)
   #:use-module (nomad webview)
@@ -34,6 +35,8 @@
             app-init))
 
 (load-extension (dynamic-path) "init_guile_nomad_app")
+
+(gi-import "Gio")
 
 (define shutdown-hook (make-hook 0))
 

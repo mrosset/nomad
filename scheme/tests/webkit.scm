@@ -22,16 +22,21 @@
   #:use-module (system foreign)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
+  #:use-module (g-golf)
   #:use-module (srfi srfi-64))
 
-(let ((gtk? (gtk-init)))
+(gi-import "Gtk")
+
+(test-skip "webkit")
+
+(let ((gtk? (gtk-init-check #f #f)))
   (test-assert "GTK init" gtk?)
   (unless gtk?
-    (test-skip webkit)))
+    (test-skip "webkit")))
 
 (test-group "webkit"
             (let* ((buffer (make <buffer>))
-                   (view (webkit-new buffer)))
+                   (view (webkit-new)))
               (test-assert "webview is pointer?"
                 (pointer? view))
               (test-assert "view is not null"
