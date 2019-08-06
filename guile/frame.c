@@ -425,10 +425,11 @@ SCM_DEFINE_PUBLIC (scm_nomad_grab_notebook, "grab-notebook", 0, 0, 0, (),
       GList *children;
       GtkWidget *widget
           = gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), page);
-      // if page holds a container then grab its first child
-      if (GTK_IS_CONTAINER (widget))
+      children = gtk_container_get_children (GTK_CONTAINER (widget));
+
+      // if page children grab its first child
+      if (g_list_length (children) > 0)
         {
-          children = gtk_container_get_children (GTK_CONTAINER (widget));
           gtk_widget_grab_focus (g_list_nth_data (children, 0));
         }
       // grab the notebook widget
