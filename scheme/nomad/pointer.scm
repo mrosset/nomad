@@ -33,20 +33,14 @@
   (widget #:accessor !widget #:init-keyword #:widget)
   (pointer #:accessor !pointer #:init-keyword #:pointer #:init-value %null-pointer))
 
-(define-method (get-pointer (buffer <widget-buffer>))
+
+(define-method-public (buffer-pointer (buffer <widget-buffer>))
   (let* ((widget (slot-ref buffer 'widget))
          (pointer (slot-ref widget 'g-inst)))
     pointer))
 
-(define-method-public (buffer-pointer (buffer <widget-buffer>))
-  (get-pointer buffer))
-
 (define-method-public (buffer-pointer)
   (buffer-pointer (current-buffer)))
-
-;; (define-method-public (set-buffer-pointer! pointer)
-;;   (set-buffer-pointer! (current-buffer)
-;;                        pointer))
 
 (define-public (pointer-kill-hook)
   (info "Destroying pointer ~a"
