@@ -20,6 +20,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
   #:use-module (nomad frame)
+  #:use-module (nomad util)
   #:use-module (g-golf)
   #:use-module (nomad util)
   #:use-module (system foreign)
@@ -56,5 +57,5 @@
   (info "Setting pointer to ~a"
         (buffer-pointer))
   (switch-to-pointer (buffer-pointer (current-buffer)))
-  (nomad-grab-widget (slot-ref (current-buffer)
+  (nomad-widget-grab-focus (slot-ref (current-buffer)
                                     'widget)))
