@@ -54,7 +54,7 @@
             set-buffer-uri!
             ))
 
-;;; <webview-buffer> extends <buffer> class
+;;; <webview-buffer> extends <pointer-buffer> class
 (define-class-public <webview-buffer>
   (<pointer-buffer>)
   (content #:accessor buffer-content #:init-keyword #:content))
