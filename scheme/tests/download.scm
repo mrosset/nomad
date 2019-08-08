@@ -26,22 +26,18 @@
   #:use-module (gcrypt base16)
   #:use-module (srfi srfi-64))
 
-(define (skip-gnutls)
+(define (skip-online)
+  (test-skip "url-fetch")
   (test-skip "download file")
   (test-skip "hash file")
   (test-skip "file exists"))
-
-(unless (false-if-exception (resolve-interface '(gnutls)))
-  (skip-gnutls))
 
 (catch 'getaddrinfo-error
   (lambda _
     (getaddrinfo "mirrors.kernel.org" "http"))
   (lambda (key code)
-    (test-skip "url-fetch")
-    (skip-gnutls)
     ;; if we get here no network, so disable online tests
-    ))
+    (skip-online)))
 
 (define (test-downloader proc dir url)
   (let ((file (string-append dir
