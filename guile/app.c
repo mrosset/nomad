@@ -326,6 +326,18 @@ SCM_DEFINE_PUBLIC (scm_nomad_dbus_test, "dbus-test", 0, 0, 0, (),
   return SCM_UNDEFINED;
 }
 
+SCM_DEFINE_PUBLIC (scm_nomad_gtk_init_check, "gtk-init-check", 0, 0, 0, (),
+                   "Initialize GTK and returns #t on success. *NOTE* this "
+                   "should only be used for "
+                   "testing, start-nomad will initialize GTK. Returns ")
+{
+  if (gtk_init_check (0, NULL))
+    {
+      return SCM_BOOL_T;
+    }
+  return SCM_BOOL_F;
+}
+
 SCM_DEFINE_PUBLIC (scm_nomad_application_id, "application-id", 0, 0, 0, (),
                    "Return string id of nomad application instance")
 {

@@ -39,6 +39,14 @@ scm_nomad_free_argv (void *data)
   g_strfreev (data);
 }
 
+void  nomad_widget_grab_focus(GtkWidget *widget) {
+  gtk_widget_grab_focus(widget);
+}
+
+void  nomad_widget_show_all(GtkWidget *widget) {
+  gtk_widget_show_all(widget);
+}
+
 SCM_DEFINE_PUBLIC (scm_nomad_list_to_argv, "list->argv", 1, 0, 0, (SCM lst),
                    "Converts LST to char **argv and returns SCM pointer")
 {

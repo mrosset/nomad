@@ -109,7 +109,7 @@
   (info "Setting pointer to ~a"
         (buffer-pointer))
   (switch-to-pointer (buffer-pointer (current-buffer)))
-  (gtk-widget-grab-focus (current-buffer)))
+  (nomad-widget-grab-focus (current-buffer)))
 
 (define (webview-onload)
   "Update BUFFER on webview load"

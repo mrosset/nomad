@@ -25,14 +25,7 @@
   #:use-module (g-golf)
   #:use-module (srfi srfi-64))
 
-(gi-import "Gtk")
-
 (test-skip "webkit")
-
-(let ((gtk? (gtk-init-check #f #f)))
-  (test-assert "GTK init" gtk?)
-  (unless gtk?
-    (test-skip "webkit")))
 
 (test-group "webkit"
             (let* ((buffer (make <buffer>))
