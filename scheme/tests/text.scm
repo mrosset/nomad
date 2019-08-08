@@ -23,10 +23,9 @@
   #:use-module (srfi srfi-64)
   #:use-module (system foreign))
 
-(gi-import "Gtk")
 (gi-import "GtkSource")
 
-(let ((gtk? (gtk-init-check #f #f)))
+(let ((gtk? (gtk-init-check)))
   (test-assert "GTK init" gtk?)
   (unless gtk?
     (test-skip "source is pointer?")))

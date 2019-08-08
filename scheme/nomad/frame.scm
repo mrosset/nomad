@@ -24,14 +24,14 @@
 
 (load-extension (dynamic-path) "init_guile_nomad_frame")
 
-(gi-import "Gtk")
+(gi-import "Nomad")
 
 (define-public (notebook-insert buffer pos)
   (let ((widget (slot-ref buffer 'widget)))
     (nomad-app-frame-notebook-insert widget
                                      (buffer-name buffer)
                                      pos)
-    (gtk-widget-show-all widget)))
+    (nomad-widget-show-all widget)))
 
 (define (make-frame-socket url socket)
   "Write `make-frame' comand with arg URL to a SOCKET."

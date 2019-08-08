@@ -85,7 +85,7 @@ INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all --include G
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 
 if HAVE_INTROSPECTION
-introspection_sources = app.h frame.h webkit.h text.h
+introspection_sources = app.h frame.h webkit.h text.h util.h
 
 Nomad-1.0.gir: libguile-nomad.la
 Nomad_1_0_INCLUDES =

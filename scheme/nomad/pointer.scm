@@ -25,7 +25,7 @@
   #:use-module (system foreign)
   )
 
-;; (gi-import "Gtk")
+(gi-import "Nomad")
 
 (define-class-public <widget-buffer>
   (<text-buffer>)
@@ -56,5 +56,5 @@
   (info "Setting pointer to ~a"
         (buffer-pointer))
   (switch-to-pointer (buffer-pointer (current-buffer)))
-  (gtk-widget-grab-focus (slot-ref (current-buffer)
+  (nomad-grab-widget (slot-ref (current-buffer)
                                     'widget)))
