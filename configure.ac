@@ -43,18 +43,36 @@ GUILE_PROGS
 dnl GUILE_FLAGS
 GUILE_SITE_DIR
 
+AC_ARG_WITH([gtksourceview], AS_HELP_STRING([--with-gtksourceview],
+			     [With gtksourceview version 3 or default 4]),
+			     [],
+			     [with_gtksourceview=4])
+
 # pkg-config modules
 PKG_CHECK_MODULES([GUILE], [guile-2.2])
 PKG_CHECK_MODULES([EMACSY], [emacsy])
 PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
 PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
-PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-4])
+
 PKG_CHECK_MODULES(GLIB, [glib-2.0])
 
+AS_IF([test "x$with_gtksourceview" = "x4"], [
+	    PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-4])
+])
+
+AS_IF([test "x$with_gtksourceview" = "x3"], [
+	    PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-3.0])
+])
+
 dnl guile modules
+GUILE_MODULE_AVAILABLE([guile_gcrypt], [(gcrypt hash)])
+if test "$guile_gcrypt" = "no"; then
+   AC_MSG_ERROR([guile-gcrypt is missing; please install it.])
+fi
+
 GUILE_MODULE_AVAILABLE([guile_readline], [(ice-9 readline)])
-if test "guile_readline" = "no"; then
+if test "$guile_readline" = "no"; then
    AC_MSG_ERROR([guile-readline is missing; please install it.])
 fi
 
@@ -137,10 +155,16 @@ AC_MSG_NOTICE([summary of build options:
   Library types:        Shared=${enable_shared}, Static=${enable_static}
 ])
 
+AC_MSG_NOTICE([summary of GTK libraries:
+
+  GtkSourceView:       ${with_gtksourceview}
+])
+
 AC_MSG_NOTICE([summary of guile libraries:
 
   Emacsy:              ${guile_emacsy}
   GnuTLS:              ${guile_gnutls}
+  Guile gcrypt:        ${guile_gcrypt}
   Guile Library:       ${guile_lib}
   Readline:            ${guile_readline}
   Curl:                ${guile_curl}
