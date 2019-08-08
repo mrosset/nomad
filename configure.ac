@@ -38,7 +38,7 @@ AC_PROG_LIBTOOL
 LT_INIT
 
 # Guile
-GUILE_PKG([2.2 2.0])
+GUILE_PKG([3.0 2.2 2.0])
 GUILE_PROGS
 dnl GUILE_FLAGS
 GUILE_SITE_DIR
@@ -56,6 +56,7 @@ PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
 PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
 
 PKG_CHECK_MODULES(GLIB, [glib-2.0])
+PKG_CHECK_MODULES(GUILE_LIB, [guile-lib-1.0])
 
 AS_IF([test "x$with_gtksourceview" = "x4"], [
 	    PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-4])
