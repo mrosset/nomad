@@ -1,0 +1,12 @@
+Source: nomad
+Maintainer: Amar Singh <nly@disroot.org>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9)
+
+Package: nomad-gtk
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Extensible Web Browser
+ Built using Guile, Emacsy and Webkitgtk. Feels like Emacs.

@@ -42,6 +42,9 @@ guix-local:
 install-guix-local:
 	guix package -f ./guix-local.scm
 
+debian-tarball:
+	git archive --format=tar.gz HEAD -o `cat configure.ac | grep AC_INIT | head -c 30 - | tail -c 22 - | sed 's/\]//g' - | sed 's/\[//g' - | sed 's/,\ /_/g' - `.tar.gz --prefix=`cat configure.ac | grep AC_INIT | head -c 30 - | tail -c 22 - | sed 's/\]//g' - | sed 's/\[//g' - | sed 's/,\ /-/g' - `
+
 format:
 	$(MAKE) -C src format
 
