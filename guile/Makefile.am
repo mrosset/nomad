@@ -79,9 +79,14 @@ resources.c: $(G_RESOURCES)
 format:
 	 clang-format -i *.c *.h
 
+
 -include $(INTROSPECTION_MAKEFILE)
 INTROSPECTION_GIRS =
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all --include Gtk-3.0 --include GObject-2.0 --include GtkSource-4
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all \
+	--include Gtk-3.0 \
+	--include GObject-2.0 \
+	--include $(GISOURCEVIEW)
+
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 
 if HAVE_INTROSPECTION
