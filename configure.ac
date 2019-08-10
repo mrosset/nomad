@@ -59,10 +59,12 @@ PKG_CHECK_MODULES(GLIB, [glib-2.0])
 PKG_CHECK_MODULES(GUILE_LIB, [guile-lib-1.0])
 
 AS_IF([test "x$with_gtksourceview" = "x4"], [
+	    AC_SUBST([GISOURCEVIEW], ["GtkSource-4"])
 	    PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-4])
 ])
 
 AS_IF([test "x$with_gtksourceview" = "x3"], [
+	    AC_SUBST([GISOURCEVIEW], ["GtkSource-3.0"])
 	    PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-3.0])
 ])
 
@@ -161,6 +163,11 @@ AC_MSG_NOTICE([summary of build options:
 AC_MSG_NOTICE([summary of GTK libraries:
 
   GtkSourceView:       ${with_gtksourceview}
+])
+
+AC_MSG_NOTICE([summary of GI typelibs:
+
+  GtkSourceView:       ${GISOURCEVIEW}
 ])
 
 AC_MSG_NOTICE([summary of guile libraries:
