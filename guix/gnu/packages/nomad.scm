@@ -20,6 +20,7 @@
  (gnu packages password-utils)
  (gnu packages pkg-config)
  (gnu packages tls)
+ (gnu packages texinfo)
  (gnu packages webkit)
  (gnu packages xdisorg)
  (gnu packages xorg)
@@ -118,42 +119,52 @@
        ("xclip" ,xclip)))))
 
 (define-public guile-g-golf
-  (let ((commit "ff111f699d6e544750140dc0e41c1bfc66d00049"))
-    (package
-      (name "guile-g-golf")
-      (version (git-version "1" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/g-golf.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0m8hv85sd2mc7s04b6hmq7wxl2x2nc65nl4i38rcs2g5isfk2rcm"))))
-      (build-system glib-or-gtk-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("texinfo" ,texinfo)
-         ("gettext" ,gettext-minimal)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("guile-lib" ,guile-lib)
-         ("glib" ,glib)
-         ("gobject-introspection" ,gobject-introspection)))
-      (arguments
-       `(;; #:configure-flags '("--with-guile-site=yes")
-         ))
-      (home-page "https://www.gnu.org/software/g-golf/")
-      (synopsis "G-Golf is a Guile Object Library for GNOME.")
-      (description "G-Golf low level API comprises a binding to - (most of) the
+  (let ((texinfo-6.6
+         (package (inherit texinfo)
+                  (name "texinfo")
+                  (version "6.6")
+                  (source (origin
+                            (method url-fetch)
+                            (uri (string-append "mirror://gnu/texinfo/texinfo-"
+                                                version ".tar.xz"))
+                            (sha256
+                             (base32
+                              "0rixv4c301djr0d0cnsxs8c1wjndi6bf9vi5axz6mwjkv80cmfcv"))))
+                  (native-inputs '()))))
+
+    (let ((commit "722b6d6ae9dcb70d584860e1331dfc0aa8a2ba12"))
+      (package
+        (name "guile-g-golf")
+        (version (git-version "1" "1" commit))
+        (source (origin
+                  (method git-fetch)
+                  (uri (git-reference
+                        (url "https://git.savannah.gnu.org/git/g-golf.git")
+                        (commit commit)))
+                  (file-name (git-file-name name version))
+                  (sha256
+                   (base32
+                    "06lwgjq4a9bxsznjigqj5rb5h467ijyxgyxhva4bwmx4l84l5whh"))))
+        (build-system glib-or-gtk-build-system)
+        (native-inputs
+         `(("autoconf" ,autoconf)
+           ("automake" ,automake)
+           ("texinfo" ,texinfo-6.6)
+           ("gettext" ,gettext-minimal)
+           ("libtool" ,libtool)
+           ("pkg-config" ,pkg-config)))
+        (inputs
+         `(("guile" ,guile-2.2)
+           ("guile-lib" ,guile-lib)
+           ("glib" ,glib)
+           ("gobject-introspection" ,gobject-introspection)))
+        (home-page "https://www.gnu.org/software/g-golf/")
+        (synopsis "G-Golf is a Guile Object Library for GNOME")
+        (description "G-Golf low level API comprises a binding to - (most of) the
 GObject Introspection and (some of) the GObject and Glib libraries, as well as
 additional (G-Golf) utilities - used to import GObject libraries and build
 their corresponding G-Golf high level API.")
-      (license license:lgpl3+))))
+        (license license:lgpl3+)))))
 
 (define-public nomad
   (let ((commit "1a1bb61048cfc34b83d388e38b5612d369a2b9df"))
