@@ -90,7 +90,7 @@
   "Creates a new webview-buffer with URL"
   (let ((buffer (make-webview-buffer url)))
     (set-buffer-hooks! buffer)
-    (set-buffer-uri! buffer
+    (buffer-load-uri buffer
                      (prefix-url url))
     (switch-to-buffer buffer)
     buffer))
