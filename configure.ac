@@ -58,12 +58,12 @@ PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
 PKG_CHECK_MODULES(GLIB, [glib-2.0])
 PKG_CHECK_MODULES(GUILE_LIB, [guile-lib-1.0])
 
-AS_IF([test "x$with_gtksourceview" = "x4"], [
+AS_IF([test "$with_gtksourceview" = "4"], [
 	    AC_SUBST([GISOURCEVIEW], ["GtkSource-4"])
 	    PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-4])
 ])
 
-AS_IF([test "x$with_gtksourceview" = "x3"], [
+AS_IF([test "$with_gtksourceview" = "3"], [
 	    AC_SUBST([GISOURCEVIEW], ["GtkSource-3.0"])
 	    PKG_CHECK_MODULES([GTK_SOURCEVIEW], [gtksourceview-3.0])
 ])

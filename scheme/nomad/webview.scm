@@ -25,7 +25,6 @@
   #:use-module (nomad pointer)
   #:use-module (nomad util)
   #:use-module (g-golf)
-  #:use-module (nomad webkit)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -53,7 +52,7 @@
             buffer-render
             buffer-sync
             buffer-uri
-            set-buffer-uri!
+            buffer-load-uri
             ))
 
 (gi-import "WebKit2")
@@ -68,7 +67,7 @@
   (slot-ref buffer 'g-inst))
 
 (define-method (buffer-reload)
-  (webkit-reload (buffer-pointer (current-buffer))))
+  (webkit-web-view-reload (current-buffer)))
 
 (define-method (buffer-hints)
   (webkit-hints (buffer-pointer (current-buffer))))
@@ -79,17 +78,17 @@
 (define-method (buffer-scroll-down)
   (webkit-scroll-down (buffer-pointer (current-buffer))))
 
-(define-method (buffer-back)
-  (webkit-back (buffer-pointer (current-buffer))))
-
 (define-method (buffer-back (buffer <webview-buffer>))
-  (webkit-back (buffer-pointer buffer)))
+  (webkit-web-view-go-back buffer))
+
+(define-method (buffer-back)
+  (buffer-back (current-buffer)))
 
 (define-method (buffer-forward)
-  (webkit-forward (buffer-pointer (current-buffer))))
+  (buffer-forward (current-buffer)))
 
 (define-method (buffer-forward (buffer <webview-buffer>))
-  (webkit-forward (buffer-pointer buffer)))
+  (webkit-web-view-go-forward buffer))
 
 (define-method (set-buffer-hooks!)
   (set-buffer-hooks! (current-buffer)))
@@ -103,7 +102,7 @@
 (define-public (webview-kill-hook)
   (info "Destroying pointer ~a"
         (buffer-pointer))
-  (destroy-pointer (buffer-pointer (current-buffer))))
+  (nomad-widget-destroy (current-buffer)))
 
 (define-public (webview-enter-hook)
   (info "Setting pointer to ~a"
@@ -121,23 +120,29 @@
 (define-method (buffer-uri (buffer <webview-buffer>))
   (webkit-web-view-get-uri buffer))
 
-(define-method (set-buffer-uri! uri)
-  (set-buffer-uri! (current-buffer) uri))
+(define-method-public (buffer-load-uri uri)
+  (buffer-load-uri (current-buffer) uri))
 
-(define-method (set-buffer-uri! (buffer <webview-buffer>)
+(define-method-public (buffer-load-uri (buffer <webview-buffer>)
+
                                 uri)
-  (webkit-web-view-load-uri buffer
-                    uri))
+      (webkit-web-view-load-uri buffer uri)
+
+
+  ;; (webkit-load-uri (buffer-pointer buffer)
+  ;;                  uri)
+  )
 
 (define-method (buffer-render)
   (buffer-render (current-buffer)))
 
 (define-method (buffer-render (buffer <webview-buffer>))
-  (webkit-load-html (buffer-pointer buffer) (buffer-content buffer)))
+  (webkit-web-view-load-html buffer (buffer-content buffer) "nomad://")
+  #t)
 
 (define* (make-webview-buffer #:optional (uri default-home-page))
   "Constructs a new webview-buffer class"
-  (let ((buffer (make <webview-buffer> #:widget (make <nomad-web-view>) #:name uri #:uri uri #:keymap webview-map)))
+  (let ((buffer (make <webview-buffer> #:name uri #:uri uri #:keymap webview-map)))
     (add-buffer! buffer)
     buffer))
 
@@ -146,7 +151,6 @@
   "Constructs a new webcontent-buffer class"
   (let ((buffer (make <webview-buffer>
                   #:name name #:content content
-                  #:widget (make <nomad-web-view>)
                   #:keymap webview-map)))
     (add-buffer! buffer)
     buffer))
@@ -172,7 +176,7 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 (define-interactive (browse #:optional (url (read-from-minibuffer "URL: ")))
   "Browse to URI. URI is prefixed with https:// if no protocol is
 specified. Returns the final URL passed to webkit"
-  (set-buffer-uri! (current-buffer)
+  (buffer-load-uri (current-buffer)
                    (prefix-url url)))
 
 (define-interactive (hints)
@@ -196,7 +200,7 @@ specified. Returns the final URL passed to webkit"
 
 (define-interactive (home)
   "Load default home page"
-  (set-buffer-uri! default-home-page))
+  (buffer-load-uri default-home-page))
 
 (define-interactive (reload)
   "Reload current URI"

@@ -70,6 +70,8 @@
 
 (test-group "webview class"
             (let ((buffer (make-webview-buffer "gnu.org")))
+              (test-equal "class of <web-kit-webview>" <webview-buffer>
+                (class-of buffer))
               (test-equal "buffer-name"
                 "gnu.org"
                 (buffer-name buffer))
@@ -81,7 +83,7 @@
                 (null-pointer? (buffer-pointer buffer)))
               (test-equal "load uri"
                 "https://gnu.org/"
-                (begin (set-buffer-uri! buffer "https://gnu.org")
+                (begin (buffer-load-uri buffer "https://gnu.org")
                        (buffer-uri buffer)))))
 
 (test-group "webcontent buffer"
