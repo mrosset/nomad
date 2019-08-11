@@ -38,4 +38,9 @@
     3
     (argv-length argv)))
 
+(test-assert "import GtkWidget"
+  (begin (gi-import-objects "Gtk"
+                            '("Widget"))
+         (procedure? gtk-widget-grab-focus)))
+
 (test-end)
