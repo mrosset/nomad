@@ -58,6 +58,8 @@
 (gi-import "WebKit2")
 (gi-import "Nomad")
 
+(gi-import-objects "Gtk" '("Widget"))
+
 ;;; <webview-buffer> extends <buffer> class
 (define-class-public <webview-buffer>
   (<text-buffer> <nomad-web-view>)
@@ -108,7 +110,7 @@
   (info "Setting pointer to ~a"
         (buffer-pointer))
   (switch-to-pointer (buffer-pointer (current-buffer)))
-  (nomad-widget-grab-focus (current-buffer)))
+  (gtk-widget-grab-focus (current-buffer)))
 
 (define (webview-onload)
   "Update BUFFER on webview load"
