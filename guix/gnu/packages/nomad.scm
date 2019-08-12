@@ -153,12 +153,34 @@
            ("texinfo" ,texinfo-6.6)
            ("gettext" ,gettext-minimal)
            ("libtool" ,libtool)
+           ("clutter" ,clutter) ;; probably want to remove this clutter?
+           ;; FIXME: clutter is only required for tests
            ("pkg-config" ,pkg-config)))
         (inputs
          `(("guile" ,guile-2.2)
            ("guile-lib" ,guile-lib)
            ("glib" ,glib)
            ("gobject-introspection" ,gobject-introspection)))
+        (arguments
+         `(#:tests? #t
+           #:phases
+           (modify-phases %standard-phases
+             (add-before 'configure 'setenv
+               (lambda _
+                 (setenv "GUILE_AUTO_COMPILE" "0")
+                 #t))
+              (add-before 'build 'substitute-libs
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let* ((get (lambda* (x #:optional (path ""))
+                                (string-append (assoc-ref inputs x) "/lib/" path)))
+                         (gi (get "gobject-introspection" "libgirepository-1.0.so"))
+                         (glib (get "glib" "libglib-2.0.so"))
+                         (gobject (get "glib" "libgobject-2.0.so")))
+                    (substitute* "g-golf/init.scm"
+                                (("libgirepository-1.0") gi)
+                                (("libglib-2.0") glib)
+                                (("libgobject-2.0") gobject))
+                    #t))))))
         (home-page "https://www.gnu.org/software/g-golf/")
         (synopsis "G-Golf is a Guile Object Library for GNOME")
         (description "G-Golf low level API comprises a binding to - (most of) the
