@@ -113,7 +113,7 @@
                   (sha256
                    (base32
                     "06lwgjq4a9bxsznjigqj5rb5h467ijyxgyxhva4bwmx4l84l5whh"))))
-        (build-system glib-or-gtk-build-system)
+        (build-system gnu-build-system)
         (native-inputs
          `(("autoconf" ,autoconf)
            ("automake" ,automake)
@@ -130,6 +130,9 @@
            ("gobject-introspection" ,gobject-introspection)))
         (arguments
          `(#:tests? #t
+           #:modules ((ice-9 popen)
+                    (ice-9 rdelim)
+                    ,@%gnu-build-system-modules)
            #:phases
            (modify-phases %standard-phases
              (add-before 'configure 'setenv
@@ -147,7 +150,25 @@
                                 (("libgirepository-1.0") gi)
                                 (("libglib-2.0") glib)
                                 (("libgobject-2.0") gobject))
-                    #t))))))
+                    #t)))
+              (add-after 'install 'install-guile-modules
+                (lambda* (#:key inputs outputs #:allow-other-keys)
+                  (let* ((out (assoc-ref outputs "out"))
+                         (guile (assoc-ref inputs "guile"))
+                         (effective (read-line (open-pipe* OPEN_READ
+                                                           "guile" "-c"
+                                                           "(display (effective-version))")))
+                         ;; FIXME: effective might fail
+                         (go-path (string-append out "/lib/guile/" effective "/site-ccache"))
+                         (scm-path (string-append out "/share/guile/site/" effective)))
+                    (mkdir-p go-path)
+                    (mkdir-p scm-path)
+                    (copy-recursively (string-append out
+                                                     "/lib/g-golf/guile/" effective "/site-ccache")
+                                      go-path)
+                    (copy-recursively (string-append out
+                                                     "/share/g-golf")
+                                      scm-path)))))))
         (home-page "https://www.gnu.org/software/g-golf/")
         (synopsis "G-Golf is a Guile Object Library for GNOME")
         (description "G-Golf low level API comprises a binding to - (most of) the
