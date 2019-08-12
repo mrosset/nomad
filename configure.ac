@@ -51,6 +51,7 @@ AC_ARG_WITH([gtksourceview], AS_HELP_STRING([--with-gtksourceview],
 # pkg-config modules
 PKG_CHECK_MODULES([GUILE], [guile-2.2])
 PKG_CHECK_MODULES([EMACSY], [emacsy])
+PKG_CHECK_MODULES([G_GOLF], [g-golf-1.0])
 PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
 PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
@@ -87,6 +88,11 @@ fi
 GUILE_MODULE_AVAILABLE([guile_emacsy], [(emacsy emacsy)])
 if test "$guile_emacsy" = "no"; then
    AC_MSG_ERROR([guile emacsy is missing; please install it.])
+fi
+
+GUILE_MODULE_AVAILABLE([guile_g_golf], [(g-golf)])
+if test "$guile_g_golf" = "no"; then
+   AC_MSG_ERROR([guile-g-golf is missing; please install it.])
 fi
 
 GUILE_MODULE_AVAILABLE([guile_curl], [(curl)])
@@ -179,4 +185,5 @@ AC_MSG_NOTICE([summary of guile libraries:
   Readline:            ${guile_readline}
   Curl:                ${guile_curl}
   Shroud:              ${guile_shroud}
+  G-Golf:              ${guile_g_golf}
 ])
