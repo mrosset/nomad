@@ -191,7 +191,6 @@
                          (effective (read-line (open-pipe* OPEN_READ
                                                            "guile" "-c"
                                                            "(display (effective-version))")))
-                         ;; FIXME: effective might fail
                          (go-path (string-append out "/lib/guile/" effective "/site-ccache"))
                          (scm-path (string-append out "/share/guile/site/" effective)))
                     (mkdir-p go-path)
