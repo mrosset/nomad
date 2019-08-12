@@ -119,7 +119,7 @@
        ("gnupg" ,gnupg)
        ("xclip" ,xclip)))))
 
-(define-public guile-g-golf
+(define-public g-golf
   (let ((texinfo-6.6
          (package (inherit texinfo)
                   (name "texinfo")
@@ -135,7 +135,7 @@
 
     (let ((commit "722b6d6ae9dcb70d584860e1331dfc0aa8a2ba12"))
       (package
-        (name "guile-g-golf")
+        (name "g-golf")
         (version (git-version "1" "1" commit))
         (source (origin
                   (method git-fetch)
@@ -232,11 +232,16 @@ their corresponding G-Golf high level API.")
          ("guile" ,guile-2.2)
          ("glib:bin" ,glib "bin")))
       (inputs
-       `(("guile" ,guile-2.2)
+       `(("atk" ,atk)
+         ("guile" ,guile-2.2)
          ("guile-lib" ,guile-lib)
          ("guile-gcrypt" ,guile-gcrypt)
-         ("guile-g-golf" ,guile-g-golf)
+         ("g-golf" ,g-golf)
+         ("gobject-introspection" ,gobject-introspection)
          ("guile-readline" ,guile-readline)
+         ("pango" ,pango)
+         ("libsoup" ,libsoup)
+         ("gdk-pixbuf" ,gdk-pixbuf)
          ("gnutls" ,gnutls)
          ("shroud" ,shroud-0.1.2)
          ;; waiting on shroud to be updated in guix
@@ -244,12 +249,13 @@ their corresponding G-Golf high level API.")
          ;; emacsy needs to be updated in guix
          ("glib" ,glib)
          ("dbus-glib" ,dbus-glib)
-         ("gtk+" ,gtk+)
-         ("gtksourceview" ,gtksourceview)
          ("webkitgtk" ,webkitgtk)
          ("xorg-server" ,xorg-server)))
       (propagated-inputs
        `(("glib-networking" ,glib-networking)
+         ;; propergate packages that have typelibs
+         ("gtksourceview" ,gtksourceview)
+         ("gtk+" ,gtk+)
          ("gsettings-desktop-schemas"
           ,gsettings-desktop-schemas)))
       (arguments
@@ -261,6 +267,21 @@ their corresponding G-Golf high level API.")
                     (srfi srfi-26))
          #:phases
          (modify-phases %standard-phases
+           (add-before 'configure 'setenv
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((g-golf (string-append (assoc-ref inputs "g-golf") "/lib/"))
+                     (typelib (lambda (input)
+                               (string-append (assoc-ref inputs input) "/lib/girepository-1.0"))))
+                 (setenv "LD_LIBRARY_PATH" g-golf)
+                 (setenv "GI_TYPELIB_PATH" (string-append (getcwd) "/guile" ":"
+                                                          (typelib "gtk+") ":"
+                                                          (typelib "gtksourceview") ":"
+                                                          (typelib "pango") ":"
+                                                          (typelib "gdk-pixbuf") ":"
+                                                          (typelib "atk") ":"
+                                                          (typelib "webkitgtk") ":"
+                                                          (typelib "libsoup"))))
+               #t))
            (add-before 'check 'start-xorg-server
                      (lambda* (#:key inputs #:allow-other-keys)
                        ;; The test suite requires a running X server.
@@ -277,7 +298,7 @@ their corresponding G-Golf high level API.")
                                                         "guile" "-c"
                                                         "(display (effective-version))")))
                       (deps (map (cut assoc-ref inputs <>) '("emacsy" "guile-lib"
-                                                             "guile-readline" "shroud" "guile-g-golf")))
+                                                             "guile-readline" "shroud" "g-golf")))
                       (scm-path (map (cut string-append <>
                                           "/share/guile/site/" effective)
                                      `(,out ,@deps)))
@@ -293,6 +314,12 @@ their corresponding G-Golf high level API.")
                              prefix ,go-path))
                       progs)
                  #t))))))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "GI_TYPELIB_PATH")
+              (separator ":")
+              (files '("lib/girepository-1.0")))
+             ))
       (home-page "https://savannah.nongnu.org/projects/nomad/")
       (synopsis "Web Browser extensible in Guile scheme")
       (description "Nomad is a Emacs-like web browser that consists of a small
