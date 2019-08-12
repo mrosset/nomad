@@ -160,7 +160,6 @@ AC_MSG_NOTICE([summary of build options:
   Build system:         ${build}
   Install prefix:       ${prefix}
   Compiler:             ${CC}
-  Valgrind:             $opt_valgrind_tests ${VALGRIND}
   CFlags:               ${CFLAGS}
   Library types:        Shared=${enable_shared}, Static=${enable_static}
 ])
