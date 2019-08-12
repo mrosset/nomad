@@ -38,9 +38,10 @@
     3
     (argv-length argv)))
 
-(test-assert "import GtkWidget"
+(test-assert "import GkWidget and GtkBox"
   (begin (gi-import-objects "Gtk"
-                            '("Widget"))
-         (procedure? gtk-widget-grab-focus)))
+                            '("Widget" "Box"))
+         (and (procedure? gtk-widget-grab-focus)
+              (procedure? gtk-box-new))))
 
 (test-end)

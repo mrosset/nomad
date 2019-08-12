@@ -76,7 +76,7 @@
                  path))
 
 (define (gi-import-objects namespace lst)
-  "Imports a LST of objects from NAME SPACE"
+  "Imports a LST of objects from NAMESPACE"
   ;; FIXME: this hack ensures that g-golf is used, without it g-golf needs to
   ;; be imported by the calling module. Otherwise int32 is unbound
   (use-modules (g-golf))
