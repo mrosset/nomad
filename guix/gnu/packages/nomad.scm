@@ -266,12 +266,17 @@ their corresponding G-Golf high level API.")
                                                         "(display (effective-version))")))
                       (deps (map (cut assoc-ref inputs <>) '("emacsy" "guile-lib"
                                                              "guile-readline" "shroud" "g-golf")))
+                      (deps-typelibs (map (cut assoc-ref inputs <>)
+                                          '("gtksourceview" "gtk+" "pango" "gdk-pixbuf"
+                                            "atk" "webkitgtk" "libsoup")))
                       (scm-path (map (cut string-append <>
                                           "/share/guile/site/" effective)
                                      `(,out ,@deps)))
                       (go-path (map (cut string-append <>
                                          "/lib/guile/" effective "/site-ccache")
                                     `(,out ,@deps)))
+                      (typelibs (map (cut string-append <> "/lib/girepository-1.0")
+                                     `(,out ,@deps-typelibs)))
                       (progs (map (cut string-append out "/bin/" <>)
                                   '("nomad"))))
                  (map (cut wrap-program <>
@@ -281,8 +286,7 @@ their corresponding G-Golf high level API.")
                              prefix ,go-path)
                            `("LD_LIBRARY_PATH" ":" prefix
                              ,(list (string-append (assoc-ref inputs "g-golf") "/lib")))
-                           `("GI_TYPELIB_PATH" ":" prefix
-                             ,(list (string-append out "/lib/girepository-1.0"))))
+                           `("GI_TYPELIB_PATH" ":" prefix ,typelibs))
                       progs)
                  #t))))))
       (native-search-paths
