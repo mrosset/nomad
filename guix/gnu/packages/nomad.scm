@@ -311,7 +311,11 @@ their corresponding G-Golf high level API.")
                            `("GIO_EXTRA_MODULES" ":" prefix ,gio-mod-path)
                            `("GUILE_LOAD_PATH" ":" prefix ,scm-path)
                            `("GUILE_LOAD_COMPILED_PATH" ":"
-                             prefix ,go-path))
+                             prefix ,go-path)
+                           `("LD_LIBRARY_PATH" ":" prefix
+                             ,(list (string-append (assoc-ref inputs "g-golf") "/lib")))
+                           `("GI_TYPELIB_PATH" ":" prefix
+                             ,(list (string-append out "/lib/girepository-1.0"))))
                       progs)
                  #t))))))
       (native-search-paths
