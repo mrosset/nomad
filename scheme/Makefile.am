@@ -74,6 +74,7 @@ TESTS =			\
 	tests/buffer.scm	\
 	tests/download.scm	\
 	tests/eval.scm		\
+	tests/frame.scm		\
 	tests/init.scm		\
 	tests/options.scm	\
 	tests/text.scm		\

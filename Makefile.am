@@ -40,7 +40,8 @@ clean-guile:
 run:
 	$(MAKE) -C ./src test
 
-test: check run
+test: check
+	$(MAKE) -C ./src test
 
 test-install: install
 	nomad
