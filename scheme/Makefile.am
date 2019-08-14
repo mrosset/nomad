@@ -68,7 +68,8 @@ SOURCES =			\
 	nomad/webview.scm	\
 	nomad/webkit.scm	\
 	nomad/webkit-settings.scm	\
-	nomad/webkit-proxy.scm
+	nomad/webkit-proxy.scm	\
+	nomad/nomad.scm
 
 TESTS =			\
 	tests/lib.scm		\
