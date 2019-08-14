@@ -19,6 +19,7 @@
 (define-module (tests webview)
   #:use-module (emacsy emacsy)
   #:use-module (nomad webview)
+  #:use-module (nomad pointer)
   #:use-module (oop goops)
   #:use-module (srfi srfi-64)
   #:use-module (system foreign))
@@ -30,6 +31,20 @@
 (test-equal "don't prefix http" (prefix-url "http://127.0.0.1") "http://127.0.0.1")
 
 (test-equal "don't prefix https" (prefix-url "https://127.0.0.1") "https://127.0.0.1")
+
+
+;; (define-class <wildebeest> () #:metaclass <redefinable-class>)
+;; (define-class <gnu> (<wildebeest>))
+
+;; (test-assert "change class"
+;;   (let ((beast (make <wildebeest>)))
+;;     (change-class beast <gnu>)
+;;     (eq? (class-of beast) <gnu>)))
+
+(test-assert "change class to webview"
+  (let ((buffer (make <text-buffer>)))
+    (change-class buffer <webview-buffer>)
+    (eq? (class-of buffer) <webview-buffer>)))
 
 (test-group "scratch messages conversion"
             (for-each (lambda (buffer)

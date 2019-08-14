@@ -84,16 +84,20 @@ load_changed_cb (NomadWebView *view, WebKitLoadEvent load_event,
                  gpointer user_data)
 {
   NomadWebViewPrivate *priv = nomad_web_view_get_instance_private (view);
-  scm_call_2 (scm_c_public_ref ("emacsy emacsy", "set-buffer-name!"),
-              scm_from_locale_string (
-                  webkit_web_view_get_uri (WEBKIT_WEB_VIEW (view))),
-              priv->buffer);
+  if (scm_is_true (priv->buffer))
+    {
+      scm_call_2 (scm_c_public_ref ("emacsy emacsy", "set-buffer-name!"),
+                  scm_from_locale_string (
+                      webkit_web_view_get_uri (WEBKIT_WEB_VIEW (view))),
+                  priv->buffer);
+    }
 }
 
 static void
 nomad_web_view_init (NomadWebView *self)
 {
   self->priv = nomad_web_view_get_instance_private (self);
+  self->priv->buffer = SCM_BOOL_F;
   // signals
   g_signal_connect (self, "load-changed", G_CALLBACK (load_changed_cb), NULL);
   g_signal_connect (self, "decide-policy", G_CALLBACK (decide_policy_cb),
@@ -108,9 +112,7 @@ nomad_web_view_class_init (NomadWebViewClass *class)
 GtkWidget *
 nomad_web_view_new (WebKitSettings *settings)
 {
-  return g_object_new (NOMAD_WEB_VIEW_TYPE,
-                       "settings", settings,
-                       NULL);
+  return g_object_new (NOMAD_WEB_VIEW_TYPE, "settings", settings, NULL);
 }
 
 void
@@ -121,7 +123,7 @@ nomad_web_view_switch_to_buffer (NomadWebView *view)
 }
 
 SCM_DEFINE (
-                   scm_nomad_webkit_new, "webkit-new", 2, 0, 0, (SCM buffer, SCM settings),
+    scm_nomad_webkit_new, "webkit-new", 2, 0, 0, (SCM buffer, SCM settings),
     "Returns a newly initialized webkit view with its parent buffer as BUFFER")
 {
   GtkWidget *view = nomad_web_view_new (scm_to_pointer (settings));
@@ -131,6 +133,15 @@ SCM_DEFINE (
   priv->buffer = buffer;
 
   return scm_from_pointer (view, NULL);
+}
+
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_reload, "webkit-reload", 1, 0, 0,
+                   (SCM pointer), "Reloads the webkit POINTER uri")
+{
+
+  GtkWidget *view = scm_to_pointer (pointer);
+  webkit_web_view_reload (WEBKIT_WEB_VIEW (view));
+  return SCM_UNDEFINED;
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_webkit_uri, "webkit-uri", 1, 0, 0, (SCM pointer),
@@ -226,63 +237,6 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_back, "webkit-back", 1, 0, 0,
   return SCM_BOOL_T;
 }
 
-SCM_DEFINE_PUBLIC (
-    scm_nomad_webkit_reload, "webview-reload", 0, 1, 0, (SCM nocache),
-    "Internally reloads WebKitView, if nocache is #t then bypass "
-    "WebKit cache. This procedure should almost never be called "
-    "directly. TODO: detail higher level procedures for reloading "
-    "webkit. Probably only (reload) in this case.")
-{
-  WebKitWebView *web_view;
-  NomadApp *app = nomad_app_get_default ();
-
-  web_view = nomad_app_get_webview (NOMAD_APP (app));
-
-  if (web_view == NULL)
-    {
-      return SCM_BOOL_F;
-    }
-
-  if (scm_is_true (nocache))
-    {
-      webkit_web_view_reload_bypass_cache (web_view);
-    }
-  else
-    {
-      webkit_web_view_reload (web_view);
-    }
-  return SCM_BOOL_T;
-}
-
-SCM_DEFINE_PUBLIC (
-    scm_nomad_get_current_url, "webview-current-url", 0, 0, 0, (),
-    "Return's the WebView's current URL. This calls webkit's "
-    "webkit_web_view_get_uri. Note: this function can potentially "
-    "return a URI that is not a URL. Since the API is directed "
-    "towards end users, we use URL since it's the more common term, "
-    "see https://danielmiessler.com/study/url-uri/ on the distinction "
-    "of URI vs URL")
-{
-  NomadApp *app = nomad_app_get_default ();
-  WebKitWebView *web_view;
-  const char *uri;
-  SCM result;
-
-  web_view = nomad_app_get_webview (NOMAD_APP (app));
-  uri = webkit_web_view_get_uri (web_view);
-
-  if (uri == NULL)
-    {
-      result = scm_from_utf8_string ("URI not loaded");
-    }
-  else
-    {
-      result = scm_from_locale_string (uri);
-    }
-
-  return result;
-}
-
 void
 run_hints_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
@@ -306,6 +260,31 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_hints, "webkit-hints", 1, 0, 0,
   webkit_web_view_run_javascript_from_gresource (
       view, "/org/gnu/nomad/hints.js", NULL, run_hints_cb, view);
 
+  return SCM_UNDEFINED;
+}
+
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_find, "webkit-find", 2, 0, 0,
+                   (SCM pointer, SCM text),
+                   "Finds TEXT string in  webview POINTER page")
+{
+  WebKitWebView *view = (WebKitWebView *)scm_to_pointer (pointer);
+  WebKitFindController *controller
+      = webkit_web_view_get_find_controller (view);
+
+  webkit_find_controller_search (controller, scm_to_locale_string (text),
+                                 WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE, -1);
+  return SCM_UNDEFINED;
+}
+
+SCM_DEFINE_PUBLIC (scm_nomad_webkit_find_finish, "webkit-find-finish", 1, 0, 0,
+                   (SCM pointer, SCM text),
+                   "Finishes the current find for webview POINTER")
+{
+  WebKitWebView *view = (WebKitWebView *)scm_to_pointer (pointer);
+  WebKitFindController *controller
+      = webkit_web_view_get_find_controller (view);
+
+  webkit_find_controller_search_finish (controller);
   return SCM_UNDEFINED;
 }
 

@@ -26,6 +26,19 @@
   #:use-module (gcrypt base16)
   #:use-module (srfi srfi-64))
 
+(define (skip-online)
+  (test-skip "url-fetch")
+  (test-skip "download file")
+  (test-skip "hash file")
+  (test-skip "file exists"))
+
+(catch 'getaddrinfo-error
+  (lambda _
+    (getaddrinfo "mirrors.kernel.org" "http"))
+  (lambda (key code)
+    ;; if we get here no network, so disable online tests
+    (skip-online)))
+
 (define (test-downloader proc dir url)
   (let ((file (string-append dir
                              //
@@ -44,18 +57,6 @@
   (test-equal "download file - fail"
     #f
     (proc "http://thou.shall/not/pass")))
-
-(test-begin "downloaders")
-
-(catch 'getaddrinfo-error
-  (lambda _
-    (getaddrinfo "mirrors.kernel.org" "http"))
-  (lambda (key code)
-    ;; if we get here no network, so disable online tests
-    (test-skip "url-fetch")
-    (test-skip "download file")
-    (test-skip "hash file")
-    (test-skip "file exists")))
 
 (test-equal "url-fetch"
   "38ffd4972ae513a0c79a8be4573403edcd709f0f572105362b08ff50cf6de521"
@@ -82,5 +83,3 @@
       (test-downloader http-download dir url)
       ;; (test-downloader curl-download dir url)
       )))
-
-(test-end)

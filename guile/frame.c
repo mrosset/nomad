@@ -31,6 +31,7 @@
 #include "app.h"
 #include "frame.h"
 #include "minibuffer.h"
+#include "text.h"
 #include "util.h"
 #include "webkit.h"
 
@@ -58,19 +59,6 @@ struct _NomadAppFrame
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadAppFrame, nomad_app_frame,
                             GTK_TYPE_APPLICATION_WINDOW)
-
-// Declarations
-static gboolean idle_update_echo_area (void *user_data);
-
-gboolean read_line_key_press_event_cb (GtkWidget *widget, GdkEventKey *event,
-                                       gpointer user_data);
-
-gboolean read_line_key_release_event_cb (GtkWidget *widget, GdkEventKey *event,
-                                         gpointer user_data);
-
-gboolean read_line_prompt_release_event_cb (GtkWidget *widget,
-                                            GdkEventKey *event,
-                                            gpointer user_data);
 
 // FIXME: This has been copied verbatim from emacsy example. include
 // emacsy copyright
@@ -129,7 +117,14 @@ frame_key_press_cb (GtkWidget *widget, GdkEventKey *event)
              So we call process_and_update_emacsy to actually do the
              processing.
            */
-          idle_update_echo_area (widget);
+
+          // Redisplay minibuffer
+          scm_call_0 (
+              scm_c_public_ref ("nomad buffer", "redisplay-minibuffer"));
+
+          // Redplay buffers
+          scm_call_0 (scm_c_public_ref ("nomad buffer", "redisplay-buffers"));
+
           flags = emacsy_tick ();
 
           if (flags & EMACSY_RAN_UNDEFINED_COMMAND_P)
@@ -164,12 +159,12 @@ frame_key_press_cb (GtkWidget *widget, GdkEventKey *event)
   return FALSE;
 }
 
-static void
-switch_page_cb (GtkNotebook *notebook, GtkWidget *page, guint page_num,
-                gpointer user_data)
-{
-  nomad_web_view_switch_to_buffer (NOMAD_WEB_VIEW (page));
-}
+/* static void
+ * switch_page_cb (GtkNotebook *notebook, GtkWidget *page, guint page_num,
+ *                 gpointer user_data)
+ * {
+ *   nomad_web_view_switch_to_buffer (page);
+ * } */
 
 /* static void
  * initialize_web_extensions (WebKitWebContext *context, gpointer user_data)
@@ -182,26 +177,6 @@ switch_page_cb (GtkNotebook *notebook, GtkWidget *page, guint page_num,
  *   webkit_web_context_set_web_extensions_initialization_user_data (
  *       context, g_variant_new_uint32 (unique_id++));
  * } */
-
-GtkSourceBuffer *
-text_buffer_new (const char *theme, const char *lang)
-{
-  GtkSourceLanguageManager *lm;
-  GtkSourceLanguage *sl;
-  GtkSourceStyleSchemeManager *sm;
-  GtkSourceStyleScheme *ss;
-  GtkSourceBuffer *buf;
-
-  buf = gtk_source_buffer_new (NULL);
-  sm = gtk_source_style_scheme_manager_new ();
-  ss = gtk_source_style_scheme_manager_get_scheme (sm, theme);
-  lm = gtk_source_language_manager_new ();
-  sl = gtk_source_language_manager_get_language (lm, lang);
-
-  gtk_source_buffer_set_language (buf, sl);
-  gtk_source_buffer_set_style_scheme (buf, ss);
-  return buf;
-}
 
 gboolean
 draw_border_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
@@ -298,61 +273,6 @@ idle_update_modeline (void *user_data)
   return TRUE;
 }
 
-static gboolean
-idle_update_echo_area (void *user_data)
-{
-  int flags;
-  GtkTextBuffer *rbuf;
-  NomadAppFramePrivate *priv;
-  NomadAppFrame *self;
-  GtkWidget *webview;
-  char *status;
-
-  // If user_data is NULL stop this idle process
-  if (!user_data)
-    {
-      return FALSE;
-    }
-
-  self = NOMAD_APP_FRAME (user_data);
-  priv = self->priv;
-
-  flags = emacsy_tick ();
-  rbuf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (priv->read_line));
-
-  webview = GTK_WIDGET (nomad_app_frame_get_webview (self));
-
-  // If there's been a request to quit, stop this idle process.
-  if (flags & EMACSY_QUIT_APPLICATION_P)
-    {
-      return FALSE;
-    }
-
-  // Update the status line.
-  status = emacsy_message_or_echo_area ();
-
-  gtk_text_buffer_set_text (rbuf, status, -1);
-
-  g_free (status);
-
-  if (scm_is_true (scm_c_public_ref ("emacsy minibuffer",
-                                     "emacsy-display-minibuffer?")))
-    {
-      gtk_widget_grab_focus (priv->read_line);
-      return TRUE;
-    }
-
-  if (webview)
-    {
-      gtk_widget_grab_focus (webview);
-    }
-  else
-    {
-      gtk_widget_grab_focus (priv->modeline);
-    }
-  return TRUE;
-}
-
 static void
 nomad_app_frame_init (NomadAppFrame *self)
 {
@@ -363,22 +283,17 @@ nomad_app_frame_init (NomadAppFrame *self)
   priv->overlay = gtk_overlay_new ();
   priv->box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   priv->notebook = gtk_notebook_new ();
-  priv->modeline = gtk_source_view_new ();
-  priv->read_line = gtk_source_view_new ();
+
+  priv->modeline = gtk_source_view_new_with_buffer (
+      source_buffer_new ("oblivion", "scheme"));
+  priv->read_line = gtk_source_view_new_with_buffer (
+      source_buffer_new ("classic", "scheme"));
 
   // tabs
   gtk_notebook_set_show_tabs (GTK_NOTEBOOK (priv->notebook), FALSE);
 
   // modeline and readline
   gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (priv->modeline), FALSE);
-
-  gtk_text_view_set_buffer (
-      GTK_TEXT_VIEW (priv->read_line),
-      GTK_TEXT_BUFFER (text_buffer_new ("classic", "scheme")));
-
-  gtk_text_view_set_buffer (
-      GTK_TEXT_VIEW (priv->modeline),
-      GTK_TEXT_BUFFER (text_buffer_new ("oblivion", "scheme")));
 
   // add controls
   gtk_container_add (GTK_CONTAINER (self), priv->overlay);
@@ -399,8 +314,8 @@ nomad_app_frame_init (NomadAppFrame *self)
   g_signal_connect (self, "key-press-event", G_CALLBACK (frame_key_press_cb),
                     (gpointer)self);
 
-  g_signal_connect (priv->notebook, "switch-page", G_CALLBACK (switch_page_cb),
-                    (gpointer)self);
+  /* g_signal_connect (priv->notebook, "switch-page", G_CALLBACK
+   * (switch_page_cb), (gpointer)self); */
 
   gtk_widget_show_all (GTK_WIDGET (self));
 }
@@ -498,25 +413,67 @@ tab_label_new (int id)
   return gtk_label_new (scm_to_locale_string (label));
 }
 
+SCM_DEFINE_PUBLIC (scm_nomad_grab_notebook, "grab-notebook", 0, 0, 0, (),
+                   "Grabs the current notebook control")
+{
+  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
+  GtkWidget *notebook = win->priv->notebook;
+  gint page = gtk_notebook_get_current_page (GTK_NOTEBOOK (notebook));
+
+  if (page >= 0)
+    {
+      GList *children;
+      GtkWidget *widget
+          = gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), page);
+      children = gtk_container_get_children (GTK_CONTAINER (widget));
+
+      // if page children grab its first child
+      if (g_list_length (children) > 0)
+        {
+          gtk_widget_grab_focus (g_list_nth_data (children, 0));
+        }
+      // grab the notebook widget
+      else
+        {
+          gtk_widget_grab_focus (widget);
+        }
+    }
+  else
+    {
+      gtk_widget_grab_focus (win->priv->modeline);
+    }
+
+  return SCM_UNSPECIFIED;
+}
+
+SCM_DEFINE_PUBLIC (scm_nomad_grab_read_line, "grab-readline", 0, 0, 0, (),
+                   "Sets focus to the echo area")
+{
+  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
+  gtk_widget_grab_focus (win->priv->read_line);
+
+  return SCM_UNSPECIFIED;
+}
+
 SCM_DEFINE_PUBLIC (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
                    (SCM pointer), "Sets the current tab to the given POINTER")
 {
   gint page;
-  GtkWidget *view;
+  GtkWidget *widget;
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
   GtkNotebook *notebook = nomad_frame_get_notebook (win);
 
   if (SCM_POINTER_P (pointer))
     {
-      view = scm_to_pointer (pointer);
-      page = gtk_notebook_page_num (notebook, view);
+      widget = scm_to_pointer (pointer);
+      page = gtk_notebook_page_num (notebook, widget);
       if (page < 0)
         {
           page = gtk_notebook_append_page (
-              notebook, view,
+              notebook, widget,
               tab_label_new (gtk_notebook_get_n_pages (notebook)));
         }
-      gtk_widget_show_all (view);
+      gtk_widget_show_all (widget);
       gtk_notebook_set_current_page (notebook, page);
       if (page != gtk_notebook_get_current_page (notebook))
         {
@@ -542,7 +499,7 @@ SCM_DEFINE_PUBLIC (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
   GtkNotebook *notebook = nomad_frame_get_notebook (win);
   SCM pointer = scm_call_1 (
-      scm_c_public_ref ("nomad webview", "buffer-pointer"), buffer);
+      scm_c_public_ref ("nomad pointer", "buffer-pointer"), buffer);
   GtkWidget *widget = scm_to_pointer (pointer);
   gint page = gtk_notebook_page_num (notebook, widget);
 
@@ -555,16 +512,21 @@ SCM_DEFINE_PUBLIC (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_notebook_insert, "notebook-insert", 2, 0, 0,
-                   (SCM buffer, SCM INDEX),
+                   (SCM buffer, SCM index),
                    "Inserts BUFFER into notebook at INDEX")
 {
+  gint page;
+  const char *c_name;
   NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
   GtkNotebook *notebook = nomad_frame_get_notebook (win);
   SCM pointer = scm_call_1 (
-      scm_c_public_ref ("nomad webview", "buffer-pointer"), buffer);
+      scm_c_public_ref ("nomad pointer", "buffer-pointer"), buffer);
   GtkWidget *widget = scm_to_pointer (pointer);
-  gint page
-      = gtk_notebook_insert_page (notebook, widget, tab_label_new (0), 0);
+
+  c_name = scm_to_locale_string (
+      scm_call_1 (scm_c_public_ref ("emacsy emacsy", "buffer-name"), buffer));
+  page = gtk_notebook_insert_page (notebook, widget, gtk_label_new (c_name),
+                                   scm_to_int (index));
 
   if (page >= 0)
     {
@@ -573,6 +535,13 @@ SCM_DEFINE_PUBLIC (scm_nomad_notebook_insert, "notebook-insert", 2, 0, 0,
     }
 
   return SCM_BOOL_F;
+}
+
+SCM_DEFINE_PUBLIC (scm_nomad_frame_get_echo_area, "get-echo-area", 0, 0, 0, (),
+                   "Returns a SCM pointer for the echo area")
+{
+  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
+  return scm_from_pointer (nomad_app_frame_get_readline (win), NULL);
 }
 
 SCM_DEFINE_PUBLIC (scm_nomad_frame_new, "frame-new", 0, 0, 0, (),

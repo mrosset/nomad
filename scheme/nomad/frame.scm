@@ -17,7 +17,6 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad frame)
-  #:use-module (nomad repl)
   #:use-module (nomad lib)
   #:export (make-frame-socket))
 

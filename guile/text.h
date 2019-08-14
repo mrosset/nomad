@@ -1,5 +1,5 @@
 /*
- * window.h
+ * text.h
  * Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
  *
  * This file is part of Nomad
@@ -18,24 +18,12 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NOMADAPPFRAME_H
-#define __NOMADAPPFRAME_H
+#ifndef __GUILE_NOMAD_TEXT_H
+#define __GUILE_NOMAD_TEXT_H
 
-#include <gtk/gtk.h>
-#include <webkit2/webkit2.h>
+#include <gtksourceview/gtksource.h>
 
-#include "app.h"
+GtkSourceBuffer *source_buffer_new (const char *theme, const char *lang);
+void nomad_text_register_function (void *data);
 
-#define NOMAD_APP_FRAME_TYPE (nomad_app_frame_get_type ())
-
-G_DECLARE_FINAL_TYPE (NomadAppFrame, nomad_app_frame, NOMAD, APP_FRAME,
-                      GtkApplicationWindow)
-
-NomadAppFrame *nomad_app_frame_new (NomadApp *app);
-GtkNotebook *nomad_frame_get_notebook (NomadAppFrame *win);
-GtkWidget *nomad_app_frame_get_minipopup (NomadAppFrame *win);
-GtkWidget *nomad_app_frame_get_readline (NomadAppFrame *self);
-void nomad_app_frame_show_minipopup (NomadAppFrame *self);
-void nomad_app_frame_hide_minipopup (NomadAppFrame *self);
-void nomad_frame_register_function (void *data);
-#endif /* __NOMADAPPWIN_H */
+#endif

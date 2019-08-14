@@ -21,27 +21,19 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
   #:use-module (nomad eval)
+  #:use-module (nomad frame)
   #:use-module (nomad minibuffer)
+  #:use-module (nomad pointer)
   #:use-module (nomad repl)
+  #:use-module (nomad text)
   #:use-module (nomad views)
   #:use-module (nomad webkit)
   #:use-module (nomad webview)
-  #:use-module (nomad frame)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
-            update-buffers
             buffers-contain?
-            buffer-protected?
             buffers->uri))
-
-(define protected-buffers '("*scratch*" "*Messages*"))
-
-(define (buffer-protected? buffer)
-  "Returns true if buffer is protected and should not be deleted."
-  (find (lambda (item)
-          (equal? item (buffer-name buffer)))
-        protected-buffers))
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
@@ -51,9 +43,8 @@
 (define-interactive (kill-some-buffers)
   "Kill all buffers but the message buffer"
   (for-each (lambda (buffer)
-              (unless (buffer-protected? buffer)
-                (switch-to-buffer buffer)
-                (kill-buffer)))
+              (switch-to-buffer buffer)
+              (kill-buffer))
             (buffer-list)))
 
 (define (buffers-contain? uri)
@@ -68,13 +59,11 @@
 
 (define (buffers->uri)
   "Returns a list of uri's for all buffers"
-  (map (lambda (buffer)
-         (with-buffer buffer
-           (let ((uri (buffer-name buffer)))
-             (when (and uri
-                        (not (string= uri "nomad://")))
-               uri))))
-       (buffer-list)))
+  (filter-map (lambda (buffer)
+                (if (eq? (class-of buffer) <webview-buffer>)
+                    (buffer-name buffer)
+                    #f))
+              (buffer-list)))
 
 (define-interactive (show-buffers)
   "Displays buffers in minipopup"
@@ -115,16 +104,34 @@
       (begin (switch-to-buffer buffer)
              #t)))
 
-;; FIXME: This should probably not be needed. But if certain buffers are
-;; killed then they are no longer webviews. And so can not be switched to or
-;; managed properly.
-(define (update-buffers)
-  "Converts buffers to <webview-buffer> and inserts them into notebook"
+(define-public (redisplay-minibuffer)
+  "Set the minibuffer graphical control to emacsy buffer state"
+  (emacsy-tick)
+  (if emacsy-display-minibuffer?
+      (grab-readline)
+      (grab-notebook))
+  (set-source-text! (get-echo-area)
+                    (emacsy-message-or-echo-area))
+  (set-source-point! (get-echo-area)
+                     (buffer:point minibuffer)))
+
+(define-public (redisplay-buffers)
+  "Converts text-buffers to <pointer-buffer> and inserts them into
+notebook. Also updates buffer contents and buffer points"
   (for-each (lambda (buffer)
-              (unless (eq? <webview-buffer> (class-of buffer))
-                (buffer->webview-buffer buffer)
-                (set-buffer-pointer! buffer
-                                     (webkit-new buffer))
-                (buffer-render buffer)
-                (notebook-insert buffer 0)))
+              (when (eq? <text-buffer> (class-of buffer))
+                (text-buffer->pointer-buffer buffer))
+              (when (eq? <nomad-text-buffer> (class-of buffer))
+                (set-source-text! (buffer-pointer buffer)
+                                  (buffer:buffer-string buffer))
+                (set-source-point! (buffer-pointer buffer)
+                                   (buffer:point buffer))))
             (buffer-list)))
+
+(define-interactive (eval-buffer #:optional (buffer (current-buffer)))
+  (catch #t
+    (lambda _
+      (message "~a"
+               (eval-string (buffer:buffer-string buffer))))
+    (lambda (key . vals)
+      (message "Error: key: ~a value: ~a" key vals))))

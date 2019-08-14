@@ -21,9 +21,9 @@
   #:use-module (ice-9 optargs)
   #:use-module (nomad buffer)
   #:use-module (nomad eval)
+  #:use-module (nomad pointer)
   #:use-module (nomad util)
   #:use-module (nomad webkit)
-  #:use-module (nomad frame)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
@@ -38,16 +38,13 @@
             search-provider-format
             webview-map
             firefox-webview-map
-            webview-enter-hook
-            webview-kill-hook
             webview-onload
             ;; ;; class constructors
             make-webview-buffer
             make-webcontent-buffer
-            buffer-pointer
+
             ;;methods
             set-buffer-hooks!
-            set-buffer-pointer!
             buffer-back
             buffer-foward
             buffer-content
@@ -57,21 +54,13 @@
             set-buffer-uri!
             ))
 
-(define (webview-kill-hook)
-  (info (format #f "Destroying web-view ~a" (buffer-pointer)))
-  (destroy-pointer (buffer-pointer (current-buffer))))
-
-(define (webview-enter-hook)
-  (info (format #f
-                 "Setting pointer to ~a"
-                 (buffer-pointer)))
-  (switch-to-pointer (buffer-pointer (current-buffer))))
-
-;;; <webview-buffer> extends <buffer> class
+;;; <webview-buffer> extends <pointer-buffer> class
 (define-class-public <webview-buffer>
-  (<buffer>)
-  (content #:accessor buffer-content  #:init-keyword #:content)
-  (pointer #:getter buffer-pointer #:setter set-buffer-pointer! #:init-keyword #:pointer #:init-value %null-pointer))
+  (<pointer-buffer>)
+  (content #:accessor buffer-content #:init-keyword #:content))
+
+(define-method (buffer-reload)
+  (webkit-reload (buffer-pointer (current-buffer))))
 
 (define-method (buffer-hints)
   (webkit-hints (buffer-pointer (current-buffer))))
@@ -94,21 +83,14 @@
 (define-method (buffer-forward (buffer <webview-buffer>))
   (webkit-forward (buffer-pointer buffer)))
 
-(define-method (buffer-pointer)
-  (buffer-pointer (current-buffer)))
-
 (define-method (set-buffer-hooks!)
   (set-buffer-hooks! (current-buffer)))
 
 (define-method (set-buffer-hooks! (buffer <webview-buffer>))
   (add-hook! (buffer-enter-hook buffer)
-             webview-enter-hook)
+             pointer-enter-hook)
   (add-hook! (buffer-kill-hook buffer)
-             webview-kill-hook))
-
-(define-method (set-buffer-pointer! pointer)
-  (set-buffer-pointer! (current-buffer)
-                       pointer))
+             pointer-kill-hook))
 
 (define (webview-onload)
   "Update BUFFER on webview load"
@@ -215,16 +197,25 @@ specified. Returns the final URL passed to webkit"
 (define-interactive (current-url)
   "Returns the current url"
   (message "~a"
-           (webview-current-url)))
+           (buffer-uri (current-buffer))))
 
 (define-interactive (copy-current-url)
   "Copy current url to clipboard"
-  (yank-string (webview-current-url))
+  (yank-string (current-url))
   (message (webview-current-url)))
 
 (define-interactive (tweak-url)
   "Edit the current-url."
   (browse (read-from-minibuffer "Url: " (current-url))))
+
+(define current-search  #f)
+
+(define-interactive
+  (isearch-forward #:optional
+                   (text (or current-search (read-from-minibuffer "I-search: "))))
+  (set! current-search text)
+  (webkit-find (buffer-pointer (current-buffer)) text)
+  (message "I-search: ~a" text))
 
 ;; search providers
 (define search-providers
@@ -240,11 +231,19 @@ specified. Returns the final URL passed to webkit"
 
 (define-public cycle-search-provider (pick-search-provider))
 
+(define-interactive (webview-keyboard-quit)
+  (when current-search
+    (set! current-search #f)
+    (webkit-find-finish (buffer-pointer (current-buffer))))
+  (keyboard-quit))
+
 ;; Provides firefox key mappings for webview-mode. This can be set as
 ;; the default webview mode map by using (!set webview-map
 ;; firefox-webview-map) in user-init-file
 (define firefox-webview-map
-  (list->keymap '(("C-u" next-buffer)
+  (list->keymap '(("C-g" webview-keyboard-quit)
+                  ("C-f" isearch-forward)
+                  ("C-u" next-buffer)
                   ("C-m" prev-buffer)
                   ("M-n" forward)
                   ("M-b" back)
@@ -267,5 +266,5 @@ specified. Returns the final URL passed to webkit"
                   ("C-p" scroll-up)
                   ("C-f" hints)
                   ("C-r" reload)
-                  ("C-q" kill-buffer)
-                  ("C-x C-f" query))))
+                  ("C-g" webview-keyboard-quit)
+                  ("C-s" isearch-forward))))

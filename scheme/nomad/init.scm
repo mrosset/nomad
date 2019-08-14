@@ -126,4 +126,5 @@
 (define (init)
   (ensure-nomad-directory)
   (when (file-exists? user-init-file)
-    (load user-init-file)))
+    (load user-init-file))
+  #t)

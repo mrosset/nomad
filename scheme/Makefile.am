@@ -57,19 +57,19 @@ SOURCES =			\
 	nomad/init.scm		\
 	nomad/minibuffer.scm	\
 	nomad/options.scm	\
+	nomad/pointer.scm	\
 	nomad/repl.scm		\
 	nomad/shroud.scm	\
 	nomad/server.scm	\
 	nomad/tests.scm		\
+	nomad/text.scm		\
 	nomad/util.scm		\
 	nomad/views.scm		\
 	nomad/webview.scm	\
 	nomad/webkit.scm	\
 	nomad/webkit-settings.scm	\
-	nomad/webkit-proxy.scm
-
-
-
+	nomad/webkit-proxy.scm	\
+	nomad/nomad.scm
 
 TESTS =			\
 	tests/lib.scm		\
@@ -78,6 +78,7 @@ TESTS =			\
 	tests/eval.scm		\
 	tests/init.scm		\
 	tests/options.scm	\
+	tests/text.scm		\
 	tests/util.scm		\
 	tests/webkit.scm	\
 	tests/webview.scm

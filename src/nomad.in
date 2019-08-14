@@ -18,14 +18,36 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(use-modules (emacsy emacsy)
+(set! %load-compiled-path
+      (cons* "@CCACHEDIR@"
+             %load-compiled-path))
+
+(use-modules (ice-9 pretty-print)
+             (emacsy emacsy)
              (nomad init)
-             (nomad app))
+             (nomad app)
+             (nomad lib))
+
+(define (pretty-string sym)
+  (with-output-to-string (lambda _
+                           (pretty-print sym))))
+
+(define (debug-paths)
+  (format #t
+          "version:      ~a~%"
+          (nomad-version))
+  (format #t
+          "dynamic-lib:  ~a~%"
+          (dynamic-path))
+  (format #t
+          "load-path:    ~a~%"
+          (pretty-string %load-path))
+  (format #t
+          "comiled-path: ~a~%"
+          (pretty-string %load-compiled-path)))
 
 (emacsy-initialize #t)
-(format #t
-        "~a~%"
-        (nomad-version))
+
 (init)
 (exit (start-nomad (command-line)))
 

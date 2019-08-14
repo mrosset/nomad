@@ -256,15 +256,6 @@ nomad_app_prev_buffer (NomadApp *app)
     }
 }
 
-WebKitWebView *
-nomad_app_get_webview (NomadApp *app)
-{
-  NomadAppFrame *frame;
-
-  frame = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  return nomad_app_frame_get_webview (frame);
-}
-
 // scheme
 SCM_DEFINE_PUBLIC (
     scm_nomad_version, "nomad-version", 0, 0, 0, (),
