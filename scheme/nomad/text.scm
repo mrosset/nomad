@@ -53,7 +53,7 @@
              'widget
              (make-source-view))
   (add-hook! (buffer-enter-hook buffer)
-             pointer-enter-hook)
+             widget-enter-hook)
   (add-hook! (buffer-kill-hook buffer)
-             pointer-kill-hook)
+             widget-kill-hook)
   (notebook-insert buffer 0))
