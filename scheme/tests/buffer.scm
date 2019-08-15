@@ -25,8 +25,6 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64))
 
-(let ((gtk? (gtk-init-check)))
-  (test-assert "Gtk init?" gtk?))
 
 (test-begin "buffers")
 
