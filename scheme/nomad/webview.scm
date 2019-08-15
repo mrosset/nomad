@@ -95,22 +95,23 @@
 (define-method (set-buffer-hooks!)
   (set-buffer-hooks! (current-buffer)))
 
+(define (webview-kill-hook)
+  (info "Destroying pointer ~a"
+        (buffer-pointer))
+  (gtk-widget-destroy (current-buffer)))
+
+(define (webview-enter-hook)
+  (info "Setting pointer to ~a"
+        (buffer-pointer))
+  (switch-to-pointer (buffer-pointer (current-buffer)))
+  (gtk-widget-grab-focus (current-buffer)))
+
+
 (define-method (set-buffer-hooks! (buffer <webview-buffer>))
   (add-hook! (buffer-enter-hook buffer)
              webview-enter-hook)
   (add-hook! (buffer-kill-hook buffer)
              webview-kill-hook))
-
-(define-public (webview-kill-hook)
-  (info "Destroying pointer ~a"
-        (buffer-pointer))
-  (nomad-widget-destroy (current-buffer)))
-
-(define-public (webview-enter-hook)
-  (info "Setting pointer to ~a"
-        (buffer-pointer))
-  (switch-to-pointer (buffer-pointer (current-buffer)))
-  (gtk-widget-grab-focus (current-buffer)))
 
 (define (webview-onload)
   "Update BUFFER on webview load"
