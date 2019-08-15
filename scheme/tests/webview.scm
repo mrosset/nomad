@@ -26,9 +26,9 @@
   #:use-module (srfi srfi-64)
   #:use-module (system foreign))
 
-(define gtk-init-check (@ (nomad app) gtk-init-check))
+(gi-import "Gtk")
 
-(let ((gtk? (gtk-init-check)))
+(let ((gtk? (gtk-init-check #f #f)))
   (test-assert "Gtk init?" gtk?))
 
 (test-begin "webview")
