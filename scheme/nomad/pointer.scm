@@ -28,6 +28,8 @@
 
 (gi-import "Nomad")
 
+(gi-import-objects "Gtk" '("Widget"))
+
 (define-class-public <widget-buffer>
   (<text-buffer>)
   (widget #:accessor !widget #:init-keyword #:widget)
@@ -42,14 +44,14 @@
 (define-method-public (buffer-pointer)
   (buffer-pointer (current-buffer)))
 
-(define-public (pointer-kill-hook)
+(define-public (widget-kill-hook)
   (info "Destroying pointer ~a"
         (buffer-pointer))
-  (destroy-pointer (buffer-pointer (current-buffer))))
+  (gtk-widget-destroy (slot-ref (current-buffer) 'widget)))
 
-(define-public (pointer-enter-hook)
+(define-public (widget-enter-hook)
   (info "Setting pointer to ~a"
         (buffer-pointer))
   (switch-to-pointer (buffer-pointer (current-buffer)))
-  (nomad-widget-grab-focus (slot-ref (current-buffer)
+  (gtk-widget-grab-focus (slot-ref (current-buffer)
                                     'widget)))
