@@ -21,12 +21,8 @@
 #ifndef __NOMAD_UTIL_H__
 #define __NOMAD_UTIL_H__
 #include <libguile.h>
-#include <gtk/gtk.h>
 
 void scm_to_argv (SCM list, char **argv);
-
-void nomad_widget_grab_focus(GtkWidget *widget);
-void nomad_widget_show_all(GtkWidget *widget);
 
 SCM scm_nomad_list_to_argv (SCM list);
 SCM scm_c_make_command (const char *key);
