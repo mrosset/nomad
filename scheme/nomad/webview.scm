@@ -127,14 +127,8 @@
   (buffer-load-uri (current-buffer) uri))
 
 (define-method-public (buffer-load-uri (buffer <webview-buffer>)
-
-                                uri)
-      (webkit-web-view-load-uri buffer uri)
-
-
-  ;; (webkit-load-uri (buffer-pointer buffer)
-  ;;                  uri)
-  )
+                                       uri)
+  (webkit-web-view-load-uri buffer uri))
 
 (define-method (buffer-render)
   (buffer-render (current-buffer)))
