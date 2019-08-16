@@ -28,10 +28,10 @@
 
 (gi-import "Gtk")
 
+(test-begin "webview")
+
 (let ((gtk? (gtk-init-check #f #f)))
   (test-assert "Gtk init?" gtk?))
-
-(test-begin "webview")
 
 (test-equal "https prefix url" (prefix-url "127.0.0.1") "https://127.0.0.1")
 
