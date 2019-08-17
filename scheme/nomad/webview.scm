@@ -43,7 +43,7 @@
             ;; ;; class constructors
             make-webview-buffer
             make-webcontent-buffer
-
+            <webview-buffer>
             ;;methods
             set-buffer-hooks!
             buffer-back
@@ -61,7 +61,7 @@
 (gi-import-objects "Gtk" '("Widget"))
 
 ;;; <webview-buffer> extends <buffer> class
-(define-class-public <webview-buffer>
+(define-class <webview-buffer>
   (<text-buffer> <nomad-web-view>)
   (content #:accessor buffer-content #:init-keyword #:content))
 
@@ -123,10 +123,10 @@
 (define-method (buffer-uri (buffer <webview-buffer>))
   (webkit-web-view-get-uri buffer))
 
-(define-method-public (buffer-load-uri uri)
+(define-method (buffer-load-uri uri)
   (buffer-load-uri (current-buffer) uri))
 
-(define-method-public (buffer-load-uri (buffer <webview-buffer>)
+(define-method (buffer-load-uri (buffer <webview-buffer>)
                                        uri)
   (webkit-web-view-load-uri buffer uri))
 
