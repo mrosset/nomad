@@ -29,24 +29,21 @@
   (test-assert "Gtk init?" gtk?))
 
 (test-group "webkit"
-            (let* ((settings (webkit-network-proxy-settings-new "localhost:8080"
+            (let* ((settings (webkit-network-proxy-settings-new "http://thou.shall.not.pass:8080"
                                                                 '("*.gnu.org")))
-                   (view (make <web-kit-web-view>))
+                   (view (make <webkit-web-view>))
                    (view-context (webkit-web-view-get-context view))
                    (global-context (webkit-web-context-get-default))
-                   (new-context (make <web-kit-web-context>)))
+                   (new-context (make <webkit-web-context>))
+                   (bad-uri  "https://duckduckgo.com/")
+                   (good-uri "https://www.gnu.org"))
 
-              (test-assert (not (null? proxy-settings))) ;; Fails because its '()
-              (test-assert (not (unspecified? view-context))) ;; Fails because it's unspecified
-              (test-assert (not (unspecified? global-context))) ;; Fails because it's unspecified
-              (test-assert (not (unspecified? new-context)))    ;; Passes
-              (test-equal <web-kit-web-context> (class-of view-context)) ;; Fails
-              (test-equal <web-kit-web-context> global-context)          ;; Fails
-              (test-equal <web-kit-web-context> (class-of new-context))  ;; Passes
+              (test-assert (not (unspecified? context)))
+              (test-assert (not (unspecified? view-context))) ;; Fails because view-context is unspecified
+              (test-assert (not (unspecified? global-context))) ;; Fails because global-context is unspecified
+              (test-equal <webkit-web-context> (class-of (slot-ref view 'web-context))) ;; Fails because its foreign
 
-              ;; setting the proxy setting fails with
-              ;; In procedure sizeof: Wrong type argument in position 1: ()
-              ;;
-              ;; empty struct seems to be the culprit here
+              ;; Can now set proxy for new context, but not useful since this
+              ;; needs to apply either to a global context or a view's context
               (webkit-web-context-set-network-proxy-settings new-context 'custom settings)
    ))
