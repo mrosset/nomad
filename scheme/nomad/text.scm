@@ -26,6 +26,7 @@
   #:use-module (nomad pointer)
   #:use-module (oop goops)
   #:use-module (system foreign)
+  #:export (<nomad-text-buffer>)
   )
 
 (load-extension (dynamic-path) "init_guile_nomad_text")
@@ -35,7 +36,7 @@
 (define default-source-language "scheme")
 (define default-source-theme "classic")
 
-(define-class-public <nomad-text-buffer> (<widget-buffer>))
+(define-class <nomad-text-buffer> (<widget-buffer>))
 
 (define* (make-source-view #:optional theme language)
   (let ((view (make <gtk-source-view>))

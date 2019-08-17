@@ -24,24 +24,26 @@
   #:use-module (g-golf)
   #:use-module (nomad util)
   #:use-module (system foreign)
+  #:export (<widget-buffer>
+            buffer-pointer)
   )
 
 (gi-import "Nomad")
 
 (gi-import-objects "Gtk" '("Widget"))
 
-(define-class-public <widget-buffer>
+(define-class <widget-buffer>
   (<text-buffer>)
   (widget #:accessor !widget #:init-keyword #:widget)
   (pointer #:accessor !pointer #:init-keyword #:pointer #:init-value %null-pointer))
 
 
-(define-method-public (buffer-pointer (buffer <widget-buffer>))
+(define-method (buffer-pointer (buffer <widget-buffer>))
   (let* ((widget (slot-ref buffer 'widget))
          (pointer (slot-ref widget 'g-inst)))
     pointer))
 
-(define-method-public (buffer-pointer)
+(define-method (buffer-pointer)
   (buffer-pointer (current-buffer)))
 
 (define-public (widget-kill-hook)
