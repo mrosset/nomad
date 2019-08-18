@@ -26,7 +26,7 @@
 (load-extension (dynamic-path) "init_guile_nomad_frame")
 
 (gi-import "Nomad")
-(gi-import-objects "Gtk" '("Widget"))
+(import-objects "Gtk" '("Widget"))
 
 (define-public (notebook-insert buffer pos)
   (let ((widget (slot-ref buffer 'widget)))

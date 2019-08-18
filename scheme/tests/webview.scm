@@ -20,15 +20,16 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad webview)
   #:use-module (nomad app)
+  #:use-module (nomad util)
   #:use-module (nomad pointer)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:use-module (srfi srfi-64)
   #:use-module (system foreign))
 
-(gi-import "Gtk")
-
 (test-begin "webview")
+
+(import-functions "Gtk" '("init_check"))
 
 (let ((gtk? (gtk-init-check #f #f)))
   (test-assert "Gtk init?" gtk?))

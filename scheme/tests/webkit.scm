@@ -18,10 +18,12 @@
 
 (define-module (test webkit)
   #:use-module (g-golf)
+  #:use-module (nomad util)
   #:use-module (srfi srfi-64))
 
-(gi-import "Gtk")
 (gi-import "WebKit2")
+
+(import-functions "Gtk" '("init_check"))
 
 (test-skip "webkit")
 
