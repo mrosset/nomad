@@ -19,34 +19,32 @@
 (define-module (tests frame)
   #:use-module (g-golf)
   #:use-module (nomad frame)
+  #:use-module (nomad util)
   #:use-module (srfi srfi-64)
   )
 
-(gi-import "Gtk")
-(gi-import "Nomad")
+(test-skip "frame")
 
-(test-begin "frame")
+(test-group "frame"
+            (import-functions "Gtk" '("init_check"))
+            (gi-import "Nomad")
+            (let ((gtk? (gtk-init-check #f #f)))
+              (test-assert gtk?))
+            (let* ((app (make <nomad-app>))
+                   (frame (make <nomad-app-frame>))
+                   (box (make <gtk-box>))
+                   (notebook (make <gtk-notebook>))
+                   (page (gtk-notebook-insert-page notebook
+                                                   box
+                                                   (make <gtk-label>)
+                                                   0)))
+              (test-assert (not (unspecified? frame)))
+              (test-equal <nomad-app-frame>
+                (class-of frame))
+              (test-equal <gtk-box>
+                (class-of box))
+              (test-equal 0 page)
+              ;; (test-equal <gtk-window> (class-of (gtk-window-new 'toplevel)))
 
-(let ((gtk? (gtk-init-check #f #f)))
-    (test-assert "Gtk init?" gtk?))
-
-
-(let* ((app (make <nomad-app>))
-       (frame (make <nomad-app-frame>))
-       (box (make <gtk-box>))
-       (notebook (make <gtk-notebook>))
-       (page (gtk-notebook-insert-page notebook box (make <gtk-label>)
-                                          0))
-       )
-
-  (test-assert (not (unspecified? frame)))
-  (test-equal <nomad-app-frame> (class-of frame))
-  (test-equal <gtk-box> (class-of box))
-  (test-equal 0 page)
-  ;; (test-equal <gtk-window> (class-of (gtk-window-new 'toplevel)))
-
-  ;; (test-assert (notebook-contains frame box))
-  )
-
-  ;; (test-error (notebook-contains frame box)))
-(test-end)
+              ;; (test-assert (notebook-contains frame box))
+              ))

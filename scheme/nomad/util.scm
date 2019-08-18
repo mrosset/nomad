@@ -25,7 +25,8 @@
   #:use-module (g-golf)
   #:export (info
             log-info?
-            gi-import-objects
+            import-functions
+            import-objects
             list->keymap
             add-to-nomad-path
             ~ // ~/))
@@ -75,7 +76,14 @@
                  //
                  path))
 
-(define (gi-import-objects namespace lst)
+(define (import-functions namespace lst)
+  (g-irepository-require namespace)
+  (for-each (lambda (function)
+              (let ((info (g-irepository-find-by-name namespace function)))
+                (gi-import-function info)))
+            lst))
+
+(define (import-objects namespace lst)
   "Imports a LST of objects from NAMESPACE"
   ;; FIXME: this hack ensures that g-golf is used, without it g-golf needs to
   ;; be imported by the calling module. Otherwise int32 is unbound

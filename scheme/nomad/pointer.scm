@@ -30,7 +30,7 @@
 
 (gi-import "Nomad")
 
-(gi-import-objects "Gtk" '("Widget"))
+(import-objects "Gtk" '("Widget"))
 
 (define-class <widget-buffer>
   (<text-buffer>)

@@ -19,12 +19,13 @@
 (define-module (test text)
   #:use-module (g-golf)
   #:use-module (nomad app)
+  #:use-module (nomad util)
   #:use-module (nomad text)
   #:use-module (srfi srfi-64)
   #:use-module (system foreign))
 
-(gi-import "Gtk")
 (gi-import "GtkSource")
+(import-functions "Gtk" '("init_check"))
 
 (let ((gtk? (gtk-init-check #f #f)))
   (test-assert "GTK init" gtk?))
