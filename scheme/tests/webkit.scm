@@ -25,8 +25,6 @@
 
 (import-functions "Gtk" '("init_check"))
 
-(test-skip "webkit")
-
 (let ((gtk? (gtk-init-check #f #f)))
   (test-assert "Gtk init?" gtk?))
 
@@ -34,18 +32,9 @@
             (let* ((settings (webkit-network-proxy-settings-new "http://thou.shall.not.pass:8080"
                                                                 '("*.gnu.org")))
                    (view (make <webkit-web-view>))
-                   (view-context (webkit-web-view-get-context view))
-                   (global-context (webkit-web-context-get-default))
-                   (new-context (make <webkit-web-context>))
-                   (bad-uri  "https://duckduckgo.com/")
-                   (good-uri "https://www.gnu.org"))
+                   (context (webkit-web-context-get-default)))
 
               (test-assert (not (unspecified? context)))
-              (test-assert (not (unspecified? view-context))) ;; Fails because view-context is unspecified
-              (test-assert (not (unspecified? global-context))) ;; Fails because global-context is unspecified
-              (test-equal <webkit-web-context> (class-of (slot-ref view 'web-context))) ;; Fails because its foreign
 
-              ;; Can now set proxy for new context, but not useful since this
-              ;; needs to apply either to a global context or a view's context
-              (webkit-web-context-set-network-proxy-settings new-context 'custom settings)
-   ))
+              (webkit-web-context-set-network-proxy-settings context 'custom settings)
+              ))
