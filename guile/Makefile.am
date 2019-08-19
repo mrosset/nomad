@@ -23,32 +23,32 @@ AM_CFLAGS = -Wall -Werror
 libguile_nomad_LTLIBRARIES = libguile-nomad.la
 libguile_nomaddir = $(libexecdir)/nomad/
 
-libguile_nomad_la_SOURCES =	app.c		\
-				frame.c		\
-				minibuffer.c	\
-				resources.c	\
-				text.c		\
-				util.c		\
-				webkit.c	\
-				webkitsettings.c	\
-				webkitproxy.c	\
-				extension.c
+libguile_nomad_la_SOURCES =  app.c app.h
+libguile_nomad_la_SOURCES += frame.c frame.h
+libguile_nomad_la_SOURCES += minibuffer.c minibuffer.h
+libguile_nomad_la_SOURCES += resources.c
+libguile_nomad_la_SOURCES += text.c text.h
+libguile_nomad_la_SOURCES += util.c util.h
+libguile_nomad_la_SOURCES += webkit.c webkit.h
+libguile_nomad_la_SOURCES += webkitsettings.c webkitsettings.h
+libguile_nomad_la_SOURCES += webkitproxy.c webkitproxy.h
+libguile_nomad_la_SOURCES += extension.c
+
+libguile_nomad_la_CFLAGS =  $(AM_CFLAGS)
+libguile_nomad_la_CFLAGS += $(EMACSY_CFLAGS)
+libguile_nomad_la_CFLAGS += $(GUILE_CFLAGS)
+libguile_nomad_la_CFLAGS += $(GLIB_CFLAGS)
+libguile_nomad_la_CFLAGS += $(GTK_CFLAGS)
+libguile_nomad_la_CFLAGS += $(WEBKIT_CFLAGS)
+libguile_nomad_la_CFLAGS += $(GTK_SOURCEVIEW_CFLAGS)
 
 
-libguile_nomad_la_CFLAGS = $(AM_CFLAGS)			\
-			$(EMACSY_CFLAGS)		\
-			$(GUILE_CFLAGS)			\
-			$(GLIB_CFLAGS)			\
-			$(GTK_CFLAGS)			\
-			$(WEBKIT_CFLAGS)		\
-			$(GTK_SOURCEVIEW_CFLAGS)
-
-libguile_nomad_la_LIBADD = $(GUILE_LIBS)		\
-			$(EMACSY_LIBS)			\
-			$(GLIB_LIBS)			\
-			$(GTK_LIBS)			\
-			$(WEBKIT_LIBS)			\
-			$(GTK_SOURCEVIEW_LIBS)
+libguile_nomad_la_LIBADD =  $(GUILE_LIBS)
+libguile_nomad_la_LIBADD += $(EMACSY_LIBS)
+libguile_nomad_la_LIBADD += $(GLIB_LIBS)
+libguile_nomad_la_LIBADD += $(GTK_LIBS)
+libguile_nomad_la_LIBADD += $(WEBKIT_LIBS)
+libguile_nomad_la_LIBADD += $(GTK_SOURCEVIEW_LIBS)
 
 
 libguile_nomad_la_LDFLAGS = -module -avoid-version -no-undefined

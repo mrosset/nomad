@@ -136,7 +136,6 @@ AC_CONFIG_FILES([
 Makefile
 guile/Makefile
 src/Makefile
-ext/Makefile
 scheme/Makefile
 ])
 

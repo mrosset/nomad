@@ -24,7 +24,7 @@ ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 nobase_mod_DATA = $(SOURCES) $(NOCOMP_SOURCES)
 nobase_ccache_DATA = $(GOBJECTS)
 
-EXTRA_DIST = $(SOURCES) $(NOCOMP_SOURCES)
+EXTRA_DIST = $(SOURCES) $(NOCOMP_SOURCES) $(TESTS) nomad/lib.in
 CLEANFILES = $(GOBJECTS) nomad/lib.scm
 
 guile_install_go_files = install-nobase_ccacheDATA
@@ -38,8 +38,6 @@ SUFFIXES = .scm .go
 do_subst = sed -e 's,[@]GUILE[@],$(GUILE),g' \
 		-e 's,[@]LIBEXEC[@],$(libexecdir),g' \
 		-e 's,[@]TOPBUILD[@],$(abs_top_builddir),g'
-
-
 
 nomad/lib.scm: nomad/lib.in Makefile
 	$(do_subst) < $(srcdir)/$< > $@

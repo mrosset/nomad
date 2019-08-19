@@ -20,10 +20,10 @@ SUBDIRS = guile scheme src
 
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = init.el
+EXTRA_DIST = build-aux/test-driver.scm
 ## FIXME this is hackish. promote init.el to emacs package
 nomaddir = "$(datadir)/nomad"
-nomad_DATA = init.el
+nomad_DATA = ## init.el
 
 dist_doc_DATA = README
 
