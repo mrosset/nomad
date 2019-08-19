@@ -99,7 +99,7 @@ fi
 
 GUILE_MODULE_AVAILABLE([guile_gnutls], [(gnutls)])
 if test "$guile_gnutls" = "no"; then
-   AC_MSG_ERROR([guile gnutls is missing; please install it.])
+   AC_MSG_WARN([guile gnutls is missing; please install it.])
 fi
 
 top_builddir_absolute=`pwd`

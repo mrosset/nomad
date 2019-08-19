@@ -32,6 +32,8 @@
   (test-skip "hash file")
   (test-skip "file exists"))
 
+(skip-online)
+
 (catch 'getaddrinfo-error
   (lambda _
     (getaddrinfo "mirrors.kernel.org" "http"))
