@@ -23,28 +23,41 @@
 (use-modules (guix packages)
 	     (guix gexp)
 	     (guix git-download)
-	     (gnu packages nomad))
+	     (gnu packages nomad)
+             (gnu packages guile-xyz))
 
 (define %source-dir (dirname (current-filename)))
 
 (define %emacsy-source-dir (string-append (getenv "HOME") "/src/emacsy"))
 
 (define-public emacsy-local
-  (package (inherit emacsy-git)
+  (package (inherit emacsy-minimal)
 	   (version "git")
 	   (source (local-file %source-dir
 			       #:recursive? #t#:select? (git-predicate %source-dir)))))
 
+(define-public emacsy-git
+  ;; from new-mru
+  (let ((commit "a88f4843c806b4bd43672edc0454901086f578c4"))
+    (package (inherit emacsy-minimal) ;; recently merged
+             (name "emacsy-git")
+             (version (git-version "v0.4.1" "25" commit))
+             (source (origin (method git-fetch)
+                             (uri (git-reference (url "https://git.savannah.gnu.org/git/emacsy.git")
+                                                 (commit commit)))
+                             (file-name (git-file-name name version))
+                             (sha256 (base32 "0bfhq5x1nm6d0bdh4534b2cfvzcbl0cgmaqyfmbzmd9nw30ibjh9")))))))
 
 ;; Override nomad's nomad sources uri to use guix-testing branch. This
 ;; allows for testing development builds of nomad without effecting
 ;; stable end user release build or git history.
 (define nomad-local
-  (package (inherit nomad)
-	   (name "nomad")
-	   (version "git")
-	   (source (local-file %source-dir
-			       #:recursive? #t
-			       #:select? (git-predicate %source-dir)))))
+  ((package-input-rewriting `((,emacsy-minimal . ,emacsy-git)))
+   (package (inherit nomad)
+            (name "nomad")
+            (version "git")
+            (source (local-file %source-dir
+                                #:recursive? #t
+                                #:select? (git-predicate %source-dir))))))
 
 nomad-local
