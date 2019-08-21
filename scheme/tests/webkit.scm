@@ -31,7 +31,6 @@
 (test-group "webkit"
             (let* ((settings (webkit-network-proxy-settings-new "http://thou.shall.not.pass:8080"
                                                                 '("*.gnu.org")))
-                   (view (make <webkit-web-view>))
                    (context (webkit-web-context-get-default)))
 
               (test-assert (not (unspecified? context)))
