@@ -24,9 +24,7 @@
 
 (use-modules (ice-9 pretty-print)
              (emacsy emacsy)
-             (nomad init)
-             (nomad app)
-             (nomad lib))
+             (nomad nomad))
 
 (define (pretty-string sym)
   (with-output-to-string (lambda _
