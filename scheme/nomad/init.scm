@@ -125,6 +125,9 @@
 
 (define (init)
   (ensure-nomad-directory)
-  (when (file-exists? user-init-file)
+  ;; If user-init-file exists and -Q is not passed as a command line argument
+  ;; then load the user-init-file
+  (when (and (not (option-quick (command-line)))
+             (file-exists? user-init-file))
     (load user-init-file))
   #t)

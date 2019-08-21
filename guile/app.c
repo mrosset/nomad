@@ -286,8 +286,17 @@ SCM_DEFINE_PUBLIC (scm_nomad_start, "start-nomad", 1, 0, 0, (SCM lst),
 
   char **argv = g_strdupv (scm_to_pointer (ptr));
 
+  GOptionEntry entries[]
+      = { { "quick", 'Q', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, NULL,
+            "Start nomad without using user-init-file", NULL },
+          { NULL } };
+
   g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
   g_signal_connect (app, "shutdown", G_CALLBACK (shutdown), NULL);
+
+  g_application_add_main_option_entries (G_APPLICATION (app), entries);
+
+  scm_call_0 (scm_c_public_ref ("nomad init", "init"));
 
   status = g_application_run (G_APPLICATION (app), argc, argv);
 

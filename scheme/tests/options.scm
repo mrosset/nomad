@@ -24,6 +24,7 @@
 (define test-command-line '("./nomad" "https://gnu.org" "--listen" "/tmp/test"))
 (define test-arg0 '("./nomad"))
 (define test-client '("./nomad" "--app-id" "org.devel.nomad" "-c"))
+(define test-quick '("./nomad" "-Q"))
 
 (test-begin "options")
 
@@ -43,5 +44,7 @@
 (test-equal "no listen" (option-listen test-arg0) "/tmp/nomad-socket")
 
 (test-equal "no url" (option-url test-arg0) "https://www.gnu.org/software/guile")
+
+(test-assert "quick" (option-quick test-quick))
 
 (test-end)

@@ -46,7 +46,6 @@
 
 (emacsy-initialize #t)
 
-(init)
 (exit (start-nomad (command-line)))
 
 ;; Local Variables:
