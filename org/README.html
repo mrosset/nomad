@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-05-24 Fri 11:24 -->
+<!-- 2019-08-22 Thu 09:09 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>&lrm;</title>
@@ -185,7 +185,7 @@
 @licstart  The following is the entire license notice for the
 JavaScript code in this tag.
 
-Copyright (C) 2012-2019 Free Software Foundation, Inc.
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
 
 The JavaScript code in this tag is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -233,137 +233,96 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org7162a6b">1. Installation</a>
+<li><a href="#orgfb57178">1. Installation</a>
 <ul>
-<li><a href="#org3673836">1.1. With Guix</a></li>
+<li><a href="#orgd6c6684">1.1. With Guix</a></li>
 </ul>
 </li>
-<li><a href="#orge1e0cc9">2. Run Nomad</a>
+<li><a href="#org47a8df0">2. Run Nomad</a>
 <ul>
-<li><a href="#orgb7d6740">2.1. From the command line</a></li>
-<li><a href="#orge873ef1">2.2. Keybinds</a></li>
+<li><a href="#org9abb2dd">2.1. From the command line</a></li>
+<li><a href="#org6310048">2.2. Keybinds</a></li>
 </ul>
 </li>
-<li><a href="#org70bbcb5">3. Extend Nomad</a></li>
-<li><a href="#org6ce8101">4. Nomad-hacker's setup</a></li>
-<li><a href="#org7571c93">5. Build from source</a>
+<li><a href="#orga823524">3. Extend Nomad</a></li>
+<li><a href="#orgb30392d">4. Build from source</a>
 <ul>
-<li><a href="#org1d7c195">5.1. Run Nomad before you've installed Nomad</a></li>
-</ul>
-</li>
-<li><a href="#org97ec185">6. Hack Nomad in QML</a>
-<ul>
-<li><a href="#org9e8cefa">6.1. To implement a Method from Qtwebengine</a></li>
-</ul>
-</li>
-<li><a href="#org8606ab1">7. FAQ</a>
-<ul>
-<li><a href="#org588c578">7.1. Nomad doesn't start</a></li>
+<li><a href="#orgb83089a">4.1. Run Nomad before you've installed Nomad</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org7162a6b" class="outline-2">
-<h2 id="org7162a6b"><span class="section-number-2">1</span> Installation</h2>
+<div id="outline-container-orgfb57178" class="outline-2">
+<h2 id="orgfb57178"><span class="section-number-2">1</span> Installation</h2>
 <div class="outline-text-2" id="text-1">
 </div>
-<div id="outline-container-org3673836" class="outline-3">
-<h3 id="org3673836"><span class="section-number-3">1.1</span> With Guix</h3>
+<div id="outline-container-orgd6c6684" class="outline-3">
+<h3 id="orgd6c6684"><span class="section-number-3">1.1</span> With Guix</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
-Nomad is not yet available in the official Guix, but we still try to
-provide substitutes to make installation easier.
+Nomad is not yet available in the official Guix
 </p>
-<ul class="org-ul">
-<li><p>
-Clone the Nomad source repository and checkout the current
-development branch.
+
+<p>
+Clone the Nomad source repository
 </p>
 <div class="org-src-container">
 <pre class="src src-shell">git clone https://git.savannah.gnu.org/git/nomad.git
 <span style="font-weight: bold;">cd</span> nomad
-git checkout feature-qt
 </pre>
-</div></li>
-<li><p>
-Make sure Guix can find the nomad package, declared in
-`guix/gnu/packages/nomad.scm`.
+</div>
+
+<p>
+Build and install Nomad
 </p>
 <div class="org-src-container">
-<pre class="src src-shell"><span style="font-weight: bold;">export</span> <span style="font-weight: bold; font-style: italic;">GUIX_PACKAGE_PATH</span>=<span style="font-style: italic;">"$PWD/guix:$GUIX_PACKAGE_PATH"</span>
+<pre class="src src-shell">guix package -f ./guix.scm
 </pre>
-</div></li>
-<li><p>
-If you'd like to to download pre-built binaries from the build
-server, you can authorize guix to use Nomad's build server.
-</p>
-<div class="org-src-container">
-<pre class="src src-shell">guix archive --authorize &lt; contrib/guix/gx.bufio.org.pub
-</pre>
-</div></li>
-<li><p>
-Then install Nomad while instructing guix to use substitutes from
-both, the official, and the Nomad build server.
-</p>
-<div class="org-src-container">
-<pre class="src src-shell">guix package -i nomad --substitute-urls=<span style="font-style: italic;">"https://ci.guix.info \</span>
-<span style="font-style: italic;">https://gx.bufio.org"</span>
-</pre>
-</div></li>
-<li><p>
-If subsitutes are still not available you may have to use an older
-version of guix and retry.
-</p>
-<div class="org-src-container">
-<pre class="src src-shell">guix pull --commit=152030ffdf548527d32458c5f3fbc98700aa7e69
-</pre>
-</div></li>
-</ul>
 </div>
 </div>
 </div>
-<div id="outline-container-orge1e0cc9" class="outline-2">
-<h2 id="orge1e0cc9"><span class="section-number-2">2</span> Run Nomad</h2>
+</div>
+
+<div id="outline-container-org47a8df0" class="outline-2">
+<h2 id="org47a8df0"><span class="section-number-2">2</span> Run Nomad</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-orgb7d6740" class="outline-3">
-<h3 id="orgb7d6740"><span class="section-number-3">2.1</span> From the command line</h3>
+<div id="outline-container-org9abb2dd" class="outline-3">
+<h3 id="org9abb2dd"><span class="section-number-3">2.1</span> From the command line</h3>
 <div class="outline-text-3" id="text-2-1">
-<ul class="org-ul">
-<li><p>
-Nomad doesn't yet support the full set of command line
-options. However, It can be run from a shell by typing
+<p>
+Nomad doesn't yet support the full set of command line options. However, It
+can be run from a shell by typing
 </p>
+
 <div class="org-src-container">
 <pre class="src src-shell">nomad
 </pre>
-</div></li>
-<li><p>
-If you want nomad to connect to an existing guile REPL use the
-following command line flag.
-</p>
-<div class="org-src-container">
-<pre class="src src-shell">nomad -c
-</pre>
-</div></li>
-</ul>
 </div>
 </div>
-<div id="outline-container-orge873ef1" class="outline-3">
-<h3 id="orge873ef1"><span class="section-number-3">2.2</span> Keybinds</h3>
+</div>
+
+<div id="outline-container-org6310048" class="outline-3">
+<h3 id="org6310048"><span class="section-number-3">2.2</span> Keybinds</h3>
 <div class="outline-text-3" id="text-2-2">
-<ul class="org-ul">
-<li>Nomad intends to support Emacs-like keybinds because it's design
-was inspired from Emacs. However there is no limitation on what
-Keybindings Nomad can support. Nomad has the concept of key-maps
-just like Emacs and users should be able to define their own
-keymaps.</li>
-<li>At the top level you might want to use `M-x` (Meta/Alt X) to use the execute
-command menu and `C-x` (Ctrl X) for Ibuffer.</li>
-<li>In a Webview buffer the `webview-mode-map` is active which
-contains the following keybinds.</li>
-</ul>
+<p>
+Nomad intends to support Emacs-like keybinds because it's design was inspired
+from Emacs. However there is no limitation on what Keybindings Nomad can
+support. Nomad has the concept of key-maps just like Emacs and users should be
+able to define their own keymaps.
+</p>
+
+<p>
+At the top level you might want to use `M-x` (Meta/Alt X) to use the execute
+command menu.
+</p>
+
+<p>
+In a Webview buffer the `webview-mode-map` is active which contains the
+following keybinds.
+</p>
+
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -413,17 +372,14 @@ contains the following keybinds.</li>
 <td class="org-left">"C-r"</td>
 <td class="org-left">(reload)</td>
 </tr>
-
-<tr>
-<td class="org-left">"C-x"</td>
-<td class="org-left">(kill-buffer)</td>
-</tr>
 </tbody>
 </table>
-<ul class="org-ul">
-<li>In Nomad's Ibuffer menu the `ctrl-x-map` is active which has
-these keybindings.</li>
-</ul>
+
+<p>
+In Nomad's Ibuffer menu the `ctrl-x-map` is active which has these
+keybindings.
+</p>
+
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -454,75 +410,51 @@ these keybindings.</li>
 </div>
 </div>
 
-<div id="outline-container-org70bbcb5" class="outline-2">
-<h2 id="org70bbcb5"><span class="section-number-2">3</span> Extend Nomad</h2>
+<div id="outline-container-orga823524" class="outline-2">
+<h2 id="orga823524"><span class="section-number-2">3</span> Extend Nomad</h2>
 <div class="outline-text-2" id="text-3">
-<ul class="org-ul">
-<li>You can customize nomad by writing your configurations to
-`~/.nomad`, which is just a scheme file!</li>
-<li>Examples
-<ul class="org-ul">
-<li>(set! search-provider-format "<a href="https://google.ca/search?q=~a">https://google.ca/search?q=~a</a>")</li>
-<li>(define-command (help) "Browse to the Nomad README."
-(browse "<a href="file:///nomad/README.html">file:///nomad/README.html</a>"))</li>
-</ul></li>
-</ul>
+<p>
+You can customize nomad by writing your configurations to `~/.nomad`, which is
+just a scheme file!
+</p>
+
+<p>
+Examples
+</p>
+<div class="org-src-container">
+<pre class="src src-schem">(set! search-provider-format "https://google.ca/search?q=~a")
+</pre>
 </div>
-</div>
-<div id="outline-container-org6ce8101" class="outline-2">
-<h2 id="org6ce8101"><span class="section-number-2">4</span> Nomad-hacker's setup</h2>
-<div class="outline-text-2" id="text-4">
-<ul class="org-ul">
-<li>Startup Emacs and install Geiser</li>
-<li>M-x geiser-connect-local RET /tmp/nomad-socket RET</li>
-<li>Try
-(forward)
-(back)
-(browse "<a href="https://gnu.org/software/guile">https://gnu.org/software/guile</a>")</li>
-<li>Nomad's extensions are defined in `$NOMAD<sub>SOURCE</sub>/scheme/`, create
-new module for nomad as `scheme/nomad/&lt;module-name&gt;`.</li>
-<li>Once you have tested it locally, you can submit a pull request to
-the Nomad source <a href="https://github.com/mrosset/nomad">repository</a>.</li>
-</ul>
 </div>
 </div>
 
-<div id="outline-container-org7571c93" class="outline-2">
-<h2 id="org7571c93"><span class="section-number-2">5</span> Build from source</h2>
-<div class="outline-text-2" id="text-5">
-<ul class="org-ul">
-<li><p>
-In Ubuntu 18.10, the the following snippet will install all required
-dependencies.
+<div id="outline-container-orgb30392d" class="outline-2">
+<h2 id="orgb30392d"><span class="section-number-2">4</span> Build from source</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+In Ubuntu 19.04, the the following snippet will install most dependencies.
 </p>
 <div class="org-src-container">
 <pre class="src src-shell">sudo apt install -y <span style="font-style: italic;">\</span>
+guile-2.2 <span style="font-style: italic;">\</span>
 guile-2.2-dev <span style="font-style: italic;">\</span>
-qtbase5-dev <span style="font-style: italic;">\</span>
-qtchooser <span style="font-style: italic;">\</span>
-qtwebengine5-dev <span style="font-style: italic;">\</span>
-qtquickcontrols2-5-dev <span style="font-style: italic;">\</span>
-qtbase5-dev-tools <span style="font-style: italic;">\</span>
-qml-module-qtquick2 <span style="font-style: italic;">\</span>
-qml-module-qtquick-controls <span style="font-style: italic;">\</span>
-qml-module-qtwebengine <span style="font-style: italic;">\</span>
-qml-module-qtwebchannel <span style="font-style: italic;">\</span>
-qml-module-qtquick-layouts <span style="font-style: italic;">\</span>
-libqtermwidget5-0-dev <span style="font-style: italic;">\</span>
+guile-library <span style="font-style: italic;">\</span>
+libgtk-3-dev <span style="font-style: italic;">\</span>
+libwebkit2gtk-4.0-dev <span style="font-style: italic;">\</span>
+libgtksourceview-4-dev
 </pre>
-</div></li>
+</div>
 
-<li><p>
+<p>
 Using Guix, the following snippet will install all required
 dependencies in a temporary shell.
 </p>
 <div class="org-src-container">
-<pre class="src src-shell"><span style="font-weight: bold;">export</span> <span style="font-weight: bold; font-style: italic;">GUIX_PACKAGE_PATH</span>=<span style="font-style: italic;">"$NOMAD_SOURCE/guix:$GUIX_PACKAGE_PATH"</span>
-guix environment nomad
+<pre class="src src-shell">guix environment -l ./guix.scm
 </pre>
-</div></li>
+</div>
 
-<li><p>
+<p>
 Then build the package with
 </p>
 <div class="org-src-container">
@@ -530,121 +462,26 @@ Then build the package with
 ./configure
 make
 </pre>
-</div></li>
-</ul>
-</div>
-
-<div id="outline-container-org1d7c195" class="outline-3">
-<h3 id="org1d7c195"><span class="section-number-3">5.1</span> Run Nomad before you've installed Nomad</h3>
-<div class="outline-text-3" id="text-5-1">
-<ul class="org-ul">
-<li>Once you've built Nomad without errors, to run Nomad from the
-local build.</li>
-</ul>
-<div class="org-src-container">
-<pre class="src src-bash">./pre-inst-env ./qt/nomad
-</pre>
-</div>
-</div>
 </div>
 </div>
 
-<div id="outline-container-org97ec185" class="outline-2">
-<h2 id="org97ec185"><span class="section-number-2">6</span> Hack Nomad in QML</h2>
-<div class="outline-text-2" id="text-6">
-<ul class="org-ul">
-<li>Nomad is hackable in Scheme. But you can also hack Nomad in
-Cpp/QML. In general, the aim of Nomad is to present you the user
-with enough programming capabilities that you don't have to resort
-to this step, but you may still wish to change some internal
-plumbing in Nomad or expose new functionality to Scheme, and we
-encourage you in this endeavour.</li>
-<li>One design principles we can use as a of rule of thumb is, for
-every feature provided by Nomad in the standard library or in the
-application, user should be able to provide their replacement.</li>
-<li>You can find features available in WebEngineView at
-<a href="https://doc.qt.io/qt-5/qml-qtwebengine-webengineview.html#Feature-prop">QtWebEngineView Features</a>.</li>
-</ul>
-</div>
-
-<div id="outline-container-org9e8cefa" class="outline-3">
-<h3 id="org9e8cefa"><span class="section-number-3">6.1</span> To implement a Method from Qtwebengine</h3>
-<div class="outline-text-3" id="text-6-1">
-<ul class="org-ul">
-<li><p>
-You can add a procedure in Nomad Cpp modules that will become
-accessible from Scheme with `SCM<sub>DEFINE</sub>` from the Guile's C
-library `libguile`.
+<div id="outline-container-orgb83089a" class="outline-3">
+<h3 id="orgb83089a"><span class="section-number-3">4.1</span> Run Nomad before you've installed Nomad</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+Once you've built Nomad without errors, to run Nomad from the local build.
 </p>
 <div class="org-src-container">
-<pre class="src src-c++"><span style="font-weight: bold;">#include</span> <span style="font-style: italic;">&lt;libguile.h&gt;</span>
+<pre class="src src-bash">make test
 </pre>
-</div></li>
-<li>The `currentWebView` is an instance of Qt WebEngineView, it can
-support a function called `loadHtml`, which loads HTML into the
-WebView. But, we can also use it to load any type of data!</li>
-<li>To make this facility available to Scheme, we'd like to define a
-procedure called `webview-load-string`, that can wrap up this
-functionality and make it available at Nomad's runtime.</li>
-<li><p>
-The following `webview-load-string` procedure is one of the ways
-you can do it. Webview-load-string is converting it's argument, a
-Scheme object into a Qt object which can be understood by
-Qtwebengine.
-</p>
-<div class="org-src-container">
-<pre class="src src-c++"><span style="font-weight: bold; font-style: italic;">SCM_DEFINE</span> (scm_webview_load_string, <span style="font-style: italic;">"webview-load-string"</span>, 1, 0, 0, (<span style="font-weight: bold; text-decoration: underline;">SCM</span> <span style="font-weight: bold; font-style: italic;">html</span>),
-          <span style="font-style: italic;">"Set's the current WebView to string HTML."</span>)
-{
-  <span style="font-weight: bold; text-decoration: underline;">QMetaObject</span>::invokeMethod(currentWebView(), <span style="font-style: italic;">"loadHtml"</span>,
-    <span style="font-weight: bold; text-decoration: underline;">Qt</span>::DirectConnection, Q_ARG(QString, (scm_to_qstring (html))));
-
-  <span style="font-weight: bold;">return</span> SCM_UNSPECIFIED;
-}
-</pre>
-</div></li>
-<li>Then, we invoke the loadHtml Method on this argument.. Although,
-this approach may work, the results can be less than robust.</li>
-<li>It's good practice to give your function an unabbreivated and
-descriptive name and a documentation string explaining how to use
-the procedure.</li>
-<li><p>
-To export this procedure use:
-</p>
-<div class="org-src-container">
-<pre class="src src-c++">scm_c_export (<span style="font-style: italic;">"webview-load-string"</span>);
-</pre>
-</div></li>
-<li><p>
-Then you can compile Nomad and add this to your `$HOME/.nomad`
-</p>
-<div class="org-src-container">
-<pre class="src src-scheme">(define-command (say-hello) (webview-load-string <span style="font-style: italic;">"Hello World"</span>))
-</pre>
-</div></li>
-<li>And in a running instance of Nomad, M-x say-hello.</li>
-</ul>
 </div>
-</div>
-</div>
-
-<div id="outline-container-org8606ab1" class="outline-2">
-<h2 id="org8606ab1"><span class="section-number-2">7</span> FAQ</h2>
-<div class="outline-text-2" id="text-7">
-</div>
-<div id="outline-container-org588c578" class="outline-3">
-<h3 id="org588c578"><span class="section-number-3">7.1</span> Nomad doesn't start</h3>
-<div class="outline-text-3" id="text-7-1">
-<ul class="org-ul">
-<li>you might have to delete the socket file `/tmp/nomad-socket`</li>
-</ul>
 </div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Mike Rosset</p>
-<p class="date">Created: 2019-05-24 Fri 11:24</p>
+<p class="date">Created: 2019-08-22 Thu 09:09</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
