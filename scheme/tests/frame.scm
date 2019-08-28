@@ -24,26 +24,16 @@
   )
 
 (import-functions "Gtk" '("init_check"))
-(import-objects "Gtk" '("Notebook" "Label" "Box"))
+(import-objects "Gtk" '("Notebook"))
 
 (gi-import "Nomad")
 
 (let ((gtk? (gtk-init-check #f #f)))
   (test-assert gtk?))
 
-;; (test-skip "frame")
-
 (test-group "frame"
             (let* ((frame (make <nomad-app-frame>))
-                   (box (make <gtk-box>))
-                   (notebook (make <gtk-notebook>)))
-
+                   (notebook (nomad-app-frame-get-notebook frame)))
               (test-equal <gtk-notebook> (class-of notebook))
               (test-equal <nomad-app-frame> (class-of frame))
-              (test-equal <gtk-box> (class-of box))
-              (gtk-notebook-append-page notebook box (make <gtk-label>))
-              (test-equal 1 (gtk-notebook-get-n-pages notebook))
-              ;; (test-equal <gtk-window> (class-of (gtk-window-new 'toplevel)))
-
-              ;; (test-assert (notebook-contains frame box))
               ))
