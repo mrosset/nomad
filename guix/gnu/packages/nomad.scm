@@ -30,6 +30,7 @@
 (define %source-dir (dirname (current-filename)))
 
 (load (string-append %source-dir "/g-golf.scm"))
+(use-modules (gnu packages g-golf))
 
 (define-public emacsy-git
   (let ((commit "ed88cfbe57d5a40ea4e1604bfdc61f10ff750626"))
