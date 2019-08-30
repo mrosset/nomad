@@ -22,7 +22,7 @@
   #:use-module (nomad buffer)
   #:use-module (nomad frame)
   #:use-module (nomad eval)
-  #:use-module (nomad pointer)
+  #:use-module (nomad widget)
   #:use-module (nomad util)
   #:use-module (g-golf)
   #:use-module (oop goops)

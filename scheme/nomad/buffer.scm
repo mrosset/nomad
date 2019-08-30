@@ -23,7 +23,7 @@
   #:use-module (nomad eval)
   #:use-module (nomad frame)
   #:use-module (nomad minibuffer)
-  #:use-module (nomad pointer)
+  #:use-module (nomad widget)
   #:use-module (nomad repl)
   #:use-module (nomad text)
   #:use-module (nomad views)

@@ -23,7 +23,7 @@
   #:use-module (nomad frame)
   #:use-module (nomad util)
   #:use-module (nomad lib)
-  #:use-module (nomad pointer)
+  #:use-module (nomad widget)
   #:use-module (oop goops)
   #:use-module (system foreign)
   #:export (<nomad-text-buffer>)
