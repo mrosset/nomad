@@ -373,17 +373,6 @@ nomad_app_frame_get_webview (NomadAppFrame *self)
   return WEBKIT_WEB_VIEW (gtk_notebook_get_nth_page (notebook, page));
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_frame_show_tabs, "toggle-tabs", 0, 0, 0, (),
-                   "Turns notebook tabs on or off")
-{
-  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *notebook = nomad_app_frame_get_notebook (win);
-
-  gtk_notebook_set_show_tabs (notebook,
-                              !gtk_notebook_get_show_tabs (notebook));
-  return SCM_UNSPECIFIED;
-}
-
 gboolean
 idle_destroy (gpointer data)
 {

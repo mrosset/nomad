@@ -68,6 +68,9 @@
 (define-method (buffer-pointer (buffer <webview-buffer>))
   (slot-ref buffer 'g-inst))
 
+(define-method (buffer-widget (buffer <webview-buffer>))
+  buffer)
+
 (define-method (buffer-reload)
   (webkit-web-view-reload (current-buffer)))
 
@@ -92,9 +95,6 @@
 (define-method (buffer-forward (buffer <webview-buffer>))
   (webkit-web-view-go-forward buffer))
 
-(define-method (set-buffer-hooks!)
-  (set-buffer-hooks! (current-buffer)))
-
 (define (webview-kill-hook)
   (info "Destroying pointer ~a"
         (buffer-pointer))
@@ -106,6 +106,8 @@
   (switch-to-pointer (buffer-pointer (current-buffer)))
   (gtk-widget-grab-focus (current-buffer)))
 
+(define-method (set-buffer-hooks!)
+  (set-buffer-hooks! (current-buffer)))
 
 (define-method (set-buffer-hooks! (buffer <webview-buffer>))
   (add-hook! (buffer-enter-hook buffer)
