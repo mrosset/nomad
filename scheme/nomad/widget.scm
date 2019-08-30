@@ -25,6 +25,7 @@
   #:use-module (nomad util)
   #:use-module (system foreign)
   #:export (<widget-buffer>
+            buffer-widget
             buffer-pointer)
   )
 
@@ -34,7 +35,7 @@
 
 (define-class <widget-buffer>
   (<text-buffer>)
-  (widget #:accessor !widget #:init-keyword #:widget)
+  (widget #:accessor buffer-widget #:init-keyword #:widget)
   (pointer #:accessor !pointer #:init-keyword #:pointer #:init-value %null-pointer))
 
 (define-method (buffer-pointer (buffer <widget-buffer>))
