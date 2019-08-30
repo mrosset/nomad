@@ -326,17 +326,6 @@ nomad_app_frame_get_notebook (NomadAppFrame *self)
   return GTK_NOTEBOOK (self->priv->notebook);
 }
 
-gint
-nomad_app_frame_notebook_insert (GtkWidget *widget, const gchar *name,
-                                 gint pos)
-{
-  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *notebook = nomad_app_frame_get_notebook (win);
-
-  return gtk_notebook_insert_page (notebook, widget, gtk_label_new (name),
-                                   pos);
-}
-
 GtkWidget *
 nomad_app_frame_get_minipopup (NomadAppFrame *self)
 {
@@ -516,32 +505,6 @@ SCM_DEFINE_PUBLIC (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
 
   if (page >= 0)
     {
-      return SCM_BOOL_T;
-    }
-
-  return SCM_BOOL_F;
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_notebook_insert, "notebook-insert-old", 2, 0, 0,
-                   (SCM buffer, SCM index),
-                   "Inserts BUFFER into notebook at INDEX")
-{
-  gint page;
-  const char *c_name;
-  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *notebook = nomad_app_frame_get_notebook (win);
-  SCM pointer = scm_call_1 (
-      scm_c_public_ref ("nomad pointer", "buffer-pointer"), buffer);
-  GtkWidget *widget = scm_to_pointer (pointer);
-
-  c_name = scm_to_locale_string (
-      scm_call_1 (scm_c_public_ref ("emacsy emacsy", "buffer-name"), buffer));
-  page = gtk_notebook_insert_page (notebook, widget, gtk_label_new (c_name),
-                                   scm_to_int (index));
-
-  if (page >= 0)
-    {
-      gtk_widget_show_all (widget);
       return SCM_BOOL_T;
     }
 

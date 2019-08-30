@@ -26,13 +26,27 @@
 (load-extension (dynamic-path) "init_guile_nomad_frame")
 
 (gi-import "Nomad")
-(import-objects "Gtk" '("Widget"))
+(import-objects "Gtk" '("Widget" "Notebook" "Label"))
 
-(define-public (notebook-insert buffer pos)
-  (let ((widget (slot-ref buffer 'widget)))
-    (nomad-app-frame-notebook-insert widget
-                                     (buffer-name buffer)
-                                     pos)
+(define-public (notebook-contains? buffer)
+  "Returns true if the current frames notebook contains BUFFER"
+  (let ((frame (nomad-app-get-frame))
+        (notebook (nomad-app-frame-get-notebook))
+        (page (gtk-notebook-page-num notebook (buffer-widget buffer))))
+    (if (>= page 0)
+        #t
+        #f)))
+
+(define-public (notebook-insert buffer position)
+  "Inserts a BUFFER with POSITION into the current frame"
+  (let* ((widget (slot-ref buffer 'widget))
+         (frame (nomad-app-get-frame))
+         (notebook (nomad-app-frame-get-notebook frame))
+         (label (gtk-label-new (buffer-name buffer))))
+    (gtk-notebook-insert-page notebook
+                              widget
+                              label
+                              position)
     (gtk-widget-show-all widget)))
 
 (define (make-frame-socket url socket)

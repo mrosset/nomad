@@ -40,9 +40,6 @@ NomadAppFrame *nomad_app_frame_new (NomadApp *app);
  */
 GtkNotebook *nomad_app_frame_get_notebook (NomadAppFrame *win);
 
-gint nomad_app_frame_notebook_insert (GtkWidget *widget, const gchar *name,
-                                      gint pos);
-
 GtkWidget *nomad_app_frame_get_minipopup (NomadAppFrame *win);
 
 GtkWidget *nomad_app_frame_get_readline (NomadAppFrame *self);
