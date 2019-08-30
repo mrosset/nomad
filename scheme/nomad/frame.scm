@@ -48,11 +48,11 @@
 ;;   #t)
 
 (define-interactive (toggle-tabs)
-  "Toggles the current notebook tabs on or off"
+  "Toggles the current notebook tabs on or off."
   (let ((notebook (current-notebook)))
     (gtk-notebook-set-show-tabs notebook
-                                (not (gtk-notebook-get-show-tabs notebook))))
-  #t)
+                                (not (gtk-notebook-get-show-tabs notebook)))
+    (gtk-notebook-get-show-tabs notebook)))
 
 (define-public (notebook-insert buffer position)
   "Inserts a BUFFER with POSITION into the current frame's notebook"
