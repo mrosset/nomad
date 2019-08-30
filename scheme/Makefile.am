@@ -79,6 +79,7 @@ TESTS =			\
 	tests/options.scm	\
 	tests/text.scm		\
 	tests/util.scm		\
+	tests/widget.scm	\
 	tests/webkit.scm	\
 	tests/webview.scm
 
