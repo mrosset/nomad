@@ -21,7 +21,7 @@
   #:use-module (nomad webview)
   #:use-module (nomad app)
   #:use-module (nomad util)
-  #:use-module (nomad pointer)
+  #:use-module (nomad widget)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:use-module (srfi srfi-64)

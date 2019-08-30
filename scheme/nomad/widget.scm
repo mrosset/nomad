@@ -1,4 +1,4 @@
-;; pointer.scm
+;; widget.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad pointer)
+(define-module (nomad widget)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
   #:use-module (nomad frame)
@@ -36,7 +36,6 @@
   (<text-buffer>)
   (widget #:accessor !widget #:init-keyword #:widget)
   (pointer #:accessor !pointer #:init-keyword #:pointer #:init-value %null-pointer))
-
 
 (define-method (buffer-pointer (buffer <widget-buffer>))
   (let* ((widget (slot-ref buffer 'widget))
