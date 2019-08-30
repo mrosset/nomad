@@ -37,8 +37,25 @@
 ;;         #t
 ;;         #f)))
 
+(define-public (current-notebook)
+  "Returns the current notebook"
+  (let* ((frame (nomad-app-get-frame))
+        (notebook (nomad-app-frame-get-notebook frame)))
+    notebook))
+
+;; (define-public (switch-to-widget buffer)
+;;   "Switches to buffer's widget"
+;;   #t)
+
+(define-interactive (toggle-tabs)
+  "Toggles the current notebook tabs on or off"
+  (let ((notebook (current-notebook)))
+    (gtk-notebook-set-show-tabs notebook
+                                (not (gtk-notebook-get-show-tabs notebook))))
+  #t)
+
 (define-public (notebook-insert buffer position)
-  "Inserts a BUFFER with POSITION into the current frame"
+  "Inserts a BUFFER with POSITION into the current frame's notebook"
   (let* ((widget (slot-ref buffer 'widget))
          (frame (nomad-app-get-frame))
          (notebook (nomad-app-frame-get-notebook frame))
