@@ -28,14 +28,14 @@
 (gi-import "Nomad")
 (import-objects "Gtk" '("Widget" "Notebook" "Label"))
 
-(define-public (notebook-contains? buffer)
-  "Returns true if the current frames notebook contains BUFFER"
-  (let ((frame (nomad-app-get-frame))
-        (notebook (nomad-app-frame-get-notebook))
-        (page (gtk-notebook-page-num notebook (buffer-widget buffer))))
-    (if (>= page 0)
-        #t
-        #f)))
+;; (define-public (notebook-contains buffer)
+;;   "Returns true if the current frames notebook contains BUFFER"
+;;   (let* ((frame (nomad-app-get-frame))
+;;         (notebook (nomad-app-frame-get-notebook frame))
+;;         (page (gtk-notebook-page-num notebook (slot-ref buffer 'widget))))
+;;     (if (>= page 0)
+;;         #t
+;;         #f)))
 
 (define-public (notebook-insert buffer position)
   "Inserts a BUFFER with POSITION into the current frame"

@@ -46,7 +46,7 @@
                                       l)
     view))
 
-(define-public (text-buffer->pointer-buffer buffer)
+(define-public (text-buffer->widget-buffer buffer)
   "Converts a <text-buffer> class to a pointer-buffer."
   (change-class buffer <nomad-text-buffer>)
   (info "converting ~a" buffer)

@@ -94,9 +94,6 @@
     "https://gnu.org/"
     (begin (browse "gnu.org")
            (buffer-uri)))
-  (test-equal "notebook-contain"
-    #t
-    (notebook-contains (current-buffer)))
   (test-equal "kill-buffer"
     "*scratch*"
     (begin (kill-buffer)

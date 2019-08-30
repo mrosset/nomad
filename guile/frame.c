@@ -493,24 +493,6 @@ SCM_DEFINE_PUBLIC (scm_nomad_number_tabs, "number-tabs", 0, 0, 0, (),
   return scm_from_int (gtk_notebook_get_n_pages (notebook));
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_notebook_contains, "notebook-contains", 1, 0, 0,
-                   (SCM buffer), "Return #t if notebook contains BUFFER")
-{
-  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *notebook = nomad_app_frame_get_notebook (win);
-  SCM pointer = scm_call_1 (
-      scm_c_public_ref ("nomad pointer", "buffer-pointer"), buffer);
-  GtkWidget *widget = scm_to_pointer (pointer);
-  gint page = gtk_notebook_page_num (notebook, widget);
-
-  if (page >= 0)
-    {
-      return SCM_BOOL_T;
-    }
-
-  return SCM_BOOL_F;
-}
-
 SCM_DEFINE_PUBLIC (scm_nomad_frame_get_echo_area, "get-echo-area", 0, 0, 0, (),
                    "Returns a SCM pointer for the echo area")
 {
