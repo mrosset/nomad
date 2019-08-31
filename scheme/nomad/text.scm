@@ -60,5 +60,4 @@
   (add-hook! (buffer-enter-hook buffer)
              widget-enter-hook)
   (add-hook! (buffer-kill-hook buffer)
-             widget-kill-hook)
-  (notebook-insert buffer 0))
+             widget-kill-hook))
