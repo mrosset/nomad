@@ -116,8 +116,9 @@
   "Converts text-buffers to <pointer-buffer> and inserts them into
 notebook. Also updates buffer contents and buffer points"
   (for-each (lambda (buffer)
-              (when (eq? <text-buffer> (class-of buffer))
-                (text-buffer->nomad-text-buffer! buffer))
+gs              (when (eq? <text-buffer> (class-of buffer))
+                (text-buffer->nomad-text-buffer! buffer)
+                (notebook-insert buffer 0))
               (when (eq? <nomad-text-buffer> (class-of buffer))
                 (set-source-text! (buffer-pointer buffer)
                                   (buffer:buffer-string buffer))
