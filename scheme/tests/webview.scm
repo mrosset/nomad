@@ -54,25 +54,11 @@
     (change-class buffer <webview-buffer>)
     (eq? (class-of buffer) <webview-buffer>)))
 
-(test-group "scratch messages conversion"
-            (for-each (lambda (buffer)
-                        (test-equal "buffer type"
-                          <text-buffer>
-                          (class-of buffer))
-                        (test-equal "buffer conversion"
-                          <webview-buffer>
-                          (buffer->webview-buffer buffer))
-                        (test-equal "buffer content"
-                          (format #f
-                                  "<h2>~a</h2>"
-                                  (buffer-name buffer))
-                          (buffer-content buffer)))
-                      (list scratch messages)))
-
 (test-group "webview class"
             (let ((buffer (make-webview-buffer "gnu.org")))
               (test-equal "class of <web-kit-webview>" <webview-buffer>
-                (class-of buffer))
+                          (class-of buffer))
+              (test-equal <webview-buffer> (class-of (buffer-widget buffer)))
               (test-equal "buffer-name"
                 "gnu.org"
                 (buffer-name buffer))

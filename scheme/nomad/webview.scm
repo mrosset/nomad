@@ -40,7 +40,7 @@
             webview-map
             firefox-webview-map
             webview-onload
-            ;; ;; class constructors
+            ;; class constructors
             make-webview-buffer
             make-webcontent-buffer
             <webview-buffer>
@@ -53,7 +53,6 @@
             buffer-sync
             buffer-uri
             buffer-load-uri
-            buffer-widget
             ))
 
 (gi-import "WebKit2")
@@ -61,18 +60,15 @@
 
 (import-objects "Gtk" '("Widget"))
 
-;;; <webview-buffer> extends <buffer> class
+;;; <webview-buffer> inherits <text-buffer> and <nomad-web-view>
 (define-class <webview-buffer>
   (<text-buffer> <nomad-web-view>)
   (content #:accessor buffer-content #:init-keyword #:content))
 
-(define-method (buffer-widget (buffer <webview-buffer>))
-  buffer)
-
 (define-method (buffer-pointer (buffer <webview-buffer>))
   (slot-ref buffer 'g-inst))
 
-(define-method (buffer-widget (buffer <webview-buffer>))
+(define-method-public (buffer-widget (buffer <webview-buffer>))
   buffer)
 
 (define-method (buffer-reload)

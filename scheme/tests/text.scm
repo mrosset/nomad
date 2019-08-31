@@ -17,12 +17,12 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test text)
+  #:use-module (emacsy emacsy)
   #:use-module (g-golf)
-  #:use-module (nomad app)
-  #:use-module (nomad util)
   #:use-module (nomad text)
+  #:use-module (nomad util)
   #:use-module (srfi srfi-64)
-  #:use-module (system foreign))
+  )
 
 (gi-import "GtkSource")
 (import-functions "Gtk" '("init_check"))
@@ -30,4 +30,9 @@
 (let ((gtk? (gtk-init-check #f #f)))
   (test-assert "GTK init" gtk?))
 
-(test-assert "source is source view?" (equal? (class-of (make <gtk-source-view>)) <gtk-source-view>))
+(test-group "text"
+            (let ((buffer (switch-to-buffer "*text-buffer*")))
+              (test-equal <text-buffer> (class-of buffer))
+              (text-buffer->nomad-text-buffer! buffer)
+              (test-equal <nomad-text-buffer> (class-of buffer))
+              (test-equal <gtk-source-view> (class-of (buffer-widget buffer)))))
