@@ -28,15 +28,6 @@
 (gi-import "Nomad")
 (import-objects "Gtk" '("Widget" "Notebook" "Label"))
 
-;; (define-public (notebook-contains buffer)
-;;   "Returns true if the current frames notebook contains BUFFER"
-;;   (let* ((frame (nomad-app-get-frame))
-;;         (notebook (nomad-app-frame-get-notebook frame))
-;;         (page (gtk-notebook-page-num notebook (slot-ref buffer 'widget))))
-;;     (if (>= page 0)
-;;         #t
-;;         #f)))
-
 (define-public (current-notebook)
   "Returns the current notebook"
   (let* ((frame (nomad-app-get-frame))
@@ -69,3 +60,11 @@
 (define (make-frame-socket url socket)
   "Write `make-frame' comand with arg URL to a SOCKET."
   (write-socket (format #f "~S" `(make-frame ,url)) socket))
+
+;; (define-public (notebook-contains notebook buffer)
+;;   "Returns true if the current frames notebook contains BUFFER"
+;;   (let* ((page (gtk-notebook-page-num notebook
+;;                                       (slot-ref buffer 'widget))))
+;;     (if (>= page 0)
+;;         #t
+;;         #f)))
