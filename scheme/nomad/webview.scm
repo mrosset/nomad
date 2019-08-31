@@ -53,6 +53,7 @@
             buffer-sync
             buffer-uri
             buffer-load-uri
+            buffer-widget
             ))
 
 (gi-import "WebKit2")
@@ -64,6 +65,9 @@
 (define-class <webview-buffer>
   (<text-buffer> <nomad-web-view>)
   (content #:accessor buffer-content #:init-keyword #:content))
+
+(define-method (buffer-widget (buffer <webview-buffer>))
+  buffer)
 
 (define-method (buffer-pointer (buffer <webview-buffer>))
   (slot-ref buffer 'g-inst))

@@ -26,7 +26,8 @@
   #:use-module (nomad widget)
   #:use-module (oop goops)
   #:use-module (system foreign)
-  #:export (<nomad-text-buffer>)
+  #:export (<nomad-text-buffer>
+            buffer-widget)
   )
 
 (load-extension (dynamic-path) "init_guile_nomad_text")
@@ -38,6 +39,9 @@
 
 (define-class <nomad-text-buffer> (<widget-buffer>))
 
+(define-method (buffer-widget (buffer <nomad-text-buffer>))
+  (slot-ref buffer 'widget))
+
 (define* (make-source-view #:optional theme language)
   (let ((view (make <gtk-source-view>))
         (t (or theme default-source-theme))
@@ -46,7 +50,7 @@
                                       l)
     view))
 
-(define-public (text-buffer->widget-buffer! buffer)
+(define-public (text-buffer->nomad-text-buffer! buffer)
   "Converts a <text-buffer> class to a pointer-buffer."
   (change-class buffer <nomad-text-buffer>)
   (info "converting ~a" buffer)
