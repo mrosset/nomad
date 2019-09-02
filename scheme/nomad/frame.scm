@@ -62,6 +62,11 @@
          (readline (nomad-app-frame-get-readline frame)))
     (gtk-widget-grab-focus readline)))
 
+(define-public (number-tabs)
+  (let* ((frame (nomad-app-get-frame))
+         (notebook (nomad-app-frame-get-notebook frame)))
+    (gtk-notebook-get-n-pages notebook)))
+
 (define (make-frame-socket url socket)
   "Write `make-frame' comand with arg URL to a SOCKET."
   (write-socket (format #f "~S" `(make-frame ,url)) socket))
