@@ -81,16 +81,6 @@ nomad_app_source_view_new ()
   return (GtkWidget *)scm_to_pointer (scm_nomad_source_new ());
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_set_source_text, "set-source-text!", 2, 0, 0,
-                   (SCM pointer, SCM text),
-                   "Sets source view POINTER text to TEXT")
-{
-  GtkWidget *source = scroll_get_source (scm_to_pointer (pointer));
-  GtkTextBuffer *buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source));
-  gtk_text_buffer_set_text (buf, scm_to_locale_string (text), -1);
-  return SCM_UNDEFINED;
-}
-
 SCM_DEFINE_PUBLIC (scm_nomad_set_point, "set-source-point!", 2, 0, 0,
                    (SCM pointer, SCM point),
                    "Sets source view POINTER cursor point to POINT")

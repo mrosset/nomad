@@ -18,22 +18,25 @@
 
 (define-module (nomad buffer)
   #:use-module (emacsy emacsy)
+  #:use-module (g-golf)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
   #:use-module (nomad eval)
   #:use-module (nomad frame)
   #:use-module (nomad minibuffer)
-  #:use-module (nomad widget)
   #:use-module (nomad repl)
   #:use-module (nomad text)
   #:use-module (nomad views)
   #:use-module (nomad webkit)
   #:use-module (nomad webview)
+  #:use-module (nomad widget)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
             buffers-contain?
             buffers->uri))
+
+(gi-import "Nomad")
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
@@ -107,7 +110,7 @@
   (emacsy-tick)
   (when emacsy-display-minibuffer?
     (grab-readline))
-  (set-source-text! (get-echo-area)
+  (set-source-text! (nomad-app-frame-get-readline (current-frame))
                     (emacsy-message-or-echo-area))
   (set-source-point! (get-echo-area)
                      (buffer:point minibuffer)))
@@ -120,7 +123,7 @@ notebook. Also updates buffer contents and buffer points"
                 (text-buffer->nomad-text-buffer! buffer)
                 (notebook-insert buffer 0))
               (when (eq? <nomad-text-buffer> (class-of buffer))
-                (set-source-text! (buffer-pointer buffer)
+                (set-source-text! (buffer-widget buffer)
                                   (buffer:buffer-string buffer))
                 (set-source-point! (buffer-pointer buffer)
                                    (buffer:point buffer))))

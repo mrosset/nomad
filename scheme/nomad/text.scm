@@ -34,6 +34,8 @@
 
 (gi-import "GtkSource")
 
+(import-objects "Gtk" '("TextBuffer" "TextView"))
+
 (define default-source-language "scheme")
 (define default-source-theme "classic")
 
@@ -49,6 +51,11 @@
     (nomad-app-source-view-set-buffer view t
                                       l)
     view))
+
+(define-public (set-source-text! view text)
+  "Sets source VIEW text buffer to TEXT"
+  (let ((buf (gtk-text-view-get-buffer view)))
+    (gtk-text-buffer-set-text buf text -1)))
 
 (define-public (text-buffer->nomad-text-buffer! buffer)
   "Converts a <text-buffer> class to a pointer-buffer."

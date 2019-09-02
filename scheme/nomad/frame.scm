@@ -30,13 +30,13 @@
 
 (define-public (current-notebook)
   "Returns the current notebook"
-  (let* ((frame (nomad-app-get-frame))
+  (let* ((frame (current-frame))
         (notebook (nomad-app-frame-get-notebook frame)))
     notebook))
 
-;; (define-public (switch-to-widget buffer)
-;;   "Switches to buffer's widget"
-;;   #t)
+(define-public (current-frame)
+  "Returns the current frame"
+    (nomad-app-get-frame))
 
 (define-interactive (toggle-tabs)
   "Toggles the current notebook tabs on or off."
