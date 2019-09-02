@@ -57,6 +57,11 @@
                               position)
     (gtk-widget-show-all widget)))
 
+(define-public (grab-readline)
+  (let* ((frame (nomad-app-get-frame))
+         (readline (nomad-app-frame-get-readline frame)))
+    (gtk-widget-grab-focus readline)))
+
 (define (make-frame-socket url socket)
   "Write `make-frame' comand with arg URL to a SOCKET."
   (write-socket (format #f "~S" `(make-frame ,url)) socket))

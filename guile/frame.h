@@ -38,9 +38,16 @@ NomadAppFrame *nomad_app_frame_new (NomadApp *app);
  *
  * Returns: (transfer full):
  */
-GtkNotebook *nomad_app_frame_get_notebook (NomadAppFrame *win);
 
-GtkWidget *nomad_app_frame_get_minipopup (NomadAppFrame *win);
+GtkNotebook *nomad_app_frame_get_notebook (NomadAppFrame *self);
+
+GtkWidget *nomad_app_frame_get_minipopup (NomadAppFrame *self);
+
+/**
+ * nomad_app_frame_get_readline:
+ *
+ * Returns: (transfer full):
+ */
 
 GtkWidget *nomad_app_frame_get_readline (NomadAppFrame *self);
 

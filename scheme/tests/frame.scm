@@ -27,13 +27,16 @@
 (import-objects "Gtk" '("Notebook"))
 
 (gi-import "Nomad")
+(gi-import "GtkSource")
 
 (let ((gtk? (gtk-init-check #f #f)))
   (test-assert gtk?))
 
 (test-group "frame"
             (let* ((frame (make <nomad-app-frame>))
+                   (readline (nomad-app-frame-get-readline frame))
                    (notebook (nomad-app-frame-get-notebook frame)))
+              (test-equal <gtk-source-view> (class-of readline))
               (test-equal <gtk-notebook> (class-of notebook))
               (test-equal <nomad-app-frame> (class-of frame))
               ))
