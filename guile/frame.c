@@ -402,48 +402,6 @@ tab_label_new (int id)
   return gtk_label_new (scm_to_locale_string (label));
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_grab_notebook, "grab-notebook", 0, 0, 0, (),
-                   "Grabs the current notebook control")
-{
-  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkWidget *notebook = win->priv->notebook;
-  gint page = gtk_notebook_get_current_page (GTK_NOTEBOOK (notebook));
-
-  if (page >= 0)
-    {
-      GList *children;
-      GtkWidget *widget
-          = gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook), page);
-      children = gtk_container_get_children (GTK_CONTAINER (widget));
-
-      // if page children grab its first child
-      if (g_list_length (children) > 0)
-        {
-          gtk_widget_grab_focus (g_list_nth_data (children, 0));
-        }
-      // grab the notebook widget
-      else
-        {
-          gtk_widget_grab_focus (widget);
-        }
-    }
-  else
-    {
-      gtk_widget_grab_focus (win->priv->modeline);
-    }
-
-  return SCM_UNSPECIFIED;
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_grab_read_line, "grab-readline", 0, 0, 0, (),
-                   "Sets focus to the echo area")
-{
-  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  gtk_widget_grab_focus (win->priv->read_line);
-
-  return SCM_UNSPECIFIED;
-}
-
 SCM_DEFINE_PUBLIC (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
                    (SCM pointer), "Sets the current tab to the given POINTER")
 {
