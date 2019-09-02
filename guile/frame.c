@@ -432,14 +432,6 @@ SCM_DEFINE_PUBLIC (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_number_tabs, "number-tabs", 0, 0, 0, (),
-                   "Return the total number of tabs")
-{
-  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *notebook = GTK_NOTEBOOK (nomad_app_frame_get_notebook (win));
-  return scm_from_int (gtk_notebook_get_n_pages (notebook));
-}
-
 SCM_DEFINE_PUBLIC (scm_nomad_frame_get_echo_area, "get-echo-area", 0, 0, 0, (),
                    "Returns a SCM pointer for the echo area")
 {
