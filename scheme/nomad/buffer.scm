@@ -116,7 +116,7 @@
                      (buffer:point minibuffer)))
 
 (define-public (redisplay-buffers)
-  "Converts text-buffers to <pointer-buffer> and inserts them into
+  "Converts text-buffers to <nomad-text-buffer> and inserts them into
 notebook. Also updates buffer contents and buffer points"
   (for-each (lambda (buffer)
               (when (eq? <text-buffer> (class-of buffer))
