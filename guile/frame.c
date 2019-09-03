@@ -439,13 +439,6 @@ SCM_DEFINE_PUBLIC (scm_nomad_frame_get_echo_area, "get-echo-area", 0, 0, 0, (),
   return scm_from_pointer (nomad_app_frame_get_readline (win), NULL);
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_frame_new, "frame-new", 0, 0, 0, (),
-                   "Creates a new frame. *warn* this should not be used")
-{
-  NomadAppFrame *win = nomad_app_frame_new (nomad_app_get_default ());
-  return scm_from_pointer (win, NULL);
-}
-
 void
 nomad_frame_register_function (void *data)
 {
