@@ -112,7 +112,7 @@
     (grab-readline))
   (set-source-text! (nomad-app-frame-get-readline (current-frame))
                     (emacsy-message-or-echo-area))
-  (set-source-point! (get-echo-area)
+  (set-source-point! (slot-ref (current-echo-area) 'g-inst)
                      (buffer:point minibuffer)))
 
 (define-public (redisplay-buffers)

@@ -418,13 +418,6 @@ SCM_DEFINE_PUBLIC (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
   return SCM_UNSPECIFIED;
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_frame_get_echo_area, "get-echo-area", 0, 0, 0, (),
-                   "Returns a SCM pointer for the echo area")
-{
-  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  return scm_from_pointer (nomad_app_frame_get_readline (win), NULL);
-}
-
 void
 nomad_frame_register_function (void *data)
 {

@@ -36,7 +36,11 @@
 
 (define-public (current-frame)
   "Returns the current frame"
-    (nomad-app-get-frame))
+  (nomad-app-get-frame))
+
+(define-public (current-echo-area)
+  "Returns the echo area for the current frame"
+  (nomad-app-frame-get-readline (current-frame)))
 
 (define-interactive (toggle-tabs)
   "Toggles the current notebook tabs on or off."
