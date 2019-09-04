@@ -385,11 +385,3 @@ tab_label_new (int id)
   SCM label = scm_number_to_string (scm_from_int (id), scm_from_int (10));
   return gtk_label_new (scm_to_locale_string (label));
 }
-
-void
-nomad_frame_register_function (void *data)
-{
-#ifndef SCM_MAGIC_SNARFER
-#include "frame.x"
-#endif
-}

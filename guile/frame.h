@@ -55,6 +55,4 @@ void nomad_app_frame_show_minipopup (NomadAppFrame *self);
 
 void nomad_app_frame_hide_minipopup (NomadAppFrame *self);
 
-void nomad_frame_register_function (void *data);
-
 #endif /* __NOMADAPPWIN_H */
