@@ -23,8 +23,6 @@
   #:use-module (g-golf)
   #:export (make-frame-socket))
 
-(load-extension (dynamic-path) "init_guile_nomad_frame")
-
 (gi-import "Nomad")
 (import-objects "Gtk" '("Widget" "Notebook" "Label"))
 

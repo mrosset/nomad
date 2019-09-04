@@ -70,12 +70,6 @@ init_guile_nomad_app ()
 }
 
 void
-init_guile_nomad_frame ()
-{
-  scm_c_define_module ("nomad frame", nomad_frame_register_function, NULL);
-}
-
-void
 init_guile_nomad_util ()
 {
   scm_c_define_module ("nomad util", nomad_util_register_function, NULL);
