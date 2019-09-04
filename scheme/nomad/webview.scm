@@ -103,7 +103,7 @@
 (define (webview-enter-hook)
   (info "Setting pointer to ~a"
         (buffer-pointer))
-  (switch-to-pointer (buffer-pointer (current-buffer)))
+  (switch-to-buffer-widget (current-buffer))
   (gtk-widget-grab-focus (current-buffer)))
 
 (define-method (set-buffer-hooks!)
