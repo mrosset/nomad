@@ -75,6 +75,26 @@
   "Write `make-frame' comand with arg URL to a SOCKET."
   (write-socket (format #f "~S" `(make-frame ,url)) socket))
 
+(define-public (switch-to-buffer-widget buffer)
+  "Switched to the BUFFER widget found in the current notebook. This should
+only be used to sync switch-to-buffer with it's GTK widget"
+  (let* ((notebook (current-notebook))
+         (widget (buffer-widget buffer))
+         (page (gtk-notebook-page-num notebook widget)))
+    ;; If the notebook does not contain the widget, then add it
+    (when (< page 0)
+      (set! page
+            (gtk-notebook-append-page notebook
+                                      widget
+                                      (make <gtk-label> #:label "unknown"))))
+    (when (eq? <webview-buffer> (class-of buffer))
+      (gtk-notebook-set-tab-label-text notebook widget page)
+      )
+    ;; Switch to the widget's page
+    (gtk-notebook-set-current-page notebook page)
+    (gtk-widget-show-all widget)
+    #t
+    ))
 ;; (define-public (notebook-contains notebook buffer)
 ;;   "Returns true if the current frames notebook contains BUFFER"
 ;;   (let* ((page (gtk-notebook-page-num notebook
