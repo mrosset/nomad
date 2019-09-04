@@ -386,37 +386,6 @@ tab_label_new (int id)
   return gtk_label_new (scm_to_locale_string (label));
 }
 
-// scheme
-SCM_DEFINE_PUBLIC (scm_switch_to_pointer_x, "switch-to-pointer", 1, 0, 0,
-                   (SCM pointer), "Sets the current tab to the given POINTER")
-{
-  gint page;
-  GtkWidget *widget;
-  NomadAppFrame *win = NOMAD_APP_FRAME (nomad_app_get_frame ());
-  GtkNotebook *notebook = nomad_app_frame_get_notebook (win);
-
-  if (SCM_POINTER_P (pointer))
-    {
-      widget = scm_to_pointer (pointer);
-      page = gtk_notebook_page_num (notebook, widget);
-      if (page < 0)
-        {
-          page = gtk_notebook_append_page (
-              notebook, widget,
-              tab_label_new (gtk_notebook_get_n_pages (notebook)));
-        }
-      gtk_widget_show_all (widget);
-      gtk_notebook_set_current_page (notebook, page);
-      if (page != gtk_notebook_get_current_page (notebook))
-        {
-          g_warning ("Paged not switched to %d", page);
-        }
-    }
-  else
-    g_warning ("warning: not given a pointer\n");
-  return SCM_UNSPECIFIED;
-}
-
 void
 nomad_frame_register_function (void *data)
 {

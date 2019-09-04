@@ -26,8 +26,7 @@
   #:use-module (nomad widget)
   #:use-module (oop goops)
   #:use-module (system foreign)
-  #:export (<nomad-text-buffer>
-            buffer-widget)
+  #:export (<nomad-text-buffer>)
   )
 
 (load-extension (dynamic-path) "init_guile_nomad_text")
@@ -41,15 +40,11 @@
 
 (define-class <nomad-text-buffer> (<widget-buffer>))
 
-(define-method (buffer-widget (buffer <nomad-text-buffer>))
-  (slot-ref buffer 'widget))
-
 (define* (make-source-view #:optional theme language)
   (let ((view (make <gtk-source-view>))
         (t (or theme default-source-theme))
         (l (or language default-source-language)))
-    (nomad-app-source-view-set-buffer view t
-                                      l)
+    (nomad-app-source-view-set-buffer view t l)
     view))
 
 (define-public (set-source-text! view text)

@@ -54,6 +54,6 @@
 (define-public (widget-enter-hook)
   (info "Setting pointer to ~a"
         (buffer-pointer))
-  (switch-to-pointer (buffer-pointer (current-buffer)))
+  (switch-to-buffer-widget (slot-ref (current-buffer) 'widget))
   (gtk-widget-grab-focus (slot-ref (current-buffer)
                                     'widget)))

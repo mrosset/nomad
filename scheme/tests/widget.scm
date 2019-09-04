@@ -33,7 +33,7 @@
 
 (test-group "widget"
             (let ((buffer (make <widget-buffer>)))
-              (set! (buffer-widget buffer) (make <gtk-label>))
+              (slot-set! buffer 'widget (make <gtk-label>))
               (test-assert (not (null-pointer? (buffer-pointer buffer))))
               (test-equal <gtk-label> (class-of (buffer-widget buffer)))
               ))
