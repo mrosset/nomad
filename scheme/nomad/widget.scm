@@ -35,8 +35,11 @@
 
 (define-class <widget-buffer>
   (<text-buffer>)
-  (widget #:accessor buffer-widget #:init-keyword #:widget)
+  (widget #:init-keyword #:widget)
   (pointer #:accessor !pointer #:init-keyword #:pointer #:init-value %null-pointer))
+
+(define-method (buffer-widget (buffer <widget-buffer>))
+  (slot-ref buffer 'widget))
 
 (define-method (buffer-pointer (buffer <widget-buffer>))
   (let* ((widget (slot-ref buffer 'widget))

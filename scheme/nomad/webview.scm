@@ -43,7 +43,6 @@
             ;; class constructors
             make-webview-buffer
             make-webcontent-buffer
-            <webview-buffer>
             ;;methods
             set-buffer-hooks!
             buffer-back
@@ -68,8 +67,10 @@
 (define-method (buffer-pointer (buffer <webview-buffer>))
   (slot-ref buffer 'g-inst))
 
-(define-method-public (buffer-widget (buffer <webview-buffer>))
+(define-method (buffer-widget (buffer <webview-buffer>))
   buffer)
+
+(export <webview-buffer> buffer-widget)
 
 (define-method (buffer-reload)
   (webkit-web-view-reload (current-buffer)))
