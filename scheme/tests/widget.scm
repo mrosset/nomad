@@ -19,7 +19,7 @@
 (define-module (tests webview)
   #:use-module (oop goops)
   #:use-module (nomad widget)
-  #:use-module ((nomad webview) #:select (<webview-bufer>))
+  #:use-module ((nomad webview) #:select (<webview-buffer>))
   #:use-module (g-golf)
   #:use-module (nomad util)
   #:use-module (srfi srfi-64)
