@@ -58,7 +58,6 @@
             (let ((buffer (make-webview-buffer "gnu.org")))
               (test-equal "class of <web-kit-webview>" <webview-buffer>
                           (class-of buffer))
-              (test-equal <webview-buffer> (class-of (buffer-widget buffer)))
               (test-equal "buffer-name"
                 "gnu.org"
                 (buffer-name buffer))

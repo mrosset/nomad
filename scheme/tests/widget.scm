@@ -19,6 +19,7 @@
 (define-module (tests webview)
   #:use-module (oop goops)
   #:use-module (nomad widget)
+  #:use-module ((nomad webview) #:select (<webview-bufer>))
   #:use-module (g-golf)
   #:use-module (nomad util)
   #:use-module (srfi srfi-64)
@@ -32,8 +33,10 @@
   (test-assert "Gtk init?" gtk?))
 
 (test-group "widget"
-            (let ((buffer (make <widget-buffer>)))
+            (let ((buffer (make <widget-buffer>))
+                  (view (make <webview-buffer>)))
               (slot-set! buffer 'widget (make <gtk-label>))
               (test-assert (not (null-pointer? (buffer-pointer buffer))))
               (test-equal <gtk-label> (class-of (buffer-widget buffer)))
+              (test-equal <webview-buffer> (class-of (buffer-widget view)))
               ))

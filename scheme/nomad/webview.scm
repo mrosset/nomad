@@ -67,9 +67,6 @@
 (define-method (buffer-pointer (buffer <webview-buffer>))
   (slot-ref buffer 'g-inst))
 
-(define-method (buffer-widget (buffer <webview-buffer>))
-  buffer)
-
 (export <webview-buffer> buffer-widget)
 
 (define-method (buffer-reload)

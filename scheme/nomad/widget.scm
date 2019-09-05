@@ -24,6 +24,7 @@
   #:use-module (g-golf)
   #:use-module (nomad util)
   #:use-module (system foreign)
+  #:use-module ((nomad webview) #:select (<webview-buffer>))
   #:export (<widget-buffer>
             buffer-widget
             buffer-pointer)
@@ -40,6 +41,9 @@
 
 (define-method (buffer-widget (buffer <widget-buffer>))
   (slot-ref buffer 'widget))
+
+(define-method (buffer-widget (buffer <webview-buffer>))
+  buffer)
 
 (define-method (buffer-pointer (buffer <widget-buffer>))
   (let* ((widget (slot-ref buffer 'widget))
