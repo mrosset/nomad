@@ -52,8 +52,8 @@
   (gtk-widget-destroy (slot-ref (current-buffer) 'widget)))
 
 (define-public (widget-enter-hook)
-  (info "Setting pointer to ~a"
-        (buffer-pointer))
+  (info "Sertting widget to ~a"
+        (slot-ref (current-buffer) 'widget))
   (switch-to-buffer-widget (slot-ref (current-buffer) 'widget))
   (gtk-widget-grab-focus (slot-ref (current-buffer)
                                     'widget)))

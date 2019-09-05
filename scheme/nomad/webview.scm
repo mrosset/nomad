@@ -101,8 +101,8 @@
   (gtk-widget-destroy (current-buffer)))
 
 (define (webview-enter-hook)
-  (info "Setting pointer to ~a"
-        (buffer-pointer))
+  (info "Setting widget to ~a"
+        (current-buffer))
   (switch-to-buffer-widget (current-buffer))
   (gtk-widget-grab-focus (current-buffer)))
 
