@@ -35,8 +35,13 @@
 (test-group "frame"
             (let* ((frame (make <nomad-app-frame>))
                    (readline (nomad-app-frame-get-readline frame))
-                   (notebook (nomad-app-frame-get-notebook frame)))
+                   (notebook (nomad-app-frame-get-notebook frame))
+                   (view (make <gtk-source-view>))
+                   (page (gtk-notebook-append-page notebook view #f)))
+
               (test-equal <gtk-source-view> (class-of readline))
               (test-equal <gtk-notebook> (class-of notebook))
               (test-equal <nomad-app-frame> (class-of frame))
+              (test-equal 0 page)
+              (test-equal <gtk-source-view> (class-of (current-notebook-widget notebook)) )
               ))
