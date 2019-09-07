@@ -326,14 +326,6 @@ SCM_DEFINE_PUBLIC (scm_nomad_dbus_test, "dbus-test", 0, 0, 0, (),
   return SCM_UNDEFINED;
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_application_id, "application-id", 0, 0, 0, (),
-                   "Return string id of nomad application instance")
-{
-  NomadApp *app = nomad_app_get_default ();
-  return scm_from_locale_string (
-      g_application_get_application_id (G_APPLICATION (app)));
-}
-
 void
 nomad_app_register_function (void *data)
 {

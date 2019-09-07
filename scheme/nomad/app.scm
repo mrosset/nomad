@@ -44,6 +44,10 @@
   "Cleans up after guile and runs user shutdown hooks"
   (run-hook shutdown-hook))
 
+(define-public (application-id)
+  (let ((app (g-application-get-default)))
+    (g-application-get-application-id app)))
+
 (define (app-init)
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
