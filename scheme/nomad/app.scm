@@ -75,10 +75,4 @@ controls are accessible to scheme"
                             50)
   ;; Create one buffer
   (make-buffer default-home-page)
-
-  ;; Kill scratch and messages buffers
-  ;; (with-buffer scratch (kill-buffer))
-  ;; (text-buffer->pointer-buffer scratch)
-  ;; (text-buffer->pointer-buffer messages)
-  ;; (with-buffer messages (kill-buffer))
   (run-hook startup-hook))
