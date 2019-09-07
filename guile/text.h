@@ -30,7 +30,4 @@ void nomad_app_source_view_set_buffer (GtkTextView *view, const char *theme,
                                        const char *lang);
 
 void nomad_text_register_function (void *data);
-SCM scm_nomad_source_new ();
-GtkWidget *nomad_app_source_view_new ();
-
 #endif

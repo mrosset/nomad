@@ -63,24 +63,6 @@ scroll_get_source (GtkWidget *widget)
   return g_list_nth_data (children, 0);
 }
 
-SCM_DEFINE_PUBLIC (scm_nomad_source_new, "source-new", 0, 0, 0, (),
-                   "Returns a newly initialized gtksource view SCM pointer")
-{
-  GtkWidget *scroll = gtk_scrolled_window_new (NULL, NULL);
-  GtkWidget *source = gtk_source_view_new_with_buffer (
-      nomad_app_source_buffer_new ("classic", "scheme"));
-
-  gtk_container_add (GTK_CONTAINER (scroll), source);
-  gtk_widget_grab_focus (source);
-  return scm_from_pointer (scroll, NULL);
-}
-
-GtkWidget *
-nomad_app_source_view_new ()
-{
-  return (GtkWidget *)scm_to_pointer (scm_nomad_source_new ());
-}
-
 SCM_DEFINE_PUBLIC (scm_nomad_set_point, "set-source-point!", 2, 0, 0,
                    (SCM pointer, SCM point),
                    "Sets source view POINTER cursor point to POINT")
