@@ -20,8 +20,3 @@
   #:use-module (nomad webkit-settings))
 
 (load-extension (dynamic-path) "init_guile_nomad_webkit")
-
-(define webkit-new* webkit-new)
-(define* (webkit-new buffer #:optional #:key (settings (webkit-settings-new)))
-  (webkit-new* buffer settings))
-(export webkit-new)

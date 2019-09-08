@@ -129,63 +129,6 @@ nomad_web_view_switch_to_buffer (NomadWebView *view)
               view->priv->buffer);
 }
 
-SCM_DEFINE (
-    scm_nomad_webkit_new, "webkit-new", 2, 0, 0, (SCM buffer, SCM settings),
-    "Returns a newly initialized webkit view with its parent buffer as BUFFER")
-{
-  GtkWidget *view = nomad_web_view_new_old (scm_to_pointer (settings));
-  NomadWebViewPrivate *priv
-      = nomad_web_view_get_instance_private (NOMAD_WEB_VIEW (view));
-
-  priv->buffer = buffer;
-
-  return scm_from_pointer (view, NULL);
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_reload, "webkit-reload", 1, 0, 0,
-                   (SCM pointer), "Reloads the webkit POINTER uri")
-{
-
-  GtkWidget *view = scm_to_pointer (pointer);
-  webkit_web_view_reload (WEBKIT_WEB_VIEW (view));
-  return SCM_UNDEFINED;
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_uri, "webkit-uri", 1, 0, 0, (SCM pointer),
-                   "Returns the current uri for a webkit view pointer. If "
-                   "webview has not uri it returns #f")
-{
-  GtkWidget *view = (GtkWidget *)scm_to_pointer (pointer);
-  const char *uri = webkit_web_view_get_uri (WEBKIT_WEB_VIEW (view));
-  if (uri)
-    {
-      return scm_from_locale_string (uri);
-    }
-  return scm_from_utf8_string ("NULL");
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_load_uri, "webkit-load-uri", 2, 0, 0,
-                   (SCM pointer, SCM uri),
-                   "Requests webkit VIEW pointer to load URI")
-{
-  GtkWidget *view = (GtkWidget *)scm_to_pointer (pointer);
-  char *c_uri = scm_to_locale_string (uri);
-  webkit_web_view_load_uri (WEBKIT_WEB_VIEW (view), c_uri);
-  g_free (c_uri);
-  return SCM_UNSPECIFIED;
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_load_html, "webkit-load-html", 2, 0, 0,
-                   (SCM pointer, SCM html),
-                   "Requests webkit VIEW pointer to load HTML")
-{
-  GtkWidget *view = (GtkWidget *)scm_to_pointer (pointer);
-  char *c_content = scm_to_locale_string (html);
-  webkit_web_view_load_html (WEBKIT_WEB_VIEW (view), c_content, "nomad://");
-  g_free (c_content);
-  return SCM_UNSPECIFIED;
-}
-
 gboolean
 scroll_up_invoke (void *data)
 {
@@ -222,28 +165,6 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_scroll_down, "webkit-scroll-down", 1, 0, 0,
   return SCM_UNDEFINED;
 }
 
-// FIXME: invoke on main thread?
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_foward, "webkit-forward", 1, 0, 0,
-                   (SCM pointer),
-                   "Request WebKitView POINTER to go forward in history. ")
-
-{
-  WebKitWebView *view = scm_to_pointer (pointer);
-  webkit_web_view_go_forward (view);
-  return SCM_BOOL_T;
-}
-
-// FIXME: invoke on main thread?
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_back, "webkit-back", 1, 0, 0,
-                   (SCM pointer),
-                   "Request WebKitView POINTER to go back in history. ")
-
-{
-  WebKitWebView *view = scm_to_pointer (pointer);
-  webkit_web_view_go_back (view);
-  return SCM_BOOL_T;
-}
-
 void
 run_hints_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
@@ -267,31 +188,6 @@ SCM_DEFINE_PUBLIC (scm_nomad_webkit_hints, "webkit-hints", 1, 0, 0,
   webkit_web_view_run_javascript_from_gresource (
       view, "/org/gnu/nomad/hints.js", NULL, run_hints_cb, view);
 
-  return SCM_UNDEFINED;
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_find, "webkit-find", 2, 0, 0,
-                   (SCM pointer, SCM text),
-                   "Finds TEXT string in  webview POINTER page")
-{
-  WebKitWebView *view = (WebKitWebView *)scm_to_pointer (pointer);
-  WebKitFindController *controller
-      = webkit_web_view_get_find_controller (view);
-
-  webkit_find_controller_search (controller, scm_to_locale_string (text),
-                                 WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE, -1);
-  return SCM_UNDEFINED;
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_webkit_find_finish, "webkit-find-finish", 1, 0, 0,
-                   (SCM pointer, SCM text),
-                   "Finishes the current find for webview POINTER")
-{
-  WebKitWebView *view = (WebKitWebView *)scm_to_pointer (pointer);
-  WebKitFindController *controller
-      = webkit_web_view_get_find_controller (view);
-
-  webkit_find_controller_search_finish (controller);
   return SCM_UNDEFINED;
 }
 
