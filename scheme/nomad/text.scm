@@ -32,8 +32,9 @@
 (load-extension (dynamic-path) "init_guile_nomad_text")
 
 (gi-import "GtkSource")
+(gi-import "GLib")
 
-(import-objects "Gtk" '("TextBuffer" "TextView"))
+(import-objects "Gtk" '("TextBuffer" "TextView" "TextIter" "Container"))
 
 (define default-source-language "scheme")
 (define default-source-theme "classic")
@@ -47,10 +48,29 @@
     (nomad-app-source-view-set-buffer view t l)
     view))
 
+(define-public (get-source-widget widget)
+  "Returns the source view for a WIDGET. The widget is either a container or a
+source view"
+  (if (eq? <gtk-text-view> (class-of widget))
+      widget
+      (let ((children (gtk-container-get-children widget)))
+        (g-list-nth-data children 0))))
+
 (define-public (set-source-text! view text)
   "Sets source VIEW text buffer to TEXT"
   (let ((buf (gtk-text-view-get-buffer view)))
     (gtk-text-buffer-set-text buf text -1)))
+
+(define-public (set-source-point! view pos)
+  "Sets source VIEW cursor point to POS"
+  (let ((buf (gtk-text-view-get-buffer view)))
+    (nomad-app-frame-text-buffer-set-point buf
+                                           pos)
+    ;; (gtk-text-buffer-get-start-iter buf iter)
+    ;; (gtk-text-iter-forward-char iter
+    ;;                             (- pos 1))
+    ;; (gtk-text-buffer-place-cursor buf iter)
+    ))
 
 (define-public (text-buffer->nomad-text-buffer! buffer)
   "Converts a <text-buffer> class to a pointer-buffer."

@@ -372,6 +372,15 @@ nomad_app_frame_get_webview (NomadAppFrame *self)
   return WEBKIT_WEB_VIEW (gtk_notebook_get_nth_page (notebook, page));
 }
 
+void
+nomad_app_frame_text_buffer_set_point (GtkTextBuffer *buffer, gint posistion)
+{
+  GtkTextIter iter;
+  gtk_text_buffer_get_start_iter (buffer, &iter);
+  gtk_text_iter_forward_chars (&iter, posistion - 1);
+  gtk_text_buffer_place_cursor (buffer, &iter);
+}
+
 gboolean
 idle_destroy (gpointer data)
 {

@@ -21,10 +21,9 @@
 #ifndef __NOMADAPPFRAME_H
 #define __NOMADAPPFRAME_H
 
+#include "app.h"
 #include <gtk/gtk.h>
 #include <webkit2/webkit2.h>
-
-#include "app.h"
 
 #define NOMAD_APP_FRAME_TYPE (nomad_app_frame_get_type ())
 
@@ -50,6 +49,9 @@ GtkWidget *nomad_app_frame_get_minipopup (NomadAppFrame *self);
  */
 
 GtkWidget *nomad_app_frame_get_readline (NomadAppFrame *self);
+
+void nomad_app_frame_text_buffer_set_point (GtkTextBuffer *buffer,
+                                            gint posistion);
 
 void nomad_app_frame_show_minipopup (NomadAppFrame *self);
 

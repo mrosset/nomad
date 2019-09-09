@@ -50,33 +50,33 @@ nomad_app_source_view_set_buffer (GtkTextView *view, const char *theme,
       view, GTK_TEXT_BUFFER (nomad_app_source_buffer_new (theme, lang)));
 }
 
-static GtkWidget *
-scroll_get_source (GtkWidget *widget)
-{
-  GList *children;
+/* static GtkWidget *
+ * scroll_get_source (GtkWidget *widget)
+ * {
+ *   GList *children;
+ *
+ *   if (GTK_IS_TEXT_VIEW (widget))
+ *     {
+ *       return widget;
+ *     }
+ *   children = gtk_container_get_children (GTK_CONTAINER (widget));
+ *   return g_list_nth_data (children, 0);
+ * } */
 
-  if (GTK_IS_TEXT_VIEW (widget))
-    {
-      return widget;
-    }
-  children = gtk_container_get_children (GTK_CONTAINER (widget));
-  return g_list_nth_data (children, 0);
-}
-
-SCM_DEFINE_PUBLIC (scm_nomad_set_point, "set-source-point!", 2, 0, 0,
-                   (SCM pointer, SCM point),
-                   "Sets source view POINTER cursor point to POINT")
-{
-  GtkWidget *source = scroll_get_source (scm_to_pointer (pointer));
-  GtkTextBuffer *buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source));
-  GtkTextIter iter;
-
-  gtk_text_buffer_get_start_iter (buf, &iter);
-  gtk_text_iter_forward_chars (&iter, scm_to_int (point) - 1);
-  gtk_text_buffer_place_cursor (GTK_TEXT_BUFFER (buf), &iter);
-
-  return SCM_UNDEFINED;
-}
+/* SCM_DEFINE_PUBLIC (scm_nomad_set_point, "set-source-point!", 2, 0, 0,
+ *                    (SCM pointer, SCM point),
+ *                    "Sets source view POINTER cursor point to POINT")
+ * {
+ *   GtkWidget *source = scroll_get_source (scm_to_pointer (pointer));
+ *   GtkTextBuffer *buf = gtk_text_view_get_buffer (GTK_TEXT_VIEW (source));
+ *   GtkTextIter iter;
+ *
+ *   gtk_text_buffer_get_start_iter (buf, &iter);
+ *   gtk_text_iter_forward_chars (&iter, scm_to_int (point) - 1);
+ *   gtk_text_buffer_place_cursor (GTK_TEXT_BUFFER (buf), &iter);
+ *
+ *   return SCM_UNDEFINED;
+ * } */
 
 void
 nomad_text_register_function (void *data)

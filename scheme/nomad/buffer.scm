@@ -112,7 +112,7 @@
     (grab-readline))
   (set-source-text! (nomad-app-frame-get-readline (current-frame))
                     (emacsy-message-or-echo-area))
-  (set-source-point! (slot-ref (current-echo-area) 'g-inst)
+  (set-source-point! (current-echo-area)
                      (buffer:point minibuffer)))
 
 (define-public (redisplay-buffers)
@@ -125,7 +125,7 @@ notebook. Also updates buffer contents and buffer points"
               (when (eq? <nomad-text-buffer> (class-of buffer))
                 (set-source-text! (buffer-widget buffer)
                                   (buffer:buffer-string buffer))
-                (set-source-point! (buffer-pointer buffer)
+                (set-source-point! (buffer-widget buffer)
                                    (buffer:point buffer))))
             (buffer-list)))
 
