@@ -18,7 +18,6 @@
 
 (define-module (nomad frame)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad lib)
   #:use-module (nomad util)
   #:use-module (g-golf)
   #:export (make-frame-socket))
