@@ -86,17 +86,14 @@ only be used to sync switch-to-buffer with it's GTK widget"
     ;; If the notebook does not contain the widget, then add it
     (when (< page 0)
       (set! page
-            (gtk-notebook-append-page notebook
-                                      widget
+            (gtk-notebook-append-page notebook widget
                                       #f)))
     ;; (when (eq? <webview-buffer> (class-of buffer))
     ;;   (gtk-notebook-set-tab-label-text notebook widget page)
     ;;   )
     ;; Switch to the widget's page
-    (gtk-notebook-set-current-page notebook page)
     (gtk-widget-show-all widget)
-    #t
-    ))
+    (gtk-notebook-set-current-page notebook page)))
 ;; (define-public (notebook-contains notebook buffer)
 ;;   "Returns true if the current frames notebook contains BUFFER"
 ;;   (let* ((page (gtk-notebook-page-num notebook
