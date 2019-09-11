@@ -63,11 +63,12 @@ source view"
 
 (define-public (set-source-point! view pos)
   "Sets source VIEW cursor point to POS"
-  (let ((buf (gtk-text-view-get-buffer view)))
+  (let* ((buf (gtk-text-view-get-buffer view))
+         (iter (gtk-text-buffer-get-start-iter buf)))
     (nomad-app-frame-text-buffer-set-point buf
                                            pos)
-    ;; (gtk-text-buffer-get-start-iter buf iter)
-    ;; (gtk-text-iter-forward-char iter
+    ;; (gtk-text-buffer-get-start-iter buf)
+    ;; (gtk-text-iter-forward-chars iter
     ;;                             (- pos 1))
     ;; (gtk-text-buffer-place-cursor buf iter)
     ))

@@ -63,9 +63,6 @@
     (passwd:dir pw)))
 
 ;; Expands to current users home directory
-;;
-;; FIXME: What's happening here? does this expand at compile time or run
-;; time?
 (define ~ (make-fluid (getenv "HOME")))
 
 (define // file-name-separator-string)
