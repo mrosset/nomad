@@ -28,7 +28,7 @@
 #define NOMAD_APP_FRAME_TYPE (nomad_app_frame_get_type ())
 
 G_DECLARE_FINAL_TYPE (NomadAppFrame, nomad_app_frame, NOMAD, APP_FRAME,
-                      GtkApplicationWindow)
+		      GtkApplicationWindow)
 
 NomadAppFrame *nomad_app_frame_new (NomadApp *app);
 
@@ -49,9 +49,6 @@ GtkWidget *nomad_app_frame_get_minipopup (NomadAppFrame *self);
  */
 
 GtkWidget *nomad_app_frame_get_readline (NomadAppFrame *self);
-
-void nomad_app_frame_text_buffer_set_point (GtkTextBuffer *buffer,
-                                            gint posistion);
 
 void nomad_app_frame_show_minipopup (NomadAppFrame *self);
 
