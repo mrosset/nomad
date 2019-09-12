@@ -34,7 +34,7 @@
 (gi-import "GtkSource")
 (gi-import "GLib")
 
-(import-objects "Gtk" '("TextBuffer" "TextView" "TextIter" "Container"))
+(import-objects "Gtk" '("TextBuffer" "TextView" "Container"))
 
 (define default-source-language "scheme")
 (define default-source-theme "classic")
