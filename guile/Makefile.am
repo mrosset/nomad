@@ -30,8 +30,6 @@ libguile_nomad_la_SOURCES += resources.c
 libguile_nomad_la_SOURCES += text.c text.h
 libguile_nomad_la_SOURCES += util.c util.h
 libguile_nomad_la_SOURCES += webkit.c webkit.h
-libguile_nomad_la_SOURCES += webkitsettings.c webkitsettings.h
-libguile_nomad_la_SOURCES += webkitproxy.c webkitproxy.h
 libguile_nomad_la_SOURCES += extension.c
 
 libguile_nomad_la_CFLAGS =  $(AM_CFLAGS)
@@ -57,7 +55,7 @@ G_RESOURCES = gresource.xml
 
 EXTRA_DIST = $(G_RESOURCES)
 
-DOT_X_FILES = webkit.x webkitsettings.x webkitproxy.x frame.x app.x util.x minibuffer.x text.x extension.x
+DOT_X_FILES = webkit.x frame.x app.x util.x minibuffer.x text.x extension.x
 
 BUILT_SOURCES = $(DOT_X_FILES)
 
