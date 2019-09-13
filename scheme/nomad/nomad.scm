@@ -39,8 +39,6 @@
   #:use-module (nomad text)
   #:use-module (nomad util)
   #:use-module (nomad views)
-  #:use-module (nomad webkit-proxy)
-  #:use-module (nomad webkit-settings)
   #:use-module (nomad webkit)
   #:use-module (nomad webview))
 
@@ -77,7 +75,5 @@
  '(nomad text)
  '(nomad util)
  '(nomad views)
- '(nomad webkit-proxy)
- '(nomad webkit-settings)
  '(nomad webkit)
  '(nomad webview))
