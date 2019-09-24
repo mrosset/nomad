@@ -7,6 +7,8 @@ GUILE_LOAD_COMPILED_PATH="@abs_top_builddir@/scheme:$GUILE_LOAD_COMPILED_PATH"
 
 GI_TYPELIB_PATH="@abs_top_builddir@/guile:$GI_TYPELIB_PATH"
 
+export G_MESSAGES_DEBUG="all"
+export G_DEBUG="fatal-warnings"
 export GUILE_LOAD_COMPILED_PATH
 export GI_TYPELIB_PATH
 

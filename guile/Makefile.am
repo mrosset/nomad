@@ -40,7 +40,6 @@ libguile_nomad_la_CFLAGS += $(GTK_CFLAGS)
 libguile_nomad_la_CFLAGS += $(WEBKIT_CFLAGS)
 libguile_nomad_la_CFLAGS += $(GTK_SOURCEVIEW_CFLAGS)
 
-
 libguile_nomad_la_LIBADD =  $(GUILE_LIBS)
 libguile_nomad_la_LIBADD += $(EMACSY_LIBS)
 libguile_nomad_la_LIBADD += $(GLIB_LIBS)
@@ -102,4 +101,4 @@ gir_DATA = $(INTROSPECTION_GIRS)
 typelibdir = $(libdir)/girepository-1.0
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
-CLEANFILES = $(gir_DATA) $(typelib_DATA)
+CLEANFILES += $(gir_DATA) $(typelib_DATA)

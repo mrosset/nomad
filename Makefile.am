@@ -16,18 +16,16 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIRS = guile scheme src
+SUBDIRS = platforms/qt guile scheme src
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
 
-EXTRA_DIST = build-aux/test-driver.scm
-## FIXME this is hackish. promote init.el to emacs package
-EXTRA_DIST = init.el m4/introspection.m4
+EXTRA_DIST = build-aux/test-driver.scm m4/introspection.m4
 
 nomaddir = "$(datadir)/nomad"
-nomad_DATA = ## init.el
+nomad_DATA =
 
 dist_doc_DATA = README
 

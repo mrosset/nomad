@@ -43,6 +43,12 @@ GUILE_PROGS
 dnl GUILE_FLAGS
 GUILE_SITE_DIR
 
+
+dnl Sub packages
+if test "$package_qt_enabled" = yes; then
+   AC_CONFIG_SUBDIRS([platforms/qt])
+fi
+
 AC_ARG_WITH([gtksourceview], AS_HELP_STRING([--with-gtksourceview],
 			     [With gtksourceview version 3 or default 4]),
 			     [],
@@ -55,7 +61,6 @@ PKG_CHECK_MODULES([G_GOLF], [g-golf-1.0])
 PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
 PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
-
 PKG_CHECK_MODULES(GLIB, [glib-2.0])
 PKG_CHECK_MODULES(GUILE_LIB, [guile-lib-1.0])
 

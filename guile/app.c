@@ -190,9 +190,9 @@ nomad_app_activate_cb (GApplication *self)
 }
 
 static void
-nomad_app_class_init (NomadAppClass *class)
+nomad_app_class_init (NomadAppClass *klass)
 {
-  G_APPLICATION_CLASS (class)->activate = nomad_app_activate_cb;
+  G_APPLICATION_CLASS (klass)->activate = nomad_app_activate_cb;
   /* G_APPLICATION_CLASS (class)->open = nomad_app_open_cb; */
 }
 

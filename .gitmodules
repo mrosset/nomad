@@ -1,3 +1,3 @@
 [submodule "typelibs/qt"]
-	path = typelibs/qt
+	path = platforms/qt
 	url = git@github.com:mrosset/giqt
