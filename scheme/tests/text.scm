@@ -26,7 +26,10 @@
   )
 
 (gi-import "GtkSource")
-(import-functions "Gtk" '("init_check"))
+
+(for-each (lambda (x)
+            (gi-import-by-name "Gtk" x))
+          '("init_check" "ScrolledWindow" "TextView"))
 
 (let ((gtk? (gtk-init-check #f #f)))
   (test-assert "GTK init" gtk?))
@@ -36,4 +39,5 @@
               (test-equal <text-buffer> (class-of buffer))
               (text-buffer->nomad-text-buffer! buffer)
               (test-equal <nomad-text-buffer> (class-of buffer))
-              (test-equal <gtk-source-view> (class-of (buffer-widget buffer)))))
+              (test-equal <gtk-scrolled-window> (class-of (buffer-widget buffer)))
+              (test-equal <gtk-source-view> (class-of (get-source-widget (buffer-widget buffer))))))

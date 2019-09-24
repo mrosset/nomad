@@ -123,9 +123,9 @@ notebook. Also updates buffer contents and buffer points"
                 (text-buffer->nomad-text-buffer! buffer)
                 (notebook-insert buffer 0))
               (when (eq? <nomad-text-buffer> (class-of buffer))
-                (set-source-text! (buffer-widget buffer)
+                (set-source-text! (get-source-widget (buffer-widget buffer))
                                   (buffer:buffer-string buffer))
-                (set-source-point! (buffer-widget buffer)
+                (set-source-point! (get-source-widget (buffer-widget buffer))
                                    (buffer:point buffer))))
             (buffer-list)))
 

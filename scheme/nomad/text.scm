@@ -34,7 +34,9 @@
 (gi-import "GtkSource")
 (gi-import "GLib")
 
-(import-objects "Gtk" '("TextBuffer" "TextView" "Container"))
+(for-each (lambda (x)
+            (gi-import-by-name "Gtk" x))
+          '("TextBuffer" "TextView" "Container" "ScrolledWindow"))
 
 (define default-source-language "scheme")
 (define default-source-theme "classic")
@@ -42,19 +44,20 @@
 (define-class <nomad-text-buffer> (<widget-buffer>))
 
 (define* (make-source-view #:optional theme language)
-  (let ((view (make <gtk-source-view>))
+  (let ((window (make <gtk-scrolled-window>))
+        (view (make <gtk-source-view>))
         (t (or theme default-source-theme))
         (l (or language default-source-language)))
     (nomad-app-source-view-set-buffer view t l)
-    view))
+    (gtk-container-add window view)
+    window))
 
 (define-public (get-source-widget widget)
   "Returns the source view for a WIDGET. The widget is either a container or a
 source view"
-  (if (eq? <gtk-text-view> (class-of widget))
-      widget
-      (let ((children (gtk-container-get-children widget)))
-        (g-list-nth-data children 0))))
+  (if (eq? <gtk-scrolled-window> (class-of widget))
+      (car (gtk-container-get-children widget))
+      widget))
 
 (define-public (set-source-text! view text)
   "Sets source VIEW text buffer to TEXT"
