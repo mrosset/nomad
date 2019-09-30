@@ -23,6 +23,7 @@
              %load-compiled-path))
 
 (use-modules (ice-9 pretty-print)
+             (g-golf)
              (emacsy emacsy)
              (nomad nomad))
 
@@ -46,8 +47,22 @@
 
 (emacsy-initialize #t)
 
-(exit (start-nomad (command-line)))
+(define (start-qt)
+  (use-modules (nomad qt))
+  (gi-import "Qt")
+  (gi-import "Gio")
+  (for-each (lambda (x)
+              (gi-import-by-name "Gtk" x))
+            '("init" "Widget"))
+  (gtk-init #f #f)
+  (let ((app (make <qt-application>))
+        (window (make-qt-main-window)))
+    (gtk-widget-show window)
+    (g-application-run app 0 #f)))
 
+(if (string= (option-platform (command-line)) "gtk")
+    (exit (start-nomad (command-line)))
+    (start-qt))
 
 ;; Local Variables:
 ;; mode: scheme

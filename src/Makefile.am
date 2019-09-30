@@ -35,7 +35,7 @@ nomad: nomad.in Makefile
 devel_flags = --gapplication-app-id "org.devel.nomad"
 
 test: all
-	$(top_builddir)/pre-inst-env ./nomad $(devel_flags)
+	$(top_builddir)/pre-inst-env ./nomad $(devel_flags) --platform qt
 
 test-url: all
 	echo "test url"
