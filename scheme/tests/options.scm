@@ -23,27 +23,31 @@
 
 (define test-command-line '("./nomad" "https://gnu.org" "--listen" "/tmp/test"))
 (define test-arg0 '("./nomad"))
-(define test-client '("./nomad" "--app-id" "org.devel.nomad" "-c"))
+(define test-client '("./nomad" "--gapplication-app-id" "org.devel.nomad" "-c"))
 (define test-quick '("./nomad" "-Q"))
+(define test-platform '("./nomad" "--platform" "qt"))
 
 (test-begin "options")
 
-(test-equal "option listen" (option-listen test-command-line) "/tmp/test")
+(test-equal "gtk" (option-platform test-arg0))
+(test-equal "qt" (option-platform test-platform))
 
-(test-equal "option url"
-  (option-url test-command-line) "https://gnu.org")
+(test-equal "/tmp/test" (option-listen test-command-line))
+(test-equal "/tmp/nomad-socket" (option-listen test-arg0))
 
-(test-equal "appid" "org.gnu.nomad" (option-app-id test-arg0))
+(test-equal "option url" "https://gnu.org" (option-url test-command-line))
 
-(test-equal "devel app id" "org.devel.nomad" (option-app-id test-client))
+(test-equal "org.gnu.nomad" (option-app-id test-arg0))
+
+(test-equal "org.devel.nomad" (option-app-id test-client))
 
 (test-assert "option client" (option-client test-client))
 
 (test-assert"option no client" (not (option-client test-arg0)))
 
-(test-equal "no listen" (option-listen test-arg0) "/tmp/nomad-socket")
+(test-equal "no listen" "/tmp/nomad-socket" (option-listen test-arg0))
 
-(test-equal "no url" (option-url test-arg0) "https://www.gnu.org/software/guile")
+(test-equal "no url" "https://www.gnu.org/software/guile" (option-url test-arg0))
 
 (test-assert "quick" (option-quick test-quick))
 
