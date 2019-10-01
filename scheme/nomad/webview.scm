@@ -57,8 +57,7 @@
 
 (gi-import "WebKit2")
 (gi-import "Nomad")
-
-(import-objects "Gtk" '("Widget"))
+(gi-import-by-name "Gtk" "Widget")
 
 ;;; <webview-buffer> inherits <text-buffer> and <nomad-web-view>
 (define-class <webview-buffer>

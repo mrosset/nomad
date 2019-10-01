@@ -22,18 +22,18 @@
   #:export (<qt-main-window>
             make-qt-main-window))
 
-(eval-when (expand load eval)
-  (gi-import "Qt")
-  (for-each (lambda (x)
-              (gi-import-by-name "Gtk" x))
-            '("Widget" "Container")))
+(gi-import "Qt")
+(for-each (lambda (x)
+            (gi-import-by-name "Gtk" x))
+          '("Widget" "Container"))
 
 (define-class <qt-main-window> (<qt-widget>))
 
 (define (make-qt-main-window)
   (let ((window (make <qt-main-window>))
-        (view (make <qt-web-view>)))
-    (qt-web-view-load-uri view "http://gnu.org")
-    (qt-widget-fill-parent window view)
+        (view (make <qt-web-view>))
+        (label (make <qt-label> #:label "hello")))
+    (qt-web-view-load-uri view "http://google.ca")
     (gtk-container-add window view)
+    (gtk-container-add window label)
     window))

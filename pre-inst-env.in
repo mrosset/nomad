@@ -1,11 +1,30 @@
-#!/bin/sh
+#!@SHELL@
+
+# pre-inst-env.in
+# Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+
+# This file is part of Nomad
+
+# Nomad is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Nomad is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License along
+# with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 export GUILE_AUTO_COMPILE=0
 GUILE_LOAD_PATH="@abs_top_srcdir@/scheme:$GUILE_LOAD_PATH"
 GUILE_LOAD_PATH="@abs_top_builddir@/scheme:$GUILE_LOAD_PATH"
 GUILE_LOAD_COMPILED_PATH="@abs_top_srcdir@/scheme:$GUILE_LOAD_COMPILED_PATH"
 GUILE_LOAD_COMPILED_PATH="@abs_top_builddir@/scheme:$GUILE_LOAD_COMPILED_PATH"
 
-GI_TYPELIB_PATH="@abs_top_builddir@/guile:$GI_TYPELIB_PATH"
+GI_TYPELIB_PATH="@abs_top_builddir@/guile:@abs_top_builddir@/platforms/qt/application:$GI_TYPELIB_PATH"
 
 export G_MESSAGES_DEBUG="all"
 export G_DEBUG="fatal-warnings"
@@ -14,4 +33,5 @@ export GI_TYPELIB_PATH
 
 exec @abs_top_builddir@/libtool --mode=execute \
      -dlopen "@abs_top_builddir@/guile/libguile-nomad.la"\
+     -dlopen "@abs_top_builddir@/platforms/qt/application/libgiqt-application.la" \
      "$@"
