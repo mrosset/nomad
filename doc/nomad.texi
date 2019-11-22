@@ -1,0 +1,198 @@
+\input texinfo    @c -*- texinfo -*-
+@c %**start of header
+@setfilename nomad.info
+@settitle Nomad Reference Manual
+@set NOMAD-VERSION 1
+@set MANUAL-REVISION 1
+@documentencoding UTF-8
+@documentlanguage en
+@c %**end of header
+
+@finalout
+@titlepage
+@title Nomad Reference Manual
+@author Amar Singh
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top
+@top 
+@end ifnottex
+
+@menu
+* Installation::
+* Run Nomad::
+* Extend Nomad::
+* Build from source::
+
+@detailmenu
+--- The Detailed Node Listing ---
+
+Installation
+
+* With Guix::
+
+Run Nomad
+
+* From the command line::
+* Keybinds::
+
+Build from source
+
+* Run Nomad before you've installed Nomad::
+
+@end detailmenu
+@end menu
+
+@node Installation
+@chapter Installation
+
+@menu
+* With Guix::
+@end menu
+
+@node With Guix
+@section With Guix
+
+Nomad is not yet available in the official Guix
+
+Clone the Nomad source repository
+@example
+git clone https://git.savannah.gnu.org/git/nomad.git
+cd nomad
+@end example
+
+Build and install Nomad
+@example
+guix package -f ./guix.scm
+@end example
+
+@node Run Nomad
+@chapter Run Nomad
+
+@menu
+* From the command line::
+* Keybinds::
+@end menu
+
+@node From the command line
+@section From the command line
+
+Nomad doesn't yet support the full set of command line options. However, It
+can be run from a shell by typing
+
+@example
+nomad
+@end example
+
+@node Keybinds
+@section Keybinds
+
+Nomad intends to support Emacs-like keybinds because it's design was inspired
+from Emacs. However there is no limitation on what Keybindings Nomad can
+support. Nomad has the concept of key-maps just like Emacs and users should be
+able to define their own keymaps.
+
+At the top level you might want to use `M-x` (Meta/Alt X) to use the execute
+command menu.
+
+In a Webview buffer the `webview-mode-map` is active which contains the
+following keybinds.
+
+@multitable {aaaaaaaaaa} {aaaaaaaaaaaaa}
+@headitem Key stroke
+@tab Command
+@item "C-b"
+@tab (next-buffer)
+@item "C-u"
+@tab (back)
+@item "C-m"
+@tab (forward)
+@item "C-n"
+@tab (scroll-down)
+@item "C-f"
+@tab (hints)
+@item "C-p"
+@tab (scroll-up)
+@item "C-r"
+@tab (reload)
+@end multitable
+
+In Nomad's Ibuffer menu the `ctrl-x-map` is active which has these
+keybindings.
+
+@multitable {aaaaaaaaaa} {aaaaaaaaaaaaa}
+@headitem Key stroke
+@tab Command
+@item "b"
+@tab (next-buffer)
+@item "k"
+@tab (kill-buffer)
+@end multitable
+
+@node Extend Nomad
+@chapter Extend Nomad
+
+You can customize nomad by writing your configurations to `~/.nomad`, which is
+just a scheme file!
+
+Examples
+@example
+(set! search-provider-format "https://google.ca/search?q=~a")
+@end example
+
+@node Build from source
+@chapter Build from source
+
+In Ubuntu 19.04, the the following snippet will install most dependencies.
+@example
+sudo apt install -y \
+guile-2.2 \
+guile-2.2-dev \
+guile-library \
+libgtk-3-dev \
+libwebkit2gtk-4.0-dev \
+libgtksourceview-4-dev
+@end example
+
+Using Guix, the following snippet will install all required
+dependencies in a temporary shell.
+@example
+guix environment -l ./guix.scm
+@end example
+
+Then build the package with
+@example
+autoreconf -vif
+./configure
+make
+@end example
+
+@menu
+* Run Nomad before you've installed Nomad::
+@end menu
+
+@node Run Nomad before you've installed Nomad
+@section Run Nomad before you've installed Nomad
+
+Once you've built Nomad without errors, to run Nomad from the local build.
+@example
+make test
+@end example
+
+@copying
+This manual documents Nomad version @value{NOMAD-VERSION}.
+
+Copyright (C) 2019 Amar Singh.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License.''
+@end copying
+
+@bye
