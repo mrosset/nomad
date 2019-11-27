@@ -11,6 +11,7 @@
 @finalout
 @titlepage
 @title Nomad Reference Manual
+
 @author Amar Singh
 @end titlepage
 
@@ -18,7 +19,17 @@
 
 @ifnottex
 @node Top
-@top 
+@top The Nomad Browser
+
+Nomad is an extensible, customisable, self-documenting web browser. This
+manual describes how to use Nomad and some of the ways to customise it;
+it corresponds to the Nomad version @value{NOMAD-VERSION}.
+
+You can read this manual in Nomad by pressing 'C-x i'.
+
+For information on extending Emacs, see @ref{Top, Guile Reference Manual,, guile, The
+Guile Reference Manual}.
+
 @end ifnottex
 
 @menu
