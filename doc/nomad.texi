@@ -25,9 +25,9 @@ END-INFO-DIR-ENTRY
 This file documents @code{Nomad}, a modern Web Browser that is
 programmable in Guile, an implementation of the Scheme programming
 language. Nomad supports various Emacs concepts such as buffers,
-mode-maps, commands, and the minibufffer.
-This is Edition @value{MANUAL-REVISION} of @cite{The Nomad Reference
-Manual} for the Nomad Web Browser.@refill
+mode-maps, commands, and the minibufffer.  This is Edition
+@value{MANUAL-REVISION} of @cite{The Nomad Reference Manual} for the
+Nomad Web Browser.@refill
 @insertcopying
 @end ifinfo
 
@@ -67,8 +67,8 @@ it corresponds to the Nomad version @value{NOMAD-VERSION}.
 
 You can read this manual in Nomad by pressing 'C-x i'.
 
-For information on extending Emacs, see @ref{Top, Guile Reference Manual,, guile, The
-Guile Reference Manual}.
+For information on extending Nomad, see @ref{Top, Guile Reference
+Manual,, guile, The Guile Reference Manual}.
 
 @insertcopying
 @end ifnottex
@@ -132,8 +132,8 @@ guix package -f ./guix.scm
 @node From the command line
 @section From the command line
 
-Nomad doesn't yet support the full set of command line options. However, It
-can be run from a shell by typing
+Nomad doesn't yet support the full set of command line options. However,
+It can be run from a shell by typing
 
 @example
 nomad
@@ -142,13 +142,13 @@ nomad
 @node Keybinds
 @section Keybinds
 
-Nomad intends to support Emacs-like keybinds because it's design was inspired
-from Emacs. However there is no limitation on what Keybindings Nomad can
-support. Nomad has the concept of key-maps just like Emacs and users should be
-able to define their own keymaps.
+Nomad intends to support Emacs-like keybinds because it's design was
+inspired from Emacs. However there is no limitation on what Keybindings
+Nomad can support. Nomad has the concept of key-maps just like Emacs and
+users should be able to define their own keymaps.
 
-At the top level you might want to use `M-x` (Meta/Alt X) to use the execute
-command menu.
+At the top level you might want to use `M-x` (Meta/Alt X) to use the
+execute command menu.
 
 In a Webview buffer the `webview-mode-map` is active which contains the
 following keybinds.
@@ -187,8 +187,8 @@ keybindings.
 @node Extend Nomad
 @chapter Extend Nomad
 
-You can customize nomad by writing your configurations to `~/.nomad`, which is
-just a scheme file!
+You can customize nomad by writing your configurations to `~/.nomad`,
+which is just a scheme file!
 
 Examples
 @example
@@ -198,7 +198,8 @@ Examples
 @node Build from source
 @chapter Build from source
 
-In Ubuntu 19.04, the the following snippet will install most dependencies.
+In Ubuntu 19.04, the the following snippet will install most
+dependencies.
 @example
 sudo apt install -y \
 guile-2.2 \
@@ -209,8 +210,8 @@ libwebkit2gtk-4.0-dev \
 libgtksourceview-4-dev
 @end example
 
-Using Guix, the following snippet will install all required
-dependencies in a temporary shell.
+Using Guix, the following snippet will install all required dependencies
+in a temporary shell.
 @example
 guix environment -l ./guix.scm
 @end example
@@ -229,7 +230,8 @@ make
 @node Run Nomad before you've installed Nomad
 @section Run Nomad before you've installed Nomad
 
-Once you've built Nomad without errors, to run Nomad from the local build.
+Once you've built Nomad without errors, to run Nomad from the local
+build.
 @example
 make test
 @end example
