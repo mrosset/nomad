@@ -73,22 +73,22 @@ Reference Manual,, guile, The Guile Reference Manual}.
 * Build from source::
 
 @detailmenu
---- The Detailed Node Listing ---
+ --- The Detailed Node Listing ---
 
-Distribution
+* Distribution::  Get the source code
 
 Installation
 
-* With Guix::
+* With Guix::   Install Nomad using Guix
 
 Run Nomad
 
-* From the command line::
-* Keybinds::
+* From the command line::       Command line options
+* Keybinds::       Default keybinds
 
 Build from source
 
-* Run Nomad before you've installed Nomad::
+* Run Nomad before you've installed Nomad::     Building and running  from source
 
 @end detailmenu
 @end menu
