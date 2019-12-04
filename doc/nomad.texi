@@ -66,31 +66,12 @@ For information on the extension language for Nomad, see @ref{Top, Guile
 Reference Manual,, guile, The Guile Reference Manual}.
 
 @menu
-* Distribution::
-* Installation::
-* Run Nomad::
-* Extend Nomad::
-* Build from source::
+* Distribution::        Get the source code
+* Installation::        Install Nomad using Guix
+* Usage::               Using Nomad from the command line, application keybinds
+* Extensions::          Modules and extensions for Nomad
+* Development::         Making changes to the source code and contributing
 
-@detailmenu
- --- The Detailed Node Listing ---
-
-* Distribution::  Get the source code
-
-Installation
-
-* With Guix::   Install Nomad using Guix
-
-Run Nomad
-
-* From the command line::       Command line options
-* Keybinds::       Default keybinds
-
-Build from source
-
-* Run Nomad before you've installed Nomad::     Building and running  from source
-
-@end detailmenu
 @end menu
 
 @c *********************************************************************
@@ -99,43 +80,30 @@ Build from source
 
 Get the latest source code from https://git.savannah.nongnu.org/cgit/nomad.git
 
+@insertcopying
+
 @c *********************************************************************
 @node Installation
 @chapter Installation
 
-@menu
-* With Guix::
-@end menu
+If you use the Gnu Guix package manager, then you can easily install
+Nomad with
+@example
+guix package -i nomad 
+@end example
 
-@c *********************************************************************
-@node With Guix
-@section With Guix
-
-Nomad is not yet available in the official Guix
-
-Clone the Nomad source repository
+If you want the latest package, clone the source repository
 @example
 git clone https://git.savannah.gnu.org/git/nomad.git
 cd nomad
-@end example
-
-Build and install Nomad
-@example
 guix package -f ./guix.scm
 @end example
 
 @c *********************************************************************
-@node Run Nomad
-@chapter Run Nomad
+@node Usage
+@chapter Usage
 
-@menu
-* From the command line::
-* Keybinds::
-@end menu
-
-@c *********************************************************************
-@node From the command line
-@section From the command line
+@section Command-line
 
 Nomad doesn't yet support the full set of command line options. However,
 It can be run from a shell by typing
@@ -144,8 +112,6 @@ It can be run from a shell by typing
 nomad
 @end example
 
-@c *********************************************************************
-@node Keybinds
 @section Keybinds
 
 Nomad intends to support Emacs-like keybinds because it's design was
@@ -191,8 +157,8 @@ keybindings.
 @end multitable
 
 @c *********************************************************************
-@node Extend Nomad
-@chapter Extend Nomad
+@node Extensions
+@chapter Extensions
 
 You can customize nomad by writing your configurations to `~/.nomad`,
 which is just a scheme file!
@@ -203,8 +169,8 @@ Examples
 @end example
 
 @c *********************************************************************
-@node Build from source
-@chapter Build from source
+@node Development
+@chapter Development
 
 In Ubuntu 19.04, the the following snippet will install most
 dependencies.
@@ -231,18 +197,13 @@ autoreconf -vif
 make
 @end example
 
-@menu
-* Run Nomad before you've installed Nomad::
-@end menu
-
-@c *********************************************************************
-@node Run Nomad before you've installed Nomad
-@section Run Nomad before you've installed Nomad
+@section Run from Source
 
 Once you've built Nomad without errors, to run Nomad from the local
 build.
 @example
 make test
+./pre-inst-env ./nomad
 @end example
 
 @bye
