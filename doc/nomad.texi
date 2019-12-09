@@ -10,6 +10,8 @@
 
 @include version.texi
 
+@include urls.texi
+
 @copying
 Copyright @copyright{} 2019 Amar M. Singh@*
 
@@ -46,24 +48,27 @@ Edition @value{MANUAL-VERSION} @*
 @c *********************************************************************
 
 @node Top
-@top Introduction
-
-This document describes @code{Nomad}, a modern Web Browser that is
-programmable in Guile, an implementation of the Scheme programming
-language.
+@top The Nomad Browser
 
 Nomad is an extensible, customisable, self-documenting web browser. This
 manual describes how to use Nomad and some of the ways to customise it;
 it corresponds to the Nomad version @value{NOMAD-VERSION}.
 
-It supports various Emacs concepts such as buffers, mode-maps, commands,
-and the minibufffer.  This is Edition @value{MANUAL-VERSION} of
-@cite{The Nomad Reference Manual} for the Nomad Web Browser.@refill
-
-You can read this manual in Nomad by pressing 'C-x i'.
+@c See 'manual-html-mono' and 'manual-html-node' in admin/admin.el.
+@html
+The homepage for GNU Emacs is at
+<a href="@value{NOMAD-HOMEPAGE}">Nongnu.org</a>.<br>
+To view this manual in other formats, see
+<a href="@value{NOMAD-ONLINE-MANUALS}">Online Manuals</a>.<br>
+@end html
 
 For information on the extension language for Nomad, see @ref{Top, Guile
-Reference Manual,, guile, The Guile Reference Manual}.
+Reference Manual,, guile,}.
+
+This is the Nomad User Manual for the Nomad Web Browser,
+@value{MANUAL-VERSION}.@refill
+
+@insertcopying
 
 @menu
 * Distribution::        Get the source code
@@ -78,9 +83,29 @@ Reference Manual,, guile, The Guile Reference Manual}.
 @node Distribution
 @chapter Distribution
 
-Get the latest source code from https://git.savannah.nongnu.org/cgit/nomad.git
+Nomad is @dfn{free software}; this means that everyone is free to use it
+and free to redistribute it under certain conditions.  Nomad is not in
+the public domain; it is copyrighted and there are restrictions on its
+distribution. The precise conditions are found in the GNU General Public
+License that comes with Nomad. @footnote{This manual is itself covered by
+the GNU Free Documentation License.  This license is similar in spirit
+to the General Public License, but is more suitable for documentation.}
 
-@insertcopying
+Get the latest source code using git from Nongnu.org
+@example
+git clone @value{NOMAD-SOURCE-GIT}
+@end example
+
+The list of releases are available at
+@ifnothtml
+@value{NOMAD-RELEASES}
+@end ifnothtml
+
+@ifhtml
+@html
+<a href="@value{NOMAD-RELEASES}">Releases.</a>
+@end html
+@end ifhtml
 
 @c *********************************************************************
 @node Installation
@@ -94,7 +119,7 @@ guix package -i nomad
 
 If you want the latest package, clone the source repository
 @example
-git clone https://git.savannah.gnu.org/git/nomad.git
+git clone @value{NOMAD-SOURCE-GIT}
 cd nomad
 guix package -f ./guix.scm
 @end example
