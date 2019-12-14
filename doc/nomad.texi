@@ -57,9 +57,9 @@ it corresponds to the Nomad version @value{PROG-VERSION}.
 @c See 'manual-html-mono' and 'manual-html-node' in admin/admin.el.
 @html
 The homepage for Nomad is at
-<a href="@value{NOMAD-HOMEPAGE}">Nongnu.org</a>.<br>
+<a href="@value{HOMEPAGE}">Nongnu.org</a>.<br>
 To view this manual in other formats, see
-<a href="@value{NOMAD-ONLINE-MANUALS}">Online Manuals</a>.<br>
+<a href="@value{MANUALS}">Online Manuals</a>.<br>
 @end html
 
 For information on the extension language for Nomad, see @ref{Top, Guile
@@ -99,16 +99,16 @@ to the General Public License, but is more suitable for documentation.}
 
 Get the latest source code using git from Nongnu.org
 @example
-git clone @value{NOMAD-SOURCE-GIT}
+git clone @value{GIT}
 @end example
 
 @ifnothtml
-The list of releases are available at @value{NOMAD-RELEASES}
+The list of releases are available at @value{RELEASES}
 @end ifnothtml
 
 @ifhtml
 @html
-The list of releases are available at <a href="@value{NOMAD-RELEASES}">Releases.</a>
+The list of releases are available at <a href="@value{RELEASES}">Releases.</a>
 @end html
 @end ifhtml
 
@@ -124,7 +124,7 @@ guix package -i nomad
 
 If you want the latest package, clone the source repository
 @example
-git clone @value{NOMAD-SOURCE-GIT}
+git clone @value{GIT}
 cd nomad
 guix package -f ./guix.scm
 @end example
