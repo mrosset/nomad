@@ -52,7 +52,7 @@ Edition @value{MANUAL-VERSION} @*
 
 Nomad is an extensible, customisable, self-documenting web browser. This
 manual describes how to use Nomad and some of the ways to customise it;
-it corresponds to the Nomad version @value{NOMAD-VERSION}.
+it corresponds to the Nomad version @value{PROG-VERSION}.
 
 @c See 'manual-html-mono' and 'manual-html-node' in admin/admin.el.
 @html
