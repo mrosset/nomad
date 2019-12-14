@@ -1,4 +1,4 @@
-outs = nomad.html nomad.info nomad nomad.txt # nomad.pdf
+outs = nomad.html nomad.info nomad nomad.txt # manual # nomad.pdf
 
 all: $(outs)
 
@@ -23,3 +23,6 @@ nomad.txt: nomad.texi
 
 nomad.pdf: nomad.texi
 	makeinfo nomad.texi --pdf
+
+manual: nomad.texi
+	./gendocs.sh nomad 'Nomad Reference Manual' --html '--css-include=reset.css --css-include=style.css --css-include=manual.css' --email 'nomad-users@nongnu.org'
