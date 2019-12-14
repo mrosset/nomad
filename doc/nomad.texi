@@ -240,10 +240,12 @@ make test
 ./pre-inst-env ./nomad
 @end example
 
+@c *********************************************************************
 @node Copying
 @appendix GNU GENERAL PUBLIC LICENSE
 @include gpl.texi
 
+@c *********************************************************************
 @node Documentation License
 @appendix GNU Free Documentation License
 @include doclicense.texi
