@@ -56,7 +56,7 @@ it corresponds to the Nomad version @value{PROG-VERSION}.
 
 @c See 'manual-html-mono' and 'manual-html-node' in admin/admin.el.
 @html
-The homepage for GNU Emacs is at
+The homepage for Nomad is at
 <a href="@value{NOMAD-HOMEPAGE}">Nongnu.org</a>.<br>
 To view this manual in other formats, see
 <a href="@value{NOMAD-ONLINE-MANUALS}">Online Manuals</a>.<br>
