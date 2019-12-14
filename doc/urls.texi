@@ -1,4 +1,4 @@
 @set NOMAD-SOURCE-GIT https://git.savannah.nongnu.org/cgit/nomad.git
 @set NOMAD-RELEASES https://download.savannah.nongnu.org/releases/nomad/
-@set NOMAD-HOMEPAGE https://savannah.nongnu.org/projects/nomad/
-@set NOMAD-ONLINE-MANUALS https://savannah.nongnu.org/projects/nomad/
+@set NOMAD-HOMEPAGE https://www.nongnu.org/nomad/
+@set NOMAD-ONLINE-MANUALS https://www.nongnu.org/nomad/manual/
