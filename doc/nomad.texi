@@ -65,6 +65,9 @@ To view this manual in other formats, see
 For information on the extension language for Nomad, see @ref{Top, Guile
 Reference Manual,, guile,}.
 
+For information on Emacsy library used in Nomad, see @ref{Top, Emacsy,,
+emacsy,}.
+
 This is the Nomad User Manual for the Nomad Web Browser,
 @value{MANUAL-VERSION}.@refill
 
