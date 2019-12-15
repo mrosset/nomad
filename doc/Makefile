@@ -29,9 +29,9 @@ html_args=--css-include=reset.css \
 support_email='nomad-users@nongnu.org'
 
 .ONESHELL:
-default: nomad.info dir
+default: nomad.info nomad.html nomad.txt dir
 
-all: $(extras) $(outs)
+all: $(outs)
 
 nomad.info: $(texi_source)
 	makeinfo $<
@@ -57,3 +57,11 @@ manual: $(texi_source)
 .PHONY:
 clean:
 	-rm -rf $(outs) $(extras) $(aux)
+
+.PHONY:
+check:
+	@echo Skip doc check
+
+.PHONY:
+install:
+	@echo Skipped doc install

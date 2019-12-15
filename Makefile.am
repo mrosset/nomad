@@ -25,7 +25,7 @@ EXTRA_DIST = build-aux/test-driver.scm
 nomaddir = "$(datadir)/nomad"
 nomad_DATA = ## init.el
 
-dist_doc_DATA = README
+dist_doc_DATA = README doc/nomad.info doc/nomad.html doc/nomad.txt
 
 clean-scheme:
 	$(MAKE) -C ./scheme clean
