@@ -23,7 +23,8 @@
  (gnu packages webkit)
  (gnu packages xdisorg)
  (gnu packages xorg)
-)
+ (gnu packages texinfo)
+ (gnu packages perl))
 
 (define-public nomad
   (package
@@ -46,7 +47,9 @@
        ("pkg-config" ,pkg-config)
        ("libtool" ,libtool)
        ("guile" ,guile-2.2)
-       ("glib:bin" ,glib "bin")))
+       ("glib:bin" ,glib "bin")
+       ("texinfo" ,texinfo)
+       ("perl" ,perl)))
     (inputs
      `(("guile" ,guile-2.2)
        ("guile-lib" ,guile-lib)
