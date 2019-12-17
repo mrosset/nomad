@@ -37,8 +37,8 @@ Documentation License.''
 
 @page
 @vskip 0pt plus 1filll
-Edition @value{MANUAL-VERSION} @*
-@value{MANUAL-UPDATED-MONTH} @*
+Edition @value{EDITION} @*
+@value{UPDATED-MONTH} @*
 
 @insertcopying
 @end titlepage
@@ -52,7 +52,7 @@ Edition @value{MANUAL-VERSION} @*
 
 Nomad is an extensible, customisable, self-documenting web browser. This
 manual describes how to use Nomad and some of the ways to customise it;
-it corresponds to the Nomad version @value{PROG-VERSION}.
+it corresponds to the Nomad version @value{VERSION}.
 
 @c See 'manual-html-mono' and 'manual-html-node' in admin/admin.el.
 @html
@@ -69,7 +69,7 @@ For information on Emacsy library used in Nomad, see @ref{Top, Emacsy,,
 emacsy,}.
 
 This is the Nomad User Manual for the Nomad Web Browser,
-@value{MANUAL-VERSION}.@refill
+@value{VERSION}.@refill
 
 @insertcopying
 
