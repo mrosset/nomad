@@ -29,7 +29,7 @@
 (define-public nomad
   (package
     (name "nomad")
-    (version "0.1.1-alpha")
+    (version "v0.1.2-candidate")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -38,7 +38,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0abz07hl5dh802ciy71xzkvkhyryypq1i94wna40a2wndbd73f7z"))))
+                "1h0gjzl6h9zzifqghdxzv7zir3gwh024821ppc3ajsm8gnjzq4a7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
