@@ -21,6 +21,8 @@ info_TEXINFOS  = nomad.texi
 
 AM_MAKEINFOHTMLFLAGS = --css-include=reset.css --css-include=style.css --css-include=manual.css --no-split
 
+EXTRA_DIST = manual.css reset.css style.css gendocs.sh
+
 all-local: info html
 
 install-exec-local: install-html
