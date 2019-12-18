@@ -23,9 +23,5 @@ all-local:
 	make info
 	make html
 
-install-local:
-	make install-info
-	make install-html
-
 manual: $(texi_source)
 	./gendocs.sh nomad 'Nomad Reference Manual' --html '$(AM_MAKEINFOHTMLFLAGS)' --email '$(support_email)'
