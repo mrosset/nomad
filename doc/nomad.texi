@@ -129,17 +129,28 @@ cd nomad
 guix package -f ./guix.scm
 @end example
 
+To build using the GNU build system, see @ref{Development}.
+
 @c *********************************************************************
 @node Usage
 @chapter Usage
 
 @section Command-line
 
-Nomad doesn't yet support the full set of command line options. However,
-It can be run from a shell by typing
+The browser can be run from a shell by typing
 
 @example
 nomad
+@end example
+
+To disable the loading of @samp{~/.nomad} configuration file
+@example
+nomad -Q
+@end example
+
+For more options, see
+@example
+nomad --help
 @end example
 
 @section Keybinds
@@ -190,6 +201,9 @@ keybindings.
 @node API
 @chapter API
 
+The modules and features provided by Nomad are in flux. The best option is
+to consult the source directly. @uref{@value{GIT}}
+
 @c *********************************************************************
 @node Extensions
 @chapter Extensions
@@ -237,7 +251,7 @@ Once you've built Nomad without errors, to run Nomad from the local
 build.
 @example
 make test
-./pre-inst-env ./nomad
+./pre-inst-env ./src/nomad
 @end example
 
 @c *********************************************************************
