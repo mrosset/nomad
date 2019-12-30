@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad app)
+(define-module (nomad application)
   #:use-module (emacsy buffer)
   #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
@@ -29,7 +29,8 @@
   #:use-module (nomad util)
   #:use-module (nomad views)
   #:use-module (nomad webview)
-  #:export (emacs-init-file
+  #:export (<application>
+            emacs-init-file
             shutdown-hook
             shutdown
             app-init))
@@ -37,6 +38,12 @@
 (load-extension (dynamic-path) "init_guile_nomad_app")
 
 (gi-import "Gio")
+
+(define-class <application> ())
+
+(define-method (initialize (self <application>) args)
+  (next-method)
+  (init))
 
 (define shutdown-hook (make-hook 0))
 

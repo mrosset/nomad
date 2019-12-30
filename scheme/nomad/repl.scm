@@ -20,7 +20,7 @@
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 readline)
   #:use-module (ice-9 threads)
-  #:use-module (nomad app)
+  #:use-module (nomad application)
   #:use-module (nomad options)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 textual-ports)

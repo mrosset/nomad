@@ -44,7 +44,8 @@ nomad/lib.scm: nomad/lib.in Makefile
 
 SOURCES =			\
 	nomad/lib.scm		\
-	nomad/app.scm		\
+	nomad/application.scm	\
+	nomad/gtk/application.scm	\
 	nomad/bookmark.scm	\
 	nomad/buffer.scm	\
 	nomad/download.scm	\

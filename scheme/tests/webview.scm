@@ -19,7 +19,7 @@
 (define-module (tests webview)
   #:use-module (emacsy emacsy)
   #:use-module (nomad webview)
-  #:use-module (nomad app)
+  #:use-module (nomad application)
   #:use-module (nomad util)
   #:use-module (nomad widget)
   #:use-module (oop goops)

@@ -34,7 +34,7 @@ startup (GApplication *app, gpointer data)
 static void
 shutdown (GApplication *app, gpointer data)
 {
-  scm_call_0 (scm_c_public_ref ("nomad app", "shutdown"));
+  scm_call_0 (scm_c_public_ref ("nomad application", "shutdown"));
 }
 
 static void

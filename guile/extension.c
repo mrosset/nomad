@@ -50,7 +50,7 @@ init_guile_nomad_webkit ()
 void
 init_guile_nomad_app ()
 {
-  scm_c_define_module ("nomad app", nomad_app_register_function, NULL);
+  scm_c_define_module ("nomad application", nomad_app_register_function, NULL);
 }
 
 void

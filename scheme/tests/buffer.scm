@@ -18,7 +18,7 @@
 
 (define-module (tests buffer)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad app)
+  #:use-module (nomad application)
   #:use-module (nomad buffer)
   #:use-module (nomad webview)
   #:use-module (oop goops)

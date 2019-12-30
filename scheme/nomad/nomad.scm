@@ -18,7 +18,8 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 (define-module (nomad nomad)
-  #:use-module (nomad app)
+  #:use-module (nomad application)
+  #:use-module (nomad gtk application)
   #:use-module (nomad bookmark)
   #:use-module (nomad buffer)
   ;; #:use-module (nomad curl)
@@ -54,7 +55,7 @@
   (for-each re-export-module modules))
 
 (re-export-modules
- '(nomad app)
+ '(nomad application)
  '(nomad bookmark)
  '(nomad buffer)
  ;; '(nomad curl)
@@ -62,6 +63,7 @@
  '(nomad download)
  '(nomad eval)
  '(nomad frame)
+ '(nomad gtk application)
  '(nomad html)
  '(nomad init)
  '(nomad lib)

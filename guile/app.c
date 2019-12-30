@@ -90,7 +90,7 @@ startup (GApplication *app, gpointer data)
 static void
 shutdown (GApplication *app, gpointer data)
 {
-  scm_call_0 (scm_c_public_ref ("nomad app", "shutdown"));
+  scm_call_0 (scm_c_public_ref ("nomad application", "shutdown"));
 }
 
 NomadApp *
@@ -186,7 +186,7 @@ nomad_app_activate_cb (GApplication *self)
                   (GBusNameLostCallback)on_name_lost, NULL, NULL);
 
   gtk_window_present (GTK_WINDOW (frame));
-  scm_call_0 (scm_c_public_ref ("nomad app", "app-init"));
+  scm_call_0 (scm_c_public_ref ("nomad application", "app-init"));
 }
 
 static void
