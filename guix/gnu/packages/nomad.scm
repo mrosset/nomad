@@ -28,9 +28,13 @@
  (gnu packages xdisorg)
  (gnu packages xorg))
 
-(define %source-dir (dirname (current-filename)))
 
-(load (string-append %source-dir "/g-golf.scm"))
+;; (unless (current-filename)
+;;   (error "can not determine current filename"))
+
+;; (define %source-dir (dirname (current-filename)))
+
+;; (load (string-append %source-dir "/g-golf.scm"))
 (use-modules (gnu packages g-golf))
 
 (define-public emacsy-git
