@@ -22,41 +22,35 @@ exec @GUILE@ -e main -s "$0" "$@"
 
 (set! %load-compiled-path
       (cons* "@CCACHEDIR@"
-	     %load-compiled-path))
+             %load-compiled-path))
 
 (use-modules (ice-9 pretty-print)
-	     (emacsy emacsy)
-	     (nomad nomad)
-	     (g-golf))
+             (emacsy emacsy)
+             (nomad nomad)
+             (g-golf))
 
 (define (pretty-string sym)
   (with-output-to-string (lambda _
-			   (pretty-print sym))))
+                           (pretty-print sym))))
 
 (define (debug-paths)
   (format #t
-	  "version:      ~a~%"
-	  (nomad-version))
+          "version:      ~a~%"
+          (nomad-version))
   (format #t
-	  "dynamic-lib:  ~a~%"
-	  (dynamic-path))
+          "dynamic-lib:  ~a~%"
+          (dynamic-path))
   (format #t
-	  "load-path:    ~a~%"
-	  (pretty-string %load-path))
+          "load-path:    ~a~%"
+          (pretty-string %load-path))
   (format #t
-	  "comiled-path: ~a~%"
-	  (pretty-string %load-compiled-path)))
+          "comiled-path: ~a~%"
+          (pretty-string %load-compiled-path)))
 
 (define (main args)
   (emacsy-initialize #t)
   (let ((app (make <nomad-gtk-application> #:application-id "org.devel.nomad")))
-    (g-application-run app 0 #f)
-    #t)
-  )
-
-
-;; (exit (start-nomad (command-line)))
-
+    (g-application-run app 0 #f)))
 
 ;; Local Variables:
 ;; mode: scheme

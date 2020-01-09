@@ -29,8 +29,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (system foreign)
-  #:export (current-url
-            scroll-down
+  #:export (scroll-down
             scroll-up
             hints
             webview-init
@@ -208,11 +207,6 @@ specified. Returns the final URL passed to webkit"
   "Queries ARG using 'search-provider-format"
   (let ((uri (simple-format #f search-provider-format q)))
     (browse uri)))
-
-(define-interactive (current-url)
-  "Returns the current url"
-  (message "~a"
-           (buffer-uri (current-buffer))))
 
 (define-interactive (copy-current-url)
   "Copy current url to clipboard"

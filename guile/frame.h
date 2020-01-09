@@ -48,6 +48,8 @@ GtkWidget *nomad_app_frame_get_minipopup (NomadAppFrame *self);
  * Returns: (transfer full):
  */
 
+void nomad_app_frame_setup_keypress (GtkApplicationWindow *window);
+
 GtkWidget *nomad_app_frame_get_readline (NomadAppFrame *self);
 
 void nomad_app_frame_show_minipopup (NomadAppFrame *self);

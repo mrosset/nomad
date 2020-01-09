@@ -27,16 +27,25 @@
   #:use-module (nomad repl)
   #:use-module (nomad text)
   #:use-module (nomad views)
-  #:use-module (nomad webkit)
-  #:use-module (nomad webview)
+  #:use-module (nomad gtk generics)
   #:use-module (nomad widget)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
-  #:export (make-buffer-socket
+  #:export (current-url
+            make-buffer-socket
+            <nomad-webview-buffer>
             buffers-contain?
             buffers->uri))
 
 (gi-import "Nomad")
+
+(define-class <nomad-webview-buffer> (<buffer>)
+  (init-uri #:init-keyword #:init-uri #:init-value "https://gnu.org"))
+
+(define-interactive (current-url)
+  "Returns the current url"
+  (message "~a"
+           (buffer-uri (current-buffer))))
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."

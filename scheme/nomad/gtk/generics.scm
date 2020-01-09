@@ -1,4 +1,4 @@
-;; webview.scm
+;; genrics.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -15,29 +15,15 @@
 
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-(define-module (nomad gtk webview)
+(define-module (nomad gtk generics)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad buffer)
-  #:use-module (nomad gtk generics)
-  #:use-module (oop goops)
   #:use-module (g-golf)
-  #:export (<nomad-gtk-webview>))
+  #:use-module (oop goops)
+  #:export (buffer-uri
+            buffer-load-uri))
 
-(eval-when (expand load eval)
-  (gi-import-by-name "WebKit2" "WebView"))
+(define-method (buffer-uri (buffer <buffer>))
+   (webkit-web-view-get-uri buffer))
 
-(define-class <nomad-gtk-webview> (<nomad-webview-buffer> <webkit-web-view>))
-
-(define-method (initialize (self <nomad-webview-buffer>) args)
-  (next-method)
-  (slot-set! self 'name "initializing...")
-  (let ((uri (slot-ref self 'init-uri)))
-    (connect self 'load-changed
-             (lambda _
-               (slot-set! self 'name (buffer-uri self))))
-    (buffer-load-uri self uri))
-  (add-hook! (buffer-kill-hook self)
-             (lambda _
-               (gtk-widget-destroy self)))
-  (switch-to-buffer self))
+(define-method (buffer-load-uri (buffer <buffer>) uri)
+  (webkit-web-view-load-uri buffer uri))

@@ -118,11 +118,11 @@ frame_key_press_cb (GtkWidget *widget, GdkEventKey *event)
            */
 
           // Redisplay minibuffer
-          scm_call_0 (
-              scm_c_public_ref ("nomad buffer", "redisplay-minibuffer"));
+          scm_call_0 (scm_c_public_ref ("nomad gtk frame", "redisplay"));
 
           // Redplay buffers
-          scm_call_0 (scm_c_public_ref ("nomad buffer", "redisplay-buffers"));
+          /* scm_call_0 (scm_c_public_ref ("nomad buffer",
+           * "redisplay-buffers")); */
 
           flags = emacsy_tick ();
 
@@ -156,6 +156,21 @@ frame_key_press_cb (GtkWidget *widget, GdkEventKey *event)
     }
 
   return FALSE;
+}
+
+gboolean
+key_press_cb (GtkWidget *widget, GdkEventKey *event)
+{
+  emacsy_tick ();
+  g_print ("Press\n");
+  return FALSE;
+}
+
+void
+nomad_app_frame_setup_keypress (GtkApplicationWindow *window)
+{
+  g_signal_connect (window, "key-press-event", G_CALLBACK (frame_key_press_cb),
+                    NULL);
 }
 
 /* static void

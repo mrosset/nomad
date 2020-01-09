@@ -23,11 +23,13 @@
   #:use-module (srfi srfi-64)
   )
 
-(import-functions "Gtk" '("init_check"))
-(import-objects "Gtk" '("Notebook"))
-
-(gi-import "Nomad")
-(gi-import "GtkSource")
+(eval-when (expand load eval)
+  (gi-import "Nomad")
+  (gi-import "GtkSource")
+  (for-each (lambda (x)
+              (gi-import-by-name  (car x) (cdr x)))
+            '(("Gtk" . "init_check")
+              ("Gtk" . "Notebook"))))
 
 (let ((gtk? (gtk-init-check #f #f)))
   (test-assert gtk?))

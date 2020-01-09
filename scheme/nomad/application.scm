@@ -35,9 +35,8 @@
             shutdown
             app-init))
 
-(load-extension (dynamic-path) "init_guile_nomad_app")
-
-(gi-import "Gio")
+(eval-when (expand load eval)
+  (gi-import "Gio"))
 
 (define-class <application> ())
 

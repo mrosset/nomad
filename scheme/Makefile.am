@@ -46,6 +46,9 @@ SOURCES =			\
 	nomad/lib.scm		\
 	nomad/application.scm	\
 	nomad/gtk/application.scm	\
+	nomad/gtk/frame.scm	\
+	nomad/gtk/webview.scm	\
+	nomad/gtk/generics.scm	\
 	nomad/bookmark.scm	\
 	nomad/buffer.scm	\
 	nomad/download.scm	\
