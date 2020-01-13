@@ -32,9 +32,9 @@
 ;; (unless (current-filename)
 ;;   (error "can not determine current filename"))
 
-;; (define %source-dir (dirname (current-filename)))
+(define %source-dir (dirname (current-filename)))
 
-;; (load (string-append %source-dir "/g-golf.scm"))
+(load (string-append %source-dir "/g-golf.scm"))
 (use-modules (gnu packages g-golf))
 
 (define-public emacsy-git
@@ -118,7 +118,7 @@
                                            "guile" "-c"
                                            "(display (effective-version))")))
                     (deps (map (cut assoc-ref inputs <>)
-                               '("emacsy" "guile-lib" "guile-readline"
+                               '("emacsy" "guile-lib" "guile-readline" "g-golf"
                                  "shroud")))
                     (scm-path (map (cut string-append <>
                                         "/share/guile/site/" effective)
