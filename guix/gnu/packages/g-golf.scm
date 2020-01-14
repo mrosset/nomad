@@ -6,6 +6,7 @@
              (gnu packages gettext)
              (gnu packages glib)
              (gnu packages gnome)
+             (gnu packages gtk)
              (gnu packages guile)
              (gnu packages guile-xyz)
              (gnu packages pkg-config)
@@ -16,10 +17,10 @@
              (guix packages))
 
 (define-public g-golf
-  (let ((commit "987048b4d7332f09a5c964e8438875522d393774"))
+  (let ((commit "e13ffc4f1b60d7ff2175e7f8d9bfa167a3b24246"))
     (package
       (name "g-golf")
-      (version (git-version "1" "575" commit))
+      (version (git-version "1" "597" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -28,7 +29,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1s2fr53swsprycss49kzlka40lnxpvyv4rf93a4rh81adbqrxrdx"))))
+                  "0sibiw609wq3sbr6zf1pnwyhh8q17v2l71daf2r79xvghsyx9mvi"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -40,10 +41,11 @@
       (inputs
        `(("guile" ,guile-2.2)
          ("guile-lib" ,guile-lib)
-         ("glib" ,glib)
-         ("clutter" ,clutter)))
+         ("gtk" ,gtk+)
+         ("glib" ,glib)))
       (propagated-inputs
-       `(("gobject-introspection" ,gobject-introspection)))
+       `(("gobject-introspection" ,gobject-introspection)
+         ("clutter" ,clutter)))
       (arguments
        `(#:tests? #f
          #:phases
@@ -52,9 +54,10 @@
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((get (lambda (key lib)
                              (string-append (assoc-ref inputs key) "/lib/" lib)))
-                      (libgi      (get "gobject-introspection" "libgirepository-1.0.so"))
-                      (libglib    (get "glib" "libglib-2.0.so"))
-                      (libgobject (get "glib" "libgobject-2.0.so")))
+                      (libgi      (get "gobject-introspection" "libgirepository-1.0"))
+                      (libglib    (get "glib" "libglib-2.0"))
+                      (libgobject (get "glib" "libgobject-2.0"))
+                      (libgdk     (get "gtk" "libgdk-3")))
                  (substitute* "configure"
                    (("SITEDIR=\"\\$datadir/g-golf\"")
                     "SITEDIR=\"$datadir/guile/site/$GUILE_EFFECTIVE_VERSION\"")
@@ -63,6 +66,7 @@
                  (substitute* "g-golf/init.scm"
                    (("libgirepository-1.0") libgi)
                    (("libglib-2.0") libglib)
+                   (("libgdk-3") libgdk)
                    (("libgobject-2.0") libgobject)
                    (("\\(dynamic-link \"libg-golf\"\\)")
                     (format #f "~s"
