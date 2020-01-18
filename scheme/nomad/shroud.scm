@@ -31,10 +31,10 @@
             shroud-find-password
             shroud-show-entry))
 
-(define (~/ filepath) (string-append (getenv "HOME") "/" filepath))
-
+;; The file where Shroud stores secrets.
 (define shroud-database-file (~/ ".config/shroud/db.gpg"))
 
+;; Shroud configuration file
 (define shroud-config-file (~/ ".shroud"))
 
 (define shroud-db
@@ -49,6 +49,8 @@
   (shroud-list* shroud-config-file
                 shroud-db))
 
+
+;; Find matching entries for a given string
 (define (shroud-find-entries text)
   "Returns a list of matches in password list"
   (filter (cut string-match text <>) (shroud--list)))
