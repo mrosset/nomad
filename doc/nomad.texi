@@ -204,6 +204,8 @@ keybindings.
 The modules and features provided by Nomad are in flux. The best option is
 to consult the source directly. @uref{@value{GIT}}
 
+@include api.texi
+
 @c *********************************************************************
 @node Extensions
 @chapter Extensions
