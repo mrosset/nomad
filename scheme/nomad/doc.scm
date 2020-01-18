@@ -28,19 +28,25 @@
             doc-get
             halp
             describe-symbol))
-
+;;
 (define (doc-names module kind depth)
+  "In MODULE, find available objects of KIND, recurse until DEPTH."
   (emacsy-collect-kind (resolve-module module) kind depth))
 
+;;
 (define (doc-object module name)
+  "Resolve in MODULE, an object NAME."
   (module-ref (resolve-module module) name))
 
+;;
 (define (doc-get module name)
+  "Get the documentation for an object, looking in MODULE, for NAME."
   (object-documentation (doc-object module name)))
+
 
 (define-interactive (help
                      #:optional (var (completing-read "Var: "
                                                       (doc-names '(nomad nomad) #f 1)
                                                       #:to-string symbol->string)))
-  "Get doc."
+  "Interactively get the documention for a Scheme Object."
   (message "~a" (doc-get '(nomad nomad) var)))
