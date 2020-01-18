@@ -1,4 +1,4 @@
-;; webview.scm
+;; buffers.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,18 +16,18 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad gtk webview)
+(define-module (nomad gtk buffers)
   #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
   #:use-module (nomad gtk generics)
   #:use-module (oop goops)
   #:use-module (g-golf)
-  #:export (<nomad-gtk-webview>))
+  #:export (<gtk-webview-buffer>))
 
 (eval-when (expand load eval)
   (gi-import-by-name "WebKit2" "WebView"))
 
-(define-class <nomad-gtk-webview> (<nomad-webview-buffer> <webkit-web-view>))
+(define-class <gtk-webview-buffer> (<nomad-webview-buffer> <webkit-web-view>))
 
 (define-method (initialize (self <nomad-webview-buffer>) args)
   (next-method)

@@ -19,7 +19,7 @@
 (define-module (nomad gtk frame)
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad gtk webview)
+  #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk generics)
   #:use-module (g-golf)
   #:export (<gtk-frame>
@@ -50,47 +50,27 @@
 (define-class <gtk-frame> (<gtk-application-window>)
   (box)
   (container)
-  (view)
+  (buffer)
   (modeline)
   (minibuffer)
   (redisplay-proc #:accessor redisplay-proc #:init-value #f))
 
-(define-method (redisplay (frame <gtk-frame>))
-  ((redisplay-proc frame)))
-
-(define (key-press-cb frame event)
-  (let* ((unicode   (gdk-keyval-to-unicode (gdk-event-key:keyval event)))
-         ;; FIXME:  What happens if GDK_KEY_BackSpace is not 8?
-         (unichar   (if (= unicode 8) #\del  (integer->char unicode)))
-         (state     (gdk-event-key:state event))
-         (type      (gdk-event:type event))
-         (mod-flags (gdk-state->emacsy-flags state)))
-    (if (equal? type 'key-press)
-        (begin
-          (emacsy-key-event unichar mod-flags)
-          (emacsy-tick)
-          (redisplay frame)
-          (if emacsy-ran-undefined-command?
-              #f
-              #t))
-        #f)))
-
 (define-method (initialize (self <gtk-frame>) args)
   (next-method)
   (let ((box        (make <gtk-vbox> #:spacing 0))
-        (view       (make <nomad-gtk-webview>))
+        (buffer       (make <gtk-webview-buffer>))
         (mode-fmt   "<span background=\"DarkGray\">~a</span>")
         (modeline   (make <gtk-label> #:single-line-mode #f #:xalign 0))
         (minibuffer (make <gtk-entry> #:has-frame #f)))
 
     (slot-set! self 'box box)
-    (slot-set! self 'view view)
+    (slot-set! self 'buffer buffer)
     (slot-set! self 'modeline modeline)
     (slot-set! self 'minibuffer minibuffer)
 
     ;; Widget layout
     (gtk-container-add self box)
-    (gtk-box-pack-start box view #t #t 0)
+    (gtk-box-pack-start box buffer #t #t 0)
     (gtk-box-pack-start box modeline #f #f 0)
     (gtk-box-pack-start box minibuffer #f #f 0)
 
@@ -118,6 +98,26 @@
                       #t))
 
     (g-timeout-add 50 (redisplay-proc self))))
+
+(define-method (redisplay (frame <gtk-frame>))
+  ((redisplay-proc frame)))
+
+(define (key-press-cb frame event)
+  (let* ((unicode   (gdk-keyval-to-unicode (gdk-event-key:keyval event)))
+         ;; FIXME:  What happens if GDK_KEY_BackSpace is not 8?
+         (unichar   (if (= unicode 8) #\del  (integer->char unicode)))
+         (state     (gdk-event-key:state event))
+         (type      (gdk-event:type event))
+         (mod-flags (gdk-state->emacsy-flags state)))
+    (if (equal? type 'key-press)
+        (begin
+          (emacsy-key-event unichar mod-flags)
+          (emacsy-tick)
+          (redisplay frame)
+          (if emacsy-ran-undefined-command?
+              #f
+              #t))
+        #f)))
 
 (define (gtk-frame-new)
   (make <gtk-frame> #:application (slot-ref (g-application-get-default) 'g-inst)))

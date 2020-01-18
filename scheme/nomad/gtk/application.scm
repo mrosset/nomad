@@ -19,7 +19,7 @@
 (define-module (nomad gtk application)
   #:use-module (nomad application)
   #:use-module (nomad init)
-  #:use-module (nomad gtk webview)
+  #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
   #:use-module (oop goops)
   #:use-module (g-golf)
@@ -31,13 +31,7 @@
 (define-class <nomad-gtk-application> (<application> <gtk-application>))
 
 (define-method (activate-cb app)
-  (let ((frame (gtk-frame-new))
-        ;; (view (make <webkit-web-view>))
-        ;; (box (make <gtk-vbox> #:spacing 0))
-        )
-    ;; (webkit-web-view-load-uri view "https://gnu.org")
-    ;; (gtk-container-add window box)
-    ;; (gtk-box-pack-start box view #t #t 0)
+  (let ((frame (gtk-frame-new)))
     (gtk-widget-show-all frame)))
 
 (define-method (initialize (self <nomad-gtk-application>) args)
