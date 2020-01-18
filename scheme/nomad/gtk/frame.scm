@@ -1,5 +1,5 @@
 ;; frame.scm
-;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
 
@@ -17,15 +17,16 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk frame)
+  #:use-module (oop goops)
+  #:use-module (emacsy emacsy)
   #:use-module (nomad gtk webview)
   #:use-module (nomad gtk generics)
-  #:use-module (oop goops)
   #:use-module (g-golf)
-  #:use-module (emacsy emacsy)
   #:export (<gtk-frame>
             gtk-frame-new))
 
 (eval-when (expand load eval)
+  (gi-import "Gdk")
   (for-each (lambda (x)
               (gi-import-by-name  (car x) (cdr x)))
             '(("Gtk" . "Container")
@@ -37,23 +38,46 @@
               ("WebKit2" . "WebView")
               ("GtkSource" . "View"))))
 
+(define emacsy-flag-map '((mod1-mask . meta)
+                          (control-mask . control)
+                          (mod4-mask . hyper)
+                          (shift-mask . shift)))
+
+(define (gdk-state->emacsy-flags states)
+  (filter-map (lambda (state)
+         (assoc-ref emacsy-flag-map state)) states))
+
 (define-class <gtk-frame> (<gtk-application-window>)
   (box)
   (container)
   (view)
   (modeline)
-  (minibuffer))
+  (minibuffer)
+  (redisplay-proc #:accessor redisplay-proc #:init-value #f))
 
-(use-modules (nomad frame))
+(define-method (redisplay (frame <gtk-frame>))
+  ((redisplay-proc frame)))
 
-(define (key-press-cb frame)
-  #f)
-
-(define-public redisplay #f)
+(define (key-press-cb frame event)
+  (let* ((unicode   (gdk-keyval-to-unicode (gdk-event-key:keyval event)))
+         ;; FIXME:  What happens if GDK_KEY_BackSpace is not 8?
+         (unichar   (if (= unicode 8) #\del  (integer->char unicode)))
+         (state     (gdk-event-key:state event))
+         (type      (gdk-event:type event))
+         (mod-flags (gdk-state->emacsy-flags state)))
+    (if (equal? type 'key-press)
+        (begin
+          (emacsy-key-event unichar mod-flags)
+          (emacsy-tick)
+          (redisplay frame)
+          (if emacsy-ran-undefined-command?
+              #f
+              #t))
+        #f)))
 
 (define-method (initialize (self <gtk-frame>) args)
   (next-method)
-  (let ((box (make <gtk-vbox> #:spacing 0))
+  (let ((box        (make <gtk-vbox> #:spacing 0))
         (view       (make <nomad-gtk-webview>))
         (mode-fmt   "<span background=\"DarkGray\">~a</span>")
         (modeline   (make <gtk-label> #:single-line-mode #f #:xalign 0))
@@ -64,33 +88,36 @@
     (slot-set! self 'modeline modeline)
     (slot-set! self 'minibuffer minibuffer)
 
-    ;;
-    ;; widget layout
+    ;; Widget layout
     (gtk-container-add self box)
     (gtk-box-pack-start box view #t #t 0)
     (gtk-box-pack-start box modeline #f #f 0)
     (gtk-box-pack-start box minibuffer #f #f 0)
 
-    ;; signals
+    ;; Signals
+    ;;
+    ;; FIXME: when using more then one frame this should not quit the
+    ;; application. Currently we only support one frame.
     (connect self 'destroy
-             (lambda _
+              (lambda _
                (g-application-quit (g-application-get-default))
-               #f))
+               #t))
+    (connect self 'key-press-event key-press-cb)
 
-    (nomad-app-frame-setup-keypress self)
-    ;; (connect self 'key-press-event (lambda (x) #t))
+    ;; Idle events
+    (set! (redisplay-proc self)
+                    (lambda _
+                      ;; don't tick if mini buffer is being used this is
+                      ;; handle by key-press-cb. otherwise completions will
+                      ;; be overwritten
+                      ;; FIXME: maybe have <nomad-gtk-application> handle this?
+                      (unless emacsy-display-minibuffer?
+                        (emacsy-tick))
+                      (gtk-entry-set-text minibuffer (emacsy-message-or-echo-area))
+                      (gtk-label-set-text modeline (emacsy-mode-line))
+                      #t))
 
-    ;; idle events
-    ;; (g-timeout-add 50 emacsy-tick)
-    (set! redisplay (lambda _
-                             (gtk-entry-set-text minibuffer (emacsy-message-or-echo-area))
-                             (gtk-label-set-text modeline (emacsy-mode-line))
-                             #t))
+    (g-timeout-add 50 (redisplay-proc self))))
 
-    (g-timeout-add 50 redisplay)))
-
-(define (key-press-cb frame)
-  #t)
-
-(define (gtk-frame-new app)
-  (make <gtk-frame> #:application (slot-ref app 'g-inst)))
+(define (gtk-frame-new)
+  (make <gtk-frame> #:application (slot-ref (g-application-get-default) 'g-inst)))

@@ -31,7 +31,7 @@
 (define-class <nomad-gtk-application> (<application> <gtk-application>))
 
 (define-method (activate-cb app)
-  (let ((frame (gtk-frame-new app))
+  (let ((frame (gtk-frame-new))
         ;; (view (make <webkit-web-view>))
         ;; (box (make <gtk-vbox> #:spacing 0))
         )
