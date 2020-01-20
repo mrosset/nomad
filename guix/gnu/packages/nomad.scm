@@ -12,13 +12,15 @@
  (gnu packages autotools)
  (gnu packages bash)
  (gnu packages curl)
+ (gnu packages emacsy)
  (gnu packages gettext)
  (gnu packages glib)
+ (gnu packages g-golf)
  (gnu packages gnome)
  (gnu packages gnupg)
  (gnu packages gtk)
- (gnu packages guile-xyz)
  (gnu packages guile)
+ (gnu packages guile-xyz)
  (gnu packages password-utils)
  (gnu packages perl)
  (gnu packages pkg-config)
@@ -27,26 +29,6 @@
  (gnu packages webkit)
  (gnu packages xdisorg)
  (gnu packages xorg))
-
-
-;; (unless (current-filename)
-;;   (error "can not determine current filename"))
-
-(define %source-dir (dirname (current-filename)))
-
-(load (string-append %source-dir "/g-golf.scm"))
-(use-modules (gnu packages g-golf))
-
-(define-public emacsy-git
-  (let ((commit "ed88cfbe57d5a40ea4e1604bfdc61f10ff750626"))
-    (package (inherit emacsy)
-             (name "emacsy-git")
-             (version (git-version "0.4.1" "5" commit))
-             (source (origin (method git-fetch)
-                             (uri (git-reference (url "https://git.savannah.gnu.org/git/emacsy.git")
-                                                 (commit commit)))
-                             (file-name (string-append name "-" version))
-                             (sha256 (base32 "05zgpdh997q53042w192xdzgnfv6ymmkb16xkgd0ssj5pnnccj28")))))))
 
 (define-public nomad
   (package

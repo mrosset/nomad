@@ -16,14 +16,15 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(load (string-append
-		 (dirname (current-filename))
-		 "/guix/gnu/packages/nomad.scm"))
+
+(add-to-load-path (string-append
+                   (dirname (current-filename))
+                   "/guix"))
 
 (use-modules (guix packages)
-	     (guix gexp)
-	     (guix git-download)
-	     ((gnu packages nomad) #:prefix nomad:)
+             (guix gexp)
+             (guix git-download)
+             ((gnu packages nomad) #:prefix nomad:)
              (gnu packages guile-xyz))
 
 (define %source-dir (dirname (current-filename)))

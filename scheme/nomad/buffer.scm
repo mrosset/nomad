@@ -42,6 +42,12 @@
 (define-class <nomad-webview-buffer> (<buffer>)
   (init-uri #:init-keyword #:init-uri #:init-value "https://gnu.org"))
 
+(define-method (initialize (self <nomad-webview-buffer>) args)
+  (next-method)
+  (slot-set! self 'name "initializing...")
+  (let ((uri (slot-ref self 'init-uri)))
+    (buffer-load-uri self uri)))
+
 (define-interactive (current-url)
   "Returns the current url"
   (message "~a"
