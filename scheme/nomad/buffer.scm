@@ -40,13 +40,16 @@
 (gi-import "Nomad")
 
 (define-class <nomad-webview-buffer> (<buffer>)
-  (init-uri #:init-keyword #:init-uri #:init-value "https://gnu.org"))
+  (init-uri #:accessor !init-uri
+            #:init-keyword
+            #:init-uri
+            #:init-value "https://gnu.org"))
 
 (define-method (initialize (self <nomad-webview-buffer>) args)
   (next-method)
   (slot-set! self 'name "initializing...")
-  (let ((uri (slot-ref self 'init-uri)))
-    (buffer-load-uri self uri)))
+  (add-buffer! self)
+  (buffer-load-uri self (!init-uri self)))
 
 (define-interactive (current-url)
   "Returns the current url"

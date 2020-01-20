@@ -197,7 +197,8 @@ specified. Returns the final URL passed to webkit"
 
 (define-interactive (reload)
   "Reload current URI"
-  (buffer-reload))
+  (buffer-reload)
+  #t)
 
 (define-interactive (make-query #:optional (q (read-from-minibuffer "Query: ")))
   "Makes a new buffer and queries ARG using 'search-provider-format"

@@ -35,6 +35,7 @@
               ("Gtk" . "Label")
               ("Gtk" . "Entry")
               ("Gtk" . "VBox")
+              ("Gtk" . "Notebook")
               ("WebKit2" . "WebView")
               ("GtkSource" . "View"))))
 
@@ -47,30 +48,28 @@
   (filter-map (lambda (state)
          (assoc-ref emacsy-flag-map state)) states))
 
-(define-class <gtk-frame> (<gtk-application-window>)
-  (box)
+(define-class <gtk-frame> (<frame> <gtk-application-window>)
   (container)
-  (buffer)
+  (box)
   (modeline)
   (minibuffer)
-  (redisplay-proc #:accessor redisplay-proc #:init-value #f))
+  (redisplay-proc #:accessor !redisplay-proc #:init-value #f))
 
 (define-method (initialize (self <gtk-frame>) args)
   (next-method)
-  (let ((box        (make <gtk-vbox> #:spacing 0))
-        (buffer       (make <gtk-webview-buffer>))
-        (mode-fmt   "<span background=\"DarkGray\">~a</span>")
+  (let* ((box        (make <gtk-vbox> #:spacing 0))
+        (container  (make <gtk-notebook>))
         (modeline   (make <gtk-label> #:single-line-mode #f #:xalign 0))
         (minibuffer (make <gtk-entry> #:has-frame #f)))
 
+    (slot-set! self 'container container)
     (slot-set! self 'box box)
-    (slot-set! self 'buffer buffer)
     (slot-set! self 'modeline modeline)
     (slot-set! self 'minibuffer minibuffer)
 
     ;; Widget layout
     (gtk-container-add self box)
-    (gtk-box-pack-start box buffer #t #t 0)
+    (gtk-box-pack-start box container #t #t 0)
     (gtk-box-pack-start box modeline #f #f 0)
     (gtk-box-pack-start box minibuffer #f #f 0)
 
@@ -85,7 +84,7 @@
     (connect self 'key-press-event key-press-cb)
 
     ;; Idle events
-    (set! (redisplay-proc self)
+    (set! (!redisplay-proc self)
                     (lambda _
                       ;; don't tick if mini buffer is being used this is
                       ;; handle by key-press-cb. otherwise completions will
@@ -96,11 +95,10 @@
                       (gtk-entry-set-text minibuffer (emacsy-message-or-echo-area))
                       (gtk-label-set-text modeline (emacsy-mode-line))
                       #t))
-
-    (g-timeout-add 50 (redisplay-proc self))))
+    (g-timeout-add 50 (!redisplay-proc self))))
 
 (define-method (redisplay (frame <gtk-frame>))
-  ((redisplay-proc frame)))
+  ((!redisplay-proc frame)))
 
 (define (key-press-cb frame event)
   (let* ((unicode   (gdk-keyval-to-unicode (gdk-event-key:keyval event)))

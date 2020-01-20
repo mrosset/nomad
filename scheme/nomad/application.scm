@@ -57,28 +57,10 @@
 (define (app-init)
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
-  ;; (define-key minibuffer-local-map "C-n" 'next-line)
-  ;; (define-key minibuffer-local-map "C-p" 'previous-line)
-  ;; (define-key minibuffer-local-map "RET" 'minibuffer-execute)
-  (with-buffer minibuffer
-               (set! (local-var 'view)
-                     completion-view)
-               (set! (local-var 'selection)
-                     0)
-               (set! (local-var 'completions)
-                     '())
-               ;; (add-hook! (buffer-enter-hook (current-buffer))
-               ;;            (lambda _
-               ;;              (render-completion-popup-view)))
-               ;; (add-hook! (buffer-exit-hook (current-buffer))
-               ;;            hide-minibuffer-popup)
-               (add-hook! shutdown-hook
+  (add-hook! shutdown-hook
                           (lambda _
-                            (info "running shutdown hook..."))))
-
-  (agenda-schedule-interval (lambda _
-                              (redisplay-buffers))
-                            50)
-  ;; Create one buffer
-  (make-buffer default-home-page)
+                            (info "running shutdown hook...")))
+  ;; (agenda-schedule-interval (lambda _
+  ;;                             (emacsy-tick))
+  ;;                           50)
   (run-hook startup-hook))
