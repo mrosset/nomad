@@ -23,12 +23,21 @@
   #:use-module (nomad gtk generics)
   #:use-module (oop goops)
   #:use-module (g-golf)
-  #:export (<gtk-webview-buffer>))
+  #:export (<gtk-widget-buffer>
+            <gtk-webview-buffer>
+            <gtk-textview-buffer>))
 
 (eval-when (expand load eval)
-  (gi-import-by-name "WebKit2" "WebView")
-  (gi-import-by-name "Gtk" "Widget")
-  (gi-import-by-name "Gtk" "Notebook"))
+  (map (lambda (pair)
+         (gi-import-by-name (car pair) (cdr pair)))
+       '(("WebKit2" . "WebView")
+         ("Gtk" . "Widget")
+         ("Gtk" . "DrawingArea")
+         ("Gtk" . "ApplicationWindow")
+         ("Gtk" . "Notebook")
+         ("GtkSource" . "View"))))
+
+
 
 (define-class <gtk-widget-buffer> ()
   (container #:accessor !container #:init-keyword #:container #:init-value #f))
@@ -59,6 +68,8 @@
                (gtk-widget-destroy self)))
   (switch-to-buffer self))
 
+
+
 (define-class <gtk-webview-buffer> (<gtk-widget-buffer>
                                     <nomad-webview-buffer>
                                     <webkit-web-view>))
@@ -67,10 +78,39 @@
   (next-method)
   (connect self 'load-changed
            (lambda _
-             (let ((whole (inexact->exact
+             (let ((percent (inexact->exact
                            (round (* 100 (!estimated-load-progress self))))))
                (slot-set! self 'name (!uri self)))
              #t)))
 
-(define-interactive (test-buffer)
-  (make <gtk-webview-buffer> #:init-uri "https://google.ca"))
+
+
+(define-class <gtk-textview-buffer> (<nomad-text-buffer>
+                                     <gtk-widget-buffer>
+                                     <gtk-scrolled-window>)
+  (source-view #:accessor !source-view))
+
+(define-method (initialize (self <gtk-textview-buffer>) args)
+  (next-method)
+  (let ((view (make <gtk-source-view> #:editable #f)))
+    (set! (!source-view self) view)
+    (gtk-container-add self view)
+    (gtk-widget-show-all self)
+    (gtk-widget-grab-focus view)))
+
+(define-method (redisplay (self <gtk-textview-buffer>))
+  (catch 'all
+    (lambda _
+      (let* ((view (!source-view self))
+             (buf  (gtk-text-view-get-buffer view))
+             ;; (iter (begin (gtk-text-buffer-set-text buf (buffer:buffer-string self) -1)
+             ;;              (gtk-text-buffer-get-start-iter buf)))
+             )
+        (gtk-text-buffer-set-text buf (buffer:buffer-string self) -1)
+        ;; (gtk-text-iter-forward-char iter (- (buffer:point self) 1))
+        ;; (gtk-text-buffer-place-cursor buf iter)
+        #t))
+    (lambda (key args)
+      (format #t "key: ~a arg: ~a" key args))))
+
+

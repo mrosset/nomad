@@ -25,11 +25,7 @@
   #:use-module (nomad lib)
   #:use-module (nomad widget)
   #:use-module (oop goops)
-  #:use-module (system foreign)
-  #:export (<nomad-text-buffer>)
-  )
-
-(load-extension (dynamic-path) "init_guile_nomad_text")
+  #:use-module (system foreign))
 
 (gi-import "GtkSource")
 (gi-import "GLib")

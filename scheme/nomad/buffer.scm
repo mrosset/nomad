@@ -33,23 +33,39 @@
   #:use-module (srfi srfi-1)
   #:export (current-url
             make-buffer-socket
+            <nomad-text-buffer>
             <nomad-webview-buffer>
             buffers-contain?
             buffers->uri))
 
-(gi-import "Nomad")
+(eval-when (expand load eval)
+  (gi-import "Nomad"))
 
-(define-class <nomad-webview-buffer> (<buffer>)
+
+(define-class <nomad-buffer> (<text-buffer>))
+
+(define-method (initialize (self <nomad-buffer>) args)
+  (next-method)
+  (add-buffer! self))
+
+
+
+(define-class <nomad-text-buffer> (<nomad-buffer>))
+
+
+
+(define-class <nomad-webview-buffer> (<nomad-buffer>)
+  (name #:init-value "*webview*")
   (init-uri #:accessor !init-uri
             #:init-keyword
             #:init-uri
-            #:init-value "https://gnu.org"))
+            #:init-value "https://neutron.bufio.org"))
 
 (define-method (initialize (self <nomad-webview-buffer>) args)
   (next-method)
-  (slot-set! self 'name "initializing...")
-  (add-buffer! self)
   (buffer-load-uri self (!init-uri self)))
+
+
 
 (define-interactive (current-url)
   "Returns the current url"
