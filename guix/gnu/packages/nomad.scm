@@ -11,6 +11,7 @@
  (guix utils)
  (gnu packages autotools)
  (gnu packages bash)
+ (gnu packages code)
  (gnu packages curl)
  (gnu packages emacsy)
  (gnu packages gettext)
@@ -53,6 +54,7 @@
        ("guile" ,guile-2.2)
        ("glib:bin" ,glib "bin")
        ("texinfo" ,texinfo)
+       ("lcov" ,lcov)
        ("perl" ,perl)))
     (inputs
      `(("guile" ,guile-2.2)

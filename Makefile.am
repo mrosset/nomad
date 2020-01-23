@@ -16,7 +16,7 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIRS = guile scheme src doc
+SUBDIRS = guile test-suite scheme src doc
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
@@ -30,6 +30,12 @@ nomaddir = "$(datadir)/nomad"
 nomad_DATA = ## init.el
 
 dist_doc_DATA = README
+
+lcov.info: all
+	$(top_builddir)/pre-inst-env $(top_builddir)/tools/coverage
+
+coverage: lcov.info
+	$(GENHTML) -o $(top_builddir)/coverage lcov.info
 
 clean-scheme:
 	$(MAKE) -C ./scheme clean

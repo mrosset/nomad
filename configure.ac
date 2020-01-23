@@ -23,7 +23,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIRS([m4])
 
 # automake
-AM_INIT_AUTOMAKE([-Wall gnu silent-rules color-tests])
+AM_INIT_AUTOMAKE([-Wall gnu silent-rules color-tests serial-tests])
 AM_SILENT_RULES([yes])
 
 # programs
@@ -140,6 +140,13 @@ if test "$GLIB_COMPILE_R" = "no"; then
    AC_MSG_ERROR([program glib-compile-resources is required])
 fi
 
+AC_PATH_PROG(GENHTML, genhtml, no)
+AC_SUBST(GENHTML)
+
+if test "$GENHTML" = "no"; then
+   AC_MSG_ERROR([program genhtml is required])
+fi
+
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
 AC_CONFIG_FILES([
@@ -148,15 +155,17 @@ guile/Makefile
 src/Makefile
 doc/Makefile
 scheme/Makefile
+test-suite/Makefile
 ])
 
 AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
+AC_CONFIG_FILES([tools/coverage], [chmod +x tools/coverage])
 
 AC_OUTPUT
 
 AC_MSG_NOTICE([summary of build options:
 
-  version:              ${VERSION}
+  Version:              ${VERSION}
   Host/Target system:   ${host}
   Build system:         ${build}
   Install prefix:       ${prefix}

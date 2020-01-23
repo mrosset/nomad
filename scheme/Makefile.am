@@ -71,30 +71,3 @@ SOURCES =			\
 	nomad/webview.scm	\
 	nomad/webkit.scm	\
 	nomad/nomad.scm
-
-TESTS =			\
-	tests/lib.scm		\
-	tests/buffer.scm	\
-	tests/download.scm	\
-	tests/eval.scm		\
-	tests/frame.scm		\
-	tests/init.scm		\
-	tests/options.scm	\
-	tests/text.scm		\
-	tests/util.scm		\
-	tests/widget.scm	\
-	tests/webkit.scm	\
-	tests/webview.scm
-
-TEST_EXTENSIONS = .scm
-
-SCM_LOG_DRIVER =					\
-	$(top_builddir)/pre-inst-env			\
-	$(GUILE) --no-auto-compile -e main		\
-	$(top_srcdir)/build-aux/test-driver.scm
-
-# Tell 'build-aux/test-driver.scm' to display only source file names,
-# not indivdual test names.
-AM_SCM_LOG_DRIVER_FLAGS = --brief=yes
-
-AM_SCM_LOG_FLAGS = --no-auto-compile -L "$(top_srcdir)"
