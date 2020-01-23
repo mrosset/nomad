@@ -49,3 +49,7 @@ Makefile.in
 *.log
 /config.h
 /config.h.in
+/test-suite/test-runner
+/tools/coverage
+/lcov.info
+/coverage
