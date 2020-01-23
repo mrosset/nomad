@@ -47,6 +47,10 @@ Makefile.in
 *.o
 *.x
 *.log
+*.gir
+*.typelib
+
+# magit
 /config.h
 /config.h.in
 /test-suite/test-runner
