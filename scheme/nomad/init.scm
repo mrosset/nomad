@@ -45,8 +45,8 @@
 
 (define startup-hook (make-hook))
 
-(define user-init-file
-  (~/ ".nomad"))
+(define (user-init-file)
+   (~/ ".nomad"))
 
 (define user-nomad-directory
   (make-fluid (~/ ".nomad.d")))
@@ -128,6 +128,6 @@
   ;; If user-init-file exists and -Q is not passed as a command line argument
   ;; then load the user-init-file
   (when (and (not (option-quick (command-line)))
-             (file-exists? user-init-file))
-    (load user-init-file))
+             (file-exists? (user-init-file)))
+    (load (user-init-file)))
   #t)

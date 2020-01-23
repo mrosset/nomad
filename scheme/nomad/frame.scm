@@ -22,8 +22,13 @@
   #:use-module (g-golf)
   #:export (make-frame-socket))
 
-(gi-import "Nomad")
-(import-objects "Gtk" '("Widget" "Notebook" "Label"))
+(eval-when (expand load eval)
+  (gi-import "Nomad")
+  (map (lambda (pair)
+         (gi-import-by-name (car pair) (cdr pair)))
+       '(("Gtk" . "Widget")
+         ("Gtk" . "Label")
+         ("Gtk" . "Notebook"))))
 
 (define-public (current-notebook)
   "Returns the current notebook"

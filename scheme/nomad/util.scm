@@ -23,15 +23,10 @@
   #:use-module (ice-9 match)
   #:use-module (oop goops)
   #:use-module (g-golf)
-  #:export (info
+  #:export (list->keymap
+            info
             log-info?
-            import-functions
-            import-objects
-            list->keymap
-            add-to-nomad-path
             ~ // ~/))
-
-(load-extension (dynamic-path) "init_guile_nomad_util")
 
 (define (list->keymap lst)
   "Creates a new keymap from LST"
@@ -41,12 +36,6 @@
               lst)
     keymap))
 
-(define-public (debug-object object)
-  (format #t
-          "type: ~a value: ~a~%"
-          (class-of object)
-          object))
-
 (define log-info? (make-fluid #t))
 
 ;; FIXME: maybe use the emacsy logger here instead?
@@ -55,12 +44,6 @@
   (when (fluid-ref log-info?)
     (let ((ifmt (format #f "INFO: ~a~%" fmt)))
       (apply format #t ifmt args))))
-
-(define (user-home)
-  "Returns the current users home directory"
-  (let* ((user (getlogin))
-         (pw (getpw user)))
-    (passwd:dir pw)))
 
 ;; Expands to current users home directory
 (define ~ (make-fluid (getenv "HOME")))
@@ -72,21 +55,3 @@
   (string-append (fluid-ref ~)
                  //
                  path))
-
-(define (import-functions namespace lst)
-  (g-irepository-require namespace)
-  (for-each (lambda (function)
-              (let ((info (g-irepository-find-by-name namespace function)))
-                (gi-import-function info)))
-            lst))
-
-(define (import-objects namespace lst)
-  "Imports a LST of objects from NAMESPACE"
-  ;; FIXME: this hack ensures that g-golf is used, without it g-golf needs to
-  ;; be imported by the calling module. Otherwise int32 is unbound
-  (use-modules (g-golf))
-  (g-irepository-require namespace)
-  (for-each (lambda (object)
-              (let ((info (g-irepository-find-by-name namespace object)))
-                (gi-import-object info)))
-            lst))

@@ -26,12 +26,11 @@
   #:use-module (system foreign)
   #:export (<widget-buffer>
             buffer-widget
-            buffer-pointer)
-  )
+            buffer-pointer))
 
-(gi-import "Nomad")
-
-(import-objects "Gtk" '("Widget"))
+(eval-when (expand load eval)
+  (gi-import "Nomad")
+  (gi-import-by-name "Gtk" "Widget"))
 
 (define-class <widget-buffer>
   (<text-buffer>)

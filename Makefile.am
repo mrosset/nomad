@@ -46,7 +46,7 @@ clean-guile:
 run: all
 	$(MAKE) -C ./src test
 
-test: check
+test: all check
 	$(MAKE) -C ./src test
 
 test-install: install

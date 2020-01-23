@@ -1,4 +1,8 @@
-TESTS = tests/buffers.scm
+TESTS  = tests/util.scm
+TESTS += tests/init.scm
+TESTS += tests/application.scm
+
+GUILE_AUTO_COMPILE := 0
 
 TEST_EXTENSIONS = .scm
 

@@ -1,4 +1,4 @@
-;; buffers.scm
+;; application.scm
 ;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,12 +16,27 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tests buffers)
+(define-module (tests application)
   #:use-module (oop goops)
-  #:use-module (nomad nomad)
+  #:use-module (nomad application)
+  #:use-module (nomad gtk application)
+  #:use-module (nomad util)
+  #:use-module (nomad init)
+  #:use-module (g-golf)
   #:use-module (unit-test))
 
-(define-class <test-buffers> (<test-case>))
+(eval-when (expand load eval)
+  (gi-import-by-name "Gtk" "init_check"))
 
-(define-method (test-version (self <test-buffers>))
-  (assert-equal (version) "2.2.6"))
+(define-class <test-application> (<test-case>))
+
+(define-method (test-init-gtk (self <test-application>))
+  (assert-true (gtk-init-check #f #f)))
+
+;; (define-method (test-application-id (self <test-application>))
+;;   (with-fluids ((~ "/tmp/home"))
+;;     (assert-equal "/tmp/home/.nomad" (user-init-file))
+;;     ;; (let* ((test-id "org.gnu.tests.nomad")
+;;     ;;        (app (make <nomad-gtk-application> #:application-id test-id)))
+;;     ;;   (assert-equal test-id (application-id)))
+;;     ))

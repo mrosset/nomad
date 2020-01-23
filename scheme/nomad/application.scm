@@ -51,6 +51,7 @@
   (run-hook shutdown-hook))
 
 (define-public (application-id)
+  "Returns the default application id"
   (let ((app (g-application-get-default)))
     (g-application-get-application-id app)))
 

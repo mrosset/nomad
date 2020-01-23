@@ -54,10 +54,10 @@
             current-search
             ))
 
-(gi-import "WebKit2")
-(gi-import "Nomad")
-
-(import-objects "Gtk" '("Widget"))
+(eval-when (expand load eval)
+  (gi-import "WebKit2")
+  (gi-import "Nomad")
+  (gi-import-by-name "Gtk" "Widget"))
 
 ;;; <webview-buffer> inherits <text-buffer> and <nomad-web-view>
 (define-class <webview-buffer>
