@@ -28,7 +28,4 @@
   (with-fluids ((fluid~ "/tmp/home"))
     (assert-equal "/tmp/home/.nomad" %user-init-file)
     (assert-equal <string> (class-of %user-init-file))
-    (set! %user-init-file "/tmp/sub/.nomad")
-    (assert-equal "/tmp/sub/.nomad" %user-init-file)
-    (assert-equal <string> (class-of %user-init-file))
     (assert-equal "/tmp/home/.nomad.d" %user-nomad-directory)))
