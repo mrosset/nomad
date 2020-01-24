@@ -25,6 +25,7 @@
   #:export (list->keymap
             info
             log-info?
+            fluid~
             ~ // ~/))
 
 (define (list->keymap lst)
@@ -44,13 +45,15 @@
     (let ((ifmt (format #f "INFO: ~a~%" fmt)))
       (apply format #t ifmt args))))
 
-;; Expands to current users home directory
-(define ~ (make-fluid (getenv "HOME")))
+;; @var{fluid~} Expands to current users home directory
+(define fluid~ (make-fluid (getenv "HOME")))
+
+(define-syntax ~ (identifier-syntax (fluid-ref fluid~)))
 
 (define // file-name-separator-string)
 
 (define (~/ path)
   "Expands to the full PATH within the current users home directory"
-  (string-append (fluid-ref ~)
+  (string-append ~
                  //
                  path))

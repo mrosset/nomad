@@ -1,5 +1,5 @@
 ;; init.scm
-;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
 
@@ -41,27 +41,40 @@
             read-history
             nomad-write-history
             add-to-history
+            define-ident
             session-file))
 
 (define startup-hook (make-hook))
 
-(define-syntax %user-init-file
-  (identifier-syntax
-   (~/ ".nomad")))
+;; Macro that defines a top level identifier
+;; define-ident create a new top level identifier of @var{var} with the
+;; value of @var{val}.
+(define-syntax define-ident
+  (syntax-rules ()
+    ((define-ident var val)
+     (begin
+       (define-syntax var
+         (identifier-syntax
+          val))
+       (export var)))))
 
-(define-syntax %user-nomad-directory
-  (identifier-syntax
-   (~/ ".nomad.d")))
+;; Path of user's initialization file. This is a top level identifier, it's
+;; value is usually @code{(string-append (fluid-ref fluid~) "/.nomad")}
+(define-ident %user-init-file
+   (~/ ".nomad"))
 
-(define download-directory
-  (make-fluid (~/ "downloads")))
+(define-ident %user-nomad-directory
+  (~/ ".nomad.d"))
+
+(define-ident %download-directory
+  (~/ "downloads"))
 
 (define history '())
 
-(define history-file
-  (make-fluid (string-append %user-nomad-directory
-                             //
-                             "history.scm")))
+(define-ident %history-file
+  (string-append %user-nomad-directory
+                            //
+                            "history.scm"))
 
 (define (read-history)
   (let ((port (open-input-file (fluid-ref history-file))))

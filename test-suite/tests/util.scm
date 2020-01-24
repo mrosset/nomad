@@ -24,8 +24,8 @@
 (define-class <test-util> (<test-case>))
 
 (define-method (test-fluids (self <test-util>))
-  (with-fluids ((~ "/tmp/home"))
-    (assert-equal "/tmp/home" (fluid-ref ~))
+  (with-fluids ((fluid~ "/tmp/home"))
+    (assert-equal "/tmp/home" ~)
     (assert-equal "/tmp/home/file" (~/ "file"))))
 
 (define-method (test-info (self <test-util>))
