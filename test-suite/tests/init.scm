@@ -26,4 +26,5 @@
 
 (define-method (test-user-init-file (self <test-init>))
   (with-fluids ((~ "/tmp/home"))
-    (assert-equal "/tmp/home/.nomad" (user-init-file))))
+    (assert-equal "/tmp/home/.nomad" %user-init-file)
+    (assert-equal "/tmp/home/.nomad.d" %user-nomad-directory)))

@@ -30,9 +30,9 @@
   #:export (init
             use-cookies?
             user-cookie-file
-            user-init-file
+            %user-init-file
+            %user-nomad-directory
             startup-hook
-            user-nomad-directory
             download-directory
             ensure-nomad-directory
             ensure-download-directory
@@ -45,11 +45,13 @@
 
 (define startup-hook (make-hook))
 
-(define (user-init-file)
-   (~/ ".nomad"))
+(define-syntax %user-init-file
+  (identifier-syntax
+   (~/ ".nomad")))
 
-(define user-nomad-directory
-  (make-fluid (~/ ".nomad.d")))
+(define-syntax %user-nomad-directory
+  (identifier-syntax
+   (~/ ".nomad.d")))
 
 (define download-directory
   (make-fluid (~/ "downloads")))
@@ -57,7 +59,7 @@
 (define history '())
 
 (define history-file
-  (make-fluid (string-append (fluid-ref user-nomad-directory)
+  (make-fluid (string-append %user-nomad-directory
                              //
                              "history.scm")))
 
@@ -82,7 +84,7 @@
 (define session '())
 
 (define session-file
-  (make-fluid (string-append (fluid-ref user-nomad-directory)
+  (make-fluid (string-append %user-nomad-directory
                              //
                              "session.scm")))
 
@@ -106,7 +108,7 @@
 (define use-cookies? #t)
 
 (define user-cookie-file
-  (string-append (fluid-ref user-nomad-directory) // "cookies.db"))
+  (string-append %user-nomad-directory // "cookies.db"))
 
 (define (ensure-fluid-directory path)
   "Ensures fluid directory PATH is created"
@@ -115,19 +117,23 @@
       (info (format #f "creating ~a" dir))
       (mkdir dir #o755))))
 
+(define (ensure-directory dir)
+  (unless (file-exists? dir)
+          (mkdir dir #o755)))
+
 (define (ensure-nomad-directory)
   "Ensures creation of user-nomad-directory"
-  (ensure-fluid-directory user-nomad-directory))
+  (ensure-fluid-directory %user-nomad-directory))
 
 (define (ensure-download-directory)
   "Ensure creation of download-directory"
   (ensure-fluid-directory download-directory))
 
 (define (init)
-  (ensure-nomad-directory)
+  (ensure-directory %user-nomad-directory)
   ;; If user-init-file exists and -Q is not passed as a command line argument
   ;; then load the user-init-file
   (when (and (not (option-quick (command-line)))
-             (file-exists? (user-init-file)))
-    (load (user-init-file)))
+             (file-exists? %user-init-file))
+    (load %user-init-file))
   #t)

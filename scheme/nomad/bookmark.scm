@@ -46,7 +46,7 @@
            save-bookmark))
 
 (define bookmark-file
-  (string-append (fluid-ref user-nomad-directory)
+  (string-append %user-nomad-directory
                  // "bookmarks.scm"))
 
 (define* (read-bookmarks #:optional file)
