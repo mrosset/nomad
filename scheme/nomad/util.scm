@@ -16,7 +16,6 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-;; FIXME: merge util module into app?
 (define-module (nomad util)
   #:use-module (nomad lib)
   #:use-module (emacsy emacsy)
@@ -26,7 +25,11 @@
             info
             log-info?
             fluid~
-            ~ // ~/))
+            ~
+            ~/
+            //
+            ensure-fluid-directory
+            ensure-directory))
 
 (define (list->keymap lst)
   "Creates a new keymap from LST"
@@ -57,3 +60,14 @@
   (string-append ~
                  //
                  path))
+
+(define (ensure-fluid-directory path)
+  "Ensures fluid directory PATH is created"
+  (let ((dir (fluid-ref path)))
+    (when (not (file-exists? dir))
+      (info (format #f "creating ~a" dir))
+      (mkdir dir #o755))))
+
+(define (ensure-directory dir)
+  (unless (file-exists? dir)
+          (mkdir dir #o755)))

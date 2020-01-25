@@ -34,13 +34,6 @@
             %user-nomad-directory
             startup-hook
             download-directory
-            ensure-nomad-directory
-            ensure-download-directory
-            history
-            history-file
-            read-history
-            nomad-write-history
-            add-to-history
             define-ident
             session-file))
 
@@ -59,40 +52,17 @@
        (export var)))))
 
 ;; Path of user's initialization file. This is a top level identifier, it's
-;; value is usually @code{(string-append (fluid-ref fluid~) "/.nomad")}
+;; default value is @code{$HOME/.nomad}.
 (define-ident %user-init-file
    (~/ ".nomad"))
 
+;; Directory where per-user configuration files are placed. It's default value
+;; is @code{$HOME/.nomad.d}.
 (define-ident %user-nomad-directory
   (~/ ".nomad.d"))
 
 (define-ident %download-directory
   (~/ "downloads"))
-
-(define history '())
-
-(define-ident %history-file
-  (string-append %user-nomad-directory
-                            //
-                            "history.scm"))
-
-(define (read-history)
-  (let ((port (open-input-file (fluid-ref history-file))))
-    (set! history (read port))
-    (close-port port)))
-
-(define (nomad-write-history)
-  (let ((port (open-output-file (fluid-ref history-file))))
-    (pretty-print history port)
-    (close-port port)))
-
-(define (add-to-history text)
-  (when (not (find (lambda (x)
-                     (string=? x text))
-                   history))
-    (set! history
-      (append history
-              (list text)))))
 
 (define session '())
 
@@ -122,25 +92,6 @@
 
 (define user-cookie-file
   (string-append %user-nomad-directory // "cookies.db"))
-
-(define (ensure-fluid-directory path)
-  "Ensures fluid directory PATH is created"
-  (let ((dir (fluid-ref path)))
-    (when (not (file-exists? dir))
-      (info (format #f "creating ~a" dir))
-      (mkdir dir #o755))))
-
-(define (ensure-directory dir)
-  (unless (file-exists? dir)
-          (mkdir dir #o755)))
-
-(define (ensure-nomad-directory)
-  "Ensures creation of user-nomad-directory"
-  (ensure-fluid-directory %user-nomad-directory))
-
-(define (ensure-download-directory)
-  "Ensure creation of download-directory"
-  (ensure-fluid-directory download-directory))
 
 (define (init)
   (ensure-directory %user-nomad-directory)
