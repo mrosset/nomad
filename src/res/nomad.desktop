@@ -1,6 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Example
-Icon=exampleapp
-StartupNotify=true
-Exec=@bindir@/exampleapp
