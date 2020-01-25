@@ -24,8 +24,10 @@
 
 (define-class <test-init> (<test-case>))
 
-(define-method (test-user-init-file (self <test-init>))
+(define-method (test-init-ident (self <test-init>))
   (with-fluids ((fluid~ "/tmp/home"))
     (assert-equal "/tmp/home/.nomad" %user-init-file)
     (assert-equal <string> (class-of %user-init-file))
-    (assert-equal "/tmp/home/.nomad.d" %user-nomad-directory)))
+    (assert-equal "/tmp/home/.nomad.d" %user-nomad-directory)
+    (assert-equal "/tmp/home/.nomad.d/session.scm" %session-file)
+    (assert-equal "/tmp/home/.nomad.d/cookies.db" %user-cookie-file)))

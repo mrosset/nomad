@@ -61,13 +61,6 @@
                  //
                  path))
 
-(define (ensure-fluid-directory path)
-  "Ensures fluid directory PATH is created"
-  (let ((dir (fluid-ref path)))
-    (when (not (file-exists? dir))
-      (info (format #f "creating ~a" dir))
-      (mkdir dir #o755))))
-
 (define (ensure-directory dir)
   (unless (file-exists? dir)
           (mkdir dir #o755)))

@@ -32,3 +32,14 @@
   (let ((proc (lambda _
                 (info "test"))))
     (assert-equal "INFO: test\n" (with-output-to-string proc))))
+
+(define-method (test-ensure-directory (self <test-util>))
+  (let ((dir (tmpnam)))
+    (dynamic-wind
+      (lambda _
+        (ensure-directory dir))
+      (lambda _
+        (assert-true (file-exists? dir)))
+      (lambda _
+        (rmdir dir)
+        (assert-false (file-exists? dir))))))

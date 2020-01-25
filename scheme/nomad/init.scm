@@ -61,19 +61,21 @@
 (define-ident %user-nomad-directory
   (~/ ".nomad.d"))
 
+;; The directory where downloads should be saved to.
 (define-ident %download-directory
   (~/ "downloads"))
 
 (define session '())
 
-(define session-file
-  (make-fluid (string-append %user-nomad-directory
-                             //
-                             "session.scm")))
+;; File to store session too.
+(define-ident %session-file
+  (string-append %user-nomad-directory
+                            //
+                            "session.scm"))
 
 (define-interactive (read-session)
   "Read session from file"
-  (let* ((port (open-input-file (fluid-ref session-file)))
+  (let* ((port (open-input-file session-file))
          (buffers (read port)))
     (close-port port)
     (for-each (lambda (uri)
@@ -83,14 +85,14 @@
 
 (define-interactive (write-session)
   "Write session to file"
-  (let* ((port (open-output-file (fluid-ref session-file)))
+  (let* ((port (open-output-file session-file))
          (buffers (buffers->uri)))
     (pretty-print buffers port)
     (close-port port)))
 
 (define use-cookies? #t)
 
-(define user-cookie-file
+(define-ident %user-cookie-file
   (string-append %user-nomad-directory // "cookies.db"))
 
 (define (init)
