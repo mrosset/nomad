@@ -54,11 +54,9 @@ SOURCES =			\
 	nomad/buffer.scm	\
 	nomad/download.scm	\
 	nomad/doc.scm		\
-	nomad/eval.scm		\
 	nomad/frame.scm		\
 	nomad/html.scm		\
 	nomad/init.scm		\
-	nomad/minibuffer.scm	\
 	nomad/options.scm	\
 	nomad/widget.scm	\
 	nomad/repl.scm		\

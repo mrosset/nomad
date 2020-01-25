@@ -48,34 +48,32 @@ doc-snarf:
 doc-snarf-api:
 	@echo "$$DOC_SNARF_HEADER"
 	@for i in							\
-		$(top_builddir)/scheme/nomad/application.scm 		\
-		$(top_builddir)/scheme/nomad/bookmark.scm 		\
-		$(top_builddir)/scheme/nomad/buffer.scm 			\
-		$(top_builddir)/scheme/nomad/curl.scm 			\
-		$(top_builddir)/scheme/nomad/doc.scm 			\
-		$(top_builddir)/scheme/nomad/download.scm 		\
-		$(top_builddir)/scheme/nomad/eval.scm 			\
-		$(top_builddir)/scheme/nomad/frame.scm 			\
-		$(top_builddir)/scheme/nomad/html.scm 			\
-		$(top_builddir)/scheme/nomad/init.scm 			\
-		$(top_builddir)/scheme/nomad/lib.in 			\
-		$(top_builddir)/scheme/nomad/lib.scm 			\
-		$(top_builddir)/scheme/nomad/minibuffer.scm 		\
-		$(top_builddir)/scheme/nomad/nomad.scm 			\
-		$(top_builddir)/scheme/nomad/options.scm 		\
-		$(top_builddir)/scheme/nomad/repl.scm 			\
-		$(top_builddir)/scheme/nomad/server.scm 			\
-		$(top_builddir)/scheme/nomad/shroud.scm 			\
-		$(top_builddir)/scheme/nomad/tests.scm 			\
-		$(top_builddir)/scheme/nomad/text.scm 			\
-		$(top_builddir)/scheme/nomad/util.scm 			\
-		$(top_builddir)/scheme/nomad/views.scm 			\
-		$(top_builddir)/scheme/nomad/webkit.scm 			\
-		$(top_builddir)/scheme/nomad/webview.scm 		\
-		$(top_builddir)/scheme/nomad/widget.scm 			\
+		$(top_builddir)/scheme/nomad/application.scm		\
+		$(top_builddir)/scheme/nomad/bookmark.scm		\
+		$(top_builddir)/scheme/nomad/buffer.scm				\
+		$(top_builddir)/scheme/nomad/curl.scm			\
+		$(top_builddir)/scheme/nomad/doc.scm			\
+		$(top_builddir)/scheme/nomad/download.scm		\
+		$(top_builddir)/scheme/nomad/frame.scm			\
+		$(top_builddir)/scheme/nomad/html.scm			\
+		$(top_builddir)/scheme/nomad/init.scm			\
+		$(top_builddir)/scheme/nomad/lib.in			\
+		$(top_builddir)/scheme/nomad/lib.scm			\
+		$(top_builddir)/scheme/nomad/nomad.scm			\
+		$(top_builddir)/scheme/nomad/options.scm		\
+		$(top_builddir)/scheme/nomad/repl.scm			\
+		$(top_builddir)/scheme/nomad/server.scm				\
+		$(top_builddir)/scheme/nomad/shroud.scm				\
+		$(top_builddir)/scheme/nomad/tests.scm			\
+		$(top_builddir)/scheme/nomad/text.scm			\
+		$(top_builddir)/scheme/nomad/util.scm			\
+		$(top_builddir)/scheme/nomad/views.scm			\
+		$(top_builddir)/scheme/nomad/webkit.scm				\
+		$(top_builddir)/scheme/nomad/webview.scm		\
+		$(top_builddir)/scheme/nomad/widget.scm				\
 	; do						\
 	  $(GUILD) display-commentary $$i		\
-             | tail +2					\
-             | sed 's,^ ,,';				\
+	     | tail +2					\
+	     | sed 's,^ ,,';				\
 	  $(DOC_SNARF) -l scheme -t $$i;		\
 	done
