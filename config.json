@@ -1,0 +1,33 @@
+{
+    "locals": {
+        "url": "/nomad",
+        "name": "Nomad",
+        "owner": "Nomad Developers",
+        "description": "The Emacs of Web Browsers",
+        "source": "https://savannah.nongnu.org/projects/Nomad",
+        "license": "GPLv3 or later",
+        "license_url": "https://www.gnu.org/licenses/gpl-3.0.en.html",
+        "irc_freenode": "#nomad-browser",
+        "irc_kiwi": "https://kiwiirc.com/nextclient/irc.freenode.net/&nick=potential_user#nomad-browser",
+        "mailing_list_user": "https://lists.gnu.org/mailman/listinfo/nomad-users",
+        "docs": "/manual"
+    },
+    "plugins": [
+        "./plugins/paginator.coffee"
+    ],
+    "require": {
+        "moment": "moment",
+        "_": "underscore",
+        "typogr": "typogr"
+    },
+    "pug": {
+        "pretty": true
+    },
+    "markdown": {
+        "smartLists": true,
+        "smartypants": true
+    },
+    "paginator": {
+        "perPage": 3
+    }
+}

@@ -1,0 +1,50 @@
+doctype html
+block vars
+  - var bodyclass = null;
+html(lang='en')
+  head
+    block head
+      meta(charset='utf-8')
+      meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+      meta(name='viewport', content='width=device-width')
+      title
+        block title
+          = locals.name
+      link(rel='alternate', href=locals.url+'/feed.xml', type='application/rss+xml', title=locals.description)
+      link(rel='stylesheet', href=locals.url+contents.css['main.css'].url)
+  body(class=bodyclass)
+    nav(class="nav")
+      div(class="content-wrap")
+        a(href=locals.url)="Home"
+        |  
+        a(href=locals.irc_kiwi)="IRC"
+        |  
+        a(href=locals.mailing_list_user)="User Mailing List"
+        |  
+        a(href=locals.source)="Source"
+        |  
+        a(href=locals.url+locals.docs)="Documentation"
+        
+    header.header
+      div.content-wrap
+        block header
+          div.logo
+            h1
+              a(href=locals.url)= locals.name
+            p.description= locals.description
+    div#content
+      div.content-wrap
+        block content
+          h2 Sorry, we could not find the page!
+    footer
+      div.content-wrap
+        block footer
+          section.about
+          section.copy
+            p #{locals.name} 
+              a(href= locals.source)="Source"
+              is licensed under 
+              a(href= locals.license_url)= locals.license
+            p &copy; #{ new Date().getFullYear() } #{ locals.owner } &mdash; powered by&nbsp;
+              a(href='https://github.com/jnordberg/wintersmith') Wintersmith
+              //- please leave the "powered by" if you use the design
