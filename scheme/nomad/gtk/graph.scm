@@ -70,25 +70,28 @@
                                               (method-generic-function method))))
                     (class-direct-methods class))))
 
-(define-interactive (describe-buffer #:optional (fmt "svg")
+(define (graph-node tree child class)
+  (let ((parents (class-direct-supers class)))
+    (for-each (lambda (parent)
+                (let* ((parent-name (symbol->string
+                                     (class-name parent)))
+                       (node (node tree parent-name)))
+                  (setv node "shape" "record")
+                  ;; (setv child "label" (string-append "{\\N|" (format-slots class) "}"))
+                  (edge node child)
+                  (graph-node tree node parent)))
+              parents)))
+
+(define-interactive (graph-class #:optional
+                                     (fmt "png")
                                      (class (class-of (current-buffer))))
   (let* ((tree    (graph "buffer"))
          (name    (symbol->string (class-name class)))
          (child   (node tree name))
-         (parents (class-direct-supers class) )
          (file    (string-append "/tmp/dot." fmt)))
 
+    (graph-node tree child class)
     (setv child "shape" "record")
-    (setv child "label" (string-append "{\\N|" (format-slots class) "|" (format-methods class) "}"))
-
-    (for-each (lambda (parent)
-                (let* ((parent-name (symbol->string
-                                    (class-name parent)))
-                       (node (node tree parent-name)))
-                  (setv node "shape" "record")
-                  (edge node child)))
-              parents)
-
     (layout tree "dot")
     (render tree fmt file)
     ;; (make <gtk-cairo-buffer>)

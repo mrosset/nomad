@@ -1,5 +1,5 @@
 ;; buffers.scm
-;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
 
@@ -88,13 +88,16 @@
 (define-class <gtk-textview-buffer> (<nomad-text-buffer>
                                      <gtk-widget-buffer>
                                      <gtk-scrolled-window>)
-  (source-view #:accessor !source-view))
+  (source-view #:accessor !source-view)
+  (name #:init-value "<gtk-textview-buffer>"))
 
 (define-method (initialize (self <gtk-textview-buffer>) args)
   (next-method)
   (let ((view (make <gtk-source-view> #:editable #f)))
     (set! (!source-view self) view)
     (gtk-container-add self view)
+    (g-timeout-add 50 (lambda _
+                        (redisplay self)))
     (gtk-widget-show-all self)
     (gtk-widget-grab-focus view)))
 
