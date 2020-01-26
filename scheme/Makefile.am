@@ -43,12 +43,14 @@ nomad/lib.scm: nomad/lib.in Makefile
 	$(do_subst) < $(srcdir)/$< > $@
 
 SOURCES =			\
+	nomad/init.scm		\
+	nomad/util.scm		\
+	nomad/nomad.scm		\
 	nomad/lib.scm		\
 	nomad/application.scm	\
 	nomad/gtk/application.scm	\
 	nomad/gtk/frame.scm	\
 	nomad/gtk/buffers.scm	\
-	nomad/gtk/generics.scm	\
 	nomad/gtk/graph.scm	\
 	nomad/bookmark.scm	\
 	nomad/buffer.scm	\
@@ -56,7 +58,6 @@ SOURCES =			\
 	nomad/doc.scm		\
 	nomad/frame.scm		\
 	nomad/html.scm		\
-	nomad/init.scm		\
 	nomad/options.scm	\
 	nomad/widget.scm	\
 	nomad/repl.scm		\
@@ -64,8 +65,5 @@ SOURCES =			\
 	nomad/server.scm	\
 	nomad/tests.scm		\
 	nomad/text.scm		\
-	nomad/util.scm		\
 	nomad/views.scm		\
-	nomad/webview.scm	\
-	nomad/webkit.scm	\
-	nomad/nomad.scm
+	nomad/webview.scm
