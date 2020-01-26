@@ -118,3 +118,9 @@
       (format #t "key: ~a arg: ~a" key args))))
 
 
+
+(define-interactive (make-buffer #:optional (uri (read-from-minibuffer "Url: ")))
+  "Creates a new webview-buffer with URL"
+  (let ((buffer (make <gtk-webview-buffer> #:init-uri uri)))
+    (buffer-load-uri buffer uri)
+    buffer))

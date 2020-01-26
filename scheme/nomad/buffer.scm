@@ -123,15 +123,6 @@
     (switch-to-buffer buffer)
     buffer))
 
-(define-interactive (make-buffer #:optional (url (read-from-minibuffer "Url: ")))
-  "Creates a new webview-buffer with URL"
-  (let ((buffer (make-webview-buffer url)))
-    (set-buffer-hooks! buffer)
-    (buffer-load-uri buffer
-                     (prefix-url url))
-    (switch-to-buffer buffer)
-    buffer))
-
 (define-public (switch-if-not-current buffer)
   "Switch to buffer if it's not the current buffer already. Returns #t if buffer switched"
   (if (eq? buffer (current-buffer))

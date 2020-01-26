@@ -24,6 +24,7 @@
   #:use-module (nomad gtk generics)
   #:use-module (g-golf)
   #:export (<gtk-frame>
+            toggle-tabs*
             gtk-frame-new))
 
 (eval-when (expand load eval)
@@ -102,6 +103,12 @@
 
 (define-method (redisplay (frame <gtk-frame>))
   ((!redisplay-proc frame)))
+
+(define-method (toggle-tabs* (self <gtk-frame>))
+  (let ((notebook (!container self)))
+    (when (eq? <gtk-notebook> (class-of notebook))
+      (gtk-notebook-set-show-tabs  notebook (not
+                                             (gtk-notebook-get-show-tabs notebook))))))
 
 (define (gtk-frame-new app)
   (make <gtk-frame> #:application (slot-ref app 'g-inst)))

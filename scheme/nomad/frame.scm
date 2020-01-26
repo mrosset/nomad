@@ -35,12 +35,6 @@
 
 (define-class <nomad-frame> ())
 
-(define-method (toggle-tabs* (self <nomad-frame>))
-  (let ((notebook (!container self)))
-    (when (eq? <gtk-notebook> (class-of notebook))
-      (gtk-notebook-set-show-tabs  notebook (not
-                                             (gtk-notebook-get-show-tabs notebook))))))
-
 
 
 (define-public (current-frame)
