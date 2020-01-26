@@ -17,20 +17,9 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad application)
-  #:use-module (emacsy buffer)
-  #:use-module (emacsy emacsy)
-  #:use-module (nomad buffer)
   #:use-module (nomad init)
-  #:use-module (nomad lib)
-  #:use-module (nomad options)
-  #:use-module (nomad repl)
-  #:use-module (nomad text)
   #:use-module (g-golf)
-  #:use-module (nomad util)
-  #:use-module (nomad views)
-  #:use-module (nomad webview)
   #:export (<application>
-            emacs-init-file
             shutdown-hook
             shutdown
             app-init))

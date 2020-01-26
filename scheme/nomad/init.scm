@@ -18,24 +18,17 @@
 
 (define-module (nomad init)
   #:use-module (nomad util)
-  #:use-module (emacsy emacsy)
-  #:use-module (nomad eval)
-  #:use-module (nomad buffer)
-  #:use-module (nomad webview)
-  #:use-module (nomad repl)
   #:use-module (nomad options)
-  #:use-module (ice-9 pretty-print)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
+  #:use-module (emacsy emacsy)
   #:export (init
             use-cookies?
-            user-cookie-file
+            %user-cookie-file
             %user-init-file
             %user-nomad-directory
             startup-hook
-            download-directory
-            define-ident
-            session-file))
+            %download-directory
+            %session-file
+            define-ident))
 
 (define startup-hook (make-hook))
 
