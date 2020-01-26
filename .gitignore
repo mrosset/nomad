@@ -32,6 +32,10 @@
 /scheme/nomad/lib.scm
 /check-guile
 /scheme/data
+/coverage
+/test-suite/test-runner
+/tools/coverage
+/lcov.info
 
 # multiple
 .deps

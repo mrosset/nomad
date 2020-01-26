@@ -35,6 +35,7 @@
          ("Gtk" . "DrawingArea")
          ("Gtk" . "ApplicationWindow")
          ("Gtk" . "Notebook")
+         ("Gtk" . "ScrolledWindow")
          ("GtkSource" . "View"))))
 
 

@@ -21,6 +21,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
   #:use-module (nomad gtk buffers)
+  #:use-module (nomad gtk frame)
   #:use-module (g-golf)
   #:export (<gtk-cairo-buffer>))
 
@@ -84,7 +85,7 @@
 
 (define-interactive (graph-class #:optional
                                      (fmt "png")
-                                     (class (class-of (current-buffer))))
+                                     (class <gtk-frame>))
   (let* ((tree    (graph "buffer"))
          (name    (symbol->string (class-name class)))
          (child   (node tree name))

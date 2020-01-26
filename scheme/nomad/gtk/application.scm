@@ -31,7 +31,7 @@
 (define-class <nomad-gtk-application> (<application> <gtk-application>))
 
 (define-method (activate-cb app)
-  (gtk-widget-show-all (gtk-frame-new))
+  (gtk-widget-show-all (gtk-frame-new app))
   (make <gtk-webview-buffer>)
   (app-init))
 

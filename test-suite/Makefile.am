@@ -1,5 +1,6 @@
 TESTS  = tests/util.scm
 TESTS += tests/init.scm
+TESTS += tests/frame.scm
 TESTS += tests/application.scm
 
 GUILE_AUTO_COMPILE := 0

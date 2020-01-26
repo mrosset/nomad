@@ -35,7 +35,7 @@ lcov.info: all
 	$(top_builddir)/pre-inst-env $(top_builddir)/tools/coverage
 
 coverage: lcov.info
-	$(GENHTML) -o $(top_builddir)/coverage lcov.info
+	$(top_builddir)/pre-inst-env $(GENHTML) -o $(top_builddir)/coverage lcov.info
 
 clean-scheme:
 	$(MAKE) -C ./scheme clean

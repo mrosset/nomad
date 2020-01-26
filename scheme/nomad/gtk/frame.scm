@@ -19,6 +19,7 @@
 (define-module (nomad gtk frame)
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
+  #:use-module (nomad frame)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk generics)
   #:use-module (g-golf)
@@ -48,8 +49,10 @@
   (filter-map (lambda (state)
          (assoc-ref emacsy-flag-map state)) states))
 
-(define-class <gtk-frame> (<frame> <gtk-application-window>)
-  (container)
+
+
+(define-class <gtk-frame> (<nomad-frame> <gtk-application-window>)
+  (container #:accessor !container)
   (box)
   (modeline)
   (minibuffer)
@@ -57,7 +60,7 @@
 
 (define-method (initialize (self <gtk-frame>) args)
   (next-method)
-  (let* ((box        (make <gtk-vbox> #:spacing 0))
+  (let* ((box       (make <gtk-vbox> #:spacing 0))
         (container  (make <gtk-notebook>))
         (modeline   (make <gtk-label> #:single-line-mode #f #:xalign 0))
         (minibuffer (make <gtk-entry> #:has-frame #f)))
@@ -100,6 +103,11 @@
 (define-method (redisplay (frame <gtk-frame>))
   ((!redisplay-proc frame)))
 
+(define (gtk-frame-new app)
+  (make <gtk-frame> #:application (slot-ref app 'g-inst)))
+
+
+
 (define (key-press-cb frame event)
   (let* ((unicode   (gdk-keyval-to-unicode (gdk-event-key:keyval event)))
          ;; FIXME:  What happens if GDK_KEY_BackSpace is not 8?
@@ -116,6 +124,3 @@
               #f
               #t))
         #f)))
-
-(define (gtk-frame-new)
-  (make <gtk-frame> #:application (slot-ref (g-application-get-default) 'g-inst)))

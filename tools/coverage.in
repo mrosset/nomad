@@ -65,7 +65,9 @@
 (define (project-file? file)
   "Determine if @var{file} is part of the current project."
   (let ((path (search-path %load-path file)))
-    (string-contains path "@abs_top_srcdir@")))
+    (if path
+        (string-contains path "@abs_top_srcdir@")
+        #f)))
 
 (define (list-tests)
   "List the tests specified in the @file{Makefile}."
@@ -89,7 +91,7 @@
         (lambda ()
           (for-each (lambda (file)
                       (format #t "loading ~a\n" file)
-                      (load file))  (list-tests))
+                      (load file)) (list-tests))
           (run-all-defined-test-cases)))))
   (let ((port (open-output-file "lcov.info"))
         (modules (filter project-file? (instrumented-source-files data))))

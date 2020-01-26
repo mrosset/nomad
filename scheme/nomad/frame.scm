@@ -18,90 +18,42 @@
 
 (define-module (nomad frame)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad util)
+  #:use-module (oop goops)
   #:use-module (g-golf)
-  #:export (make-frame-socket))
+  #:export (make-frame-socket
+            <nomad-frame>))
 
 (eval-when (expand load eval)
-  (gi-import "Nomad")
   (map (lambda (pair)
          (gi-import-by-name (car pair) (cdr pair)))
        '(("Gtk" . "Widget")
          ("Gtk" . "Label")
+         ("Gio" . "Application")
          ("Gtk" . "Notebook"))))
 
-(define-public (current-notebook)
-  "Returns the current notebook"
-  (let* ((frame (current-frame))
-        (notebook (nomad-app-frame-get-notebook frame)))
-    notebook))
+
+
+(define-class <nomad-frame> ())
+
+(define-method (toggle-tabs* (self <nomad-frame>))
+  (let ((notebook (!container self)))
+    (when (eq? <gtk-notebook> (class-of notebook))
+      (gtk-notebook-set-show-tabs  notebook (not
+                                             (gtk-notebook-get-show-tabs notebook))))))
+
+
 
 (define-public (current-frame)
   "Returns the current frame"
-  (nomad-app-get-frame))
+  (let* ((app (g-application-get-default))
+         (frame (gtk-application-get-active-window app)))
+    frame))
 
-(define-public (current-notebook-widget notebook)
-  "Returns the NOTEBOOK's widget"
-  (let ((page (gtk-notebook-get-current-page notebook)))
-    (gtk-notebook-get-nth-page notebook page)))
+;; (define (make-frame-socket url socket)
+;;   "Write `make-frame' comand with arg URL to a SOCKET."
+;;   (write-socket (format #f "~S" `(make-frame ,url)) socket))
 
-(define-public (current-echo-area)
-  "Returns the echo area for the current frame"
-  (nomad-app-frame-get-readline (current-frame)))
-
-(define-interactive (toggle-tabs)
+(define-interactive (toggle-tabs #:optional (frame (current-frame)))
   "Toggles the current notebook tabs on or off."
-  (let ((notebook (current-notebook)))
-    (gtk-notebook-set-show-tabs notebook
-                                (not (gtk-notebook-get-show-tabs notebook)))
-    (gtk-notebook-get-show-tabs notebook)))
-
-(define-public (notebook-insert buffer position)
-  "Inserts a BUFFER with POSITION into the current frame's notebook"
-  (let* ((widget (slot-ref buffer 'widget))
-         (frame (nomad-app-get-frame))
-         (notebook (nomad-app-frame-get-notebook frame))
-         (label (gtk-label-new (buffer-name buffer))))
-    (gtk-notebook-insert-page notebook
-                              widget
-                              label
-                              position)
-    (gtk-widget-show-all widget)))
-
-(define-public (grab-readline)
-  (let* ((frame (nomad-app-get-frame))
-         (readline (nomad-app-frame-get-readline frame)))
-    (gtk-widget-grab-focus readline)))
-
-(define-public (number-tabs)
-  (let* ((frame (nomad-app-get-frame))
-         (notebook (nomad-app-frame-get-notebook frame)))
-    (gtk-notebook-get-n-pages notebook)))
-
-(define (make-frame-socket url socket)
-  "Write `make-frame' comand with arg URL to a SOCKET."
-  (write-socket (format #f "~S" `(make-frame ,url)) socket))
-
-(define-public (switch-to-buffer-widget widget)
-  "Switched to the BUFFER widget found in the current notebook. This should
-only be used to sync switch-to-buffer with it's GTK widget"
-  (let* ((notebook (current-notebook))
-         (page (gtk-notebook-page-num notebook widget)))
-    ;; If the notebook does not contain the widget, then add it
-    (when (< page 0)
-      (set! page
-            (gtk-notebook-append-page notebook widget
-                                      #f)))
-    ;; (when (eq? <webview-buffer> (class-of buffer))
-    ;;   (gtk-notebook-set-tab-label-text notebook widget page)
-    ;;   )
-    ;; Switch to the widget's page
-    (gtk-widget-show-all widget)
-    (gtk-notebook-set-current-page notebook page)))
-;; (define-public (notebook-contains notebook buffer)
-;;   "Returns true if the current frames notebook contains BUFFER"
-;;   (let* ((page (gtk-notebook-page-num notebook
-;;                                       (slot-ref buffer 'widget))))
-;;     (if (>= page 0)
-;;         #t
-;;         #f)))
+  (toggle-tabs* frame)
+  #t)
