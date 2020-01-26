@@ -31,6 +31,17 @@
             ensure-fluid-directory
             ensure-directory))
 
+;;; Taken from Emacsy
+(define-public (re-export-modules . modules)
+  "Re-export modules"
+  (define (re-export-module module)
+    (module-for-each
+     (lambda (sym var)
+       ;; (format #t "re-exporting ~a~%" sym)
+       (module-re-export! (current-module) (list sym)))
+     (resolve-interface module)))
+  (for-each re-export-module modules))
+
 (define (list->keymap lst)
   "Creates a new keymap from LST"
   (let ((keymap (make-keymap)))

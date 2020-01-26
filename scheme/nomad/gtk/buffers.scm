@@ -19,22 +19,25 @@
 (define-module (nomad gtk buffers)
   #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
-  #:use-module (nomad gtk frame)
-  #:use-module (nomad gtk generics)
+  #:use-module (nomad webview)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<gtk-widget-buffer>
             <gtk-webview-buffer>
-            <gtk-textview-buffer>))
+            <gtk-textview-buffer>
+            buffer-uri
+            buffer-load-uri))
 
 (eval-when (expand load eval)
   (map (lambda (pair)
          (gi-import-by-name (car pair) (cdr pair)))
        '(("WebKit2" . "WebView")
+         ("WebKit2" . "LoadEvent")
          ("Gtk" . "Widget")
          ("Gtk" . "DrawingArea")
          ("Gtk" . "ApplicationWindow")
          ("Gtk" . "Notebook")
+         ("Gtk" . "TextBuffer")
          ("Gtk" . "ScrolledWindow")
          ("GtkSource" . "View"))))
 
@@ -82,7 +85,14 @@
              (let ((percent (inexact->exact
                            (round (* 100 (!estimated-load-progress self))))))
                (slot-set! self 'name (!uri self)))
-             #t)))
+             #t))
+  (buffer-load-uri self (!init-uri self)))
+
+(define-method (buffer-load-uri (buffer <gtk-webview-buffer>) uri)
+  (webkit-web-view-load-uri buffer uri))
+
+(define-method (buffer-uri (buffer <gtk-webview-buffer>))
+   (webkit-web-view-get-uri buffer))
 
 
 
@@ -118,9 +128,3 @@
       (format #t "key: ~a arg: ~a" key args))))
 
 
-
-(define-interactive (make-buffer #:optional (uri (read-from-minibuffer "Url: ")))
-  "Creates a new webview-buffer with URL"
-  (let ((buffer (make <gtk-webview-buffer> #:init-uri uri)))
-    (buffer-load-uri buffer uri)
-    buffer))

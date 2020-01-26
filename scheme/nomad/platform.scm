@@ -1,4 +1,4 @@
-;; webview.scm
+;; platform.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,22 +16,9 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad webview)
-  #:use-module (emacsy emacsy)
-  #:use-module (nomad buffer)
-  #:use-module (g-golf)
-  #:use-module (oop goops)
-  #:export (<nomad-webview-buffer>
-            !init-uri))
+(define-module (nomad platform)
+  #:use-module (nomad util)
+  #:use-module (nomad gtk gtk))
 
-
-
-(define-class <nomad-webview-buffer> (<nomad-buffer>)
-  (name #:init-value "*webview*")
-  (init-uri #:accessor !init-uri
-            #:init-keyword
-            #:init-uri
-            #:init-value "https://neutron.bufio.org"))
-
-(define-method (initialize (self <nomad-webview-buffer>) args)
-  (next-method))
+(re-export-modules
+ '(nomad gtk gtk))

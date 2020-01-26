@@ -1,5 +1,4 @@
 (define-module (nomad options)
-  #:use-module (nomad webview)
   #:use-module (ice-9 getopt-long)
   #:export (
             option-app-id

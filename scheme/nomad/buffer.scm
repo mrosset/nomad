@@ -21,20 +21,11 @@
   #:use-module (g-golf)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
-  #:use-module (nomad eval)
-  #:use-module (nomad frame)
-  #:use-module (nomad minibuffer)
-  #:use-module (nomad repl)
-  #:use-module (nomad text)
-  #:use-module (nomad views)
-  #:use-module (nomad gtk generics)
-  #:use-module (nomad widget)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
-  #:export (current-url
-            make-buffer-socket
+  #:export (make-buffer-socket
             <nomad-text-buffer>
-            <nomad-webview-buffer>
+            <nomad-buffer>
             buffers-contain?
             buffers->uri))
 
@@ -53,24 +44,6 @@
 (define-class <nomad-text-buffer> (<nomad-buffer>))
 
 
-
-(define-class <nomad-webview-buffer> (<nomad-buffer>)
-  (name #:init-value "*webview*")
-  (init-uri #:accessor !init-uri
-            #:init-keyword
-            #:init-uri
-            #:init-value "https://neutron.bufio.org"))
-
-(define-method (initialize (self <nomad-webview-buffer>) args)
-  (next-method)
-  (buffer-load-uri self (!init-uri self)))
-
-
-
-(define-interactive (current-url)
-  "Returns the current url"
-  (message "~a"
-           (buffer-uri (current-buffer))))
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."

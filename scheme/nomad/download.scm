@@ -25,7 +25,6 @@
   #:use-module (web response)
   #:use-module (nomad init)
   #:use-module (nomad util)
-  #:use-module (nomad webview)
   #:export (uri->filename
             url-fetch
             copy-to-port

@@ -19,6 +19,7 @@
 (define-module (tests frame)
   #:use-module (oop goops)
   #:use-module (g-golf)
+  #:use-module (nomad commands)
   #:use-module (nomad frame)
   #:use-module (nomad gtk frame)
   #:use-module (unit-test))

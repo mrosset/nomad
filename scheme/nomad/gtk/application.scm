@@ -26,7 +26,10 @@
   #:export (<nomad-gtk-application>))
 
 (eval-when (expand load eval)
-  (gi-import-by-name "Gtk" "Widget"))
+  (map (lambda (pair)
+         (gi-import-by-name (car pair) (cdr pair)))
+       '(("Gtk" . "Widget")
+         ("Gtk" . "Application"))))
 
 (define-class <nomad-gtk-application> (<application> <gtk-application>))
 

@@ -20,8 +20,7 @@
   #:use-module (g-golf)
   #:use-module (nomad frame)
   #:use-module (nomad util)
-  #:use-module (srfi srfi-64)
-  )
+  #:use-module (srfi srfi-64))
 
 (eval-when (expand load eval)
   (gi-import "Nomad")

@@ -25,6 +25,11 @@
   #:use-module (g-golf)
   #:export (<gtk-cairo-buffer>))
 
+(eval-when (expand load eval)
+  (map (lambda (pair)
+         (gi-import-by-name (car pair) (cdr pair)))
+       '(("WebKit2" . "WebView"))))
+
 (load-extension "libgv_guile.so" "SWIG_init")
 
 (define-class <gtk-cairo-buffer> (<nomad-text-buffer>
@@ -85,7 +90,7 @@
 
 (define-interactive (graph-class #:optional
                                      (fmt "png")
-                                     (class <gtk-frame>))
+                                     (class <gtk-webview-buffer>))
   (let* ((tree    (graph "buffer"))
          (name    (symbol->string (class-name class)))
          (child   (node tree name))

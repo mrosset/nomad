@@ -1,4 +1,4 @@
-;; genrics.scm
+;; commands.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -15,15 +15,25 @@
 
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
-(define-module (nomad gtk generics)
-  #:use-module (emacsy emacsy)
-  #:use-module (g-golf)
+
+(define-module (nomad commands)
   #:use-module (oop goops)
-  #:export (buffer-uri
-            buffer-load-uri))
+  #:use-module (emacsy emacsy)
+  #:use-module (nomad frame)
+  #:use-module (nomad platform))
 
-(define-method (buffer-uri (buffer <buffer>))
-   (webkit-web-view-get-uri buffer))
+(define-interactive (current-url)
+  "Returns the current url"
+  (message "~a"
+           (buffer-uri (current-buffer))))
 
-(define-method (buffer-load-uri (buffer <buffer>) uri)
-  (webkit-web-view-load-uri buffer uri))
+(define-interactive (make-buffer #:optional (uri (read-from-minibuffer "Url: ")))
+  "Creates a new webview-buffer with URL"
+  (let ((buffer (make <gtk-webview-buffer> #:init-uri uri)))
+    (buffer-load-uri buffer uri)
+    buffer))
+
+(define-interactive (toggle-tabs #:optional (frame (current-frame)))
+  "Toggles the current notebook tabs on or off."
+  (toggle-tabs* frame)
+  #t)

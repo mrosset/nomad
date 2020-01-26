@@ -20,8 +20,6 @@
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
   #:use-module (nomad frame)
-  #:use-module (nomad gtk buffers)
-  #:use-module (nomad gtk generics)
   #:use-module (g-golf)
   #:export (<gtk-frame>
             toggle-tabs*

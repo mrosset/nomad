@@ -18,16 +18,15 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 (define-module (nomad nomad)
+  #:use-module (nomad platform)
   #:use-module (nomad application)
-  #:use-module (nomad gtk application)
-  #:use-module (nomad gtk buffers)
-  #:use-module (nomad gtk generics)
   #:use-module (nomad bookmark)
   #:use-module (nomad buffer)
   ;; #:use-module (nomad curl)
   #:use-module (nomad doc)
   #:use-module (nomad download)
-  #:use-module (nomad eval)
+  #:use-module (nomad commands)
+
   #:use-module (nomad frame)
   #:use-module (nomad html)
   #:use-module (nomad init)
@@ -42,32 +41,18 @@
   #:use-module (nomad text)
   #:use-module (nomad util)
   #:use-module (nomad views)
-  #:use-module (nomad webkit)
   #:use-module (nomad webview))
 
-;;; Taken from Emacsy
-(define (re-export-modules . modules)
-  "Re-export modules"
-  (define (re-export-module module)
-    (module-for-each
-     (lambda (sym var)
-       ;;(format #t "re-exporting ~a~%" sym)
-       (module-re-export! (current-module) (list sym)))
-     (resolve-interface module)))
-  (for-each re-export-module modules))
-
 (re-export-modules
+ '(nomad platform)
  '(nomad application)
  '(nomad bookmark)
  '(nomad buffer)
  ;; '(nomad curl)
  '(nomad doc)
  '(nomad download)
- '(nomad eval)
+ '(nomad commands)
  '(nomad frame)
- '(nomad gtk application)
- '(nomad gtk buffers)
- '(nomad gtk generics)
  '(nomad html)
  '(nomad init)
  '(nomad lib)
@@ -81,5 +66,4 @@
  '(nomad text)
  '(nomad util)
  '(nomad views)
- '(nomad webkit)
  '(nomad webview))

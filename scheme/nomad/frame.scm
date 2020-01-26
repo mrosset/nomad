@@ -46,8 +46,3 @@
 ;; (define (make-frame-socket url socket)
 ;;   "Write `make-frame' comand with arg URL to a SOCKET."
 ;;   (write-socket (format #f "~S" `(make-frame ,url)) socket))
-
-(define-interactive (toggle-tabs #:optional (frame (current-frame)))
-  "Toggles the current notebook tabs on or off."
-  (toggle-tabs* frame)
-  #t)

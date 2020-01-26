@@ -24,7 +24,6 @@
  #:use-module (ice-9 pretty-print)
  #:use-module (ice-9 regex)
  #:use-module (ice-9 optargs)
- #:use-module (nomad webview)
  #:use-module (nomad buffer)
  #:use-module (nomad init)
  #:use-module (nomad util)
