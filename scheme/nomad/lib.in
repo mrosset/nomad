@@ -16,21 +16,20 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad lib)
-  #:export (dynamic-path))
+(define-module (nomad lib))
 
 ;; FIXE: catch the right exception here
-(catch #t
-  (lambda _
-    (load-extension "libguile-nomad" "init_guile_nomad_lib"))
-  (lambda (key . param)
-    (load-extension "@LIBEXEC@/nomad/libguile-nomad.so"
-                    "init_guile_nomad_lib")))
+;; (catch #t
+;;   (lambda _
+;;     (load-extension "libguile-nomad" "init_guile_nomad_lib"))
+;;   (lambda (key . param)
+;;     (load-extension "@LIBEXEC@/nomad/libguile-nomad.so"
+;;                     "init_guile_nomad_lib")))
 
-(define (dynamic-path)
-  (if (libguile-nomad?)
-      "libguile-nomad"
-      "@LIBEXEC@/nomad/libguile-nomad.so"))
+;; (define (dynamic-path)
+;;   (if (libguile-nomad?)
+;;       "libguile-nomad"
+;;       "@LIBEXEC@/nomad/libguile-nomad.so"))
 
 ;; Local Variables:
 ;; mode: scheme

@@ -46,12 +46,15 @@ SOURCES =			\
 	nomad/init.scm		\
 	nomad/util.scm		\
 	nomad/nomad.scm		\
+	nomad/commands.scm	\
+	nomad/platform.scm	\
 	nomad/lib.scm		\
 	nomad/application.scm	\
 	nomad/gtk/application.scm	\
 	nomad/gtk/frame.scm	\
 	nomad/gtk/buffers.scm	\
 	nomad/gtk/graph.scm	\
+	nomad/gtk/gtk.scm	\
 	nomad/bookmark.scm	\
 	nomad/buffer.scm	\
 	nomad/download.scm	\

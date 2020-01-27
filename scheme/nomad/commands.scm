@@ -20,7 +20,14 @@
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
   #:use-module (nomad frame)
+  #:use-module (nomad webview)
   #:use-module (nomad platform))
+
+(define (ensure-protocol uri)
+  (if (or (string-prefix? "https://" uri)
+          (string-prefix? "http://" uri))
+      uri
+      (string-append "https://" uri)))
 
 (define-interactive (current-url)
   "Returns the current url"
@@ -29,11 +36,23 @@
 
 (define-interactive (make-buffer #:optional (uri (read-from-minibuffer "Url: ")))
   "Creates a new webview-buffer with URL"
-  (let ((buffer (make <gtk-webview-buffer> #:init-uri uri)))
-    (buffer-load-uri buffer uri)
-    buffer))
+  (make <platform-webview-buffer> #:init-uri  (ensure-protocol uri)))
 
 (define-interactive (toggle-tabs #:optional (frame (current-frame)))
   "Toggles the current notebook tabs on or off."
   (toggle-tabs* frame)
   #t)
+
+(define-interactive (edit-uri)
+  "Edit the current-url."
+  (buffer-load-uri (current-buffer)
+                   (read-from-minibuffer "Url: " (buffer-uri (current-buffer))))
+  #t)
+
+(define-interactive (load-uri #:optional (n (universal-argument-pop!)))
+  "Loads @var{uri} with current buffer"
+  (let ((uri (ensure-protocol (read-from-minibuffer "Url: "))))
+    (if (or (not (is-a? <nomad-webview-buffer> (current-buffer))) (> n 1) )
+        (make <platform-webview-buffer> #:init-uri uri)
+        (buffer-load-uri (current-buffer) uri))
+    #t))

@@ -29,10 +29,8 @@
             buffers-contain?
             buffers->uri))
 
-(eval-when (expand load eval)
-  (gi-import "Nomad"))
-
 
+
 (define-class <nomad-buffer> (<text-buffer>))
 
 (define-method (initialize (self <nomad-buffer>) args)

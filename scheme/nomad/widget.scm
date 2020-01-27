@@ -29,7 +29,6 @@
             buffer-pointer))
 
 (eval-when (expand load eval)
-  (gi-import "Nomad")
   (gi-import-by-name "Gtk" "Widget"))
 
 (define-class <widget-buffer>

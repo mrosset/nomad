@@ -18,7 +18,10 @@
 
 (define-module (nomad platform)
   #:use-module (nomad util)
-  #:use-module (nomad gtk gtk))
+  #:use-module (nomad gtk gtk)
+  #:re-export (<platform-webview-buffer>
+               <platform-application>
+               <platform-frame>))
 
 (re-export-modules
  '(nomad gtk gtk))

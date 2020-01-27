@@ -56,7 +56,6 @@
 
 (eval-when (expand load eval)
   (gi-import "WebKit2")
-  (gi-import "Nomad")
   (gi-import-by-name "Gtk" "Widget"))
 
 ;;; <webview-buffer> inherits <text-buffer> and <nomad-web-view>
@@ -213,10 +212,6 @@ specified. Returns the final URL passed to webkit"
   "Copy current url to clipboard"
   (yank-string (current-url))
   (message (webview-current-url)))
-
-(define-interactive (tweak-url)
-  "Edit the current-url."
-  (browse (read-from-minibuffer "Url: " (current-url))))
 
 (define-interactive
   (isearch-forward #:optional

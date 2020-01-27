@@ -25,12 +25,10 @@
             %user-cookie-file
             %user-init-file
             %user-nomad-directory
-            startup-hook
+            %startup-hook
             %download-directory
             %session-file
             define-ident))
-
-(define startup-hook (make-hook))
 
 ;; Macro that defines a top level identifier
 ;; define-ident create a new top level identifier of @var{var} with the
@@ -43,6 +41,8 @@
          (identifier-syntax
           val))
        (export var)))))
+
+(define %startup-hook (make-hook))
 
 ;; Path of user's initialization file. This is a top level identifier, it's
 ;; default value is @code{$HOME/.nomad}.

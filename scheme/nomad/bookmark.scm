@@ -25,6 +25,7 @@
  #:use-module (ice-9 regex)
  #:use-module (ice-9 optargs)
  #:use-module (nomad buffer)
+ #:use-module (nomad commands)
  #:use-module (nomad init)
  #:use-module (nomad util)
  #:use-module (srfi srfi-1)
@@ -41,6 +42,7 @@
            read-bookmarks
            write-bookmarks
            bookmarks
+           pp-bookmarks
            open-bookmark
            save-bookmark))
 

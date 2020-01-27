@@ -20,10 +20,20 @@
 
 (define-module (nomad gtk gtk)
   #:use-module (nomad util)
+  #:use-module (oop goops)
   #:use-module (nomad gtk application)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
-  #:use-module (nomad gtk graph))
+  #:use-module (nomad gtk graph)
+  #:export (<platform-webview-buffer>
+            <platform-application>
+            <platform-frame>))
+
+(define-class <platform-webview-buffer> (<gtk-webview-buffer>))
+
+(define-class <platform-application> (<nomad-gtk-application>))
+
+(define-class <platform-frame> (<gtk-frame>))
 
 (re-export-modules
  '(nomad gtk application)

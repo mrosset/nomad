@@ -18,10 +18,11 @@
 
 (define-module (nomad application)
   #:use-module (nomad init)
+  #:use-module (nomad util)
   #:use-module (g-golf)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<application>
             shutdown-hook
-            shutdown
             app-init))
 
 (eval-when (expand load eval)
@@ -53,4 +54,4 @@ controls are accessible to scheme"
   ;; (agenda-schedule-interval (lambda _
   ;;                             (emacsy-tick))
   ;;                           50)
-  (run-hook startup-hook))
+  (run-hook %startup-hook))

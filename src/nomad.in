@@ -27,6 +27,7 @@ exec @GUILE@ -e main -s "$0" "$@"
 (use-modules (ice-9 pretty-print)
              (emacsy emacsy)
              (nomad nomad)
+             (nomad platform)
              (g-golf))
 
 (define (pretty-string sym)
@@ -49,7 +50,7 @@ exec @GUILE@ -e main -s "$0" "$@"
 
 (define (main args)
   (emacsy-initialize #t)
-  (let ((app (make <nomad-gtk-application> #:application-id "org.gnu.devel.nomad")))
+  (let ((app (make <platform-application> #:application-id "org.gnu.devel.nomad")))
     (g-application-run app 0 #f)))
 
 ;; Local Variables:

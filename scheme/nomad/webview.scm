@@ -35,3 +35,5 @@
 
 (define-method (initialize (self <nomad-webview-buffer>) args)
   (next-method))
+
+

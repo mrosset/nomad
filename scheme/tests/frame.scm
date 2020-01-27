@@ -23,7 +23,6 @@
   #:use-module (srfi srfi-64))
 
 (eval-when (expand load eval)
-  (gi-import "Nomad")
   (gi-import "GtkSource")
   (for-each (lambda (x)
               (gi-import-by-name  (car x) (cdr x)))
@@ -44,5 +43,4 @@
               (test-equal <gtk-notebook> (class-of notebook))
               (test-equal <nomad-app-frame> (class-of frame))
               (test-equal 0 page)
-              (test-equal <gtk-source-view> (class-of (current-notebook-widget notebook)) )
-              ))
+              (test-equal <gtk-source-view> (class-of (current-notebook-widget notebook)))))

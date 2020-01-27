@@ -20,8 +20,6 @@
   #:use-module (nomad application)
   #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
-  #:use-module (nomad minibuffer)
-  #:use-module (nomad eval)
   #:use-module (nomad html)
   #:export (render-completion-popup-view))
 
@@ -70,51 +68,50 @@ color: steelblue;
     ((define-view (proc  ...) thunk)
      (define-public (proc ...)
        (sxml->html-string
-	`(html
-	  (style ,style-sheet)
-	  (head
-	   (title "nomad view"))
-	  (body (@ (onload "document.getElementById('selected').scrollIntoView();")
-		   (style "margin: 0px 0px 0px 0px;"))
-		(div (@ (class "fill"))
-		     ,thunk))))))))
+        `(html
+          (style ,style-sheet)
+          (head
+           (title "nomad view"))
+          (body (@ (onload "document.getElementById('selected').scrollIntoView();")
+                   (style "margin: 0px 0px 0px 0px;"))
+                (div (@ (class "fill"))
+                     ,thunk))))))))
 
 (define-popup-view (which-key-view-old lst selection)
   `(table ,@(map (lambda (cmd)
-		   `(tr (td (@ (class "accent")) ,(car cmd)) (td ,(car (cdr cmd)))))
-		 lst)))
+                   `(tr (td (@ (class "accent")) ,(car cmd)) (td ,(car (cdr cmd)))))
+                 lst)))
 
 (define-popup-view (which-key-view lst selection)
   `(div (@ (class "grid-container")) ,@(map (lambda (cmd)
-				 `(div (@ (class "grid-item"))
-				       (table
-					(tr
-					 (td (@ (class "key-cell")) ,(car cmd))
-					 (td ,(car (cdr cmd)))))))
-			       lst)))
+                                 `(div (@ (class "grid-item"))
+                                       (table
+                                        (tr
+                                         (td (@ (class "key-cell")) ,(car cmd))
+                                         (td ,(car (cdr cmd)))))))
+                               lst)))
 
 (define-popup-view (completion-view lst selection)
   `(table
-	 ,(let ((count 0))
-	    (map (lambda (item)
-		   (let ((tr `(tr (td ,item)))
-			 (selected `(tr (@ (id "selected") (class "selected")) (td ,item))))
-		     (when (= count selection)
-		       (set! tr selected))
-		     (set! count (+ count 1))
-		     tr))
-		 lst))))
+         ,(let ((count 0))
+            (map (lambda (item)
+                   (let ((tr `(tr (td ,item)))
+                         (selected `(tr (@ (id "selected") (class "selected")) (td ,item))))
+                     (when (= count selection)
+                       (set! tr selected))
+                     (set! count (+ count 1))
+                     tr))
+                 lst))))
 
 (define-interactive (render-completion-popup-view)
   "Renders the current minibuffer completion state"
   (with-buffer minibuffer
     (let* ((contents (substring (minibuffer-contents) 0 (- (point) (point-min))))
-	   (completions (all-completions
-			 contents
-			 (fluid-ref (@@ (emacsy minibuffer) minibuffer-completion-table))
-			 (fluid-ref (@@ (emacsy minibuffer) minibuffer-completion-predicate))))
-	   (view (local-var 'view))
-	   (row (local-var 'selection)))
+           (completions (all-completions
+                         contents
+                         (fluid-ref (@@ (emacsy minibuffer) minibuffer-completion-table))
+                         (fluid-ref (@@ (emacsy minibuffer) minibuffer-completion-predicate))))
+           (view (local-var 'view))
+           (row (local-var 'selection)))
       (set! (local-var 'completions) completions)
       (render-popup view completions row))))
-

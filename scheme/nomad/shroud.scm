@@ -18,7 +18,6 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 (define-module (nomad shroud)
-  #:use-module (nomad eval)
   #:use-module (nomad util)
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 regex)

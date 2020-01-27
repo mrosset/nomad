@@ -18,7 +18,6 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 (define-module (nomad nomad)
-  #:use-module (nomad platform)
   #:use-module (nomad application)
   #:use-module (nomad bookmark)
   #:use-module (nomad buffer)
@@ -26,12 +25,9 @@
   #:use-module (nomad doc)
   #:use-module (nomad download)
   #:use-module (nomad commands)
-
   #:use-module (nomad frame)
   #:use-module (nomad html)
   #:use-module (nomad init)
-  #:use-module (nomad lib)
-  #:use-module (nomad minibuffer)
   #:use-module (nomad options)
   #:use-module (nomad widget)
   #:use-module (nomad repl)
@@ -44,7 +40,6 @@
   #:use-module (nomad webview))
 
 (re-export-modules
- '(nomad platform)
  '(nomad application)
  '(nomad bookmark)
  '(nomad buffer)
@@ -55,8 +50,6 @@
  '(nomad frame)
  '(nomad html)
  '(nomad init)
- '(nomad lib)
- '(nomad minibuffer)
  '(nomad options)
  '(nomad widget)
  '(nomad repl)
