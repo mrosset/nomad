@@ -50,7 +50,7 @@ exec @GUILE@ -e main -s "$0" "$@"
 
 (define (main args)
   (emacsy-initialize #t)
-  (let ((app (make <platform-application> #:application-id "org.gnu.devel.nomad")))
+  (let ((app (make <application> #:application-id "org.gnu.devel.nomad")))
     (g-application-run app 0 #f)))
 
 ;; Local Variables:

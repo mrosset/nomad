@@ -24,24 +24,8 @@
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
-            <nomad-text-buffer>
-            <nomad-buffer>
             buffers-contain?
             buffers->uri))
-
-
-
-(define-class <nomad-buffer> (<text-buffer>))
-
-(define-method (initialize (self <nomad-buffer>) args)
-  (next-method)
-  (add-buffer! self))
-
-
-
-(define-class <nomad-text-buffer> (<nomad-buffer>))
-
-
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."

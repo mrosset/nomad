@@ -18,8 +18,7 @@
 
 (define-module (nomad gtk buffers)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad buffer)
-  #:use-module (nomad webview)
+  #:use-module (nomad platform api)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<gtk-widget-buffer>

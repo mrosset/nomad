@@ -19,7 +19,7 @@
 (define-module (nomad gtk graph)
   #:use-module (cairo)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad buffer)
+  #:use-module (nomad platform api)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
   #:use-module (g-golf)

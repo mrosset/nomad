@@ -17,23 +17,35 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad webview)
-  #:use-module (emacsy emacsy)
-  #:use-module (nomad buffer)
-  #:use-module (g-golf)
   #:use-module (oop goops)
-  #:export (<nomad-webview-buffer>
-            !init-uri))
+  #:use-module (emacsy emacsy)
+  #:use-module (nomad platform))
 
-
+(define-interactive (current-url)
+  "Returns the current url"
+  (message "~a"
+           (buffer-uri (current-buffer))))
 
-(define-class <nomad-webview-buffer> (<nomad-buffer>)
-  (name #:init-value "*webview*")
-  (init-uri #:accessor !init-uri
-            #:init-keyword
-            #:init-uri
-            #:init-value "https://neutron.bufio.org"))
+(define (ensure-protocol uri)
+  (if (or (string-prefix? "https://" uri)
+          (string-prefix? "http://" uri))
+      uri
+      (string-append "https://" uri)))
 
-(define-method (initialize (self <nomad-webview-buffer>) args)
-  (next-method))
+(define-interactive (make-buffer #:optional (uri (read-from-minibuffer "Url: ")))
+  "Creates a new webview-buffer with URL"
+  (make <webview-buffer> #:init-uri  (ensure-protocol uri)))
 
-
+(define-interactive (edit-uri)
+  "Edit the current-url."
+  (buffer-load-uri (current-buffer)
+                   (read-from-minibuffer "Url: " (buffer-uri (current-buffer))))
+  #t)
+
+(define-interactive (load-uri #:optional (n (universal-argument-pop!)))
+  "Loads @var{uri} with current buffer"
+  (let ((uri (ensure-protocol (read-from-minibuffer "Url: "))))
+    (if (or (not (is-a? <webview-buffer> (current-buffer))) (> n 1) )
+        (make <webview-buffer> #:init-uri uri)
+        (buffer-load-uri (current-buffer) uri))
+    #t))

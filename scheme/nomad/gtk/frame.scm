@@ -19,7 +19,7 @@
 (define-module (nomad gtk frame)
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad frame)
+  #:use-module (nomad platform api)
   #:use-module (g-golf)
   #:export (<gtk-frame>
             toggle-tabs*

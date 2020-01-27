@@ -25,15 +25,15 @@
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
   #:use-module (nomad gtk graph)
-  #:export (<platform-webview-buffer>
-            <platform-application>
-            <platform-frame>))
+  #:export (<webview-buffer>
+            <application>
+            <frame>))
 
-(define-class <platform-webview-buffer> (<gtk-webview-buffer>))
+(define-class <webview-buffer> (<gtk-webview-buffer>))
 
-(define-class <platform-application> (<nomad-gtk-application>))
+(define-class <application> (<nomad-gtk-application>))
 
-(define-class <platform-frame> (<gtk-frame>))
+(define-class <frame> (<gtk-frame>))
 
 (re-export-modules
  '(nomad gtk application)

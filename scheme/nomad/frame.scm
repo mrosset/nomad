@@ -1,5 +1,5 @@
 ;; frame.scm
-;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
 
@@ -19,29 +19,25 @@
 (define-module (nomad frame)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
-  #:use-module (g-golf)
-  #:export (make-frame-socket
-            <nomad-frame>))
+  #:use-module (nomad platform)
+  #:use-module (g-golf))
 
 (eval-when (expand load eval)
   (map (lambda (pair)
          (gi-import-by-name (car pair) (cdr pair)))
-       '(("Gtk" . "Widget")
-         ("Gtk" . "Label")
-         ("Gio" . "Application")
-         ("Gtk" . "Notebook"))))
+       '(("Gio" . "Application"))))
 
-
-
-(define-class <nomad-frame> ())
-
-
-
+;; FIXME: move this to platform API
 (define-public (current-frame)
   "Returns the current frame"
   (let* ((app (g-application-get-default))
          (frame (gtk-application-get-active-window app)))
     frame))
+
+(define-interactive (toggle-tabs #:optional (frame (current-frame)))
+  "Toggles the current notebook tabs on or off."
+  (toggle-tabs* frame)
+  #t)
 
 ;; (define (make-frame-socket url socket)
 ;;   "Write `make-frame' comand with arg URL to a SOCKET."
