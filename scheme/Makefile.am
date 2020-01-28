@@ -53,7 +53,8 @@ SOURCES =			\
 	nomad/gtk/application.scm	\
 	nomad/gtk/frame.scm	\
 	nomad/gtk/buffers.scm	\
-	nomad/gtk/graph.scm	\
+	nomad/gtk/widgets.scm	\
+	nomad/graph.scm		\
 	nomad/gtk/gtk.scm	\
 	nomad/bookmark.scm	\
 	nomad/buffer.scm	\

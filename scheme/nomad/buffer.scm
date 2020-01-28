@@ -85,16 +85,6 @@
       (begin (switch-to-buffer buffer)
              #t)))
 
-(define-public (redisplay-minibuffer)
-  "Set the minibuffer graphical control to emacsy buffer state"
-  (emacsy-tick)
-  (when emacsy-display-minibuffer?
-    (grab-readline))
-  (set-source-text! (nomad-app-frame-get-readline (current-frame))
-                    (emacsy-message-or-echo-area))
-  (set-source-point! (current-echo-area)
-                     (buffer:point minibuffer)))
-
 (define-public (redisplay-buffers)
   "Converts text-buffers to <nomad-text-buffer> and inserts them into
 notebook. Also updates buffer contents and buffer points"
