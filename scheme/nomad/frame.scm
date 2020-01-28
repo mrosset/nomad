@@ -27,13 +27,6 @@
          (gi-import-by-name (car pair) (cdr pair)))
        '(("Gio" . "Application"))))
 
-;; FIXME: move this to platform API
-(define-public (current-frame)
-  "Returns the current frame"
-  (let* ((app (g-application-get-default))
-         (frame (gtk-application-get-active-window app)))
-    frame))
-
 (define-interactive (toggle-tabs #:optional (frame (current-frame)))
   "Toggles the current notebook tabs on or off."
   (toggle-tabs* frame)

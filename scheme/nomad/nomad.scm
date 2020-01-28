@@ -36,7 +36,8 @@
   #:use-module (nomad text)
   #:use-module (nomad util)
   #:use-module (nomad views)
-  #:use-module (nomad webview))
+  #:use-module (nomad webview)
+  #:use-module (nomad graph))
 
 (re-export-modules
  '(nomad application)
@@ -57,4 +58,5 @@
  '(nomad text)
  '(nomad util)
  '(nomad views)
- '(nomad webview))
+ '(nomad webview)
+ '(nomad graph))

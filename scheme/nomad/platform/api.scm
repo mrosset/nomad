@@ -25,7 +25,8 @@
             <nomad-buffer>
             <nomad-text-buffer>
             <nomad-webview-buffer>
-            !init-uri))
+            !init-uri
+            webview-mode))
 
 
 
@@ -43,7 +44,13 @@
 
 (define-class <nomad-text-buffer> (<nomad-buffer>))
 
+(define-method (initialize (self <nomad-text-buffer>) args)
+  (next-method)
+  (set! (buffer-modes self) `(,fundamental-mode)))
+
 
+
+(define-public webview-mode (make <mode> #:mode-name "webview"))
 
 (define-class <nomad-webview-buffer> (<nomad-buffer>)
   (name #:init-value "*webview*")
@@ -53,6 +60,7 @@
             #:init-value "https://neutron.bufio.org"))
 
 (define-method (initialize (self <nomad-webview-buffer>) args)
-  (next-method))
+  (next-method)
+  (set! (buffer-modes self) `(,webview-mode)))
 
 

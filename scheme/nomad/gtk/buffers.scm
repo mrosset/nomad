@@ -19,6 +19,7 @@
 (define-module (nomad gtk buffers)
   #:use-module (emacsy emacsy)
   #:use-module (nomad platform api)
+  #:use-module (nomad gtk widgets)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<gtk-widget-buffer>
@@ -103,27 +104,15 @@
 
 (define-method (initialize (self <gtk-textview-buffer>) args)
   (next-method)
-  (let ((view (make <gtk-source-view> #:editable #f)))
+  (let ((view (make <widget-source-view>
+                              #:theme "classic"
+                              #:top-margin 1
+                              #:bottom-margin 1
+                              #:buffer self
+                              #:thunk (lambda _
+                                        (buffer:buffer-string self)))))
     (set! (!source-view self) view)
     (gtk-container-add self view)
-    (g-timeout-add 50 (lambda _
-                        (redisplay self)))
     (gtk-widget-show-all self)
     (gtk-widget-grab-focus view)))
-
-(define-method (redisplay (self <gtk-textview-buffer>))
-  (catch 'all
-    (lambda _
-      (let* ((view (!source-view self))
-             (buf  (gtk-text-view-get-buffer view))
-             ;; (iter (begin (gtk-text-buffer-set-text buf (buffer:buffer-string self) -1)
-             ;;              (gtk-text-buffer-get-start-iter buf)))
-             )
-        (gtk-text-buffer-set-text buf (buffer:buffer-string self) -1)
-        ;; (gtk-text-iter-forward-char iter (- (buffer:point self) 1))
-        ;; (gtk-text-buffer-place-cursor buf iter)
-        #t))
-    (lambda (key args)
-      (format #t "key: ~a arg: ~a" key args))))
-
 

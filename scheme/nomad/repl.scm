@@ -39,7 +39,7 @@
 
 (define (poll-server)
   (poll-coop-repl-server repl-server)
-  (usleep 100000)
+  (usleep 50000)
   (poll-server))
 
 (define (server-start-coop socket-file)

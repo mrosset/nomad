@@ -19,14 +19,18 @@
 (define-module (nomad gtk frame)
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
+  #:use-module (nomad gtk widgets)
   #:use-module (nomad platform api)
   #:use-module (g-golf)
   #:export (<gtk-frame>
             toggle-tabs*
-            gtk-frame-new))
+            gtk-frame-new
+            current-frame))
+
+(default-duplicate-binding-handler
+  '(merge-generics replace warn-override-core warn last))
 
 (eval-when (expand load eval)
-  (gi-import "Gdk")
   (for-each (lambda (x)
               (gi-import-by-name  (car x) (cdr x)))
             '(("Gtk" . "Container")
@@ -36,8 +40,19 @@
               ("Gtk" . "Entry")
               ("Gtk" . "VBox")
               ("Gtk" . "Notebook")
+              ("Gtk" . "CssProvider")
+              ("Gtk" . "StyleContext")
               ("WebKit2" . "WebView")
-              ("GtkSource" . "View"))))
+              ("GtkSource" . "View")
+              ("GtkSource" . "StyleScheme")
+              ("GtkSource" . "StyleSchemeManager")
+              ("GtkSource" . "LanguageManager"))))
+
+(define-public (current-frame)
+  "Returns the current frame"
+  (let* ((app (g-application-get-default))
+         (frame (gtk-application-get-active-window app)))
+    frame))
 
 (define emacsy-flag-map '((mod1-mask . meta)
                           (control-mask . control)
@@ -48,59 +63,55 @@
   (filter-map (lambda (state)
          (assoc-ref emacsy-flag-map state)) states))
 
+
 
 
 (define-class <gtk-frame> (<nomad-frame> <gtk-application-window>)
   (container #:accessor !container)
-  (box)
+  (box #:accessor !modeline)
   (modeline)
-  (minibuffer)
-  (redisplay-proc #:accessor !redisplay-proc #:init-value #f))
+  (minibuffer))
 
 (define-method (initialize (self <gtk-frame>) args)
   (next-method)
   (let* ((box       (make <gtk-vbox> #:spacing 0))
-        (container  (make <gtk-notebook>))
-        (modeline   (make <gtk-label> #:single-line-mode #f #:xalign 0))
-        (minibuffer (make <gtk-entry> #:has-frame #f)))
+         (container  (make <gtk-notebook>))
+         (modeline   (make <widget-source-view>
+                       #:theme "cobalt"
+                       #:top-margin 1
+                       #:bottom-margin 1
+                       #:thunk emacsy-mode-line))
+         (mini-view  (make <widget-source-view>
+                       #:top-margin 2
+                       #:bottom-margin 2
+                       #:buffer minibuffer
+                       #:parent self
+                       #:thunk  emacsy-message-or-echo-area)))
 
     (slot-set! self 'container container)
     (slot-set! self 'box box)
     (slot-set! self 'modeline modeline)
-    (slot-set! self 'minibuffer minibuffer)
+    (slot-set! self 'minibuffer mini-view)
+
+    ;; Widget styles
+    (nomad-app-set-style (slot-ref self 'modeline) "textview text { background-color: #BFBFBF; color: black; }")
+    (nomad-app-set-style (slot-ref self 'minibuffer) "textview text { background-color: white; color: black; }")
 
     ;; Widget layout
     (gtk-container-add self box)
     (gtk-box-pack-start box container #t #t 0)
     (gtk-box-pack-start box modeline #f #f 0)
-    (gtk-box-pack-start box minibuffer #f #f 0)
+    (gtk-box-pack-start box mini-view #f #f 0)
 
     ;; Signals
     ;;
     ;; FIXME: when using more then one frame this should not quit the
     ;; application. Currently we only support one frame.
     (connect self 'destroy
-              (lambda _
+             (lambda _
                (g-application-quit (g-application-get-default))
                #t))
-    (connect self 'key-press-event key-press-cb)
-
-    ;; Idle events
-    (set! (!redisplay-proc self)
-                    (lambda _
-                      ;; don't tick if mini buffer is being used this is
-                      ;; handle by key-press-cb. otherwise completions will
-                      ;; be overwritten
-                      ;; FIXME: maybe have <nomad-gtk-application> handle this?
-                      (unless emacsy-display-minibuffer?
-                        (emacsy-tick))
-                      (gtk-entry-set-text minibuffer (emacsy-message-or-echo-area))
-                      (gtk-label-set-text modeline (emacsy-mode-line))
-                      #t))
-    (g-timeout-add 50 (!redisplay-proc self))))
-
-(define-method (redisplay (frame <gtk-frame>))
-  ((!redisplay-proc frame)))
+    (connect self 'key-press-event key-press-cb)))
 
 (define-method (toggle-tabs* (self <gtk-frame>))
   (let ((notebook (!container self)))
@@ -124,7 +135,6 @@
         (begin
           (emacsy-key-event unichar mod-flags)
           (emacsy-tick)
-          (redisplay frame)
           (if emacsy-ran-undefined-command?
               #f
               #t))
