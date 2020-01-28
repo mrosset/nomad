@@ -138,9 +138,9 @@ guile/Makefile
 src/Makefile
 doc/Makefile
 scheme/Makefile
-tools/unused.scm
+tools/unused
 ],
-[chmod +x tools/unused.scm])
+[chmod +x tools/unused])
 
 AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 

@@ -89,3 +89,7 @@
 (let ((cmds (command-line)))
   (display (module-find-unused-identifiers (cadr cmds) (caddr cmds)))
   (newline))
+
+;; Local Variables:
+;; mode:scheme
+;; End:
