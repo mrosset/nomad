@@ -156,7 +156,10 @@ src/Makefile
 doc/Makefile
 scheme/Makefile
 test-suite/Makefile
-])
+tools/unused
+],
+[chmod +x tools/unused])
+
 
 AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 AC_CONFIG_FILES([tools/coverage], [chmod +x tools/coverage])
