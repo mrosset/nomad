@@ -1,0 +1,91 @@
+#!@GUILE@
+!#
+;; unused --- check for unused imports
+
+;;; Copyright (C) 2019-2020 by Amar M. Singh <nly@disroot.org>
+
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+(use-modules (srfi srfi-1) (srfi srfi-26) (emacsy self-doc))
+
+;;; snarfed from Resonance
+
+(define true?
+  (lambda (b)
+    (if (equal? b #t)
+        #t
+        #f)))
+
+(define false?
+  (lambda (b)
+    (if (equal? b #f)
+        #t
+        #f)))
+
+(define read-all
+  (lambda (port)
+    (let ((obj (read port)))
+      (if (eof-object? obj)
+          '()
+          (cons obj
+                (read-all port))))))
+
+(define tree-search-sym
+  (lambda (tree sym)
+    (if (null? tree)
+	#f
+	(if (not (list? (car tree)))
+	    (if (eq? sym (car tree))
+		tree
+		(tree-search-sym (cdr tree) sym))
+	    (or (tree-search-sym (car tree) sym)
+		(tree-search-sym (cdr tree) sym))))))
+
+(define (module-identifiers module)
+  (let ((syms (emacsy-collect-kind (resolve-module module) #f)))
+    (map (lambda (e)
+           (cons e (false-if-exception (eval e (interaction-environment)))))
+         syms)))
+
+(define (module-syms module)
+  (map car (module-identifiers module)))
+
+(define (module-find-identifier file sym)
+  (call-with-input-file file
+    (lambda (port)
+      (fold (lambda (item rest)
+              (cons (tree-search-sym
+                     item
+                     sym)
+                    rest))
+            '()
+            (read-all port)))))
+
+(define (module-find-identifier? file sym)
+  (find true?
+        (map (compose not false?)
+                   (module-find-identifier file sym))))
+
+(define (module-find-unused-identifier module module-user-file)
+  (zip (map (cut module-find-identifier? module-user-file <>)
+            (module-syms module))
+       (module-syms module)))
+
+(define (module-find-unused-identifiers module check-file)
+  (module-find-unused-identifier (read (open-input-string module))
+                                 check-file))
+
+(let ((cmds (command-line)))
+  (display (module-find-unused-identifiers (cadr cmds) (caddr cmds)))
+  (newline))
