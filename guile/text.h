@@ -24,10 +24,12 @@
 #include <gtksourceview/gtksource.h>
 
 GtkSourceBuffer *nomad_app_source_buffer_new (const char *theme,
-                                              const char *lang);
+					      const char *lang);
+
+void nomad_app_set_style(GtkWidget *widget, const char* style);
 
 void nomad_app_source_view_set_buffer (GtkTextView *view, const char *theme,
-                                       const char *lang);
+				       const char *lang);
 
 void nomad_text_register_function (void *data);
 #endif

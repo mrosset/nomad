@@ -21,6 +21,19 @@
 #include <gtksourceview/gtksource.h>
 #include <libguile.h>
 
+void
+nomad_app_set_style(GtkWidget *widget, const char* style) {
+  GtkCssProvider *provider = gtk_css_provider_new ();
+  gtk_css_provider_load_from_data (provider,
+                                   style,
+                                   -1,
+                                   NULL);
+  gtk_style_context_add_provider (gtk_widget_get_style_context (widget),
+                                  GTK_STYLE_PROVIDER (provider),
+                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  g_object_unref (provider);
+}
+
 GtkSourceBuffer *
 nomad_app_source_buffer_new (const char *theme, const char *lang)
 {
