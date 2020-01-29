@@ -30,7 +30,7 @@
     (load-extension "libgv_guile.so" "SWIG_init"))
   (lambda (key . vals)
     (format #t "~a can not load guile graphviz extension libgv_guile.so\n" (yellow "WARNING:"))
-    (format #t "~a key: ~a value: ~a\n" (yellow "WARNING:") 'YELLOW key vals)))
+    (format #t "~a key: ~a value: ~a\n" (yellow "WARNING:") key vals)))
 
 (define (format-slots class)
   (let ((slots (class-direct-slots class)))
