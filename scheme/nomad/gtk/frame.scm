@@ -138,4 +138,6 @@
           (if emacsy-ran-undefined-command?
               #f
               #t))
-        #f)))
+        #f)
+    (when (equal? type 'key-release)
+      #f)))

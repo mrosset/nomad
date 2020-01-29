@@ -19,9 +19,15 @@
 (define-module (nomad platform)
   #:use-module (nomad util)
   #:use-module (nomad gtk gtk)
-  #:re-export (<webview-buffer>
-               <application>
-               <frame>))
+  #:use-module (emacsy emacsy)
+  #:use-module (nomad platform api)
+  #:use-module (oop goops)
+  #:export (platform-classes))
+
+(define platform-classes '(<textview-buffer>
+                                 <webview-buffer>
+                                 <application>
+                                 <frame>))
 
 (re-export-modules
  '(nomad gtk gtk))

@@ -19,9 +19,18 @@
 (define-module (nomad graph)
   #:use-module (g-golf)
   #:use-module (emacsy emacsy)
+  #:use-module (term ansi-color)
   #:use-module (nomad platform))
 
-(load-extension "libgv_guile.so" "SWIG_init")
+(define (yellow string)
+  (colorize-string string 'YELLOW))
+
+(catch #t
+  (lambda _
+    (load-extension "libgv_guile.so" "SWIG_init"))
+  (lambda (key . vals)
+    (format #t "~a can not load guile graphviz extension libgv_guile.so\n" (yellow "WARNING:"))
+    (format #t "~a key: ~a value: ~a\n" (yellow "WARNING:") 'YELLOW key vals)))
 
 (define (format-slots class)
   (let ((slots (class-direct-slots class)))
@@ -44,6 +53,7 @@
                                      (class-name parent)))
                        (node (node tree parent-name)))
                   (setv node "shape" "record")
+                  ;; FIXME: due to GTK this creates to large of a map. only show slots for nomad classes
                   ;; (setv child "label" (string-append "{\\N|" (format-slots class) "}"))
                   (edge node child)
                   (graph-node tree node parent)))
@@ -51,13 +61,12 @@
 
 (define-interactive (graph-class #:optional
                                      (fmt "png")
-                                     (class (eval (string->symbol (read-from-minibuffer "Class: "))
-                                                  (interaction-environment))))
+                                     (name (completing-read "Class: " (map symbol->string platform-classes))))
   (let* ((tree    (graph "buffer"))
-         (name    (symbol->string (class-name class)))
+         (class   (eval (string->symbol name)
+                                   (interaction-environment)))
          (child   (node tree name))
          (file    (string-append "/tmp/dot." fmt)))
-
     (graph-node tree child class)
     (setv child "shape" "record")
     (layout tree "dot")
@@ -65,4 +74,4 @@
     (make <webview-buffer> #:init-uri (string-append "file://" file))
     #t))
 
-;; (define-key global-map (kbd "C-h C-c") 'graph-class)
+(define-key global-map (kbd "C-h 3") 'graph-class)

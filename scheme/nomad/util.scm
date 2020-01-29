@@ -17,9 +17,8 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad util)
-  #:use-module (nomad lib)
-  #:use-module (emacsy emacsy)
   #:use-module (ice-9 match)
+  #:use-module (emacsy emacsy)
   #:use-module (oop goops)
   #:export (list->keymap
             info

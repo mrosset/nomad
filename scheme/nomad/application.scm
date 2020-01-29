@@ -21,18 +21,11 @@
   #:use-module (nomad util)
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
-  #:export (<application>
-            shutdown-hook
+  #:export (shutdown-hook
             app-init))
 
 (eval-when (expand load eval)
   (gi-import "Gio"))
-
-(define-class <application> ())
-
-(define-method (initialize (self <application>) args)
-  (next-method)
-  (init))
 
 (define shutdown-hook (make-hook 0))
 
