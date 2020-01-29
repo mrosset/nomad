@@ -51,7 +51,8 @@
 
 (define-interactive (graph-class #:optional
                                      (fmt "png")
-                                     (class <webview-buffer>))
+                                     (class (eval (string->symbol (read-from-minibuffer "Class: "))
+                                                  (interaction-environment))))
   (let* ((tree    (graph "buffer"))
          (name    (symbol->string (class-name class)))
          (child   (node tree name))
@@ -63,3 +64,5 @@
     (render tree fmt file)
     (make <webview-buffer> #:init-uri (string-append "file://" file))
     #t))
+
+;; (define-key global-map (kbd "C-h C-c") 'graph-class)

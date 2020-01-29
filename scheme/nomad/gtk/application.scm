@@ -18,6 +18,7 @@
 
 (define-module (nomad gtk application)
   #:use-module (nomad application)
+  #:use-module (nomad platform api)
   #:use-module (nomad init)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
@@ -31,7 +32,7 @@
        '(("Gtk" . "Widget")
          ("Gtk" . "Application"))))
 
-(define-class <nomad-gtk-application> (<application> <gtk-application>))
+(define-class <nomad-gtk-application> (<nomad-application> <gtk-application>))
 
 (define-method (activate-cb app)
   (gtk-widget-show-all (gtk-frame-new app))

@@ -19,7 +19,13 @@
 (define-module (nomad webview)
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad platform))
+  #:use-module (nomad platform)
+  #:export (%search-provider-format
+            %default-home-page))
+
+(define %search-provider-format "https://duckduckgo.com/?q=~a")
+
+(define %default-home-page "https://www.gnu.org/software/guile")
 
 (define-interactive (current-url)
   "Returns the current url"
@@ -43,8 +49,19 @@
   #t)
 
 (define-interactive (load-uri #:optional (n (universal-argument-pop!)))
-  "Loads @var{uri} with current buffer"
+  "Loads @var{uri} with current buffer. If the current buffer is not a webview
+it will create a new @var{<webview-buffer>}. When used with universal argument
+@var{uri} will be loaded with a new buffer."
   (let ((uri (ensure-protocol (read-from-minibuffer "Url: "))))
+    (if (or (not (is-a? <webview-buffer> (current-buffer))) (> n 1) )
+        (make <webview-buffer> #:init-uri uri)
+        (buffer-load-uri (current-buffer) uri))
+    #t))
+
+(define-interactive (query #:optional (n (universal-argument-pop!)))
+  "Queries the default search provider @var{%search-provider-format}"
+  (let ((uri (simple-format #f %search-provider-format
+                               (read-from-minibuffer "Query: "))))
     (if (or (not (is-a? <webview-buffer> (current-buffer))) (> n 1) )
         (make <webview-buffer> #:init-uri uri)
         (buffer-load-uri (current-buffer) uri))

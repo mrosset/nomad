@@ -155,10 +155,6 @@
     (add-buffer! buffer)
     buffer))
 
-(define search-provider-format "https://duckduckgo.com/?q=~a")
-
-(define default-home-page "https://www.gnu.org/software/guile")
-
 (define (prefix-url url)
   "Returns a full protocol URI for domain URI.
 e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
@@ -202,11 +198,6 @@ specified. Returns the final URL passed to webkit"
 (define-interactive (make-query #:optional (q (read-from-minibuffer "Query: ")))
   "Makes a new buffer and queries ARG using 'search-provider-format"
   (make-buffer (simple-format #f search-provider-format q)))
-
-(define-interactive (query #:optional (q (read-from-minibuffer "Query: ")))
-  "Queries ARG using 'search-provider-format"
-  (let ((uri (simple-format #f search-provider-format q)))
-    (browse uri)))
 
 (define-interactive (copy-current-url)
   "Copy current url to clipboard"

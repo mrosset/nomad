@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad platform api)
+  #:use-module (nomad init)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
   #:use-module (g-golf)
@@ -27,6 +28,14 @@
             <nomad-webview-buffer>
             !init-uri
             webview-mode))
+
+
+
+(define-class <nomad-application> ())
+
+(define-method (initialize (self <nomad-application>) args)
+  (next-method)
+  (init))
 
 
 

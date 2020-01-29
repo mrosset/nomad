@@ -64,7 +64,7 @@
   (set-source-language! self "scheme")
 
   ;; https://developer.gnome.org/gtksourceview/stable/GtkSourceView.html
-  (nomad-app-set-style self "textview {font-size: 10pt; }")
+  (nomad-app-set-style self "textview { font-size: 10pt; }")
 
   (gtk-text-view-set-overwrite self #t)
 

@@ -82,8 +82,8 @@
                        #:bottom-margin 1
                        #:thunk emacsy-mode-line))
          (mini-view  (make <widget-source-view>
-                       #:top-margin 2
-                       #:bottom-margin 2
+                       #:top-margin 1
+                       #:bottom-margin 1
                        #:buffer minibuffer
                        #:parent self
                        #:thunk  emacsy-message-or-echo-area)))
