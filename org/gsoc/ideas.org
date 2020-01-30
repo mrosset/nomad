@@ -1,0 +1,25 @@
+#+TITEL: Google Summer of Code
+
+* GSOC Project ideas
+** Add P2P protocol support
+Add addition protocol support for GNUNet and IPFS
+
+** Nomad functional extension management using a GUIX profile
+Nomad uses GNU guile scheme as it's extension language. And GUIX is a
+functional package manager that also uses GNU guile. Nomad could use GUIX as a
+scheme library to manage user extensions. The extensions could be installed
+into a GUIX profile under Nomad's user directory. something like
+$HOME/.nomad.d/guix
+
+Because Nomad has access to full graphical buffers. Meta data about package
+could be presented as graphical buffers. Including buffers to search for
+extensions, installing and removing extensions.
+
+If written correctly it could also be used to manage GUIX user profiles and
+the GUIX system it's self.
+
+** Add Emacs multi window support
+In emacs graphical windows are called frames. And addition frame views are
+called windows. Nomad current only supports one window view. It would be nice
+if used Emacsy window support to split window views. Allowing multiple buffers
+to be viewed in the same frame.
