@@ -22,6 +22,7 @@
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<nomad-application>
+            !startup-hook
             <nomad-frame>
             <nomad-buffer>
             <nomad-text-buffer>
@@ -31,7 +32,10 @@
 
 
 
-(define-class <nomad-application> ())
+(define-class <nomad-application> ()
+  (startup-hook #:accessor !startup-hook
+                #:init-keyword #:startup-hook
+                #:init-value %startup-hook))
 
 (define-method (initialize (self <nomad-application>) args)
   (next-method)

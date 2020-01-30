@@ -19,6 +19,7 @@
 (define-module (nomad application)
   #:use-module (nomad init)
   #:use-module (nomad util)
+  #:use-module (nomad platform)
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (shutdown-hook
@@ -47,4 +48,6 @@ controls are accessible to scheme"
   ;; (agenda-schedule-interval (lambda _
   ;;                             (emacsy-tick))
   ;;                           50)
-  (run-hook %startup-hook))
+  (make <webview-buffer>))
+
+(add-hook! %startup-hook app-init)

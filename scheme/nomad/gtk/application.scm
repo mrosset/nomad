@@ -17,9 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk application)
-  #:use-module (nomad application)
   #:use-module (nomad platform api)
-  #:use-module (nomad init)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
   #:use-module (oop goops)
@@ -36,8 +34,7 @@
 
 (define-method (activate-cb app)
   (gtk-widget-show-all (gtk-frame-new app))
-  (make <gtk-webview-buffer>)
-  (app-init))
+  (run-hook (!startup-hook app)))
 
 (define-method (initialize (self <nomad-gtk-application>) args)
   (next-method)

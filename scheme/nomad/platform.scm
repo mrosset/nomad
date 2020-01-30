@@ -25,9 +25,10 @@
   #:export (platform-classes))
 
 (define platform-classes '(<textview-buffer>
-                                 <webview-buffer>
-                                 <application>
-                                 <frame>))
+                           <webview-buffer>
+                           <application>
+                           <frame>))
+
 
 (re-export-modules
  '(nomad gtk gtk))
