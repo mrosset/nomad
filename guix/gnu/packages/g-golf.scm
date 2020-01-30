@@ -17,10 +17,10 @@
              (guix packages))
 
 (define-public g-golf
-  (let ((commit "1365af36071f3ebd49d7bae788975cc53418555e"))
+  (let ((commit "5f7238d3af7987fb83abcf8fc3fb7833a8b96102"))
     (package
       (name "g-golf")
-      (version (git-version "1" "605" commit))
+      (version (git-version "1" "606" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -29,7 +29,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1aca1gkhys9pakq8k0d609hyp24xswpb0hq9g97ggv7hngfb7giy"))))
+                  "002lk54z6byg5z0dmxpywa85kklqg0bzrdhqrzpwx2j9kzfg6rc8"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -41,11 +41,11 @@
       (inputs
        `(("guile" ,guile-2.2)
          ("guile-lib" ,guile-lib)
+         ("clutter" ,clutter)
          ("gtk" ,gtk+)
          ("glib" ,glib)))
       (propagated-inputs
-       `(("gobject-introspection" ,gobject-introspection)
-         ("clutter" ,clutter)))
+       `(("gobject-introspection" ,gobject-introspection)))
       (arguments
        `(#:tests? #f
          #:phases
