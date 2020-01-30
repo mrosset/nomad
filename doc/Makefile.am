@@ -16,7 +16,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-nomad_TEXINFOS = doclicense.texi gpl.texi urls.texi version.texi
+nomad_TEXINFOS = api.texi doclicense.texi gpl.texi urls.texi version.texi
 info_TEXINFOS  = nomad.texi
 
 AM_MAKEINFOHTMLFLAGS = --css-include=reset.css --css-include=style.css --css-include=manual.css --no-split
