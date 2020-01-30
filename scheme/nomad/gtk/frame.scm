@@ -23,6 +23,7 @@
   #:use-module (nomad platform api)
   #:use-module (g-golf)
   #:export (<gtk-frame>
+            !container
             toggle-tabs*
             gtk-frame-new
             current-frame))

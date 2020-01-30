@@ -27,7 +27,7 @@
   #:export (<webview-buffer>
             <textview-buffer>
             <application>
-            <frame>))
+            <app-frame>))
 
 (define-class <webview-buffer> (<gtk-webview-buffer>))
 
@@ -35,7 +35,7 @@
 
 (define-class <application> (<nomad-gtk-application>))
 
-(define-class <frame> (<gtk-frame>))
+(define-class <app-frame> (<gtk-frame>))
 
 (re-export-modules
  '(nomad gtk application)
