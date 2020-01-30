@@ -1,4 +1,5 @@
 TESTS  = tests/util.scm
+TESTS += tests/api.scm
 TESTS += tests/init.scm
 TESTS += tests/frame.scm
 TESTS += tests/application.scm
