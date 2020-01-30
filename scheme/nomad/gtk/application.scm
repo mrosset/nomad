@@ -36,7 +36,6 @@
 
 (define-method (activate-cb app)
   (gtk-widget-show-all (gtk-frame-new app))
-  (make <gtk-webview-buffer>)
   (app-init))
 
 (define-method (initialize (self <nomad-gtk-application>) args)
