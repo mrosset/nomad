@@ -30,6 +30,8 @@
             !init-uri
             webview-mode))
 
+(define-public %webview-map (make-keymap))
+
 
 
 (define-class <nomad-application> ()
@@ -67,6 +69,7 @@
 
 (define-class <nomad-webview-buffer> (<nomad-buffer>)
   (name #:init-value "*webview*")
+  (keymap #:accessor local-keymap #:init-keyword #:keymap #:init-form %webview-map)
   (init-uri #:accessor !init-uri
             #:init-keyword
             #:init-uri

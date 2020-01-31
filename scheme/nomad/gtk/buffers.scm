@@ -23,17 +23,19 @@
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<gtk-widget-buffer>
-            <gtk-webview-buffer>
             <gtk-textview-buffer>
+            <gtk-webview-buffer>
             buffer-uri
-            buffer-load-uri))
+            buffer-load-uri
+            buffer-back
+            buffer-forward
+            buffer-reload))
 
 (eval-when (expand load eval)
+  (gi-import "WebKit2")
   (map (lambda (pair)
          (gi-import-by-name (car pair) (cdr pair)))
-       '(("WebKit2" . "WebView")
-         ("WebKit2" . "LoadEvent")
-         ("Gtk" . "Widget")
+       '(("Gtk" . "Widget")
          ("Gtk" . "DrawingArea")
          ("Gtk" . "ApplicationWindow")
          ("Gtk" . "Notebook")
@@ -88,11 +90,21 @@
              #t))
   (buffer-load-uri self (!init-uri self)))
 
-(define-method (buffer-load-uri (buffer <gtk-webview-buffer>) uri)
-  (webkit-web-view-load-uri buffer uri))
+(define-method (buffer-load-uri (self <gtk-webview-buffer>) uri)
+  (webkit-web-view-load-uri self uri))
 
-(define-method (buffer-uri (buffer <gtk-webview-buffer>))
-   (webkit-web-view-get-uri buffer))
+(define-method (buffer-uri (self <gtk-webview-buffer>))
+   (webkit-web-view-get-uri self))
+
+(define-method (buffer-forward (self <gtk-webview-buffer>))
+  (webkit-web-view-go-forward self))
+
+(define-method (buffer-back (self <gtk-webview-buffer>))
+  (webkit-web-view-go-back self))
+
+(define-method (buffer-reload (self <gtk-webview-buffer>))
+  (info "RELOAD")
+  (webkit-web-view-reload self))
 
 
 
