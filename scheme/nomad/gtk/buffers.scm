@@ -18,7 +18,7 @@
 
 (define-module (nomad gtk buffers)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad platform api)
+  #:use-module (nomad api)
   #:use-module (nomad gtk widgets)
   #:use-module (oop goops)
   #:use-module (g-golf)

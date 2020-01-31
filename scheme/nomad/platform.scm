@@ -20,7 +20,7 @@
   #:use-module (nomad util)
   #:use-module (nomad gtk gtk)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad platform api)
+  #:use-module (nomad api)
   #:use-module (oop goops)
   #:export (platform-classes))
 

@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad platform api)
+(define-module (nomad api)
   #:use-module (nomad init)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)

@@ -17,7 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk application)
-  #:use-module (nomad platform api)
+  #:use-module (nomad api)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
   #:use-module (oop goops)

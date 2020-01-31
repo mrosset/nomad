@@ -21,7 +21,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad init)
   #:use-module (nomad util)
-  #:use-module (nomad platform api)
+  #:use-module (nomad api)
   #:use-module (unit-test))
 
 (define-class <test-api> (<test-case>))

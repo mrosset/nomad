@@ -20,7 +20,7 @@
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
   #:use-module (nomad gtk widgets)
-  #:use-module (nomad platform api)
+  #:use-module (nomad api)
   #:use-module (g-golf)
   #:export (<gtk-frame>
             !container
