@@ -27,6 +27,7 @@
  #:use-module (nomad webview)
  #:use-module (nomad init)
  #:use-module (nomad util)
+ #:use-module (nomad platform)
  #:use-module (srfi srfi-1)
  #:use-module (srfi srfi-26)
  #:use-module (srfi srfi-9)
@@ -42,7 +43,7 @@
            write-bookmarks
            bookmarks
            pp-bookmarks
-           open-bookmark
+           load-bookmark
            save-bookmark))
 
 (define bookmark-file
@@ -94,6 +95,8 @@
           (contents . "https://savannah.nongnu.org/projects/nomad"))
          ((id . "nomad-git")
           (contents . "http://git.savannah.nongnu.org/cgit/nomad.git"))
+         ((id . "gnu")
+          (contents . "https://gnu.org"))
          ((id . "emacsy")
           (contents . "https://savannah.nongnu.org/projects/emacsy"))
          ((id . "guilem")
@@ -121,17 +124,18 @@
   (filter (compose (cut string-match key <>) bookmark-id)
           (or books bookmarks)))
 
-(define-interactive (open-bookmark #:optional (str (completing-read "Bookmark: " (map bookmark-id bookmarks))))
+(define-interactive (load-bookmark #:optional (str (completing-read "Bookmark: " (map bookmark-id bookmarks))))
   "Opens bookmark by key in current buffer"
-  (make-buffer (bookmark-contents
-                (car (bookmark-find str)))))
+  (buffer-load-uri (current-buffer) (bookmark-contents
+                                     (car (bookmark-find str)))))
 
 (define-interactive (find-bookmark)
   "Opens bookmark using completing-read in current buffer"
-  (make-buffer (bookmark-contents
-                (car (bookmark-find
-                      (completing-read "Bookmark: " (bookmark-list bookmarks))
-                      bookmarks)))))
+  (buffer-load-uri (current-buffer)
+                   (bookmark-contents
+                    (car (bookmark-find
+                          (completing-read "Bookmark: " (bookmark-list bookmarks))
+                          bookmarks)))))
 
 (define-interactive (save-bookmark #:optional (key (read-from-minibuffer "Key: ")) (url (or (current-url) (read-from-minibuffer "URL: "))))
   "Makes a bookmark by 'KEY in a new buffer"

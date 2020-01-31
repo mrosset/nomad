@@ -17,11 +17,12 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk application)
+  #:use-module (oop goops)
+  #:use-module (g-golf)
+  #:use-module (emacsy emacsy)
   #:use-module (nomad api)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
-  #:use-module (oop goops)
-  #:use-module (g-golf)
   #:export (<nomad-gtk-application>))
 
 (eval-when (expand load eval)
@@ -34,6 +35,7 @@
 
 (define-method (activate-cb app)
   (gtk-widget-show-all (gtk-frame-new app))
+  (emacsy-initialize #t)
   (run-hook (!startup-hook app)))
 
 (define-method (initialize (self <nomad-gtk-application>) args)

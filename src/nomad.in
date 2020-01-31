@@ -49,7 +49,6 @@ exec @GUILE@ -e main -s "$0" "$@"
           (pretty-string %load-compiled-path)))
 
 (define (main args)
-  (emacsy-initialize #t)
   (let ((app (make <application> #:application-id "org.gnu.devel.nomad")))
     (g-application-run app 0 #f)))
 

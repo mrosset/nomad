@@ -93,3 +93,7 @@
         val))
     (lambda (key . vals)
       (message "Error: key: ~a value: ~a" key vals))))
+
+(define-interactive (class-of-buffer #:optional (buffer (current-buffer)))
+  (message "~a" (class-of buffer))
+  #t)

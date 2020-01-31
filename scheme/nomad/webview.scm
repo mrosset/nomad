@@ -109,24 +109,31 @@
     (message "I-search: ~a" text)))
 
 (define-interactive (load-uri #:optional
-                              (uri (ensure-protocol (read-from-minibuffer "Url: ")))
-                              (buffer (current-buffer)))
-  "Loads @var{uri} with current buffer. If the current buffer is not a webview
-it will create a new @var{<webview-buffer>}. When used with universal argument
+                              (buffer (current-buffer))
+                              (uri (ensure-protocol (read-from-minibuffer "Url: "))))
+  "Loads @var{uri} with current buffer.  If the current buffer is not a webview
+it will create a new @var{<webview-buffer>}.  When used with universal argument
 @var{uri} will be loaded with a new buffer."
-  (buffer-load-uri buffer uri)
+  (if (or (> (universal-argument-pop!) 1)
+          (not (is-a? (current-buffer) <webview-buffer>)))
+      (make <webview-buffer> #:init-uri uri)
+      (buffer-load-uri (current-buffer) uri))
   #t)
 
-(define-public is-a is-a?)
-
-(define-interactive (query #:optional (n (universal-argument-pop!)))
-  "Queries the default search provider @var{%search-provider-format}"
-  (let ((uri (simple-format #f %search-provider-format
-                               (read-from-minibuffer "Query: "))))
-    (if (or (not (is-a? <webview-buffer> (current-buffer))) (> n 1) )
-        (make <webview-buffer> #:init-uri uri)
-        (buffer-load-uri (current-buffer) uri))
-    #t))
+(define-interactive (query #:optional
+                           (text (read-from-minibuffer "Query: ")))
+  "Queries the default search provider @var{%search-provider-format}.  If the
+current buffer is not a @var{<webview-buffer>} it will create a new
+@var{<webview-buffer>} and query the default search provider."
+  (let ((u   (universal-argument-pop!))
+        (uri (format #f
+                     %search-provider-format
+                     text)))
+    (if (or (> u 1)
+            (not (is-a? (current-buffer) <webview-buffer>)))
+      (make <webview-buffer> #:init-uri uri)
+      (buffer-load-uri (current-buffer) uri)))
+  #t)
 
 (define-interactive (webview-keyboard-quit)
   (when (current-search (current-buffer))
@@ -138,8 +145,8 @@ it will create a new @var{<webview-buffer>}. When used with universal argument
     (keyboard-quit))
 
 ;; Provides firefox key mappings for webview-mode. This can be set as
-;; the default webview mode map by using (!set webview-map
-;; firefox-webview-map) in user-init-file
+;; the default webview mode map by using (!set %webview-map
+;; %firefox-webview-map) in %user-init-file
 (define-public %firefox-webview-map
   (list->keymap '(("C-g" webview-keyboard-quit)
                   ("C-f" isearch-forward)
@@ -158,13 +165,13 @@ it will create a new @var{<webview-buffer>}. When used with universal argument
                   ("C-v" scroll-down)
                   ("M-'" hints))))
 
-;; Default webview key mappings
+;; Default webview-mode key mappings
 (set! %webview-map
-  (list->keymap '(("C-u" back)
-                  ("C-m" forward)
-                  ("C-n" scroll-down)
-                  ("C-p" scroll-up)
-                  ("C-f" hints)
-                  ("C-r" reload)
-                  ("C-g" webview-keyboard-quit)
-                  ("C-s" isearch-forward))))
+      (list->keymap '(("C-c b" back)
+                      ("C-m" forward)
+                      ("C-n" scroll-down)
+                      ("C-p" scroll-up)
+                      ("C-f" hints)
+                      ("C-r" reload)
+                      ("C-g" webview-keyboard-quit)
+                      ("C-s" isearch-forward))))

@@ -127,4 +127,5 @@
     (gtk-container-add self view)
     (gtk-widget-show-all self)
     (gtk-widget-grab-focus view)))
+
 
