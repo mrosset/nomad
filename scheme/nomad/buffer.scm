@@ -85,24 +85,11 @@
       (begin (switch-to-buffer buffer)
              #t)))
 
-(define-public (redisplay-buffers)
-  "Converts text-buffers to <nomad-text-buffer> and inserts them into
-notebook. Also updates buffer contents and buffer points"
-  (for-each (lambda (buffer)
-              (when (eq? <text-buffer> (class-of buffer))
-                (text-buffer->nomad-text-buffer! buffer)
-                (notebook-insert buffer 0))
-              (when (eq? <nomad-text-buffer> (class-of buffer))
-                (set-source-text! (get-source-widget (buffer-widget buffer))
-                                  (buffer:buffer-string buffer))
-                (set-source-point! (get-source-widget (buffer-widget buffer))
-                                   (buffer:point buffer))))
-            (buffer-list)))
-
 (define-interactive (eval-buffer #:optional (buffer (current-buffer)))
   (catch #t
     (lambda _
-      (message "~a"
-               (eval-string (buffer:buffer-string buffer))))
+      (let ((val (eval-string (buffer:buffer-string buffer))))
+        (message "~a" val)
+        val))
     (lambda (key . vals)
       (message "Error: key: ~a value: ~a" key vals))))
