@@ -32,6 +32,8 @@
 
 (define-public %webview-map (make-keymap))
 
+(define-public %default-home-page #f)
+
 
 
 (define-class <nomad-application> ()
@@ -68,15 +70,15 @@
 (define-public webview-mode (make <mode> #:mode-name "webview"))
 
 (define-class <nomad-webview-buffer> (<nomad-buffer>)
-  (name #:init-value "*webview*")
   (keymap #:accessor local-keymap #:init-keyword #:keymap #:init-form %webview-map)
   (init-uri #:accessor !init-uri
             #:init-keyword
             #:init-uri
-            #:init-value "https://neutron.bufio.org"))
+            #:init-form %default-home-page))
 
 (define-method (initialize (self <nomad-webview-buffer>) args)
   (next-method)
-  (set! (buffer-modes self) `(,webview-mode)))
+  (set! (buffer-modes self) `(,webview-mode))
+  (slot-set! self 'name (!init-uri self)))
 
 

@@ -84,34 +84,35 @@
                       (redisplay self)
                       #t)))
 
-(define-method (redisplay (self <gtk-source-view>))
+(define-method (redisplay (self <widget-source-view>))
   (set-source-text! self ((!thunk self)))
   (when (!buffer self)
     (set-source-point! self (buffer:point (!buffer self)))))
 
+
+
+;; These methods work on base GTK classes.
 (define-method (set-source-theme! (self <gtk-source-view>) text)
   (let* ((buf     (gtk-text-view-get-buffer self))
          (manager (make <gtk-source-style-scheme-manager>))
          (style   (gtk-source-style-scheme-manager-get-scheme manager text)))
     (gtk-source-buffer-set-style-scheme buf style)))
 
-
 
-;; These methods work on base GTK classes.
 (define-method (set-source-language! (self <gtk-source-view>) text)
   (let* ((buf     (gtk-text-view-get-buffer self))
          (manager (make <gtk-source-language-manager>))
          (lang    (gtk-source-language-manager-get-language manager text)))
     (gtk-source-buffer-set-language buf lang)))
 
-(define-method (set-source-text! (view <gtk-source-view>) text)
+(define-method (set-source-text! (self <gtk-source-view>) text)
   "Sets source @var{view} text buffer to @var{text}"
-  (let ((buf (gtk-text-view-get-buffer view)))
+  (let ((buf (gtk-text-view-get-buffer self)))
     (gtk-text-buffer-set-text buf text -1)))
 
-(define-method (set-source-point! (view <gtk-source-view>) pos)
+(define-method (set-source-point! (self <gtk-source-view>) pos)
   "Sets source @var{view} cursor point to @var{pos}"
-  (let* ((buf (gtk-text-view-get-buffer view))
+  (let* ((buf (gtk-text-view-get-buffer self))
          (iter (gtk-text-buffer-get-start-iter buf)))
     (gtk-text-buffer-get-start-iter buf)
     (gtk-text-iter-forward-chars iter

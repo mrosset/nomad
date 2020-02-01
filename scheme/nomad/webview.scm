@@ -17,19 +17,18 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad webview)
+  #:use-module (nomad api)
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
   #:use-module (nomad util)
   #:use-module (nomad platform)
-  #:use-module (nomad api)
   #:use-module (srfi srfi-1)
   #:export (%search-provider-format
-            %search-providers
-            %default-home-page))
+            %search-providers))
 
 (define %search-provider-format "https://duckduckgo.com/?q=~a")
 
-(define %default-home-page "https://www.gnu.org/software/guile")
+(set! %default-home-page "https://www.gnu.org/software/guile")
 
 ;; search providers
 (define %search-providers
