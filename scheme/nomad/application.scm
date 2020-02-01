@@ -17,10 +17,11 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad application)
+  #:use-module (g-golf)
+  #:use-module (emacsy emacsy)
   #:use-module (nomad init)
   #:use-module (nomad util)
   #:use-module (nomad platform)
-  #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (shutdown-hook
             app-init))
@@ -45,9 +46,8 @@ controls are accessible to scheme"
   (add-hook! shutdown-hook
                           (lambda _
                             (info "running shutdown hook...")))
-  ;; (agenda-schedule-interval (lambda _
-  ;;                             (emacsy-tick))
-  ;;                           50)
+  (remove-buffer! scratch)
+  (remove-buffer! messages)
   (make <webview-buffer>))
 
 (add-hook! %startup-hook app-init)
