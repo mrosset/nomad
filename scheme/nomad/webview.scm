@@ -100,13 +100,16 @@
   (yank-string (current-url))
   (message (webview-current-url)))
 
-(define-interactive
-  (isearch-forward #:optional
-                   (text (or (current-search (current-buffer)) (read-from-minibuffer "I-search: "))))
-  (slot-set! (current-buffer) 'search text)
-  (let ((controller (webkit-web-view-get-find-controller (current-buffer))))
-    (webkit-find-controller-search controller text 0 255)
-    (message "I-search: ~a" text)))
+(define-interactive (isearch-forward
+                     #:optional (text (or (current-search (current-buffer))
+                                          (read-from-minibuffer "I-search: "))))
+  (set! (current-search (current-buffer)) text)
+  (search-forward (current-buffer))
+  #t)
+
+(define-interactive (webview-keyboard-quit)
+  (search-finish (current-buffer))
+  #t)
 
 (define-interactive (load-uri #:optional
                               (buffer (current-buffer))
@@ -134,15 +137,6 @@ current buffer is not a @var{<webview-buffer>} it will create a new
       (make <webview-buffer> #:init-uri uri)
       (buffer-load-uri (current-buffer) uri)))
   #t)
-
-(define-interactive (webview-keyboard-quit)
-  (when (current-search (current-buffer))
-    (let ((controller (webkit-web-view-get-find-controller (current-buffer))))
-      (slot-set! (current-buffer)
-                 'search
-                 #f)
-      (webkit-find-controller-search-finish controller)))
-    (keyboard-quit))
 
 ;; Provides firefox key mappings for webview-mode. This can be set as
 ;; the default webview mode map by using (!set %webview-map

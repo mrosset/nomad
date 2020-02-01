@@ -29,7 +29,10 @@
             buffer-load-uri
             buffer-back
             buffer-forward
-            buffer-reload))
+            buffer-reload
+            current-search
+            search-forward
+            search-finish))
 
 (eval-when (expand load eval)
   (gi-import "WebKit2")
@@ -78,7 +81,8 @@
 
 (define-class <gtk-webview-buffer> (<gtk-widget-buffer>
                                     <nomad-webview-buffer>
-                                    <webkit-web-view>))
+                                    <webkit-web-view>)
+  (search #:accessor current-search #:init-value #f))
 
 (define-method (initialize (self <gtk-webview-buffer>) args)
   (next-method)
@@ -106,6 +110,14 @@
   (info "RELOAD")
   (webkit-web-view-reload self))
 
+(define-method (search-forward (self <gtk-webview-buffer>))
+  (let ((controller (webkit-web-view-get-find-controller self)))
+    (webkit-find-controller-search controller (current-search self) 1 255)))
+
+(define-method (search-finish (self <gtk-webview-buffer>))
+  (set! (current-search self) #f)
+  (let ((controller (webkit-web-view-get-find-controller self)))
+    (webkit-find-controller-search-finish controller)))
 
 
 (define-class <gtk-textview-buffer> (<nomad-text-buffer>
