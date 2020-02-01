@@ -75,7 +75,7 @@
 
 (define-method (initialize (self <gtk-frame>) args)
   (next-method)
-  (let* ((box       (make <gtk-vbox> #:spacing 0))
+  (let* ((box        (make <gtk-vbox> #:spacing 0))
          (container  (make <gtk-notebook>))
          (modeline   (make <widget-source-view>
                        #:theme "cobalt"
@@ -139,9 +139,10 @@
         (begin
           (emacsy-key-event unichar mod-flags)
           (emacsy-tick)
+          ;; We need two tick or we can not test for emacsy-ran-undefined-command?
+          (unless emacsy-display-minibuffer?
+            (emacsy-tick))
           (if emacsy-ran-undefined-command?
               #f
               #t))
-        #f)
-    (when (equal? type 'key-release)
-      #f)))
+        #f)))

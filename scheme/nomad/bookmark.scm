@@ -127,7 +127,8 @@
 (define-interactive (load-bookmark #:optional (str (completing-read "Bookmark: " (map bookmark-id bookmarks))))
   "Opens bookmark by key in current buffer"
   (buffer-load-uri (current-buffer) (bookmark-contents
-                                     (car (bookmark-find str)))))
+                                     (car (bookmark-find str))))
+  #t)
 
 (define-interactive (find-bookmark)
   "Opens bookmark using completing-read in current buffer"
