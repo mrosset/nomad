@@ -93,6 +93,7 @@
     (slot-set! self 'box box)
     (slot-set! self 'modeline modeline)
     (slot-set! self 'minibuffer mini-view)
+    (slot-set! self 'title "Nomad")
 
     ;; Widget styles
     (nomad-app-set-style (slot-ref self 'modeline) "textview text { background-color: #BFBFBF; color: black; }")
