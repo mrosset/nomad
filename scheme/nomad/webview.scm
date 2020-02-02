@@ -82,7 +82,7 @@
 
 (define-interactive (back #:optional (buffer (current-buffer)))
   "Browse backwards in history"
-  (buffer-back buffer)
+  (buffer-back #:optional (buffer (current-buffer)))
   #t)
 
 (define-interactive (home)

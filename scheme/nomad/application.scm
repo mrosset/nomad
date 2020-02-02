@@ -46,8 +46,6 @@ controls are accessible to scheme"
   (add-hook! shutdown-hook
                           (lambda _
                             (info "running shutdown hook...")))
-  (remove-buffer! scratch)
-  (remove-buffer! messages)
   (make <webview-buffer>))
 
 (add-hook! %startup-hook app-init)
