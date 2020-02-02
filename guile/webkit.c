@@ -23,7 +23,6 @@
 #include "util.h"
 /* #include <glib-object.h> */
 #include <libguile.h>
-#include <webkit2/webkit2.h>
 
 typedef struct _NomadWebViewPrivate NomadWebViewPrivate;
 
@@ -40,6 +39,12 @@ struct _NomadWebView
 
 G_DEFINE_TYPE_WITH_PRIVATE (NomadWebView, nomad_web_view,
                             WEBKIT_TYPE_WEB_VIEW);
+
+void
+nomad_app_run_javascript(WebKitWebView *view, const char *js) {
+  webkit_web_view_run_javascript (view, js, NULL, NULL,
+                                  NULL);
+}
 
 static gboolean
 decide_policy_cb (WebKitWebView *view, WebKitPolicyDecision *decision,

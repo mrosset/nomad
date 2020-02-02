@@ -32,4 +32,6 @@ GtkWidget *nomad_web_view_new ();
 void nomad_web_view_switch_to_buffer (NomadWebView *view);
 void nomad_webkit_register_function (void *data);
 
+void nomad_app_run_javascript(WebKitWebView *view, const char *js);
+
 #endif

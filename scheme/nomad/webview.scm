@@ -65,14 +65,14 @@
   (buffer-hints)
   #t)
 
-(define-interactive (scroll-up)
+(define-interactive (scroll-up #:optional (buffer (current-buffer)))
   "Scroll buffer up"
-  (buffer-scroll-up)
+  (buffer-scroll-up buffer)
   #t)
 
-(define-interactive (scroll-down)
+(define-interactive (scroll-down #:optional (buffer (current-buffer)))
   "Scroll buffer down"
-  (buffer-scroll-down)
+  (buffer-scroll-down buffer)
   #t)
 
 (define-interactive (forward #:optional (buffer (current-buffer)))

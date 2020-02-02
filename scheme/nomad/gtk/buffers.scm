@@ -29,12 +29,15 @@
             buffer-load-uri
             buffer-back
             buffer-forward
+            buffer-scroll-up
+            buffer-scroll-down
             buffer-reload
             current-search
             search-forward
             search-finish))
 
 (eval-when (expand load eval)
+  (gi-import "Nomad")
   (gi-import "WebKit2")
   (map (lambda (pair)
          (gi-import-by-name (car pair) (cdr pair)))
@@ -107,8 +110,13 @@
   (webkit-web-view-go-back self))
 
 (define-method (buffer-reload (self <gtk-webview-buffer>))
-  (info "RELOAD")
   (webkit-web-view-reload self))
+
+(define-method (buffer-scroll-up (self <gtk-webview-buffer>))
+  (nomad-app-run-javascript self "window.scrollBy(0, -25);"))
+
+(define-method (buffer-scroll-down (self <gtk-webview-buffer>))
+  (nomad-app-run-javascript self "window.scrollBy(0, 25);"))
 
 (define-method (search-forward (self <gtk-webview-buffer>))
   (let ((controller (webkit-web-view-get-find-controller self)))

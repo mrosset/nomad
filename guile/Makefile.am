@@ -83,6 +83,7 @@ INTROSPECTION_GIRS =
 INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all \
 	--include Gtk-3.0 \
 	--include GObject-2.0 \
+	--include WebKit2-4.0 \
 	--include $(GISOURCEVIEW)
 
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
