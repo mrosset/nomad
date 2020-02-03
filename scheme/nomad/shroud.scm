@@ -19,6 +19,7 @@
 
 (define-module (nomad shroud)
   #:use-module (nomad util)
+  #:use-module (nomad gtk util)
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 optargs)
@@ -64,4 +65,4 @@
                      #:optional (entry (completing-read "Entry: "
                                                         (shroud--list))))
   "Show password/secrets entry"
-  (yank-string (shroud-show-entry entry "password")))
+  (copy-text (shroud-show-entry entry "password")))
