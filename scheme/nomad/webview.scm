@@ -41,11 +41,12 @@
   (message "~a"
            (buffer-uri (current-buffer))))
 
-(define (ensure-protocol uri)
-  (if (or (string-prefix? "https://" uri)
-          (string-prefix? "http://" uri))
-      uri
-      (string-append "https://" uri)))
+(define (ensure-protocol url)
+  "Returns a full protocol URI for domain URI.
+e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
+  (if (string-contains url "://")
+      url
+      (string-append "https://" url)))
 
 (define (pick-search-provider)
   (let ((s %search-providers))
@@ -96,8 +97,9 @@
 
 (define-interactive (copy-current-url)
   "Copy current url to clipboard"
-  (yank-string (current-url))
-  (message (webview-current-url)))
+  (copy-text (current-url))
+  (message (current-url))
+  #t)
 
 (define-interactive (isearch-forward
                      #:optional (text (or (current-search (current-buffer))

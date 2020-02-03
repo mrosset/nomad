@@ -24,6 +24,7 @@
   #:use-module (nomad gtk application)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
+  #:use-module (nomad gtk util)
   #:export (<webview-buffer>
             <textview-buffer>
             <application>
@@ -40,4 +41,5 @@
 (re-export-modules
  '(nomad gtk application)
  '(nomad gtk buffers)
- '(nomad gtk frame))
+ '(nomad gtk frame)
+ '(nomad gtk util))
