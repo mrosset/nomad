@@ -33,7 +33,7 @@
  #:use-module (srfi srfi-9)
  #:export (alist->bookmark
            bookmark->alist
-           bookmark-file
+           %bookmark-file
            bookmark-find
            bookmark-init
            bookmark-list
@@ -46,19 +46,19 @@
            load-bookmark
            save-bookmark))
 
-(define bookmark-file
+(define %bookmark-file
   (string-append %user-nomad-directory
                  // "bookmarks.scm"))
 
 (define* (read-bookmarks #:optional file)
-  (let ((bookmark-file (or file bookmark-file)))
+  (let ((bookmark-file (or file %bookmark-file)))
     (let* ((in (open-input-file bookmark-file))
           (sexp (read in)))
       (set! bookmarks (map alist->bookmark sexp))
       (close-port in))))
 
 (define* (write-bookmarks #:optional file)
-  (let ((bookmark-file (or file bookmark-file)))
+  (let ((bookmark-file (or file %bookmark-file)))
     (let* ((out (open-output-file bookmark-file))
            (sexp (map bookmark->alist bookmarks)))
       (pretty-print sexp out)
