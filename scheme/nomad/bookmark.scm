@@ -57,10 +57,10 @@
       (set! bookmarks (map alist->bookmark sexp))
       (close-port in))))
 
-(define* (write-bookmarks #:optional file)
+(define* (write-bookmarks #:optional file (books bookmarks))
   (let ((bookmark-file (or file %bookmark-file)))
     (let* ((out (open-output-file bookmark-file))
-           (sexp (map bookmark->alist bookmarks)))
+           (sexp (map bookmark->alist books)))
       (pretty-print sexp out)
       (close-port out))))
 
@@ -115,7 +115,7 @@
 (define (pp-bookmarks)
   (define (print-bookmark arg)
     (format #t "~s\t~s\n" (bookmark-id arg) (bookmark-contents arg)))
-  (map print-bookmark bookmarks))
+  (for-each print-bookmark bookmarks))
 
 (define* (bookmark-list #:optional books)
   (map bookmark-id (or books bookmarks)))
