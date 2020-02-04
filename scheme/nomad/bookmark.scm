@@ -39,6 +39,7 @@
            bookmark-list
            bookmark-ref
            make-bookmark
+           add-bookmark
            read-bookmarks
            write-bookmarks
            bookmarks
@@ -105,6 +106,11 @@
           (contents . "https://www.gnu.org/software/emacs"))
          ((id . "guile")
           (contents . "https://www.gnu.org/software/guile")))))
+
+(define* (add-bookmark book #:optional (books bookmarks))
+  (if (bookmark? book)
+      (set! books (cons book books))
+      (error "Not a bookmark")))
 
 (define-interactive (message-bookmarks)
   "Pretty prints bookmarks to echo area"
