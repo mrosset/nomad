@@ -1,7 +1,7 @@
 ;; bookmark --- bookmarks for Nomad
 
 ;; Copyright (C) 2019 Mike Rosset<mike.rosset@gmail.com>
-;; Copyright (C) 2019 Amar Singh<nly@disroot.org>
+;; Copyright (C) 2019-2020 Amar Singh<nly@disroot.org>
 
 ;; This file is part of Nomad.
 
@@ -121,7 +121,7 @@
   (map bookmark-id (or books bookmarks)))
 
 (define* (bookmark-find key #:optional books)
-  (filter (compose (cut string-match key <>) bookmark-id)
+  (filter (compose (cut string-ci=? key <>) bookmark-id)
           (or books bookmarks)))
 
 (define-interactive (load-bookmark #:optional (str (completing-read "Bookmark: " (map bookmark-id bookmarks))))
