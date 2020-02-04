@@ -31,6 +31,9 @@ nomad_DATA = ## init.el
 
 dist_doc_DATA = README
 
+desktopdir = $(datadir)/applications
+dist_desktop_DATA = etc/nomad.desktop
+
 lcov.info: all
 	$(top_builddir)/pre-inst-env $(top_builddir)/tools/coverage
 

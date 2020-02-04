@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Nomad
+GenericName=Web Browser
+Comment=Hackable Web Browser
+Exec=nomad %F
+Icon=nomad
+Type=Application
+Terminal=false
+Categories=Web;Development;GTK;Viewer;
+StartupWMClass=Emacs
+Keywords=Web;Browser;
