@@ -20,24 +20,40 @@
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:use-module (emacsy emacsy)
+  #:use-module (nomad init)
   #:use-module (nomad api)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
   #:export (<nomad-gtk-application>))
 
 (eval-when (expand load eval)
+  (default-duplicate-binding-handler
+    '(merge-generics replace warn-override-core warn last))
+
   (map (lambda (pair)
          (gi-import-by-name (car pair) (cdr pair)))
        '(("Gtk" . "Widget")
-         ("Gtk" . "Application"))))
+         ("Gtk" . "Application")
+         ("WebKit2" . "WebContext")
+         ("WebKit2" . "CookieManager"))))
 
 (define-class <nomad-gtk-application> (<nomad-application> <gtk-application>))
 
-(define-method (activate-cb app)
-  (gtk-widget-show-all (gtk-frame-new app))
+(define (startup-cb app)
   (emacsy-initialize #t)
+  (when %use-cookies?
+    (let ((manager (webkit-web-context-get-cookie-manager
+                    (webkit-web-context-get-default))))
+      (webkit-cookie-manager-set-persistent-storage
+       manager
+       %user-cookie-file
+       'sqlite))))
+
+(define (activate-cb app)
+  (gtk-widget-show-all (gtk-frame-new app))
   (run-hook (!startup-hook app)))
 
 (define-method (initialize (self <nomad-gtk-application>) args)
   (next-method)
+  (connect self 'startup startup-cb)
   (connect self 'activate activate-cb))

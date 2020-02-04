@@ -28,10 +28,10 @@
             gtk-frame-new
             current-frame))
 
-(default-duplicate-binding-handler
-  '(merge-generics replace warn-override-core warn last))
-
 (eval-when (expand load eval)
+  (default-duplicate-binding-handler
+    '(merge-generics replace warn-override-core warn last))
+
   (for-each (lambda (x)
               (gi-import-by-name  (car x) (cdr x)))
             '(("Gtk" . "Container")

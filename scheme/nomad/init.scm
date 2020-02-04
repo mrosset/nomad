@@ -22,7 +22,7 @@
   #:use-module (nomad options)
   #:use-module (emacsy emacsy)
   #:export (init
-            use-cookies?
+            %use-cookies?
             %user-cookie-file
             %user-init-file
             %user-nomad-directory
@@ -84,7 +84,7 @@
     (pretty-print buffers port)
     (close-port port)))
 
-(define use-cookies? #t)
+(define %use-cookies? #f)
 
 (define-ident %user-cookie-file
   (string-append %user-nomad-directory // "cookies.db"))
@@ -97,5 +97,4 @@
   ;; then load the user-init-file
   (when (and (not (option-quick (command-line)))
              (file-exists? %user-init-file))
-    (load %user-init-file))
-  #t)
+    (load %user-init-file)))
