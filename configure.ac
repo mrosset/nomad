@@ -156,7 +156,7 @@ src/Makefile
 doc/Makefile
 scheme/Makefile
 test-suite/Makefile
-pixmaps/Makefile
+etc/images/icons/hicolor/Makefile
 tools/unused
 ],
 [chmod +x tools/unused])

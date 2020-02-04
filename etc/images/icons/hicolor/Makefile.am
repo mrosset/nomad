@@ -22,7 +22,8 @@ nobase_dist_icons_DATA = \
     22x22/apps/nomad.png \
     24x24/apps/nomad.png \
     32x32/apps/nomad.png \
-    48x48/apps/nomad.png
+    48x48/apps/nomad.png \
+    128x128/apps/nomad.png
 
 gtk_update_icon_cache = gtk-update-icon-cache -f -t $(iconsdir)
 
