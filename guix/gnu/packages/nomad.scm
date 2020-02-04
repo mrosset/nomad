@@ -67,6 +67,7 @@
        ("glib" ,glib)
        ("dbus-glib" ,dbus-glib)
        ("gtk+" ,gtk+)
+       ("gtk+:bin" ,gtk+ "bin")
        ("gtksourceview" ,gtksourceview)
        ("webkitgtk" ,webkitgtk)
        ("g-golf" ,g-golf)
