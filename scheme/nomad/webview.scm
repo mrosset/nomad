@@ -83,7 +83,7 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 
 (define-interactive (back #:optional (buffer (current-buffer)))
   "Browse backwards in history"
-  (buffer-back #:optional (buffer (current-buffer)))
+  (buffer-back buffer)
   #t)
 
 (define-interactive (home)
@@ -110,6 +110,7 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 
 (define-interactive (webview-keyboard-quit)
   (search-finish (current-buffer))
+  (keyboard-quit)
   #t)
 
 (define-interactive (load-uri #:optional
@@ -162,7 +163,7 @@ current buffer is not a @var{<webview-buffer>} it will create a new
 
 ;; Default webview-mode key mappings
 (set! %webview-map
-      (list->keymap '(("C-c b" back)
+      (list->keymap '(("C-c u" back)
                       ("C-m" forward)
                       ("C-n" scroll-down)
                       ("C-p" scroll-up)
