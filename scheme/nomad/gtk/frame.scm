@@ -97,6 +97,7 @@
     (slot-set! self 'default-height 480)
     (slot-set! self 'default-width 640)
     (slot-set! self 'icon-name "nomad")
+    (gtk-window-set-icon-name self "nomad")
 
     ;; Widget styles
     (nomad-app-set-style (slot-ref self 'modeline) "textview text { background-color: #BFBFBF; color: black; }")
@@ -125,7 +126,8 @@
                                              (gtk-notebook-get-show-tabs notebook))))))
 
 (define (gtk-frame-new app)
-  (make <gtk-frame> #:application (slot-ref app 'g-inst)))
+  (make <gtk-frame> #:application (slot-ref app 'g-inst)
+        #:icon-name "nomad"))
 
 
 
