@@ -156,6 +156,7 @@ src/Makefile
 doc/Makefile
 scheme/Makefile
 test-suite/Makefile
+pixmaps/Makefile
 tools/unused
 ],
 [chmod +x tools/unused])

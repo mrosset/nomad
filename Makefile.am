@@ -16,7 +16,7 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIRS = guile test-suite scheme src doc
+SUBDIRS = guile test-suite scheme src doc pixmaps
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
