@@ -131,3 +131,19 @@
     (description "Nomad is a Emacs-like web browser that consists of a small C
 backend and modular feature-set fully programmable in Guile.")
     (license license:gpl3+)))
+
+(define-public nomad-git
+  (let ((commit "37295da03aa1b0fc27b27048dbb5887214e9f13d"))
+    (package
+      (inherit nomad)
+      (name "nomad-git")
+      (version (git-version "1" "873" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/nomad.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0mdd065di5sq8lwh5h0azxwsxdklzbp0idj07pqgahalxmj8y4jr")))))))
