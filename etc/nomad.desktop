@@ -6,6 +6,6 @@ Exec=nomad %F
 Icon=nomad
 Type=Application
 Terminal=false
-Categories=Web;Development;GTK;Viewer;
+Categories=Web;Development;GTK;Viewer;Internet;
 StartupWMClass=Emacs
 Keywords=Web;Browser;
