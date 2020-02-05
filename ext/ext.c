@@ -30,6 +30,7 @@ WebKitWebPage *page = NULL;
 static void
 web_page_loaded_callback (WebKitWebPage *web_page, gpointer user_data)
 {
+  g_print("PAGE created\n");
   page = web_page;
 }
 

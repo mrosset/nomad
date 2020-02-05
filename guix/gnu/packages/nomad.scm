@@ -124,8 +124,7 @@
      (list (search-path-specification
             (variable "GI_TYPELIB_PATH")
             (separator ":")
-            (files '("lib/girepository-1.0")))
-           ))
+            (files '("lib/girepository-1.0")))))
     (home-page "https://savannah.nongnu.org/projects/nomad/")
     (synopsis "Web Browser extensible in Guile scheme")
     (description "Nomad is a Emacs-like web browser that consists of a small C

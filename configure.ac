@@ -155,6 +155,7 @@ guile/Makefile
 src/Makefile
 doc/Makefile
 scheme/Makefile
+ext/Makefile
 test-suite/Makefile
 etc/images/icons/hicolor/Makefile
 tools/unused

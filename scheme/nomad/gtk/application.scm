@@ -39,6 +39,11 @@
 
 (define-class <nomad-gtk-application> (<nomad-application> <gtk-application>))
 
+(define (initialize-extention-cb ctx)
+  (webkit-web-context-set-web-extensions-directory
+   ctx
+   (getenv "NOMAD_WEB_EXTENTION_DIR")))
+
 (define (startup-cb app)
   (emacsy-initialize #t)
   (when %use-cookies?
@@ -56,4 +61,7 @@
 (define-method (initialize (self <nomad-gtk-application>) args)
   (next-method)
   (connect self 'startup startup-cb)
-  (connect self 'activate activate-cb))
+  (connect self 'activate activate-cb)
+  (connect (webkit-web-context-get-default)
+           'initialize-web-extensions
+           initialize-extention-cb))
