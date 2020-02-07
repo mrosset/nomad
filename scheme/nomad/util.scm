@@ -18,6 +18,7 @@
 
 (define-module (nomad util)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 pretty-print)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
   #:export (list->keymap
@@ -74,3 +75,15 @@
 (define (ensure-directory dir)
   (unless (file-exists? dir)
           (mkdir dir #o755)))
+
+(define-public (safe-message fmt var)
+  (catch #t
+    (lambda _
+      (message fmt var))
+    (lambda (key . vals)
+      (format #t "Error: key: ~a value: ~a" key vals))))
+
+(define-public (pretty-message fmt var)
+  (message fmt
+           (with-output-to-string (lambda _
+                                    (pretty-print var))))  )
