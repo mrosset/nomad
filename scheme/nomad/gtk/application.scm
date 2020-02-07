@@ -30,12 +30,20 @@
   (default-duplicate-binding-handler
     '(merge-generics replace warn-override-core warn last))
 
+  (gi-import "Gio")
   (map (lambda (pair)
          (gi-import-by-name (car pair) (cdr pair)))
        '(("Gtk" . "Widget")
          ("Gtk" . "Application")
          ("WebKit2" . "WebContext")
          ("WebKit2" . "CookieManager"))))
+
+(define-public (application-id)
+  "Returns the default application id"
+  (let ((app (g-application-get-default)))
+    (g-application-get-application-id app)))
+
+
 
 (define-class <nomad-gtk-application> (<nomad-application> <gtk-application>))
 

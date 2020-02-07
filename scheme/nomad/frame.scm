@@ -19,13 +19,7 @@
 (define-module (nomad frame)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
-  #:use-module (nomad platform)
-  #:use-module (g-golf))
-
-(eval-when (expand load eval)
-  (map (lambda (pair)
-         (gi-import-by-name (car pair) (cdr pair)))
-       '(("Gio" . "Application"))))
+  #:use-module (nomad platform))
 
 (define-interactive (toggle-tabs #:optional (frame (current-frame)))
   "Toggles the current notebook tabs on or off."

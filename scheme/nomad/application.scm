@@ -17,28 +17,19 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad application)
-  #:use-module (g-golf)
   #:use-module (emacsy emacsy)
   #:use-module (nomad init)
   #:use-module (nomad util)
   #:use-module (nomad platform)
-  #:duplicates (merge-generics replace warn-override-core warn last)
+  #:use-module (g-golf)
   #:export (shutdown-hook
             app-init))
-
-(eval-when (expand load eval)
-  (gi-import "Gio"))
 
 (define shutdown-hook (make-hook 0))
 
 (define (shutdown)
   "Cleans up after guile and runs user shutdown hooks"
   (run-hook shutdown-hook))
-
-(define-public (application-id)
-  "Returns the default application id"
-  (let ((app (g-application-get-default)))
-    (g-application-get-application-id app)))
 
 (define (app-init)
   "This is called when the application is activated. Which ensures

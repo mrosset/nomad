@@ -25,6 +25,9 @@
             set-source-point!))
 
 (eval-when (expand load eval)
+  (default-duplicate-binding-handler
+    '(merge-generics replace warn-override-core warn last))
+
   (gi-import "Nomad")
   (gi-import "Gdk")
   (for-each (lambda (x)
