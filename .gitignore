@@ -52,7 +52,6 @@ Makefile.in
 /src/nomad
 /stamp-h1
 /pre-inst-env
-/scheme/nomad/lib.scm
 /check-guile
 /scheme/data
 /coverage

@@ -16,7 +16,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-nomad_TEXINFOS = api.texi doclicense.texi gpl.texi urls.texi version.texi
+nomad_TEXINFOS = doclicense.texi gpl.texi urls.texi version.texi
 info_TEXINFOS  = nomad.texi
 
 AM_MAKEINFOHTMLFLAGS = --css-include=reset.css --css-include=style.css --css-include=manual.css --no-split
@@ -57,8 +57,6 @@ doc-snarf-api:
 		$(top_builddir)/scheme/nomad/frame.scm			\
 		$(top_builddir)/scheme/nomad/html.scm			\
 		$(top_builddir)/scheme/nomad/init.scm			\
-		$(top_builddir)/scheme/nomad/lib.in			\
-		$(top_builddir)/scheme/nomad/lib.scm			\
 		$(top_builddir)/scheme/nomad/nomad.scm			\
 		$(top_builddir)/scheme/nomad/options.scm		\
 		$(top_builddir)/scheme/nomad/repl.scm			\
@@ -68,7 +66,6 @@ doc-snarf-api:
 		$(top_builddir)/scheme/nomad/text.scm			\
 		$(top_builddir)/scheme/nomad/util.scm			\
 		$(top_builddir)/scheme/nomad/views.scm			\
-		$(top_builddir)/scheme/nomad/webkit.scm				\
 		$(top_builddir)/scheme/nomad/webview.scm		\
 		$(top_builddir)/scheme/nomad/widget.scm				\
 	; do						\
