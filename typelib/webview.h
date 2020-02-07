@@ -1,5 +1,5 @@
 /*
- * minibuffer.h
+ * webkit.h
  * Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
  *
  * This file is part of Nomad
@@ -18,9 +18,18 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NOMADMINIBUFFER_H
-#define __NOMADMINIBUFFER_H
-SCM scm_nomad_minibuffer_render_popup ();
-SCM scm_nomad_minibuffer_message (SCM text);
-void nomad_minibuffer_register_function (void *data);
-#endif /* __NOMADAPPWIN_H */
+#ifndef __GUILE_NOMAD_WEBKIT_H
+#define __GUILE_NOMAD_WEBKIT_H
+
+#include <gtk/gtk.h>
+#include <webkit2/webkit2.h>
+
+#define NOMAD_WEB_VIEW_TYPE (nomad_web_view_get_type ())
+G_DECLARE_FINAL_TYPE (NomadWebView, nomad_web_view, NOMAD, WEB_VIEW,
+                      WebKitWebView)
+
+GtkWidget *nomad_web_view_new ();
+void nomad_web_view_switch_to_buffer (NomadWebView *view);
+void nomad_webkit_register_function (void *data);
+
+#endif

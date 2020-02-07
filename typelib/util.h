@@ -1,6 +1,6 @@
 /*
- * text.h
- * Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+ * util.h
+ * Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
  *
  * This file is part of Nomad
  *
@@ -18,18 +18,15 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUILE_NOMAD_TEXT_H
-#define __GUILE_NOMAD_TEXT_H
+#ifndef __NOMAD_UTIL_H
+#define __NOMAD_UTIL_H
 
-#include <gtksourceview/gtksource.h>
+#include <gtk/gtk.h>
+#include <webkit2/webkit2.h>
 
-GtkSourceBuffer *nomad_app_source_buffer_new (const char *theme,
-					      const char *lang);
+void nomad_app_run_javascript (WebKitWebView *view, const char *js);
+void nomad_app_set_style (GtkWidget *widget, const char *style);
+void nomad_app_send_message (WebKitWebView *view, WebKitUserMessage *message);
+void nomad_app_set_webview_signals (WebKitWebView *view);
 
-void nomad_app_set_style(GtkWidget *widget, const char* style);
-
-void nomad_app_source_view_set_buffer (GtkTextView *view, const char *theme,
-				       const char *lang);
-
-void nomad_text_register_function (void *data);
 #endif

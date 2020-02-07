@@ -16,7 +16,7 @@
 ## You should have received a copy of the GNU General Public License along
 ## with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-SUBDIRS = ext guile test-suite scheme src doc etc/images/icons/hicolor
+SUBDIRS = ext typelib test-suite scheme src doc etc/images/icons/hicolor
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 

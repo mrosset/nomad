@@ -151,11 +151,11 @@ GOBJECT_INTROSPECTION_CHECK([1.30.0])
 
 AC_CONFIG_FILES([
 Makefile
-guile/Makefile
+ext/Makefile
+typelib/Makefile
 src/Makefile
 doc/Makefile
 scheme/Makefile
-ext/Makefile
 test-suite/Makefile
 etc/images/icons/hicolor/Makefile
 tools/unused

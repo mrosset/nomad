@@ -23,14 +23,8 @@ AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement
 libguile_nomad_LTLIBRARIES = libguile-nomad.la
 libguile_nomaddir = $(libexecdir)/nomad/
 
-libguile_nomad_la_SOURCES =  app.c app.h
-libguile_nomad_la_SOURCES += frame.c frame.h
-libguile_nomad_la_SOURCES += minibuffer.c minibuffer.h
-libguile_nomad_la_SOURCES += resources.c
-libguile_nomad_la_SOURCES += text.c text.h
-libguile_nomad_la_SOURCES += util.c util.h
-libguile_nomad_la_SOURCES += webkit.c webkit.h
-libguile_nomad_la_SOURCES += extension.c
+libguile_nomad_la_SOURCES  =  webview.c webview.h
+libguile_nomad_la_SOURCES +=  util.c util.h
 
 libguile_nomad_la_CFLAGS =  $(AM_CFLAGS)
 libguile_nomad_la_CFLAGS += $(EMACSY_CFLAGS)
@@ -48,28 +42,17 @@ libguile_nomad_la_LIBADD += $(GTK_LIBS)
 libguile_nomad_la_LIBADD += $(WEBKIT_LIBS)
 libguile_nomad_la_LIBADD += $(GTK_SOURCEVIEW_LIBS)
 
-
 libguile_nomad_la_LDFLAGS = -avoid-version -no-undefined
 
 G_RESOURCES = gresource.xml
 
 EXTRA_DIST = $(G_RESOURCES)
 
-DOT_X_FILES = webkit.x frame.x app.x util.x minibuffer.x text.x extension.x
-
 BUILT_SOURCES = $(DOT_X_FILES)
 
 CLEANFILES = $(BUILT_SOURCES)
 
-snarfcppopts = $(DEFS) $(AM_CPPFLAGS) $(AM_CFLAGS) $(libguile_nomad_la_CFLAGS)
-
-SUFFIXES = .x
-
 .PHONY: format
-
-.c.x:
-	@echo "  SNARF" $@;
-	@$(GUILE_SNARF) -o $@ $< $(snarfcppopts)
 
 resources.c: $(G_RESOURCES)
 	$(GLIB_COMPILE_R) $< --target=$@ --generate-source
@@ -88,7 +71,7 @@ INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all \
 
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 
-introspection_sources = app.h frame.h webkit.h text.h util.h
+introspection_sources = webview.h util.h
 
 Nomad-1.0.gir: libguile-nomad.la
 Nomad_1_0_INCLUDES =

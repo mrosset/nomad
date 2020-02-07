@@ -16,27 +16,6 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# single
-/aclocal.m4
-/autom4te.cache
-/build-aux
-/config.cache
-/config.status
-/configure
-/libtool
-/m4
-/src/nomad
-/guile/resources.c
-/stamp-h1
-/pre-inst-env
-/scheme/nomad/lib.scm
-/check-guile
-/scheme/data
-/coverage
-/test-suite/test-runner
-/tools/coverage
-/lcov.info
-
 # multiple
 .deps
 .libs
@@ -54,10 +33,29 @@ Makefile.in
 *.gir
 *.typelib
 
-# magit
+# single
 /config.h
 /config.h.in
 /test-suite/test-runner
 /tools/coverage
 /lcov.info
 /coverage
+/typelib/resources.c
+/aclocal.m4
+/autom4te.cache
+/build-aux
+/config.cache
+/config.status
+/configure
+/libtool
+/m4
+/src/nomad
+/stamp-h1
+/pre-inst-env
+/scheme/nomad/lib.scm
+/check-guile
+/scheme/data
+/coverage
+/test-suite/test-runner
+/tools/coverage
+/lcov.info
