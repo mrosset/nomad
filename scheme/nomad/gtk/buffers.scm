@@ -134,10 +134,8 @@
                           (make <webkit-user-message> #:name "hints-finish")))
 
 (define-method (buffer-hints (self <gtk-webview-buffer>))
-  (let ((result  #f)
-        (thread  #f))
-    (nomad-app-send-message self
-                            (make <webkit-user-message> #:name "show-hints"))))
+  (nomad-app-send-message self
+                          (make <webkit-user-message> #:name "show-hints")))
 
 (define-method (search-forward (self <gtk-webview-buffer>))
   (let ((controller (webkit-web-view-get-find-controller self)))
