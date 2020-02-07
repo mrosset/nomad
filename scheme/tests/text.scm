@@ -20,10 +20,8 @@
   #:use-module (emacsy emacsy)
   #:use-module (g-golf)
   #:use-module (nomad text)
-  #:use-module (nomad widget)
   #:use-module (nomad util)
-  #:use-module (srfi srfi-64)
-  )
+  #:use-module (srfi srfi-64))
 
 (gi-import "GtkSource")
 

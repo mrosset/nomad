@@ -55,7 +55,6 @@ SOURCES =			\
 	nomad/frame.scm		\
 	nomad/html.scm		\
 	nomad/options.scm	\
-	nomad/widget.scm	\
 	nomad/repl.scm		\
 	nomad/shroud.scm	\
 	nomad/server.scm	\
