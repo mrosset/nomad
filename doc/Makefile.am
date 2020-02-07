@@ -32,11 +32,11 @@ manual: $(texi_source)
 
 api.texi: doc-snarf
 
-info-local: doc-snarf
+info-local:
 
-html-local: doc-snarf
+html-local:
 
-pdf-local: doc-snarf
+pdf-local:
 
 DOC_SNARF = $(top_builddir)/pre-inst-env $(GUILD) doc-snarf
 
