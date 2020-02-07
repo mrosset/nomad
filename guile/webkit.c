@@ -24,6 +24,14 @@
 /* #include <glib-object.h> */
 #include <libguile.h>
 
+enum
+{
+  RECEIVED,
+  LAST
+};
+
+static guint web_view_signals[LAST] = { 0 };
+
 typedef struct _NomadWebViewPrivate NomadWebViewPrivate;
 
 struct _NomadWebViewPrivate
@@ -40,10 +48,78 @@ struct _NomadWebView
 G_DEFINE_TYPE_WITH_PRIVATE (NomadWebView, nomad_web_view,
                             WEBKIT_TYPE_WEB_VIEW);
 
+typedef struct
+{
+  char *message;
+} ReplyData;
+
+/* static void
+ * noamd_app_send_message_ready_cb (GObject *view, GAsyncResult *result,
+ *                                  gpointer user_data)
+ * {
+ *   GVariant *parameters;
+ *   WebKitUserMessage *reply = NULL;
+ *
+ *   char *status = (char *)user_data;
+ *   g_autoptr (GError) error = NULL;
+ *
+ *   reply = webkit_web_view_send_message_to_page_finish (WEBKIT_WEB_VIEW
+ * (view), result, &error); if (error)
+ *     {
+ *       g_warning ("Error getting Message: %s\n", error->message);
+ *       g_free (user_data);
+ *       return;
+ *     }
+ *
+ *   parameters = webkit_user_message_get_parameters (reply);
+ *   if (!parameters)
+ *     {
+ *       g_free (user_data);
+ *       return;
+ *     }
+ *   status = g_strdup (g_variant_get_string (parameters, NULL));
+ *   scm_variable_set_x (
+ *       scm_c_public_variable ("nomad gtk buffers", "message-reply"),
+ *       scm_from_locale_string (status));
+ *   g_free (status);
+ * } */
+
 void
-nomad_app_run_javascript(WebKitWebView *view, const char *js) {
-  webkit_web_view_run_javascript (view, js, NULL, NULL,
-                                  NULL);
+nomad_app_send_message (WebKitWebView *view, WebKitUserMessage *message)
+{
+  webkit_web_view_send_message_to_page (view, message, NULL, NULL, NULL);
+}
+
+void
+nomad_app_run_javascript (WebKitWebView *view, const char *js)
+{
+  webkit_web_view_run_javascript (view, js, NULL, NULL, NULL);
+}
+
+gboolean
+user_message_received_cb (WebKitWebView *web_view, WebKitUserMessage *message,
+                          gpointer user_data)
+{
+  const char *name = webkit_user_message_get_name (message);
+  g_signal_emit (web_view, web_view_signals[RECEIVED], 0, name);
+  return TRUE;
+}
+
+void
+nomad_app_set_webview_signals (WebKitWebView *view)
+{
+  g_signal_connect (view, "user-message-received",
+                    G_CALLBACK (user_message_received_cb), NULL);
+
+  // clang-format off
+  web_view_signals[RECEIVED] =
+    g_signal_new("message-received",
+                 WEBKIT_TYPE_WEB_VIEW,
+                 G_SIGNAL_RUN_FIRST,
+                 0, NULL, NULL,
+                 g_cclosure_marshal_VOID__POINTER,
+                 G_TYPE_NONE, 1, G_TYPE_STRING);
+  // clang-format on
 }
 
 static gboolean

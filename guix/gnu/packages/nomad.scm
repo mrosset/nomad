@@ -69,7 +69,7 @@
        ("gtk+" ,gtk+)
        ("gtk+:bin" ,gtk+ "bin")
        ("gtksourceview" ,gtksourceview)
-       ("webkitgtk" ,webkitgtk)
+       ("webkitgtk" ,webkitgtk-unstable)
        ("g-golf" ,g-golf)
        ("xorg-server" ,xorg-server)))
     (propagated-inputs
@@ -130,6 +130,19 @@
     (description "Nomad is a Emacs-like web browser that consists of a small C
 backend and modular feature-set fully programmable in Guile.")
     (license license:gpl3+)))
+
+(define-public webkitgtk-unstable
+  (package
+    (inherit webkitgtk)
+    (name "webkitgtk-unstable")
+    (version "2.27.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.webkitgtk.org/releases/"
+                                  "webkitgtk-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1xvl93ajqgkar6ij15966mdzq1fijispgjafah60g4s98r2hlmah"))))))
 
 (define-public nomad-git
   (let ((commit "37295da03aa1b0fc27b27048dbb5887214e9f13d"))

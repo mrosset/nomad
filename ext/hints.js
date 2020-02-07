@@ -326,5 +326,3 @@ function get_key(evt){
         }
         return ctrl+meta+key;
 }
-
-hintMode();

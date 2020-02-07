@@ -62,8 +62,8 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
                    (read-from-minibuffer "Url: " (buffer-uri (current-buffer))))
   #t)
 
-(define-interactive (hints)
-  (buffer-hints)
+(define-interactive (hints #:optional (buffer (current-buffer)))
+  (buffer-hints buffer)
   #t)
 
 (define-interactive (scroll-up #:optional (buffer (current-buffer)))
@@ -109,6 +109,7 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
   #t)
 
 (define-interactive (webview-keyboard-quit)
+  (hints-finish (current-buffer))
   (search-finish (current-buffer))
   (keyboard-quit)
   #t)

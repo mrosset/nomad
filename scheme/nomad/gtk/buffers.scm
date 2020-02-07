@@ -19,6 +19,7 @@
 (define-module (nomad gtk buffers)
   #:use-module (emacsy emacsy)
   #:use-module (nomad api)
+  #:use-module (nomad util)
   #:use-module (nomad gtk widgets)
   #:use-module (oop goops)
   #:use-module (g-golf)
@@ -29,6 +30,8 @@
             buffer-load-uri
             buffer-back
             buffer-forward
+            buffer-hints
+            hints-finish
             buffer-scroll-up
             buffer-scroll-down
             buffer-reload
@@ -92,9 +95,15 @@
   (connect self 'load-changed
            (lambda _
              (let ((percent (inexact->exact
-                           (round (* 100 (!estimated-load-progress self))))))
+                             (round (* 100 (!estimated-load-progress self))))))
                (slot-set! self 'name (!uri self)))
              #t))
+
+  ;; Set user-message-received signals and any signals g-golf can not handle.
+  (nomad-app-set-webview-signals self)
+  (connect self 'message-received (lambda (view message)
+                                    (safe-message "~a" message)))
+
   (buffer-load-uri self (!init-uri self)))
 
 (define-method (buffer-load-uri (self <gtk-webview-buffer>) uri)
@@ -118,6 +127,18 @@
 (define-method (buffer-scroll-down (self <gtk-webview-buffer>))
   (nomad-app-run-javascript self "window.scrollBy(0, 25);"))
 
+(define-public message-reply #f)
+
+(define-method (hints-finish (self <gtk-webview-buffer>))
+  (nomad-app-send-message self
+                          (make <webkit-user-message> #:name "hints-finish")))
+
+(define-method (buffer-hints (self <gtk-webview-buffer>))
+  (let ((result  #f)
+        (thread  #f))
+    (nomad-app-send-message self
+                            (make <webkit-user-message> #:name "show-hints"))))
+
 (define-method (search-forward (self <gtk-webview-buffer>))
   (let ((controller (webkit-web-view-get-find-controller self)))
     (webkit-find-controller-search controller (current-search self) 1 255)))
@@ -126,6 +147,7 @@
   (set! (current-search self) #f)
   (let ((controller (webkit-web-view-get-find-controller self)))
     (webkit-find-controller-search-finish controller)))
+
 
 
 (define-class <gtk-textview-buffer> (<nomad-text-buffer>
