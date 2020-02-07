@@ -58,3 +58,5 @@ Makefile.in
 /test-suite/test-runner
 /tools/coverage
 /lcov.info
+/ext/resources.c
+/tools/unused
