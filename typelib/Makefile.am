@@ -25,6 +25,7 @@ libguile_nomaddir = $(libexecdir)/nomad/
 
 libguile_nomad_la_SOURCES  =  webview.c webview.h
 libguile_nomad_la_SOURCES +=  util.c util.h
+libguile_nomad_la_SOURCES +=  resources.c
 
 libguile_nomad_la_CFLAGS =  $(AM_CFLAGS)
 libguile_nomad_la_CFLAGS += $(EMACSY_CFLAGS)
@@ -46,16 +47,17 @@ libguile_nomad_la_LDFLAGS = -avoid-version -no-undefined
 
 G_RESOURCES = gresource.xml
 
-EXTRA_DIST = $(G_RESOURCES)
+BUILT_SOURCES = resources.c
 
-BUILT_SOURCES = $(DOT_X_FILES)
+EXTRA_DIST = $(G_RESOURCES)
 
 CLEANFILES = $(BUILT_SOURCES)
 
 .PHONY: format
 
 resources.c: $(G_RESOURCES)
-	$(GLIB_COMPILE_R) $< --target=$@ --generate-source
+	echo    "GLIB       $@"
+	@$(GLIB_COMPILE_R) $< --target=$@ --generate-source
 
 format:
 	 clang-format -i *.c *.h
@@ -86,4 +88,4 @@ gir_DATA = $(INTROSPECTION_GIRS)
 typelibdir = $(libdir)/girepository-1.0
 typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
-CLEANFILES = $(gir_DATA) $(typelib_DATA)
+CLEANFILES += $(gir_DATA) $(typelib_DATA)
