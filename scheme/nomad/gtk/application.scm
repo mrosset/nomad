@@ -50,13 +50,13 @@
 (define (initialize-extention-cb ctx)
   (webkit-web-context-set-web-extensions-directory
    ctx
-   (getenv "NOMAD_WEB_EXTENTION_DIR")))
+   (getenv "NOMAD_WEB_EXTENSION_DIR")))
 
 (define (startup-cb app)
   (emacsy-initialize #t)
   (when %use-cookies?
     (let ((manager (webkit-web-context-get-cookie-manager
-                    (webkit-web-context-get-default))))
+		    (webkit-web-context-get-default))))
       (webkit-cookie-manager-set-persistent-storage
        manager
        %user-cookie-file

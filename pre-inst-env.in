@@ -7,7 +7,7 @@ GUILE_LOAD_COMPILED_PATH="@abs_top_builddir@/scheme:$GUILE_LOAD_COMPILED_PATH"
 
 GI_TYPELIB_PATH="@abs_top_builddir@/typelib:$GI_TYPELIB_PATH"
 
-export NOMAD_WEB_EXTENTION_DIR="@abs_top_builddir@/ext/.libs/"
+export NOMAD_WEB_EXTENSION_DIR="@abs_top_builddir@/ext/.libs/"
 
 export GUILE_LOAD_COMPILED_PATH
 export GI_TYPELIB_PATH
