@@ -1,6 +1,6 @@
 /*
- * webkit.h
- * Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+ * scheme.h
+ * Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
  *
  * This file is part of Nomad
  *
@@ -18,18 +18,17 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __GUILE_NOMAD_WEBKIT_H
-#define __GUILE_NOMAD_WEBKIT_H
+#ifndef __NOMAD_SCHEME_H__
+#define __NOMAD_SCHEME_H__
 
+#include <glib-object.h>
 #include <gtk/gtk.h>
 #include <webkit2/webkit2.h>
 
-#define NOMAD_WEB_VIEW_TYPE (nomad_web_view_get_type ())
-G_DECLARE_FINAL_TYPE (NomadWebView, nomad_web_view, NOMAD, WEB_VIEW,
-                      WebKitWebView)
+G_BEGIN_DECLS
 
-GtkWidget *nomad_web_view_new ();
-void nomad_web_view_switch_to_buffer (NomadWebView *view);
-void nomad_webkit_register_function (void *data);
+#define NOMAD_TYPE_SCHEME nomad_scheme_get_type ()
+G_DECLARE_FINAL_TYPE (NomadScheme, nomad_scheme, NOMAD, SCHEME, GObject)
 
+G_END_DECLS
 #endif

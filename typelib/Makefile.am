@@ -23,7 +23,7 @@ AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement
 libguile_nomad_LTLIBRARIES = libguile-nomad.la
 libguile_nomaddir = $(libexecdir)/nomad/
 
-libguile_nomad_la_SOURCES  =  webview.c webview.h
+libguile_nomad_la_SOURCES =  scheme.c scheme.h
 libguile_nomad_la_SOURCES +=  util.c util.h
 libguile_nomad_la_SOURCES +=  resources.c
 
@@ -73,7 +73,7 @@ INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all \
 
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 
-introspection_sources = webview.h util.h
+introspection_sources = scheme.h util.h
 
 Nomad-1.0.gir: libguile-nomad.la
 Nomad_1_0_INCLUDES =

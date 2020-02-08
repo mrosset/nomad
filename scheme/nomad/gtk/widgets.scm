@@ -28,7 +28,6 @@
   (default-duplicate-binding-handler
     '(merge-generics replace warn-override-core warn last))
 
-  (gi-import "Nomad")
   (gi-import "Gdk")
   (for-each (lambda (x)
               (gi-import-by-name  (car x) (cdr x)))
@@ -39,7 +38,8 @@
               ("GtkSource" . "Language")
               ("GtkSource" . "StyleScheme")
               ("GtkSource" . "StyleSchemeManager")
-              ("GtkSource" . "LanguageManager"))))
+              ("GtkSource" . "LanguageManager")))
+  (gi-import "Nomad"))
 
 
 

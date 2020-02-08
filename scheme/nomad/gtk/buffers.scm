@@ -40,8 +40,9 @@
             search-finish))
 
 (eval-when (expand load eval)
-  (gi-import "Nomad")
-  (gi-import "WebKit2")
+  (default-duplicate-binding-handler
+    '(merge-generics replace warn-override-core warn last))
+
   (map (lambda (pair)
          (gi-import-by-name (car pair) (cdr pair)))
        '(("Gtk" . "Widget")
@@ -50,7 +51,9 @@
          ("Gtk" . "Notebook")
          ("Gtk" . "TextBuffer")
          ("Gtk" . "ScrolledWindow")
-         ("GtkSource" . "View"))))
+         ("GtkSource" . "View")))
+  (gi-import "WebKit2")
+  (gi-import "Nomad"))
 
 
 
