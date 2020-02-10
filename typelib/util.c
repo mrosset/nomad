@@ -19,6 +19,8 @@
  */
 
 #include "util.h"
+#include "../config.h"
+#include <libguile.h>
 
 enum
 {
@@ -69,10 +71,93 @@ nomad_app_set_webview_signals (WebKitWebView *view)
   // clang-format off
   web_view_signals[RECEIVED] =
     g_signal_new("message-received",
-		 WEBKIT_TYPE_WEB_VIEW,
-		 G_SIGNAL_RUN_FIRST,
-		 0, NULL, NULL,
-		 g_cclosure_marshal_VOID__POINTER,
-		 G_TYPE_NONE, 1, G_TYPE_STRING);
+                 WEBKIT_TYPE_WEB_VIEW,
+                 G_SIGNAL_RUN_FIRST,
+                 0, NULL, NULL,
+                 g_cclosure_marshal_VOID__POINTER,
+                 G_TYPE_NONE, 1, G_TYPE_STRING);
   // clang-format on
+}
+
+static void
+open_cb (GApplication *app, GFile **files, gint n_files, gchar *hint,
+         gpointer user_data)
+{
+  g_print ("OPEN\n");
+
+  if (!gtk_application_get_active_window (GTK_APPLICATION (app)))
+    {
+      scm_call_0 (scm_c_private_ref ("nomad platform ", "make-frame"));
+      gtk_widget_show_all (GTK_WIDGET (
+          gtk_application_get_active_window (GTK_APPLICATION (app))));
+    }
+
+  for (int i = 0; i < n_files; i++)
+    {
+      scm_call_1 (scm_c_private_ref ("nomad platform ", "make-webview-buffer"),
+                  scm_from_locale_string (g_file_get_uri (files[i])));
+    }
+}
+
+static void
+scm_nomad_free_argv (void *data)
+{
+  g_strfreev (data);
+}
+
+SCM_DEFINE_PUBLIC (scm_nomad_list_to_argv, "list->argv", 1, 0, 0, (SCM lst),
+                   "Converts LST to char **argv and returns SCM pointer")
+{
+  int len;
+  gchar **argv;
+
+  len = scm_to_int (scm_length (lst));
+  argv = malloc (sizeof (char *) * len + 1);
+
+  argv[len] = NULL;
+
+  for (int i = 0; i < len; i++)
+    {
+      SCM item = scm_list_ref (lst, scm_from_int (i));
+      argv[i] = scm_to_locale_string (item);
+    }
+
+  return scm_from_pointer (argv, scm_nomad_free_argv);
+}
+
+void
+nomad_app_run (GtkApplication *app)
+{
+  SCM lst, ptr;
+  int argc;
+  char **argv;
+  GOptionEntry entries[]
+      = { { "quick", 'Q', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, NULL,
+            "Start nomad without using user-init-file", NULL },
+          { NULL } };
+
+  lst = scm_c_eval_string ("(command-line)");
+  ptr = scm_nomad_list_to_argv (lst);
+  argv = g_strdupv (scm_to_pointer (ptr));
+  argc = scm_to_int (scm_length (lst));
+
+  // clang-format off
+  g_application_set_flags (G_APPLICATION (app),
+                           G_APPLICATION_HANDLES_OPEN |
+                           G_APPLICATION_CAN_OVERRIDE_APP_ID);
+  // clang-format on
+
+  g_signal_connect (app, "open", G_CALLBACK (open_cb), NULL);
+
+  g_application_add_main_option_entries (G_APPLICATION (app), entries);
+
+  g_application_run (G_APPLICATION (app), argc, argv);
+}
+
+// scheme
+SCM_DEFINE_PUBLIC (
+    scm_nomad_version, "nomad-version", 0, 0, 0, (),
+    "Return string describing the version of Nomad that is running")
+{
+  return scm_from_utf8_string (VERSION);
 }

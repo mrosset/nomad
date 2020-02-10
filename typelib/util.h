@@ -28,5 +28,6 @@ void nomad_app_run_javascript (WebKitWebView *view, const char *js);
 void nomad_app_set_style (GtkWidget *widget, const char *style);
 void nomad_app_send_message (WebKitWebView *view, WebKitUserMessage *message);
 void nomad_app_set_webview_signals (WebKitWebView *view);
+void nomad_app_run (GtkApplication *app);
 
 #endif

@@ -23,9 +23,9 @@ AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement
 libguile_nomad_LTLIBRARIES = libguile-nomad.la
 libguile_nomaddir = $(libexecdir)/nomad/
 
-libguile_nomad_la_SOURCES =  scheme.c scheme.h
-libguile_nomad_la_SOURCES +=  util.c util.h
-libguile_nomad_la_SOURCES +=  resources.c
+libguile_nomad_la_SOURCES  = scheme.c scheme.h
+libguile_nomad_la_SOURCES += util.c util.h
+libguile_nomad_la_SOURCES += resources.c
 
 libguile_nomad_la_CFLAGS =  $(AM_CFLAGS)
 libguile_nomad_la_CFLAGS += $(EMACSY_CFLAGS)
@@ -56,7 +56,7 @@ CLEANFILES = $(BUILT_SOURCES)
 .PHONY: format
 
 resources.c: $(G_RESOURCES)
-	echo    "GLIB       $@"
+	@echo    "GLIB       $@"
 	@$(GLIB_COMPILE_R) $< --target=$@ --generate-source
 
 format:

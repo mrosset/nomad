@@ -29,6 +29,11 @@
                            <application>
                            <frame>))
 
+(define (make-webview-buffer uri)
+  (make <webview-buffer> #:init-uri uri))
+
+(define-interactive (make-frame #:optional (app (current-application)))
+  (show-all (gtk-frame-new app)))
 
 (re-export-modules
  '(nomad gtk gtk))

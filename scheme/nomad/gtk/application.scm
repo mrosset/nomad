@@ -30,6 +30,7 @@
   (default-duplicate-binding-handler
     '(merge-generics replace warn-override-core warn last))
 
+  (gi-import "Nomad")
   (gi-import "Gio")
   (map (lambda (pair)
          (gi-import-by-name (car pair) (cdr pair)))
@@ -43,6 +44,14 @@
   (let ((app (g-application-get-default)))
     (g-application-get-application-id app)))
 
+(define-public (current-application)
+  "Returns the default application"
+  (g-application-get-default))
+
+(define-public (application-run app)
+  "Returns the default application"
+    (nomad-app-run app))
+
 
 
 (define-class <nomad-gtk-application> (<nomad-application> <gtk-application>))
@@ -53,23 +62,41 @@
    (getenv "NOMAD_WEB_EXTENSION_DIR")))
 
 (define (startup-cb app)
+  (format #t "STARTUP\n")
   (emacsy-initialize #t)
+  (init)
+  (connect (webkit-web-context-get-default)
+           'initialize-web-extensions
+           initialize-extention-cb)
   (when %use-cookies?
     (let ((manager (webkit-web-context-get-cookie-manager
-		    (webkit-web-context-get-default))))
+                    (webkit-web-context-get-default))))
       (webkit-cookie-manager-set-persistent-storage
        manager
        %user-cookie-file
        'sqlite))))
 
 (define (activate-cb app)
+  (format #t "ACTIVATE\n")
   (gtk-widget-show-all (gtk-frame-new app))
   (run-hook (!startup-hook app)))
 
+(define (open-cb app files n-files hint)
+  (format #t "OPEN\n")
+  (catch #t
+    (lambda _
+      (gtk-application-get-active-window app))
+    (lambda _
+      (error "Cannot get the active frame")))
+
+  (make <gtk-webview-buffer> #:init-uri "http://google.ca"))
+
 (define-method (initialize (self <nomad-gtk-application>) args)
   (next-method)
+  (g-application-set-flags self '(handles-open can-override-app-id))
+  ;; (slot-set! self 'flags '(handles-open can-override-app-id))
+  ;; (connect self 'open open-cb)
   (connect self 'startup startup-cb)
-  (connect self 'activate activate-cb)
-  (connect (webkit-web-context-get-default)
-           'initialize-web-extensions
-           initialize-extention-cb))
+  (connect self 'activate activate-cb))
+
+

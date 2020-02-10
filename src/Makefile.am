@@ -32,7 +32,7 @@ nomad: nomad.in Makefile
 	$(do_subst) < $(srcdir)/nomad.in > $@
 	chmod +x nomad
 
-devel_flags = --gapplication-app-id "org.devel.nomad"
+devel_flags = --gapplication-app-id "org.gnu.devel.nomad"
 
 test: all
 	$(top_builddir)/pre-inst-env ./nomad $(devel_flags)

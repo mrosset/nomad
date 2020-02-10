@@ -43,7 +43,8 @@
 
 (define-method (initialize (self <nomad-application>) args)
   (next-method)
-  (init))
+  ;; (init)
+  )
 
 
 

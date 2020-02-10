@@ -20,7 +20,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad api)
   #:use-module (nomad util)
-  #:use-module (nomad gtk widgets)
+  #:use-module (nomad gtk widget)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<gtk-widget-buffer>

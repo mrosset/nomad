@@ -19,7 +19,7 @@
 (define-module (nomad gtk frame)
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad gtk widgets)
+  #:use-module (nomad gtk widget)
   #:use-module (nomad api)
   #:use-module (g-golf)
   #:export (<gtk-frame>
@@ -63,7 +63,6 @@
 (define (gdk-state->emacsy-flags states)
   (filter-map (lambda (state)
          (assoc-ref emacsy-flag-map state)) states))
-
 
 
 

@@ -16,13 +16,14 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad gtk widgets)
+(define-module (nomad gtk widget)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<widget-source-view>
             set-source-text!
-            set-source-point!))
+            set-source-point!
+            show-all))
 
 (eval-when (expand load eval)
   (default-duplicate-binding-handler
@@ -121,3 +122,6 @@
     (gtk-text-iter-forward-chars iter
                                 (- pos 1))
     (gtk-text-buffer-place-cursor buf iter)))
+
+(define-method (show-all (self <gtk-widget>))
+  (gtk-widget-show-all self))
