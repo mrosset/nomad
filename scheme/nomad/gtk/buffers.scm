@@ -95,6 +95,7 @@
 
 (define-method (initialize (self <gtk-webview-buffer>) args)
   (next-method)
+
   (connect self 'load-changed
            (lambda _
              (let ((percent (inexact->exact
@@ -102,10 +103,9 @@
                (slot-set! self 'name (!uri self)))
              #t))
 
-  ;; Set user-message-received signals and any signals g-golf can not handle.
-  (nomad-app-set-webview-signals self)
-  (connect self 'message-received (lambda (view message)
-                                    (safe-message "~a" message)))
+  (connect self 'user-message-received
+           (lambda (v m)
+             (safe-message "~a" (webkit-user-message-get-name m))))
 
   (buffer-load-uri self (!init-uri self)))
 

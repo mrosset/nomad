@@ -78,7 +78,7 @@
 
 (define (activate-cb app)
   (format #t "ACTIVATE\n")
-  (gtk-widget-show-all (gtk-frame-new app))
+  (gtk-frame-new app)
   (run-hook (!startup-hook app)))
 
 (define (open-cb app files n-files hint)

@@ -18,7 +18,6 @@
 
 (define-module (nomad init)
   #:use-module (nomad util)
-  #:use-module (nomad buffer)
   #:use-module (nomad options)
   #:use-module (emacsy emacsy)
   #:export (init

@@ -17,7 +17,7 @@
              (guix packages))
 
 (define-public g-golf
-  (let ((commit "5f7238d3af7987fb83abcf8fc3fb7833a8b96102"))
+  (let ((commit "fedba803d5b0bb5d8aeef4ad6ff9dd4c96f7c9ac"))
     (package
       (name "g-golf")
       (version (git-version "1" "606" commit))
@@ -29,7 +29,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "002lk54z6byg5z0dmxpywa85kklqg0bzrdhqrzpwx2j9kzfg6rc8"))))
+                  "1cahwvwdg74fryiqx1v53jg78nv1h2siwwc0y5v71bqcm406zwm7"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)

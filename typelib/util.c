@@ -22,14 +22,6 @@
 #include "../config.h"
 #include <libguile.h>
 
-enum
-{
-  RECEIVED,
-  LAST
-};
-
-static guint web_view_signals[LAST] = { 0 };
-
 void
 nomad_app_run_javascript (WebKitWebView *view, const char *js)
 {
@@ -54,29 +46,21 @@ nomad_app_send_message (WebKitWebView *view, WebKitUserMessage *message)
 }
 
 gboolean
-user_message_received_cb (WebKitWebView *web_view, WebKitUserMessage *message,
-                          gpointer user_data)
+nomad_draw_border (GtkWidget *widget, cairo_t *cr)
 {
-  const char *name = webkit_user_message_get_name (message);
-  g_signal_emit (web_view, web_view_signals[RECEIVED], 0, name);
-  return TRUE;
-}
+  guint width, height;
+  GdkRGBA color;
 
-void
-nomad_app_set_webview_signals (WebKitWebView *view)
-{
-  g_signal_connect (view, "user-message-received",
-                    G_CALLBACK (user_message_received_cb), NULL);
+  gdk_rgba_parse (&color, "black");
 
-  // clang-format off
-  web_view_signals[RECEIVED] =
-    g_signal_new("message-received",
-                 WEBKIT_TYPE_WEB_VIEW,
-                 G_SIGNAL_RUN_FIRST,
-                 0, NULL, NULL,
-                 g_cclosure_marshal_VOID__POINTER,
-                 G_TYPE_NONE, 1, G_TYPE_STRING);
-  // clang-format on
+  width = gtk_widget_get_allocated_width (widget);
+  height = gtk_widget_get_allocated_height (widget);
+
+  cairo_rectangle (cr, 0, 0, width, height);
+  gdk_cairo_set_source_rgba (cr, &color);
+
+  cairo_fill (cr);
+  return FALSE;
 }
 
 static void
