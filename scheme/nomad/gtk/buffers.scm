@@ -21,11 +21,13 @@
   #:use-module (nomad api)
   #:use-module (nomad util)
   #:use-module (nomad gtk widget)
+  #:use-module (nomad gtk frame)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<gtk-widget-buffer>
             <gtk-textview-buffer>
             <gtk-webview-buffer>
+            <gtk-popup-buffer>
             buffer-uri
             buffer-load-uri
             buffer-back
@@ -49,6 +51,7 @@
          ("Gtk" . "DrawingArea")
          ("Gtk" . "ApplicationWindow")
          ("Gtk" . "Notebook")
+         ("Gtk" . "Grid")
          ("Gtk" . "TextBuffer")
          ("Gtk" . "ScrolledWindow")
          ("GtkSource" . "View")))
@@ -88,6 +91,39 @@
 
 
 
+(define-class <gtk-popup-buffer> (<nomad-buffer> <gtk-grid>)
+  (container #:accessor !container #:init-keyword #:container #:init-value #f)
+  (list #:accessor !list #:init-keyword #:list #:init-value '()))
+
+(define-method (initialize (self <gtk-popup-buffer>) args)
+  (next-method)
+  (unless (!container self)
+       (set! (!container self) (!mini-popup (current-frame))))
+
+  (let* ((popup (!container self))
+         (items (!list self))
+         (grid  (!grid popup)))
+    (do ((i 0
+          (+ 1 i)))
+        ((>= i (length items)))
+      (gtk-grid-attach grid
+                       (make <gtk-label>
+                         #:label
+                         (buffer-name (list-ref items i)))
+                       0 i 1 1))
+
+    (add-hook! (buffer-enter-hook self)
+               (lambda _
+                 (gtk-widget-show-all popup)))
+
+    (add-hook! (buffer-exit-hook self)
+               (lambda _
+                 (gtk-widget-hide popup)))
+    (add-hook! (buffer-kill-hook self)
+               (lambda _
+                 (gtk-widget-hide popup))))
+    (switch-to-buffer self))
+
 (define-class <gtk-webview-buffer> (<gtk-widget-buffer>
                                     <nomad-webview-buffer>
                                     <webkit-web-view>)
@@ -95,7 +131,6 @@
 
 (define-method (initialize (self <gtk-webview-buffer>) args)
   (next-method)
-
   (connect self 'load-changed
            (lambda _
              (let ((percent (inexact->exact

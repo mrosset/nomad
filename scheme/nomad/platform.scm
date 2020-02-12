@@ -25,15 +25,17 @@
   #:export (platform-classes))
 
 (define platform-classes '(<textview-buffer>
+                           <popup-buffer>
                            <webview-buffer>
                            <application>
                            <frame>))
 
-(define (make-webview-buffer uri)
+(define-interactive (make-webview-buffer
+                     #:optional (uri (read-from-minibuffer "Url: ")))
   (make <webview-buffer> #:init-uri uri))
 
 (define-interactive (make-frame #:optional (app (current-application)))
-  (show-all (gtk-frame-new app)))
+  (gtk-frame-new app))
 
 (re-export-modules
  '(nomad gtk gtk))

@@ -21,6 +21,9 @@
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<widget-source-view>
+            <widget-border>
+            <widget-mini-popup>
+            !grid
             set-source-text!
             set-source-point!
             show-all))
@@ -34,6 +37,11 @@
               (gi-import-by-name  (car x) (cdr x)))
             '(("Gtk" . "CssProvider")
               ("Gtk" . "StyleContext")
+              ("Gtk" . "VBox")
+              ("Gtk" . "DrawingArea")
+              ("Gtk" . "ScrolledWindow")
+              ("Gtk" . "Grid")
+              ("Gtk" . "VSeparator")
               ("GtkSource" . "View")
               ("GtkSource" . "Buffer")
               ("GtkSource" . "Language")
@@ -95,6 +103,40 @@
 
 
 
+(define-class <widget-border> (<gtk-drawing-area>))
+
+(define-method (initialize (self <widget-border>) args)
+  (next-method)
+  (gtk-widget-set-size-request self -1 1)
+  (connect self 'draw nomad-draw-border))
+
+
+
+(define-class <widget-mini-popup> (<gtk-scrolled-window>)
+  (!grid #:accessor !grid #:init-keyword #:child #:init-value #f))
+
+(define-method (initialize (self <widget-mini-popup>) args)
+  (next-method)
+
+  ;; init slots
+  (unless (!grid self)
+    (set! (!grid self) (make <gtk-grid>)))
+
+  ;; alignment and sizing
+  (gtk-widget-set-size-request self -1 200)
+  (gtk-widget-set-halign self 'fill)
+  (gtk-widget-set-valign self 'end)
+
+  ;; packing
+  (let ((grid (make <gtk-grid>))
+        (box  (make <gtk-vbox>)))
+    (gtk-box-pack-start box (make <widget-border>) #f #f 0)
+    (gtk-box-pack-start box grid #t #t 0)
+    (gtk-box-pack-start box (make <widget-border>) #f #f 0)
+    (gtk-container-add self box)
+    (set! (!grid self) grid)))
+
+
 ;; These methods work on base GTK classes.
 (define-method (set-source-theme! (self <gtk-source-view>) text)
   (let* ((buf     (gtk-text-view-get-buffer self))

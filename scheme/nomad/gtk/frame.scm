@@ -24,6 +24,7 @@
   #:use-module (g-golf)
   #:export (<gtk-frame>
             !container
+            !mini-popup
             toggle-tabs*
             gtk-frame-new
             current-frame))
@@ -43,11 +44,17 @@
               ("Gtk" . "Notebook")
               ("Gtk" . "CssProvider")
               ("Gtk" . "StyleContext")
+              ("Gtk" . "Overlay")
+              ("Gtk" . "Grid")
               ("WebKit2" . "WebView")
               ("GtkSource" . "View")
               ("GtkSource" . "StyleScheme")
               ("GtkSource" . "StyleSchemeManager")
               ("GtkSource" . "LanguageManager"))))
+
+(define-public (current-popup)
+  "Returns the current frame"
+  (!mini-popup (current-frame)))
 
 (define-public (current-frame)
   "Returns the current frame"
@@ -68,7 +75,8 @@
 
 (define-class <gtk-frame> (<nomad-frame> <gtk-application-window>)
   (container #:accessor !container)
-  (box #:accessor !modeline)
+  (overlay #:accessor !overlay)
+  (mini-popup #:accessor !mini-popup)
   (modeline)
   (minibuffer))
 
@@ -76,6 +84,8 @@
   (next-method)
   (let* ((box        (make <gtk-vbox> #:spacing 0))
          (container  (make <gtk-notebook>))
+         (overlay    (make <gtk-overlay>))
+         (mini-popup (make <widget-mini-popup>))
          (modeline   (make <widget-source-view>
                        #:theme "cobalt"
                        #:top-margin 1
@@ -88,8 +98,9 @@
                        #:parent self
                        #:thunk  emacsy-message-or-echo-area)))
 
+    (set! (!overlay self) overlay)
+    (set! (!mini-popup self) mini-popup)
     (slot-set! self 'container container)
-    (slot-set! self 'box box)
     (slot-set! self 'modeline modeline)
     (slot-set! self 'minibuffer mini-view)
     (slot-set! self 'title "Nomad")
@@ -103,9 +114,15 @@
     (nomad-app-set-style (slot-ref self 'minibuffer) "textview text { background-color: white; color: black; }")
 
     ;; Widget layout
-    (gtk-container-add self box)
+    (gtk-container-add self overlay)
+    (gtk-container-add overlay box)
+
+    (gtk-overlay-add-overlay overlay mini-popup)
+
+    (gtk-widget-set-margin-bottom mini-popup 41)
     (gtk-box-pack-start box container #t #t 0)
-    (gtk-box-pack-start box modeline #f #f 0)
+    (gtk-box-pack-start box  modeline #f #f 0)
+    (gtk-box-pack-start box (make <widget-border>) #f #f 0)
     (gtk-box-pack-start box mini-view #f #f 0)
 
     ;; Signals
@@ -116,7 +133,9 @@
              (lambda _
                (g-application-quit (g-application-get-default))
                #t))
-    (connect self 'key-press-event key-press-cb)))
+    (connect self 'key-press-event key-press-cb)
+    (gtk-widget-show-all self)
+    (gtk-widget-hide mini-popup)))
 
 (define-method (toggle-tabs* (self <gtk-frame>))
   (let ((notebook (!container self)))

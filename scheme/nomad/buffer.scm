@@ -18,6 +18,7 @@
 
 (define-module (nomad buffer)
   #:use-module (emacsy emacsy)
+  #:use-module (nomad platform)
   #:use-module (g-golf)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
@@ -97,3 +98,6 @@
 (define-interactive (class-of-buffer #:optional (buffer (current-buffer)))
   (message "~a" (class-of buffer))
   #t)
+
+(define-interactive (make-popup-buffer)
+  (make <popup-buffer> #:name "*buffers*" #:list (buffer-list)))
