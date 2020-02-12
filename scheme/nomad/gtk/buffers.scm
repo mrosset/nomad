@@ -91,7 +91,7 @@
 
 
 
-(define-class <gtk-popup-buffer> (<nomad-buffer> <gtk-grid>)
+(define-class <gtk-popup-buffer> (<nomad-buffer>)
   (container #:accessor !container #:init-keyword #:container #:init-value #f)
   (list #:accessor !list #:init-keyword #:list #:init-value '()))
 
@@ -121,8 +121,7 @@
                  (gtk-widget-hide popup)))
     (add-hook! (buffer-kill-hook self)
                (lambda _
-                 (gtk-widget-hide popup))))
-    (switch-to-buffer self))
+                 (gtk-widget-hide popup)))))
 
 (define-class <gtk-webview-buffer> (<gtk-widget-buffer>
                                     <nomad-webview-buffer>
