@@ -165,6 +165,7 @@ current buffer is not a @var{<webview-buffer>} it will create a new
 ;; Default webview-mode key mappings
 (set! %webview-map
       (list->keymap '(("C-c u" back)
+                      ("k" kill-buffer)
                       ("C-m" forward)
                       ("C-n" scroll-down)
                       ("C-p" scroll-up)

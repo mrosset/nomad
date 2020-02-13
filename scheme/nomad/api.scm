@@ -52,7 +52,7 @@
 
 
 
-(define-class <nomad-buffer> (<text-buffer>))
+(define-class <nomad-buffer> (<buffer>))
 
 (define-method (initialize (self <nomad-buffer>) args)
   (next-method)

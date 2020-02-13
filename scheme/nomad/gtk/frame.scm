@@ -19,13 +19,13 @@
 (define-module (nomad gtk frame)
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
+  #:use-module (emacsy window)
   #:use-module (nomad gtk widget)
+  #:use-module (nomad gtk window)
   #:use-module (nomad api)
   #:use-module (g-golf)
   #:export (<gtk-frame>
-            !container
-            !mini-popup
-            toggle-tabs*
+            !root
             gtk-frame-new
             current-frame))
 
@@ -74,35 +74,23 @@
 
 
 (define-class <gtk-frame> (<nomad-frame> <gtk-application-window>)
-  (container #:accessor !container)
-  (overlay #:accessor !overlay)
-  (mini-popup #:accessor !mini-popup)
-  (modeline)
-  (minibuffer))
+  (!root       #:accessor  !root
+               #:init-form (make <gtk-vbox>
+                             #:spacing 0))
+  (overlay     #:accessor  !overlay
+               #:init-form (make <gtk-overlay>))
+  (mini-buffer #:accessor  !mini-buffer
+               #:init-form (make <widget-source-view>
+                             #:top-margin 1
+                             #:bottom-margin 1
+                             #:buffer minibuffer
+                             #:thunk  emacsy-message-or-echo-area)))
 
 (define-method (initialize (self <gtk-frame>) args)
   (next-method)
-  (let* ((box        (make <gtk-vbox> #:spacing 0))
-         (container  (make <gtk-notebook>))
-         (overlay    (make <gtk-overlay>))
-         (mini-popup (make <widget-mini-popup>))
-         (modeline   (make <widget-source-view>
-                       #:theme "cobalt"
-                       #:top-margin 1
-                       #:bottom-margin 1
-                       #:thunk emacsy-mode-line))
-         (mini-view  (make <widget-source-view>
-                       #:top-margin 1
-                       #:bottom-margin 1
-                       #:buffer minibuffer
-                       #:parent self
-                       #:thunk  emacsy-message-or-echo-area)))
+  (let* ((box         (make <gtk-vbox> #:spacing 0))
+         (mini-popup  (make <widget-mini-popup>)))
 
-    (set! (!overlay self) overlay)
-    (set! (!mini-popup self) mini-popup)
-    (slot-set! self 'container container)
-    (slot-set! self 'modeline modeline)
-    (slot-set! self 'minibuffer mini-view)
     (slot-set! self 'title "Nomad")
     (slot-set! self 'default-height 480)
     (slot-set! self 'default-width 640)
@@ -110,20 +98,21 @@
     (gtk-window-set-icon-name self "nomad")
 
     ;; Widget styles
-    (nomad-app-set-style (slot-ref self 'modeline) "textview text { background-color: #BFBFBF; color: black; }")
-    (nomad-app-set-style (slot-ref self 'minibuffer) "textview text { background-color: white; color: black; }")
+    (nomad-app-set-style (!mini-buffer self) "textview text { background-color: white; color: black; }")
 
     ;; Widget layout
-    (gtk-container-add self overlay)
-    (gtk-container-add overlay box)
+    (gtk-container-add self box)
+    ;; (gtk-container-add overlay box)
 
-    (gtk-overlay-add-overlay overlay mini-popup)
+    ;; (gtk-overlay-add-overlay overlay mini-popup)
 
-    (gtk-widget-set-margin-bottom mini-popup 41)
-    (gtk-box-pack-start box container #t #t 0)
-    (gtk-box-pack-start box  modeline #f #f 0)
-    (gtk-box-pack-start box (make <widget-border>) #f #f 0)
-    (gtk-box-pack-start box mini-view #f #f 0)
+    ;; (gtk-widget-set-margin-bottom mini-popup 41)
+    (gtk-box-pack-start box (!root self) #t #t 0)
+    (gtk-box-pack-start box (!mini-buffer self) #f #f 0)
+
+    (set! current-window (make <nomad-gtk-window> #:window-buffer (current-buffer)))
+    (set! root-window (make <internal-window> #:window-children (list current-window)))
+    (gtk-container-add (!root self) (!widget current-window))
 
     ;; Signals
     ;;
@@ -134,14 +123,7 @@
                (g-application-quit (g-application-get-default))
                #t))
     (connect self 'key-press-event key-press-cb)
-    (gtk-widget-show-all self)
-    (gtk-widget-hide mini-popup)))
-
-(define-method (toggle-tabs* (self <gtk-frame>))
-  (let ((notebook (!container self)))
-    (when (eq? <gtk-notebook> (class-of notebook))
-      (gtk-notebook-set-show-tabs  notebook (not
-                                             (gtk-notebook-get-show-tabs notebook))))))
+    (gtk-widget-show-all self)))
 
 (define (gtk-frame-new app)
   (make <gtk-frame> #:application (slot-ref app 'g-inst)

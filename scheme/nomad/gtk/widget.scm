@@ -17,16 +17,19 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk widget)
+  #:use-module (srfi srfi-26)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<widget-source-view>
             <widget-border>
             <widget-mini-popup>
+            <widget-text-view>
             !grid
             set-source-text!
             set-source-point!
-            show-all))
+            container-child
+            container-empty?))
 
 (eval-when (expand load eval)
   (default-duplicate-binding-handler
@@ -53,7 +56,9 @@
 
 
 ;; <widget-source-view> provides additional construction and initialization of
-;; <gtk-source-view> specialized for nomads text views
+;; <gtk-source-view> specialized for nomads text views FIXME: this is
+;; redundant due to <widget-text-view> but this is extra special due to
+;; modeline and minibuffer switch this to use <nomad-text-view>
 (define-class <widget-source-view> (<gtk-source-view>)
   (theme #:accessor !theme #:init-keyword #:theme #:init-value "classic")
   (buffer #:accessor !buffer
@@ -80,11 +85,6 @@
 
   (gtk-text-view-set-overwrite self #t)
 
-  (when (!buffer self)
-    (add-hook! (buffer-enter-hook (!buffer self))
-               (lambda _
-                 (gtk-widget-grab-focus self))))
-
   (when (and (!buffer self) (!parent self))
     (add-hook! (buffer-exit-hook (!buffer self))
                (lambda _
@@ -100,6 +100,27 @@
   (set-source-text! self ((!thunk self)))
   (when (!buffer self)
     (set-source-point! self (buffer:point (!buffer self)))))
+
+
+
+(define-class <widget-text-view> (<gtk-source-view>)
+  (theme  #:accessor !theme  #:init-keyword #:theme  #:init-value "classic")
+  (styles #:accessor !styles #:init-keywork #:styles #:init-value '()))
+
+(define-method (initialize (self <widget-text-view>) args)
+  (next-method)
+  ;; Setup controls
+  ;;
+  ;; Since emacsy does all of the editing. We can use
+  ;; overwrite mode which provides a block cursor.
+  (gtk-text-view-set-overwrite self #t)
+  (set-source-theme! self (!theme self))
+  (set-source-language! self "scheme")
+
+
+  ;; https://developer.gnome.org/gtksourceview/stable/GtkSourceView.html
+  ;;                      "textview { font-family: Monospace; font-size: 10pt;}")
+  (map (cut nomad-app-set-style self <>) (!styles self)))
 
 
 
@@ -137,6 +158,7 @@
     (set! (!grid self) grid)))
 
 
+
 ;; These methods work on base GTK classes.
 (define-method (set-source-theme! (self <gtk-source-view>) text)
   (let* ((buf     (gtk-text-view-get-buffer self))
@@ -165,5 +187,8 @@
                                 (- pos 1))
     (gtk-text-buffer-place-cursor buf iter)))
 
-(define-method (show-all (self <gtk-widget>))
-  (gtk-widget-show-all self))
+(define-method (container-child (self <gtk-container>))
+  (car (gtk-container-get-children self)))
+
+(define-method (container-empty? (self <gtk-container>))
+  (= (length (gtk-container-get-children self)) 0))

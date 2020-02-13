@@ -24,21 +24,19 @@
   #:use-module (nomad gtk application)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
+  #:use-module (nomad gtk window)
   #:use-module (nomad gtk util)
   #:use-module (nomad gtk widget)
   #:export (<webview-buffer>
-            <textview-buffer>
-            <popup-buffer>
+            <nomad-window>
             <application>
             <app-frame>))
 
 (define-class <webview-buffer> (<gtk-webview-buffer>))
 
-(define-class <textview-buffer> (<gtk-textview-buffer>))
-
-(define-class <popup-buffer> (<gtk-popup-buffer>))
-
 (define-class <application> (<nomad-gtk-application>))
+
+(define-class <nomad-window> (<nomad-gtk-window>))
 
 (define-class <app-frame> (<gtk-frame>))
 

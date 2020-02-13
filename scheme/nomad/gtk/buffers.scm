@@ -17,10 +17,12 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk buffers)
+  #:use-module (ice-9 format)
   #:use-module (emacsy emacsy)
   #:use-module (nomad api)
   #:use-module (nomad util)
   #:use-module (nomad gtk widget)
+  #:use-module (nomad gtk window)
   #:use-module (nomad gtk frame)
   #:use-module (oop goops)
   #:use-module (g-golf)
@@ -60,68 +62,14 @@
 
 
 
-(define-class <gtk-widget-buffer> ()
-  (container #:accessor !container #:init-keyword #:container #:init-value #f))
+(define-class <gtk-widget-buffer> ())
 
 (define-method (initialize (self <gtk-widget-buffer>) args)
   (next-method)
-
-  (unless (!container self)
-       (let* ((app (g-application-get-default))
-              (frame (gtk-application-get-active-window app))
-              (container (slot-ref frame 'container)))
-         (set! (!container self) container)))
-
-  (gtk-container-add (!container self) self)
-  (gtk-widget-show-all (!container self))
-
-  (add-hook! (buffer-enter-hook self)
-             (lambda _
-               (let* ((notebook (!container self))
-                      (page (gtk-notebook-page-num notebook self)))
-                 (gtk-notebook-set-current-page notebook page)
-                 (gtk-notebook-set-tab-label-text notebook self (format #f "~a" page))
-                 (gtk-widget-show-all notebook)
-                 (gtk-widget-grab-focus self))))
-
   (add-hook! (buffer-kill-hook self)
              (lambda _
-               (gtk-widget-destroy self)))
-  (switch-to-buffer self))
-
+               (gtk-widget-destroy self))))
 
-
-(define-class <gtk-popup-buffer> (<nomad-buffer>)
-  (container #:accessor !container #:init-keyword #:container #:init-value #f)
-  (list #:accessor !list #:init-keyword #:list #:init-value '()))
-
-(define-method (initialize (self <gtk-popup-buffer>) args)
-  (next-method)
-  (unless (!container self)
-       (set! (!container self) (!mini-popup (current-frame))))
-
-  (let* ((popup (!container self))
-         (items (!list self))
-         (grid  (!grid popup)))
-    (do ((i 0
-          (+ 1 i)))
-        ((>= i (length items)))
-      (gtk-grid-attach grid
-                       (make <gtk-label>
-                         #:label
-                         (buffer-name (list-ref items i)))
-                       0 i 1 1))
-
-    (add-hook! (buffer-enter-hook self)
-               (lambda _
-                 (gtk-widget-show-all popup)))
-
-    (add-hook! (buffer-exit-hook self)
-               (lambda _
-                 (gtk-widget-hide popup)))
-    (add-hook! (buffer-kill-hook self)
-               (lambda _
-                 (gtk-widget-hide popup)))))
 
 (define-class <gtk-webview-buffer> (<gtk-widget-buffer>
                                     <nomad-webview-buffer>
@@ -132,9 +80,7 @@
   (next-method)
   (connect self 'load-changed
            (lambda _
-             (let ((percent (inexact->exact
-                             (round (* 100 (!estimated-load-progress self))))))
-               (slot-set! self 'name (!uri self)))
+             (slot-set! self 'name (!uri self))
              #t))
 
   (connect self 'user-message-received
@@ -182,27 +128,5 @@
   (set! (current-search self) #f)
   (let ((controller (webkit-web-view-get-find-controller self)))
     (webkit-find-controller-search-finish controller)))
-
-
-
-(define-class <gtk-textview-buffer> (<nomad-text-buffer>
-                                     <gtk-widget-buffer>
-                                     <gtk-scrolled-window>)
-  (source-view #:accessor !source-view)
-  (name #:init-value "<gtk-textview-buffer>"))
-
-(define-method (initialize (self <gtk-textview-buffer>) args)
-  (next-method)
-  (let ((view (make <widget-source-view>
-                              #:theme "classic"
-                              #:top-margin 1
-                              #:bottom-margin 1
-                              #:buffer self
-                              #:thunk (lambda _
-                                        (buffer:buffer-string self)))))
-    (set! (!source-view self) view)
-    (gtk-container-add self view)
-    (gtk-widget-show-all self)
-    (gtk-widget-grab-focus view)))
 
 

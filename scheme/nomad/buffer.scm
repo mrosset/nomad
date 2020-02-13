@@ -29,7 +29,7 @@
             buffers->uri))
 
 (set! buffer-classes (cons* <webview-buffer>
-                            <popup-buffer> buffer-classes))
+                            buffer-classes))
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
