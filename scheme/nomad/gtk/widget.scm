@@ -28,6 +28,7 @@
             !grid
             set-source-text!
             set-source-point!
+            show-all
             container-child
             container-empty?))
 
@@ -158,6 +159,9 @@
     (set! (!grid self) grid)))
 
 
+
+(define-method (show-all (self <gtk-widget>))
+  (gtk-widget-show-all self))
 
 ;; These methods work on base GTK classes.
 (define-method (set-source-theme! (self <gtk-source-view>) text)

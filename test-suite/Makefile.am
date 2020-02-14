@@ -3,6 +3,7 @@ TESTS += tests/api.scm
 TESTS += tests/init.scm
 TESTS += tests/frame.scm
 TESTS += tests/application.scm
+TESTS += tests/gtk/window.scm
 
 GUILE_AUTO_COMPILE := 0
 

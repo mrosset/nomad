@@ -74,17 +74,20 @@
 
 
 (define-class <gtk-frame> (<nomad-frame> <gtk-application-window>)
-  (!root       #:accessor  !root
-               #:init-form (make <gtk-vbox>
+  (!root       #:accessor    !root
+               #:init-form   (make <gtk-vbox>
                              #:spacing 0))
-  (overlay     #:accessor  !overlay
-               #:init-form (make <gtk-overlay>))
-  (mini-buffer #:accessor  !mini-buffer
-               #:init-form (make <widget-source-view>
-                             #:top-margin 1
-                             #:bottom-margin 1
-                             #:buffer minibuffer
-                             #:thunk  emacsy-message-or-echo-area)))
+  (overlay     #:accessor    !overlay
+               #:init-form   (make <gtk-overlay>))
+  (mini-buffer #:accessor    !mini-buffer
+               #:init-form   (make <widget-source-view>
+                               #:top-margin 1
+                               #:bottom-margin 1
+                               #:buffer minibuffer
+                               #:thunk  emacsy-message-or-echo-area))
+  (show        #:accessor     !show
+               #:init-keyword #:show
+               #:init-value   #t))
 
 (define-method (initialize (self <gtk-frame>) args)
   (next-method)
@@ -123,7 +126,8 @@
                (g-application-quit (g-application-get-default))
                #t))
     (connect self 'key-press-event key-press-cb)
-    (gtk-widget-show-all self)))
+    (when (!show self)
+      (gtk-widget-show-all self))))
 
 (define (gtk-frame-new app)
   (make <gtk-frame> #:application (slot-ref app 'g-inst)

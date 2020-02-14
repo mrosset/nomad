@@ -23,15 +23,45 @@
   #:use-module (nomad util)
   #:use-module (nomad init)
   #:use-module (g-golf)
-  #:use-module (unit-test))
+  #:use-module (unit-test)
+  #:export (with-test-app
+            make-test-app
+            g-inst
+            %test-app-id))
 
 (eval-when (expand load eval)
-  (gi-import-by-name "Gtk" "init_check"))
+  (default-duplicate-binding-handler
+    '(merge-generics replace warn-override-core warn last))
+
+  (gi-import "Gio")
+  (for-each (lambda (x)
+              (gi-import-by-name  (car x) (cdr x)))
+            '(("Gtk" . "ApplicationWindow")
+              ("Gtk" . "Widget"))))
+
+(define %test-app-id "org.gnu.test.nomad")
+
+(define (g-inst widget)
+  (!g-inst widget))
+
+(define (make-test-app)
+  (make <gtk-application> #:application-id %test-app-id))
+
+(define-syntax with-test-app
+  (syntax-rules ()
+    ((with-test-app app body)
+     (let ((activate (lambda (app)
+              body)))
+       (connect app 'activate activate)
+       (g-application-run app 0 #f)))))
 
 (define-class <test-application> (<test-case>))
 
-(define-method (test-init-gtk (self <test-application>))
-  (assert-true (gtk-init-check #f #f)))
+(define-method (test-with-application (self <test-application>))
+  (let ((app (make-test-app)))
+    (with-test-app app
+                   (assert-equal %test-app-id
+                                 (g-application-get-application-id app)))))
 
 ;; (define-method (test-application-id (self <test-application>))
 ;;   (with-fluids ((~ "/tmp/home"))
