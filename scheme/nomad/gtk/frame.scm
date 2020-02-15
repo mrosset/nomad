@@ -78,7 +78,8 @@
   (root        #:accessor    !root
                #:init-form   (make <gtk-vbox> #:spacing 0))
   (mini-buffer #:accessor    !mini-buffer
-               #:init-form   (make <widget-source-view>
+               #:init-form   (make <widget-text-view>
+                               #:styles '("textview text { background-color: white; color: black; }")
                                #:top-margin 1
                                #:bottom-margin 1
                                #:buffer minibuffer
@@ -103,9 +104,6 @@
     (slot-set! self 'default-width 640)
     (slot-set! self 'icon-name "nomad")
     (gtk-window-set-icon-name self "nomad")
-
-    ;; Widget styles
-    (nomad-app-set-style (!mini-buffer self) "textview text { background-color: white; color: black; }")
 
     ;; Widget packing
     (gtk-container-add self box)

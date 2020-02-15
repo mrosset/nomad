@@ -28,8 +28,8 @@
             <widget-text-view>
             <widget-window>
             !grid
-            set-source-text!
-            set-source-point!
+            set-text!
+            set-point!
             show-all
             container
             container-child
@@ -63,48 +63,19 @@
 ;; Widgets that have an associated buffer
 (define-class <widget-buffer> ()
   (buffer #:accessor !buffer #:init-keyword #:buffer #:init-value #f))
-
-
-;; <widget-source-view> provides additional construction and initialization of
-;; <gtk-source-view> specialized for nomads text views FIXME: this is
-;; redundant due to <widget-text-view> but this is extra special due to
-;; modeline and minibuffer switch this to use <nomad-text-view>
-(define-class <widget-source-view> (<widget-buffer> <gtk-source-view>)
-  (theme #:accessor !theme #:init-keyword #:theme #:init-value "classic")
-  (thunk  #:accessor !thunk
-          #:init-keyword #:thunk
-          #:init-value (lambda _ "no text thunk defined.")))
-
-(define-method (initialize (self <widget-source-view>) args)
-  (next-method)
-  ;; Setup controls
-  ;;
-  ;; Since emacsy does all of the editing. We can use
-  ;; overwrite mode which provides a block cursor.
-  (set-source-theme! self (!theme self))
-  (set-source-language! self "scheme")
-
-  ;; https://developer.gnome.org/gtksourceview/stable/GtkSourceView.html
-  (nomad-app-set-style self "textview { font-size: 10pt; }")
-
-  (gtk-text-view-set-overwrite self #t)
-
-  (g-timeout-add 50 (lambda _
-                      (unless emacsy-display-minibuffer?
-                        (emacsy-tick))
-                      (redisplay self)
-                      #t)))
-
-(define-method (redisplay (self <widget-source-view>))
-  (set-source-text! self ((!thunk self)))
-  (when (!buffer self)
-    (set-source-point! self (buffer:point (!buffer self)))))
 
 
 
 (define-class <widget-text-view> (<widget-buffer> <gtk-source-view>)
-  (theme  #:accessor !theme  #:init-keyword #:theme  #:init-value "classic")
-  (styles #:accessor !styles #:init-keywork #:styles #:init-value '()))
+  (theme  #:accessor     !theme
+          #:init-keyword #:theme
+          #:init-value   "classic")
+  (styles #:accessor     !styles
+          #:init-keyword #:styles
+          #:init-value   '())
+  (thunk  #:accessor     !thunk
+          #:init-keyword #:thunk
+          #:init-value   #f))
 
 (define-method (initialize (self <widget-text-view>) args)
   (next-method)
@@ -113,18 +84,29 @@
   ;; Since emacsy does all of the editing. We can use
   ;; overwrite mode which provides a block cursor.
   (gtk-text-view-set-overwrite self #t)
-  (set-source-theme! self (!theme self))
-  (set-source-language! self "scheme")
+  (set-theme! self (!theme self))
+  (set-language! self "scheme")
 
   ;; https://developer.gnome.org/gtksourceview/stable/GtkSourceView.html
-  ;;                      "textview { font-family: Monospace; font-size: 10pt;}")
-  (map (cut nomad-app-set-style self <>) (!styles self))
-  (let ((buffer (!buffer self)))
-  (when buffer
-    (g-timeout-add 50 (lambda _
-                        (set-source-text! self (buffer:buffer-string buffer))
-                        (set-source-point! self (buffer:point buffer))
-                        #t)))))
+  ;; "textview { font-family: Monospace; font-size: 10pt;}")
+  (for-each (lambda (style)
+              (nomad-app-set-style self style))
+            (!styles self))
+
+  (g-timeout-add 50 (lambda _
+                      (unless emacsy-display-minibuffer?
+                        (emacsy-tick))
+                      (redisplay self)
+                      #t)))
+
+(define-method (redisplay (self <widget-text-view>))
+  (if (!thunk self)
+      (begin
+        (set-text! self ((!thunk self))))
+      (set-text! self (buffer:buffer-string (!buffer self))))
+
+  (when (!buffer self)
+    (set-point! self (buffer:point (!buffer self)))))
 
 
 
@@ -145,18 +127,18 @@
   (window    #:accessor     !window
              #:init-keyword #:window)
   (mode-line #:accessor     !mode-line
-             #:init-form    (make <widget-source-view>
-                            #:top-margin 1
-                            #:bottom-margin 1
-                            #:thunk emacsy-mode-line)))
+             #:init-form    (make <widget-text-view>
+                              #:styles '("textview text { background-color: #BFBFBF; color: black; }")
+                              #:top-margin 1
+                              #:bottom-margin 1
+                              #:thunk emacsy-mode-line)))
 
 (define-method (initialize (self <widget-window>) args)
   (next-method)
-  (nomad-app-set-style (!mode-line self) "textview text { background-color: #BFBFBF; color: black; }")
   (set! (!thunk (!mode-line self))
         (lambda _
           (with-buffer (!buffer self)
-            (emacsy-mode-line))))
+                       (emacsy-mode-line))))
   (let ((window (!window self))
         (buffer (!buffer self)))
     (gtk-box-pack-start self (container self) #t #t 0)
@@ -171,25 +153,25 @@
   (gtk-widget-show-all self))
 
 ;; These methods work on base GTK classes.
-(define-method (set-source-theme! (self <gtk-source-view>) text)
+(define-method (set-theme! (self <gtk-source-view>) text)
   (let* ((buf     (gtk-text-view-get-buffer self))
          (manager (make <gtk-source-style-scheme-manager>))
          (style   (gtk-source-style-scheme-manager-get-scheme manager text)))
     (gtk-source-buffer-set-style-scheme buf style)))
 
 
-(define-method (set-source-language! (self <gtk-source-view>) text)
+(define-method (set-language! (self <gtk-source-view>) text)
   (let* ((buf     (gtk-text-view-get-buffer self))
          (manager (make <gtk-source-language-manager>))
          (lang    (gtk-source-language-manager-get-language manager text)))
     (gtk-source-buffer-set-language buf lang)))
 
-(define-method (set-source-text! (self <gtk-source-view>) text)
+(define-method (set-text! (self <gtk-source-view>) text)
   "Sets source @var{view} text buffer to @var{text}"
   (let ((buf (gtk-text-view-get-buffer self)))
     (gtk-text-buffer-set-text buf text -1)))
 
-(define-method (set-source-point! (self <gtk-source-view>) pos)
+(define-method (set-point! (self <gtk-source-view>) pos)
   "Sets source @var{view} cursor point to @var{pos}"
   (let* ((buf  (gtk-text-view-get-buffer self))
          (iter (gtk-text-buffer-get-start-iter buf)))
