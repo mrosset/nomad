@@ -27,12 +27,3 @@
 (gi-import "Gio")
 
 (define-class <test-gtk-window> (<test-case>))
-
-
-(define-method (test-gtk-window (self <test-gtk-window>))
-  (let ((app (make-test-app)))
-    (with-test-app app
-                   (begin
-                     (make <gtk-frame> #:show #f
-                                    #:application (g-inst app))
-                     (g-application-quit app)))))

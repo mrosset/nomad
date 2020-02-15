@@ -39,14 +39,13 @@
          ("WebKit2" . "WebContext")
          ("WebKit2" . "CookieManager"))))
 
-(define-public (application-id)
-  "Returns the default application id"
-  (let ((app (g-application-get-default)))
-    (g-application-get-application-id app)))
-
 (define-public (current-application)
   "Returns the default application"
   (g-application-get-default))
+
+(define-public (application-id)
+  "Returns the default application id"
+  (g-application-get-application-id (current-application)))
 
 (define-public (application-run app)
   "Returns the default application"

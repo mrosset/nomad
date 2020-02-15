@@ -68,7 +68,9 @@
   (next-method)
   (add-hook! (buffer-kill-hook self)
              (lambda _
-               (gtk-widget-destroy self))))
+               (gtk-widget-destroy self)))
+  (switch-to-buffer self))
+
 
 
 (define-class <gtk-webview-buffer> (<gtk-widget-buffer>
@@ -88,6 +90,12 @@
              (safe-message "~a" (webkit-user-message-get-name m))))
 
   (buffer-load-uri self (!init-uri self)))
+
+(define-method (emacsy-mode-line (buffer <gtk-webview-buffer>))
+  (format #f "~a~/~a%"
+          (next-method)
+          (inexact->exact
+           (round (* 100 (!estimated-load-progress buffer))))))
 
 (define-method (buffer-load-uri (self <gtk-webview-buffer>) uri)
   (webkit-web-view-load-uri self uri))

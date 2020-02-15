@@ -28,15 +28,12 @@
   #:use-module (nomad gtk util)
   #:use-module (nomad gtk widget)
   #:export (<webview-buffer>
-            <nomad-window>
             <application>
             <app-frame>))
 
 (define-class <webview-buffer> (<gtk-webview-buffer>))
 
 (define-class <application> (<nomad-gtk-application>))
-
-(define-class <nomad-window> (<nomad-gtk-window>))
 
 (define-class <app-frame> (<gtk-frame>))
 

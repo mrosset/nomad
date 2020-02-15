@@ -25,9 +25,7 @@
   #:use-module (g-golf)
   #:use-module (unit-test)
   #:export (with-test-app
-            make-test-app
-            g-inst
-            %test-app-id))
+            make-test-app))
 
 (eval-when (expand load eval)
   (default-duplicate-binding-handler
@@ -39,29 +37,31 @@
             '(("Gtk" . "ApplicationWindow")
               ("Gtk" . "Widget"))))
 
-(define %test-app-id "org.gnu.test.nomad")
-
-(define (g-inst widget)
-  (!g-inst widget))
+(define-public %test-app-id "org.gnu.test.nomad")
+(define-public %test-app-quit #t)
 
 (define (make-test-app)
   (make <gtk-application> #:application-id %test-app-id))
 
 (define-syntax with-test-app
   (syntax-rules ()
-    ((with-test-app app body)
-     (let ((activate (lambda (app)
-              body)))
-       (connect app 'activate activate)
-       (g-application-run app 0 #f)))))
+    ((with-test-app body)
+     (let ((app (make-test-app))
+           (activate (lambda (app) body)))
+       (dynamic-wind
+         (lambda _
+           (connect app 'activate activate))
+         (lambda _
+           (g-application-run app 0 #f))
+         (lambda _
+           (when %test-app-quit
+            (g-application-quit app))))))))
 
 (define-class <test-application> (<test-case>))
 
-(define-method (test-with-application (self <test-application>))
-  (let ((app (make-test-app)))
-    (with-test-app app
-                   (assert-equal %test-app-id
-                                 (g-application-get-application-id app)))))
+;; (define-method (test-with-application (self <test-application>))
+;;   (with-test-app
+;;                  (assert-equal %test-app-id (application-id))))
 
 ;; (define-method (test-application-id (self <test-application>))
 ;;   (with-fluids ((~ "/tmp/home"))
