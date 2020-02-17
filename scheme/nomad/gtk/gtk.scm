@@ -34,8 +34,6 @@
 
 (define-class <webview-buffer> (<gtk-webview-buffer>))
 
-(define-class <textview-buffer> (<gtk-textview-buffer>))
-
 (define-class <popup-buffer> (<gtk-popup-buffer>))
 
 (define-class <application> (<nomad-gtk-application>))

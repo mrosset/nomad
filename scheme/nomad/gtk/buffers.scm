@@ -184,25 +184,3 @@
     (webkit-find-controller-search-finish controller)))
 
 
-
-(define-class <gtk-textview-buffer> (<nomad-text-buffer>
-                                     <gtk-widget-buffer>
-                                     <gtk-scrolled-window>)
-  (source-view #:accessor !source-view)
-  (name #:init-value "<gtk-textview-buffer>"))
-
-(define-method (initialize (self <gtk-textview-buffer>) args)
-  (next-method)
-  (let ((view (make <widget-source-view>
-                              #:theme "classic"
-                              #:top-margin 1
-                              #:bottom-margin 1
-                              #:buffer self
-                              #:thunk (lambda _
-                                        (buffer:buffer-string self)))))
-    (set! (!source-view self) view)
-    (gtk-container-add self view)
-    (gtk-widget-show-all self)
-    (gtk-widget-grab-focus view)))
-
-
