@@ -88,14 +88,16 @@
   (connect self 'user-message-received
            (lambda (v m)
              (safe-message "~a" (webkit-user-message-get-name m))))
-
   (buffer-load-uri self (!init-uri self)))
 
 (define-method (emacsy-mode-line (buffer <gtk-webview-buffer>))
-  (format #f "~a~/~a%"
+  (format #f "~a~/~a%~/~a"
           (next-method)
           (inexact->exact
-           (round (* 100 (!estimated-load-progress buffer))))))
+           (round (* 100 (!estimated-load-progress buffer))))
+          (if (!is-loading buffer)
+              "loading..."
+              (webkit-web-view-get-title buffer))))
 
 (define-method (buffer-load-uri (self <gtk-webview-buffer>) uri)
   (webkit-web-view-load-uri self uri))

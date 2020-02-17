@@ -19,6 +19,7 @@
 (define-module (nomad buffer)
   #:use-module (emacsy emacsy)
   #:use-module (nomad platform)
+  #:use-module (nomad util)
   #:use-module (g-golf)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
@@ -93,7 +94,7 @@
   (catch #t
     (lambda _
       (let ((val (eval-string (buffer:buffer-string buffer))))
-        (message "~a" val)
+        (pretty-message "~a" val)
         val))
     (lambda (key . vals)
       (message "Error: key: ~a value: ~a" key vals))))

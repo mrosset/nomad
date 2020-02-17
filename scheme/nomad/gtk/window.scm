@@ -17,20 +17,19 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk window)
+  #:use-module (srfi srfi-26)
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
+  #:use-module (nomad web)
   #:use-module (nomad gtk widget)
   #:use-module (nomad gtk frame)
   #:use-module (nomad gtk buffers)
   #:use-module (g-golf)
-  #:export (<nomad-gtk-window>
-            redisplay
-            remove-user-data
-            !widget
-            !last-tick
-            !last-buffer
-            !container))
+  #:export (<widget-window>
+            widget-container
+            window-widget
+            redisplay))
 
 (eval-when (expand load eval)
   (default-duplicate-binding-handler
@@ -43,32 +42,43 @@
               ("Gtk" . "HBox")
               ("Gtk" . "Expander"))))
 
+
+
+(define-class <widget-window> (<window>))
+
+(define-method (window-widget (window <widget-window>))
+  (!widget (user-data window)))
+
+(define-method (widget-container (window <widget-window>))
+  (container (user-data window)))
+
+(define-method (widget-buffer (window <widget-window>))
+  (!buffer (user-data window)))
+
+
+
 (define-public (window-config-change window)
    (container-replace (!root (current-frame)) (instantiate-window root-window)))
 
 ;; Redisplay current window on each event read. This is mainly used to redisplay the
 ;; cursor.
 ;; (add-hook! read-event-hook (lambda (x)
+;;                              (set! %redisplay? #t)
 ;;                              ;; (dimfi current-window)
-;;                              (window-config-change root-window)))
+;;                              ;; (window-config-change root-window)
+;;                              ))
 
 
 (add-hook! window-configuration-change-hook window-config-change)
 
 
 
-;; (define-class <gtk-internal-window> (<internal-window> <gtk-box>))
-
-;; (define-method (initialize (self <gtk-internal-window>) args)
-;;   (next-method))
-
 (define (make-gtk-window list vertical)
   (let ((box (if vertical
                  (make <gtk-vbox>)
                  (make <gtk-hbox>))))
     (for-each (lambda (widget)
-                (if (!parent widget)
-                    ;; (gtk-widget-reparent widget box)
+                (if  (!parent widget)
                     (begin
                       (gtk-container-remove (!parent widget) widget)
                       (gtk-box-pack-start box widget #t #t 0))
@@ -76,49 +86,44 @@
     (gtk-widget-show-all box)
     box))
 
-(define-method (instantiate-window (window <window>))
-  (make <widget-window> #:window window #:buffer (window-buffer window))
-  ;; (let ((box (make <widget-window>)))
-  ;;   (gtk-box-pack-start box (make <gtk-label> #:label "Hello") #t #t 0)
-  ;;   box)
-  ;; (dimfi window)
-  ;; window
-  ;; (describe window)
-  ;; (let ((buffer (window-buffer window)))
-  ;;   (create-web-view-window window buffer (is-a? buffer <text-buffer>)))
-  )
+(define-method (instantiate-window (window <widget-window>))
+  (make <window-container> #:window window #:buffer (window-buffer window)))
 
 (define-method (instantiate-window (window <internal-window>))
   (make-gtk-window (map instantiate-window (window-children window))
-                                       (eq? (orientation window) 'vertical)))
+                   (eq? (orientation window) 'vertical)))
 
 
 
 (define-method (redisplay (window <internal-window>))
   (for-each redisplay (window-children window)))
 
-(define-method (redisplay (window <window>))
-  (update (user-data window)))
 
-(define-method (update self)
-  (let* ((window   (!window self))
-         (buffer   (!buffer self)))
-    (when (or (not (user-data self))
-              (not (eq? buffer (window-buffer window))))
+(define-method (redisplay (window <widget-window>))
+  (let* ((buffer    (window-buffer window))
+         (view      (user-data window))
+         (container (widget-container window))
+         (widget    (if (is-a? buffer  <webkit-web-view>)
+                        buffer
+                        (local-var 'widget))))
+    (unless widget
+      (dimfi "CREATE")
       (cond
-       ((is-a? (window-buffer window) <text-buffer>)
-        (set! (user-data self) (make <widget-text-view> #:buffer (window-buffer window))))
-       ((is-a? (window-buffer window) <gtk-webview-buffer>)
-        (let ((view (make <webkit-web-view>)))
-          (webkit-web-view-load-uri view (buffer-uri (window-buffer window)))
-          (set! (user-data self) view)))
-       (else (error "buffer not implimented")))
-      (set! (!buffer self) (window-buffer window))
-      (container-replace (container self) (user-data self))
-      (gtk-widget-show-all self)
-      (gtk-widget-grab-focus (user-data self)))))
+       ((is-a? buffer <webkit-web-view>))
+       ((is-a? buffer <text-buffer>)
+        (set! widget (make <widget-text-view> #:buffer buffer)))
+       (else (error "Buffer not implimented")))
+      (set! (!buffer (user-data window)) buffer)
+      (set! (local-var 'widget) widget)
+      (container-replace container widget)
+      (gtk-widget-grab-focus widget))
+    (when (not (eq? buffer (!buffer (user-data window))))
+      (dimfi "SWITCH")
+      (set! (!buffer (user-data window)) buffer)
+      (container-replace container widget)
+      (gtk-widget-grab-focus widget))))
 
-;; (define-method (needs-redisplay? (window <nomad-gtk-window>))
+;;-method (needs-redisplay? (window <nomad-gtk-window>))
 ;;   (let* ((buffer (window-buffer window))
 ;;          (buffer-tick (buffer-modified-tick buffer))
 ;;          (window-tick (!last-tick window)))

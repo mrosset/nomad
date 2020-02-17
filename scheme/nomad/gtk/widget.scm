@@ -17,16 +17,21 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk widget)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-26)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
+  #:use-module (nomad web)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<widget-source-view>
             <widget-border>
             <widget-mini-popup>
             <widget-text-view>
-            <widget-window>
+            <window-container>
+            unused-widget
+            make-buffer-widget
+            !widget
             !grid
             set-text!
             set-point!
@@ -43,9 +48,11 @@
   (gi-import "Gdk")
   (for-each (lambda (x)
               (gi-import-by-name  (car x) (cdr x)))
-            '(("Gtk" . "CssProvider")
+            '(("WebKit2" . "WebView")
+              ("Gtk" . "CssProvider")
               ("Gtk" . "StyleContext")
               ("Gtk" . "VBox")
+              ("Gtk" . "Label")
               ("Gtk" . "DrawingArea")
               ("Gtk" . "ScrolledWindow")
               ("Gtk" . "Grid")
@@ -60,13 +67,33 @@
 
 
 
+(define-method (unused-widget (buffer <buffer>))
+  "Returns the first unused widget for @var{buffer}"
+  (let ((free (filter-map (lambda (widget)
+                            (if (!parent widget)
+                                #f
+                                widget)) (buffer-widgets buffer))))
+    (if (not (null? free))
+        (car free)
+        #f)))
+
 ;; Widgets that have an associated buffer
-(define-class <widget-buffer> ()
+(define-class <widget-with-buffer> ()
   (buffer #:accessor !buffer #:init-keyword #:buffer #:init-value #f))
 
 
 
-(define-class <widget-text-view> (<widget-buffer> <gtk-source-view>)
+(define-class <cache-widget> (<widget-with-buffer>))
+
+(define-method (initialize (widget <cache-widget>) args)
+  (next-method)
+  (when (!buffer widget)
+    (set! %widget-cache (acons (!buffer widget) widget %widget-cache))))
+
+
+
+(define-class <widget-text-view> (<widget-with-buffer>
+                                  <gtk-source-view>)
   (theme  #:accessor     !theme
           #:init-keyword #:theme
           #:init-value   "classic")
@@ -104,7 +131,6 @@
       (begin
         (set-text! self ((!thunk self))))
       (set-text! self (buffer:buffer-string (!buffer self))))
-
   (when (!buffer self)
     (set-point! self (buffer:point (!buffer self)))))
 
@@ -119,10 +145,10 @@
 
 
 
-(define-class <widget-window> (<widget-buffer> <gtk-vbox>)
+(define-class <window-container> (<widget-with-buffer> <gtk-vbox>)
   (container #:accessor     container
              #:init-form    (make <gtk-vbox> #:spacing 0))
-  (user-data #:accessor     user-data
+  (widget    #:accessor     !widget
              #:init-value   #f)
   (window    #:accessor     !window
              #:init-keyword #:window)
@@ -133,14 +159,13 @@
                               #:bottom-margin 1
                               #:thunk emacsy-mode-line)))
 
-(define-method (initialize (self <widget-window>) args)
+(define-method (initialize (self <window-container>) args)
   (next-method)
   (set! (!thunk (!mode-line self))
         (lambda _
           (with-buffer (!buffer self)
                        (emacsy-mode-line))))
-  (let ((window (!window self))
-        (buffer (!buffer self)))
+  (let ((window (!window self)))
     (gtk-box-pack-start self (container self) #t #t 0)
     (gtk-box-pack-start self (make <widget-border>) #f #f 0)
     (gtk-box-pack-start self (!mode-line self) #f #f 0)
@@ -149,10 +174,49 @@
 
 
 
+;; (define-method (emacsy-mode-line (buffer <web-buffer>))
+;;   (format #f "~a~/~a~/~a%"
+;;           (next-method)
+;;           (buffer-title buffer)
+;;           (buffer-progress buffer)))
+
+
+
+(define-class <widget-web-view> (<widget-with-buffer>
+                                 <webkit-web-view>)
+  (load-uri #:init-form (lambda (view uri)
+                          (set! (buffer-uri (!buffer view)) uri)
+                          (webkit-web-view-load-uri view uri))))
+
+(define-method (widget-load-uri (view <widget-web-view>) uri)
+  (webkit-web-view-load-uri view uri))
+
+(define-method (initialize (view <widget-web-view>) args)
+  (next-method)
+  (webkit-web-view-load-uri view (buffer-uri (!buffer view)))
+  (g-timeout-add 50
+                 (lambda _
+                   (set! (buffer-progress (!buffer view))
+                         (inexact->exact
+                          (round (* 100 (!estimated-load-progress view)))))
+                   (set! (buffer-title (!buffer view))
+                         (!title view))
+                   #t)))
+
+;; (define-method (redisplay (view <widget-web-view>))
+;;   (unless (string=? (buffer-uri (!buffer view))
+;;                     (!uri view))
+;;     (dimfi (buffer-uri (!buffer view)) (!uri view))
+;;     (webkit-web-view-load-uri view (buffer-uri (!buffer view)))))
+
+
+(define-method (make-buffer-widget (buffer <web-buffer>))
+  (make <widget-web-view> #:buffer buffer))
+
+;; Base GTK methods.
 (define-method (show-all (self <gtk-widget>))
   (gtk-widget-show-all self))
 
-;; These methods work on base GTK classes.
 (define-method (set-theme! (self <gtk-source-view>) text)
   (let* ((buf     (gtk-text-view-get-buffer self))
          (manager (make <gtk-source-style-scheme-manager>))
@@ -181,12 +245,15 @@
     (gtk-text-buffer-place-cursor buf iter)))
 
 (define-method (container-child (self <gtk-container>))
-  (car (gtk-container-get-children self)))
+  (if (container-empty? self)
+      #f
+      (car (gtk-container-get-children self))))
 
 (define-method (container-replace (self <gtk-container>) widget)
   (when (not (container-empty? self))
     (gtk-container-remove self (container-child self)))
-  (gtk-box-pack-start self widget #t #t 0))
+  (gtk-box-pack-start self widget #t #t 0)
+  (show-all self))
 
 (define-method (container-empty? (self <gtk-container>))
   (= (length (gtk-container-get-children self)) 0))

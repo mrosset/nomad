@@ -24,7 +24,6 @@
   #:use-module (nomad gtk window)
   #:use-module (nomad api)
   #:use-module (g-golf)
-  #:duplicates (merge-generics)
   #:export (<gtk-frame>
             !root
             gtk-frame-new
@@ -92,7 +91,7 @@
   (next-method)
   (let* ((box (make <gtk-vbox> #:spacing 0)))
     ;; Initialize root window
-    (set! current-window (make <window>
+    (set! current-window (make <widget-window>
                            #:window-buffer (current-buffer)))
     (set! root-window  (make <internal-window>
                          #:orientation 'vertical
@@ -125,8 +124,6 @@
 
     (g-timeout-add 50 (lambda _
                         (redisplay root-window)
-                        (show-all (user-data (user-data (selected-window))))
-                        (gtk-widget-grab-focus (user-data (user-data (selected-window))))
                         #t))
 
     (when (!show self)
