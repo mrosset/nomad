@@ -50,6 +50,7 @@ SOURCES =			\
 	nomad/gtk/util.scm	\
 	nomad/graph.scm		\
 	nomad/gtk/gtk.scm	\
+	nomad/web.scm		\
 	nomad/bookmark.scm	\
 	nomad/buffer.scm	\
 	nomad/download.scm	\
@@ -60,8 +61,5 @@ SOURCES =			\
 	nomad/repl.scm		\
 	nomad/shroud.scm	\
 	nomad/server.scm	\
-	nomad/tests.scm		\
 	nomad/text.scm		\
-	nomad/views.scm		\
-	nomad/web.scm		\
-	nomad/webview.scm
+	nomad/views.scm

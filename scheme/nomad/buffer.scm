@@ -29,9 +29,6 @@
             buffers-contain?
             buffers->uri))
 
-(set! buffer-classes (cons* <webview-buffer>
-                            buffer-classes))
-
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
   (write-socket (format #f "~S" `(make-buffer ,url))

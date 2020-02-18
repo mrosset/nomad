@@ -20,66 +20,64 @@
   #:use-module (srfi srfi-26)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
+  #:use-module (nomad util)
   #:use-module (g-golf)
-  #:export (<web-buffer>
-            buffer-widgets
+  #:export (%search-provider-format
+            %default-home-page
+            %search-providers
+            %web-mode-map
+            <widget-buffer>
+            <web-buffer>
+            buffer-uri
             buffer-widget
-            current-widget
             buffer-progress
             buffer-title
-            buffer-uri))
+            current-search))
+
+(define %search-provider-format "https://duckduckgo.com/?q=~a")
 
 (define %default-home-page "https://www.gnu.org/software/guile")
 
-(define (ensure-protocol url)
-  "Returns a full protocol URI for domain URI.
-e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
-  (if (string-contains url "://")
-      url
-      (string-append "https://" url)))
+(define-public web-mode (make <mode> #:mode-name "web"))
+
+;; search providers
+(define %search-providers
+  (circular-list "https://searx.info/?q=~a"
+                 "https://google.com/?q=~a"
+                 "https://duckduckgo.com/?q=~a"))
+
+(define %web-mode-map)
 
 
 
-;; Cache of buffer widgets these widgets are reused when possible.
-;; (define-class <widget-cache> (<pair>))
-
-;; We only have one cache %widget-cache
-(define-public %widget-cache '())
-
-(define-method (buffer-widgets (buffer <buffer>))
-  "Returns the widgets for @var{buffer}"
-  (filter-map  (lambda (pair)
-                 (if (eq? buffer (car pair))
-                     (cdr pair)
-                     #f))
-               %widget-cache))
+(define-class <widget-buffer> ()
+  (widget   #:accessor    buffer-widget
+            #:init-value  #f))
 
 
 
-(define-method (current-widget (buffer <buffer>)))
-
-(define-class <web-buffer> (<text-buffer>)
-  (widget   #:accessor     buffer-widget
-            #:init-value   #f)
-  (name     #:init-keyword #:name #:init-value "<web-buffer>")
+(define-class <web-buffer> (<widget-buffer> <buffer>)
+  (keymap   #:accessor     local-keymap
+            #:init-keyword #:keymap
+            #:init-form    %web-mode-map)
+  (name     #:init-keyword #:name
+            #:init-value   "<web-buffer>")
   (progress #:accessor     buffer-progress
             #:init-value   0)
   (title    #:accessor     buffer-title
             #:init-value   "")
   (uri      #:accessor     buffer-uri
             #:init-keyword #:uri
-            #:init-value   %default-home-page))
+            #:init-value   %default-home-page)
+  (search   #:accessor     current-search
+            #:init-value   #f))
 
-(define-method (initialize (self <web-buffer>) args)
-  (next-method)
-  (with-buffer self
-    (set! (local-var 'widget) #f))
-  (add-buffer! self)
-  (switch-to-buffer self))
-
-
+(define-generic buffer-load-uri)
 
 
+
+(define-public (make-web-buffer uri)
+  (make <web-buffer> #:uri uri))
 
 (set! buffer-classes (cons* <web-buffer>
                             buffer-classes))

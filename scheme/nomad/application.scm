@@ -43,7 +43,6 @@ controls are accessible to scheme"
             (with-buffer buffer
               (set! (local-var 'widget) #f)))
             (list scratch messages minibuffer))
-
-  (make <webview-buffer> #:init-uri "http://gnu.org"))
+  (make <web-buffer> #:uri %default-home-page))
 
 (add-hook! %startup-hook app-init)

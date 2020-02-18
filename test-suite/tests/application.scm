@@ -21,6 +21,7 @@
   #:use-module (nomad application)
   #:use-module (nomad gtk application)
   #:use-module (nomad util)
+  #:use-module (nomad platform)
   #:use-module (nomad init)
   #:use-module (g-golf)
   #:use-module (unit-test)
@@ -31,6 +32,7 @@
   (default-duplicate-binding-handler
     '(merge-generics replace warn-override-core warn last))
 
+  (gi-import "Nomad")
   (gi-import "Gio")
   (for-each (lambda (x)
               (gi-import-by-name  (car x) (cdr x)))
@@ -38,24 +40,24 @@
               ("Gtk" . "Widget"))))
 
 (define-public %test-app-id "org.gnu.test.nomad")
-(define-public %test-app-quit #t)
 
 (define (make-test-app)
-  (make <gtk-application> #:application-id %test-app-id))
+  (make <application> #:application-id %test-app-id))
 
 (define-syntax with-test-app
   (syntax-rules ()
     ((with-test-app body)
      (let ((app (make-test-app))
-           (activate (lambda (app) body)))
+           (open (lambda (app files n-files hint)
+                   body
+                   (g-application-quit app))))
        (dynamic-wind
          (lambda _
-           (connect app 'activate activate))
+           (connect-after app 'open open))
          (lambda _
-           (g-application-run app 0 #f))
+           (application-run app))
          (lambda _
-           (when %test-app-quit
-            (g-application-quit app))))))))
+           (g-application-quit app)))))))
 
 (define-class <test-application> (<test-case>))
 

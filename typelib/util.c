@@ -78,7 +78,7 @@ open_cb (GApplication *app, GFile **files, gint n_files, gchar *hint,
 
   for (int i = 0; i < n_files; i++)
     {
-      scm_call_1 (scm_c_private_ref ("nomad platform ", "make-webview-buffer"),
+      scm_call_1 (scm_c_private_ref ("nomad web ", "make-web-buffer"),
                   scm_from_locale_string (g_file_get_uri (files[i])));
     }
 }

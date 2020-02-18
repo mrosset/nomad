@@ -88,7 +88,7 @@
     (lambda _
       (error "Cannot get the active frame")))
 
-  (make <gtk-webview-buffer> #:init-uri "http://google.ca"))
+  (make <web-buffer> #:uri "http://gnu.org"))
 
 (define-method (initialize (self <nomad-gtk-application>) args)
   (next-method)

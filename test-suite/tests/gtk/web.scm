@@ -1,4 +1,4 @@
-;; api.scm
+;; web.scm
 ;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,30 +16,18 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad api)
-  #:use-module (nomad init)
+(define-module (tests gtk web)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
-  #:use-module (g-golf)
-  #:export (<nomad-application>
-            !startup-hook
-            <nomad-frame>
-            webview-mode))
+  #:use-module (oop goops describe)
+  #:use-module (nomad platform)
+  #:use-module (nomad web)
+  #:use-module (tests application)
+  #:use-module (unit-test))
 
-
+(define-class <test-gtk-web> (<test-case>))
 
-(define-class <nomad-application> ()
-  (startup-hook #:accessor !startup-hook
-                #:init-keyword #:startup-hook
-                #:init-value %startup-hook))
-
-(define-method (initialize (self <nomad-application>) args)
-  (next-method)
-  ;; (init)
-  )
-
-
-
-(define-class <nomad-frame> ())
-
-
+(define-method (test-web-buffer (test <test-gtk-web>))
+  (with-test-app
+   (let ((buffer (make <web-buffer> #:uri "https://bufio.org")))
+     (assert-equal "https://bufio.org/" (widget-uri buffer)))))

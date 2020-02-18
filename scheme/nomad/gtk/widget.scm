@@ -24,12 +24,11 @@
   #:use-module (nomad web)
   #:use-module (oop goops)
   #:use-module (g-golf)
-  #:export (<widget-source-view>
+  #:export (<widget-web-view>
             <widget-border>
             <widget-mini-popup>
             <widget-text-view>
             <window-container>
-            unused-widget
             make-buffer-widget
             !widget
             !grid
@@ -67,28 +66,9 @@
 
 
 
-(define-method (unused-widget (buffer <buffer>))
-  "Returns the first unused widget for @var{buffer}"
-  (let ((free (filter-map (lambda (widget)
-                            (if (!parent widget)
-                                #f
-                                widget)) (buffer-widgets buffer))))
-    (if (not (null? free))
-        (car free)
-        #f)))
-
 ;; Widgets that have an associated buffer
 (define-class <widget-with-buffer> ()
   (buffer #:accessor !buffer #:init-keyword #:buffer #:init-value #f))
-
-
-
-(define-class <cache-widget> (<widget-with-buffer>))
-
-(define-method (initialize (widget <cache-widget>) args)
-  (next-method)
-  (when (!buffer widget)
-    (set! %widget-cache (acons (!buffer widget) widget %widget-cache))))
 
 
 
@@ -174,42 +154,39 @@
 
 
 
-;; (define-method (emacsy-mode-line (buffer <web-buffer>))
-;;   (format #f "~a~/~a~/~a%"
-;;           (next-method)
-;;           (buffer-title buffer)
-;;           (buffer-progress buffer)))
-
-
-
 (define-class <widget-web-view> (<widget-with-buffer>
-                                 <webkit-web-view>)
-  (load-uri #:init-form (lambda (view uri)
-                          (set! (buffer-uri (!buffer view)) uri)
-                          (webkit-web-view-load-uri view uri))))
+                                 <webkit-web-view>))
 
 (define-method (widget-load-uri (view <widget-web-view>) uri)
-  (webkit-web-view-load-uri view uri))
+  (webkit-web-view-load-uri view uri)
+  (show-all view))
 
 (define-method (initialize (view <widget-web-view>) args)
   (next-method)
-  (webkit-web-view-load-uri view (buffer-uri (!buffer view)))
-  (g-timeout-add 50
-                 (lambda _
-                   (set! (buffer-progress (!buffer view))
-                         (inexact->exact
-                          (round (* 100 (!estimated-load-progress view)))))
-                   (set! (buffer-title (!buffer view))
-                         (!title view))
-                   #t)))
+  (connect view 'load-changed
+           (lambda _
+             (let ((buffer (!buffer view)))
+               (dimfi "LOADING...")
+               (set! (buffer-title buffer)
+                     (!title view))
+               (set! (buffer-uri buffer)
+                     (!uri view))
+               (set! (buffer-progress buffer)
+                     (inexact->exact
+                      (round (* 100 (!estimated-load-progress view))))))
+             #t))
+  (widget-load-uri view (buffer-uri (!buffer view))))
 
-;; (define-method (redisplay (view <widget-web-view>))
-;;   (unless (string=? (buffer-uri (!buffer view))
-;;                     (!uri view))
-;;     (dimfi (buffer-uri (!buffer view)) (!uri view))
-;;     (webkit-web-view-load-uri view (buffer-uri (!buffer view)))))
+(define-method (initialize (buffer <widget-buffer>) args)
+  (next-method)
+  (add-hook! (buffer-kill-hook buffer)
+             (lambda _
+               (gtk-widget-destroy (buffer-widget buffer))))
+  (add-buffer! buffer)
+  (switch-to-buffer buffer))
 
 
+
 (define-method (make-buffer-widget (buffer <web-buffer>))
   (make <widget-web-view> #:buffer buffer))
 
@@ -253,7 +230,8 @@
   (when (not (container-empty? self))
     (gtk-container-remove self (container-child self)))
   (gtk-box-pack-start self widget #t #t 0)
-  (show-all self))
+  (show-all self)
+  (gtk-widget-grab-focus widget))
 
 (define-method (container-empty? (self <gtk-container>))
   (= (length (gtk-container-get-children self)) 0))

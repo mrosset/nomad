@@ -21,6 +21,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad api)
   #:use-module (nomad util)
+  #:use-module (nomad web)
   #:use-module (nomad gtk widget)
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk frame)
@@ -30,7 +31,8 @@
             <gtk-textview-buffer>
             <gtk-webview-buffer>
             <gtk-popup-buffer>
-            buffer-uri
+            widget-uri
+            widget-title
             buffer-load-uri
             buffer-back
             buffer-forward
@@ -39,7 +41,6 @@
             buffer-scroll-up
             buffer-scroll-down
             buffer-reload
-            current-search
             search-forward
             search-finish))
 
@@ -61,6 +62,70 @@
   (gi-import "Nomad"))
 
 
+;; Methods
+;;
+;; <web-buffer>
+
+(define-method (emacsy-mode-line (buffer <web-buffer>))
+  (format #f "~a~/~a~/~a~/~a%"
+          (next-method)
+          (buffer-title buffer)
+          (buffer-uri buffer)
+          (buffer-progress buffer)))
+
+(define-method (initialize (buffer <web-buffer>) arg)
+  (next-method)
+  (set! (buffer-modes buffer) `(,web-mode))
+  (set! (buffer-widget buffer) (make <widget-web-view> #:buffer buffer)))
+
+(define-method (widget-title (buffer <web-buffer>))
+  (if (!is-loading (buffer-widget buffer))
+      "loading..."
+      (webkit-web-view-get-title (buffer-widget buffer))))
+
+(define-method (widget-uri (buffer <web-buffer>))
+  (webkit-web-view-get-uri (buffer-widget buffer)))
+
+(define-method (buffer-load-uri (buffer <web-buffer>) uri)
+  (webkit-web-view-load-uri (buffer-widget buffer)
+                            uri))
+
+(define-method (buffer-forward (buffer <web-buffer>))
+  (webkit-web-view-go-forward (buffer-widget buffer)))
+
+(define-method (buffer-back (buffer <web-buffer>))
+  (webkit-web-view-go-back (buffer-widget buffer)))
+
+(define-method (buffer-reload (buffer <web-buffer>))
+  (webkit-web-view-reload (buffer-widget buffer)))
+
+(define-method (buffer-scroll-up (buffer <web-buffer>))
+  (nomad-app-run-javascript (buffer-widget buffer)
+                            "window.scrollBy(0, -25);"))
+
+(define-method (buffer-scroll-down (buffer <web-buffer>))
+  (nomad-app-run-javascript (buffer-widget buffer)
+                            "window.scrollBy(0, 25);"))
+
+(define-method (hints-finish (buffer <web-buffer>))
+  (nomad-app-send-message (buffer-widget buffer)
+                          (make <webkit-user-message> #:name "hints-finish")))
+
+(define-method (buffer-hints (buffer <web-buffer>))
+  (nomad-app-send-message (buffer-widget buffer)
+                          (make <webkit-user-message> #:name "show-hints")))
+
+(define-method (search-forward (buffer <web-buffer>))
+  (let ((controller (webkit-web-view-get-find-controller (buffer-widget buffer))))
+    (webkit-find-controller-search controller (current-search buffer) 1 255)))
+
+(define-method (search-finish (buffer <web-buffer>))
+  (set! (current-search buffer) #f)
+  (let ((controller (webkit-web-view-get-find-controller (buffer-widget buffer))))
+    (webkit-find-controller-search-finish controller)))
+
+
+
 
 (define-class <gtk-widget-buffer> ())
 
@@ -70,73 +135,5 @@
              (lambda _
                (gtk-widget-destroy self)))
   (switch-to-buffer self))
-
-
-
-(define-class <gtk-webview-buffer> (<gtk-widget-buffer>
-                                    <nomad-webview-buffer>
-                                    <webkit-web-view>)
-  (search #:accessor current-search #:init-value #f))
-
-(define-method (initialize (self <gtk-webview-buffer>) args)
-  (next-method)
-  (connect self 'load-changed
-           (lambda _
-             (slot-set! self 'name (!uri self))
-             #t))
-
-  (connect self 'user-message-received
-           (lambda (v m)
-             (safe-message "~a" (webkit-user-message-get-name m))))
-  (buffer-load-uri self (!init-uri self)))
-
-(define-method (emacsy-mode-line (buffer <gtk-webview-buffer>))
-  (format #f "~a~/~a%~/~a"
-          (next-method)
-          (inexact->exact
-           (round (* 100 (!estimated-load-progress buffer))))
-          (if (!is-loading buffer)
-              "loading..."
-              (webkit-web-view-get-title buffer))))
-
-(define-method (buffer-load-uri (self <gtk-webview-buffer>) uri)
-  (webkit-web-view-load-uri self uri))
-
-(define-method (buffer-uri (self <gtk-webview-buffer>))
-   (webkit-web-view-get-uri self))
-
-(define-method (buffer-forward (self <gtk-webview-buffer>))
-  (webkit-web-view-go-forward self))
-
-(define-method (buffer-back (self <gtk-webview-buffer>))
-  (webkit-web-view-go-back self))
-
-(define-method (buffer-reload (self <gtk-webview-buffer>))
-  (webkit-web-view-reload self))
-
-(define-method (buffer-scroll-up (self <gtk-webview-buffer>))
-  (nomad-app-run-javascript self "window.scrollBy(0, -25);"))
-
-(define-method (buffer-scroll-down (self <gtk-webview-buffer>))
-  (nomad-app-run-javascript self "window.scrollBy(0, 25);"))
-
-(define-public message-reply #f)
-
-(define-method (hints-finish (self <gtk-webview-buffer>))
-  (nomad-app-send-message self
-                          (make <webkit-user-message> #:name "hints-finish")))
-
-(define-method (buffer-hints (self <gtk-webview-buffer>))
-  (nomad-app-send-message self
-                          (make <webkit-user-message> #:name "show-hints")))
-
-(define-method (search-forward (self <gtk-webview-buffer>))
-  (let ((controller (webkit-web-view-get-find-controller self)))
-    (webkit-find-controller-search controller (current-search self) 1 255)))
-
-(define-method (search-finish (self <gtk-webview-buffer>))
-  (set! (current-search self) #f)
-  (let ((controller (webkit-web-view-get-find-controller self)))
-    (webkit-find-controller-search-finish controller)))
 
 

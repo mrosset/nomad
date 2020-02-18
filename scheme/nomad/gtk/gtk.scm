@@ -27,11 +27,9 @@
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk util)
   #:use-module (nomad gtk widget)
-  #:export (<webview-buffer>
-            <application>
+  #:duplicates (merge-generics)
+  #:export (<application>
             <app-frame>))
-
-(define-class <webview-buffer> (<gtk-webview-buffer>))
 
 (define-class <application> (<nomad-gtk-application>))
 
