@@ -31,6 +31,7 @@
             <gtk-textview-buffer>
             <gtk-webview-buffer>
             <gtk-popup-buffer>
+            widget-is-loading?
             widget-uri
             widget-title
             buffer-load-uri
@@ -82,6 +83,9 @@
   (if (!is-loading (buffer-widget buffer))
       "loading..."
       (webkit-web-view-get-title (buffer-widget buffer))))
+
+(define-method (widget-is-loading? (buffer <web-buffer>))
+  (!is-loading (buffer-widget buffer)))
 
 (define-method (widget-uri (buffer <web-buffer>))
   (webkit-web-view-get-uri (buffer-widget buffer)))

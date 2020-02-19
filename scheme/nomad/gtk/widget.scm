@@ -28,13 +28,16 @@
             <widget-border>
             <widget-mini-popup>
             <widget-text-view>
+            redisplay
             <window-container>
             make-buffer-widget
-            !widget
             !grid
+            thunk
             set-text!
+            get-text
             set-point!
             show-all
+            grab-focus
             container
             container-child
             container-replace
@@ -74,15 +77,19 @@
 
 (define-class <widget-text-view> (<widget-with-buffer>
                                   <gtk-source-view>)
-  (theme  #:accessor     !theme
-          #:init-keyword #:theme
-          #:init-value   "classic")
-  (styles #:accessor     !styles
-          #:init-keyword #:styles
-          #:init-value   '())
-  (thunk  #:accessor     !thunk
-          #:init-keyword #:thunk
-          #:init-value   #f))
+  (last-tick  #:accessor     last-tick
+              #:init-value   -2)
+  (last-pos   #:accessor     last-pos
+              #:init-value   -1)
+  (theme      #:accessor     !theme
+              #:init-keyword #:theme
+              #:init-value   "classic")
+  (styles     #:accessor     !styles
+              #:init-keyword #:styles
+              #:init-value   '())
+  (thunk      #:accessor     thunk
+              #:init-keyword #:thunk
+              #:init-value   #f))
 
 (define-method (initialize (self <widget-text-view>) args)
   (next-method)
@@ -91,28 +98,40 @@
   ;; Since emacsy does all of the editing. We can use
   ;; overwrite mode which provides a block cursor.
   (gtk-text-view-set-overwrite self #t)
+
+  ;; Set theme and language
   (set-theme! self (!theme self))
   (set-language! self "scheme")
 
   ;; https://developer.gnome.org/gtksourceview/stable/GtkSourceView.html
-  ;; "textview { font-family: Monospace; font-size: 10pt;}")
   (for-each (lambda (style)
               (nomad-app-set-style self style))
             (!styles self))
 
   (g-timeout-add 50 (lambda _
-                      (unless emacsy-display-minibuffer?
-                        (emacsy-tick))
                       (redisplay self)
                       #t)))
 
+;; (define-method (redisplay (self <widget-text-view>))
+;;   (if (thunk self)
+;;       (set-text! self ((thunk self)))
+;;       (set-text! self (buffer:buffer-string (!buffer self))))
+;;   (when (!buffer self)
+;;     (set-point! self (buffer:point (!buffer self)))))
+
 (define-method (redisplay (self <widget-text-view>))
-  (if (!thunk self)
-      (begin
-        (set-text! self ((!thunk self))))
-      (set-text! self (buffer:buffer-string (!buffer self))))
-  (when (!buffer self)
-    (set-point! self (buffer:point (!buffer self)))))
+  (let ((buffer (!buffer self))
+        (thunk  (thunk self)))
+    (if thunk
+        (set-text! self (thunk))
+        (unless  (eq? (buffer-modified-tick buffer) (last-tick self))
+          (set-text! self (buffer:buffer-string buffer))
+          (set! (last-tick self) (buffer-modified-tick buffer))
+          (set! (last-pos self) -2)))
+    (when (and buffer
+               (not (eq? (buffer:point buffer) (last-pos self))))
+      (set-point! self (buffer:point buffer))
+      (set! (last-pos self) (buffer:point buffer)))))
 
 
 
@@ -127,9 +146,7 @@
 
 (define-class <window-container> (<widget-with-buffer> <gtk-vbox>)
   (container #:accessor     container
-             #:init-form    (make <gtk-vbox> #:spacing 0))
-  (widget    #:accessor     !widget
-             #:init-value   #f)
+             #:init-form    (make <gtk-scrolled-window>))
   (window    #:accessor     !window
              #:init-keyword #:window)
   (mode-line #:accessor     !mode-line
@@ -141,7 +158,7 @@
 
 (define-method (initialize (self <window-container>) args)
   (next-method)
-  (set! (!thunk (!mode-line self))
+  (set! (thunk (!mode-line self))
         (lambda _
           (with-buffer (!buffer self)
                        (emacsy-mode-line))))
@@ -177,6 +194,9 @@
              #t))
   (widget-load-uri view (buffer-uri (!buffer view))))
 
+(define-method (redisplay (view <widget-web-view>))
+  #t)
+
 (define-method (initialize (buffer <widget-buffer>) args)
   (next-method)
   (add-hook! (buffer-kill-hook buffer)
@@ -191,8 +211,17 @@
   (make <widget-web-view> #:buffer buffer))
 
 ;; Base GTK methods.
-(define-method (show-all (self <gtk-widget>))
-  (gtk-widget-show-all self))
+(define-method (show-all (widget <gtk-widget>))
+  (gtk-widget-show-all widget))
+
+(define-method (grab-focus (widget <gtk-widget>))
+  (gtk-widget-grab-focus widget))
+
+(define-method (get-text (widget <gtk-text-view>))
+  (let* ((buf   (gtk-text-view-get-buffer widget))
+         (start (gtk-text-buffer-get-start-iter buf))
+         (end   (gtk-text-buffer-get-end-iter buf)))
+    (gtk-text-buffer-get-text buf start end #t)))
 
 (define-method (set-theme! (self <gtk-source-view>) text)
   (let* ((buf     (gtk-text-view-get-buffer self))
@@ -229,7 +258,7 @@
 (define-method (container-replace (self <gtk-container>) widget)
   (when (not (container-empty? self))
     (gtk-container-remove self (container-child self)))
-  (gtk-box-pack-start self widget #t #t 0)
+  (gtk-container-add self widget)
   (show-all self)
   (gtk-widget-grab-focus widget))
 

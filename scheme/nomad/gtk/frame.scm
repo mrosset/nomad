@@ -20,8 +20,10 @@
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
-  #:use-module (nomad gtk widget)
   #:use-module (nomad gtk window)
+  #:use-module (nomad gtk widget)
+  #:use-module (nomad web)
+  #:use-module (nomad text)
   #:use-module (nomad api)
   #:use-module (g-golf)
   #:export (<gtk-frame>
@@ -76,7 +78,7 @@
 (define-class <gtk-frame> (<nomad-frame> <gtk-application-window>)
   (root        #:accessor    !root
                #:init-form   (make <gtk-vbox> #:spacing 0))
-  (mini-buffer #:accessor    !mini-buffer
+  (echo-area   #:accessor    echo-area
                #:init-form   (make <widget-text-view>
                                #:styles '("textview text { background-color: white; color: black; }")
                                #:top-margin 1
@@ -97,6 +99,7 @@
                          #:orientation 'vertical
                          #:window-children (list current-window)))
 
+
     ;; Initialize slots
     (slot-set! self 'title "Nomad")
     (slot-set! self 'default-height 480)
@@ -104,11 +107,21 @@
     (slot-set! self 'icon-name "nomad")
     (gtk-window-set-icon-name self "nomad")
 
+
+    ;; Add buffer hooks for minibuffer
+    (add-hook! (buffer-enter-hook minibuffer)
+               (lambda _
+                 (grab-focus (echo-area self))))
+
+    (add-hook! (buffer-exit-hook minibuffer)
+               (lambda _
+                 (grab-focus (buffer-widget
+                              (window-buffer current-window)))))
+
     ;; Widget packing
     (gtk-container-add self box)
     (gtk-box-pack-start box (!root self) #t #t 0)
-    (gtk-box-pack-start box (!mini-buffer self) #f #f 0)
-
+    (gtk-box-pack-start box (echo-area self) #f #f 0)
 
     ;; FIXME: when using more then one frame this should not quit the
     ;; application. Currently we only support one frame.
@@ -122,7 +135,7 @@
     ;; Redraw the windows for the first time.
     (window-config-change root-window)
 
-    (g-timeout-add 50 (lambda _
+    (g-timeout-add 200 (lambda _
                         (redisplay root-window)
                         #t))
 
@@ -146,7 +159,7 @@
         (begin
           (emacsy-key-event unichar mod-flags)
           (emacsy-tick)
-          ;; We need two tick or we can not test for emacsy-ran-undefined-command?
+          ;; We need two ticks or we can not test for emacsy-ran-undefined-command?
           (unless emacsy-display-minibuffer?
             (emacsy-tick))
           (if emacsy-ran-undefined-command?

@@ -28,8 +28,7 @@
   #:use-module (g-golf)
   #:export (<widget-window>
             widget-container
-            window-widget
-            redisplay))
+            window-widget))
 
 (eval-when (expand load eval)
   (default-duplicate-binding-handler
@@ -44,7 +43,8 @@
 
 
 
-(define-class <widget-window> (<window>))
+(define-class <widget-window> (<window>)
+  (last-tick #:accessor last-tick #:init-value -1))
 
 (define-method (window-widget (window <widget-window>))
   (!widget (user-data window)))
@@ -98,8 +98,16 @@
 (define-method (redisplay (window <internal-window>))
   (for-each redisplay (window-children window)))
 
+(define-method (redisplay (window <window>))
+  (when (is-a? (window-buffer window) <text-buffer>)
+   (catch 'no-such-local-variable
+     (lambda _
+       (local-var 'widget))
+     (lambda (key . vals)
+       (set! (local-var 'widget) #f)))))
 
 (define-method (redisplay (window <widget-window>))
+  (next-method)
   (let* ((buffer    (window-buffer window))
          (view      (user-data window))
          (container (widget-container window))
@@ -126,16 +134,17 @@
       (set! (!buffer (user-data window)) buffer)
       (container-replace container widget))))
 
-;;-method (needs-redisplay? (window <nomad-gtk-window>))
-;;   (let* ((buffer (window-buffer window))
-;;          (buffer-tick (buffer-modified-tick buffer))
-;;          (window-tick (!last-tick window)))
-;;     (not (= buffer-tick window-tick))))
+(define-method (needs-redisplay? (widget <widget-text-view>) (window <widget-window>))
+         (let* ((buffer (window-buffer window))
+                (buffer-tick (buffer-modified-tick buffer))
+                (window-tick (last-tick window)))
+           (dimfi (or (not (= buffer-tick window-tick))
+                (thunk widget)))))
 
-;; (define-method (redisplayed! (window <nomad-gtk-window>))
-;;   (let* ((buffer (window-buffer window))
-;;          (buffer-tick (buffer-modified-tick buffer)))
-;;     (set! (!last-tick window) buffer-tick)))
+(define-method (redisplayed! (window <widget-window>))
+  (let* ((buffer (window-buffer window))
+         (buffer-tick (buffer-modified-tick buffer)))
+    (set! (last-tick window) buffer-tick)))
 
 ;; (define-method (redisplay (self <nomad-gtk-window>))
 ;;   (let* ((buffer    (window-buffer self)))
