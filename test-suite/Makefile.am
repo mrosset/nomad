@@ -1,18 +1,21 @@
 TESTS  = tests/util.scm
-TESTS += tests/api.scm
 TESTS += tests/init.scm
 TESTS += tests/frame.scm
 TESTS += tests/application.scm
 TESTS += tests/gtk/window.scm
-
-GUILE_AUTO_COMPILE := 0
+TESTS += tests/gtk/web.scm
+TESTS += tests/gtk/text.scm
 
 TEST_EXTENSIONS = .scm
 
-TESTS_ENVIRONMENT = \
-	$(abs_top_builddir)/pre-inst-env		\
-	$(GUILE) -L $(abs_top_builddir)/test-suite	\
-		 --no-auto-compile -s test-runner
+SCM_LOG_COMPILER  = $(abs_top_builddir)/pre-inst-env \
+		    $(GUILE) -L "$(abs_top_builddir)/test-suite"
+
+AM_SCM_LOG_FLAGS = -s test-runner
+
+AM_TESTS_ENVIRONMENT = GUILE_LOAD_PATH="$(abs_top_builddir)/test-suite"
+
+AM_LOG_FLAGS = --color-tests=yes
 
 test-list:
 	echo $(TESTS)
@@ -23,7 +26,7 @@ do_subst = sed -e 's,[@]GUILE[@],$(GUILE),g'	\
 
 all-local: test-runner
 
-CLEANFILES =  test-runner
+CLEANFILES = test-runner
 
 test-runner: test-runner.in
 	$(do_subst) < $< > $@

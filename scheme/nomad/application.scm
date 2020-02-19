@@ -39,10 +39,6 @@ controls are accessible to scheme"
                           (lambda _
                             (info "running shutdown hook...")))
 
-  (for-each (lambda (buffer)
-            (with-buffer buffer
-              (set! (local-var 'widget) #f)))
-            (list scratch messages minibuffer))
   (make <web-buffer> #:uri %default-home-page))
 
 (add-hook! %startup-hook app-init)

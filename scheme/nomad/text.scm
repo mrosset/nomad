@@ -17,8 +17,12 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad text)
+  #:use-module (emacsy emacsy)
   #:use-module (g-golf)
-  #:use-module (nomad platform))
+  #:export (buffer-widget))
 
 (define %default-source-language "scheme")
 (define %default-source-theme "classic")
+
+(define-method (buffer-widget (buffer <text-buffer>))
+  (local-var 'widget))

@@ -23,7 +23,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIRS([m4])
 
 # automake
-AM_INIT_AUTOMAKE([-Wall gnu silent-rules color-tests serial-tests])
+AM_INIT_AUTOMAKE([-Wall gnu silent-rules color-tests])
 AM_SILENT_RULES([yes])
 
 # programs

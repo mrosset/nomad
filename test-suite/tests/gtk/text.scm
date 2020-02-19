@@ -1,4 +1,4 @@
-;; web.scm
+;; text.scm
 ;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -18,18 +18,25 @@
 
 (define-module (tests gtk web)
   #:use-module (emacsy emacsy)
+  #:use-module (g-golf)
   #:use-module (oop goops)
-  #:use-module (oop goops describe)
-  #:use-module (nomad platform)
-  #:use-module (nomad web)
+  #:use-module (nomad text)
+  #:use-module (nomad text)
+  #:use-module (nomad gtk widget)
   #:use-module (tests application)
   #:use-module (unit-test))
 
-(define-class <test-gtk-web> (<test-case>))
+(define-class <test-gtk-text> (<test-case>))
 
+(gi-import-by-name "Gtk" "init")
 
-(define-method (test-web-buffer (test <test-gtk-web>))
-  (with-test-app
-   (let ((buffer (make <web-buffer> #:uri "https://bufio.org")))
-     (assert-equal <widget-web-view> (class-of (buffer-widget buffer)))
-     (assert-equal "https://bufio.org/" (widget-uri buffer)))))
+(define-method (test-text-buffer (test <test-gtk-text>))
+  (gtk-init #f #f)
+  (with-buffer scratch
+          (set! (local-var 'widget) (make <widget-text-view> #:buffer scratch))
+          (assert-equal <widget-text-view> (class-of (buffer-widget scratch))))
+  (with-buffer messages
+    (set! (local-var 'widget) (make <widget-text-view> #:buffer messages))
+    (insert "foo")
+    (redisplay (buffer-widget messages))
+    (assert-equal (get-text (buffer-widget (current-buffer))) (buffer-string))))

@@ -37,7 +37,8 @@
   #:use-module (nomad views)
   #:use-module (nomad web)
   #:use-module (nomad web-mode)
-  #:use-module (nomad graph))
+  #:use-module (nomad graph)
+  #:duplicates (merge-generics))
 
 (re-export-modules
  '(nomad api)

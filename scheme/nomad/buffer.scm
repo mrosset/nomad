@@ -102,3 +102,5 @@
 
 (define-interactive (make-popup-buffer)
   (make <popup-buffer> #:name "*buffers*" #:list (buffer-list)))
+
+(define-key fundamental-map (kbd "C-c C-b") eval-buffer)

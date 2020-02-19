@@ -48,15 +48,11 @@
 
 (define %web-mode-map)
 
-
-
-(define-class <widget-buffer> ()
+(define-class <widget-buffer> (<buffer>)
   (widget   #:accessor    buffer-widget
             #:init-value  #f))
 
-
-
-(define-class <web-buffer> (<widget-buffer> <buffer>)
+(define-class <web-buffer> (<widget-buffer>)
   (keymap   #:accessor     local-keymap
             #:init-keyword #:keymap
             #:init-form    %web-mode-map)
@@ -71,10 +67,6 @@
             #:init-value   %default-home-page)
   (search   #:accessor     current-search
             #:init-value   #f))
-
-(define-generic buffer-load-uri)
-
-
 
 (define-public (make-web-buffer uri)
   (make <web-buffer> #:uri uri))
