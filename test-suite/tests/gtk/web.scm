@@ -19,19 +19,38 @@
 (define-module (tests gtk web)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
-  #:use-module (oop goops describe)
   #:use-module (nomad platform)
-  #:use-module (nomad web)
+  #:use-module (nomad nomad)
+  #:use-module (web server)
   #:use-module (tests application)
   #:use-module (unit-test))
 
 (define-class <test-gtk-web> (<test-case>))
 
+(define (request-path-components request)
+  (split-and-decode-uri-path (uri-path (request-uri request))))
+
+(define (redirect)
+  (values (dimfi (build-response #:code 301))
+          "Location: https://bufio.org"))
+
+(define (test-handler request body)
+  (cond ((equal? (request-path-components request)
+                 '("test"))
+         (redirect))
+        ((equal? (request-path-components request)
+                 '("test/"))
+         (values '((content-type . (text/plain)))
+                 "Hello GNU!"))
+        (else (not-found request))))
 
 (define-method (test-web-buffer (test <test-gtk-web>))
+  (call-with-new-thread
+   (lambda _
+     (run-server test-handler 'http '(#:port 8081))))
   (with-test-app
-   (let ((buffer (make <web-buffer> #:uri "https://bufio.org")))
+   (let ((buffer (make <web-buffer> #:uri "http://localhot:8081/test")))
      (assert-equal <widget-web-view> (class-of (buffer-widget buffer)))
-     (assert-equal "https://bufio.org/" (widget-uri buffer))
+     (assert-equal "http://localhost:8081/test/" (widget-uri buffer))
      (assert-equal (widget-uri (buffer-widget buffer))
                    (buffer-uri buffer)))))

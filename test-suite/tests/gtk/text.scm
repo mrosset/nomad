@@ -20,9 +20,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (g-golf)
   #:use-module (oop goops)
-  #:use-module (nomad text)
-  #:use-module (nomad text)
-  #:use-module (nomad gtk widget)
+  #:use-module (nomad nomad)
   #:use-module (tests application)
   #:use-module (unit-test))
 
@@ -31,7 +29,7 @@
 (gi-import-by-name "Gtk" "init")
 
 (define-method (test-text-buffer (test <test-gtk-text>))
-  (gtk-init #f #f)
+  (gtk-init 0 #f)
   (with-buffer scratch
           (set! (local-var 'widget) (make <widget-text-view> #:buffer scratch))
           (assert-equal <widget-text-view> (class-of (buffer-widget scratch))))

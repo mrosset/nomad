@@ -86,7 +86,7 @@
               #:init-value   "classic")
   (styles     #:accessor     !styles
               #:init-keyword #:styles
-              #:init-value   '())
+              #:init-form   '("textview { font-family: \"DejaVu Sans Mono\"; font-weight: normal; font-stretch: normal}"))
   (thunk      #:accessor     thunk
               #:init-keyword #:thunk
               #:init-value   #f))
@@ -151,7 +151,7 @@
              #:init-keyword #:window)
   (mode-line #:accessor     !mode-line
              #:init-form    (make <widget-text-view>
-                              #:styles '("textview text { background-color: #BFBFBF; color: black; }")
+                              #:styles '("textview text { font-family: \"DejaVu Sans Mono\"; background-color: #BFBFBF; color: black; }")
                               #:top-margin 1
                               #:bottom-margin 1
                               #:thunk emacsy-mode-line)))

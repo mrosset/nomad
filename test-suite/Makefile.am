@@ -14,10 +14,13 @@ SCM_LOG_COMPILER  = $(abs_top_builddir)/pre-inst-env \
 SCM_LOG_DRIVER = $(abs_top_builddir)/tools/test-driver
 
 AM_SCM_LOG_FLAGS = -s test-runner
-
+AM_LOG_FLAGS = --color-tests=yes
 AM_TESTS_ENVIRONMENT = GUILE_LOAD_PATH="$(abs_top_builddir)/test-suite"
 
-AM_LOG_FLAGS = --color-tests=yes
+# TESTS_ENVIRONMENT = GUILE_LOAD_PATH="$(abs_top_builddir)/test-suite" \
+#		    $(abs_top_builddir)/pre-inst-env ./test-runner
+
+
 
 test-list:
 	echo $(TESTS)

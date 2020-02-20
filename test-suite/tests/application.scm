@@ -41,9 +41,6 @@
 
 (define-public %test-app-id "org.gnu.test.nomad")
 
-(define (make-test-app)
-  (make <application> #:application-id %test-app-id))
-
 (define-syntax with-test-app
   (syntax-rules ()
     ((with-test-app body)

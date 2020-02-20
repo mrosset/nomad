@@ -18,26 +18,13 @@
 
 (define-module (tests frame)
   #:use-module (oop goops)
-  #:use-module (g-golf)
   #:use-module (nomad frame)
   #:use-module (nomad gtk frame)
+  #:use-module (tests application)
   #:use-module (unit-test))
-
-(eval-when (expand load eval)
-  (map (lambda (item)
-         (gi-import-by-name (car item) (cdr item)))
-       '(("Gtk" . "init_check")
-         ("Gtk" . "Application")
-         ("Gtk" . "Notebook"))))
 
 (define-class <test-frame> (<test-case>))
 
  (define-method (test-frame (self <test-frame>))
-  (let* ((app (make <gtk-application> #:application-id "org.gnu.test.nomad"))
-         (activate (lambda (app)
-                     (let* ((frame    (gtk-frame-new app)))
-                       (assert-equal <gtk-frame> (class-of frame))
-                       (assert-equal <gtk-frame> (class-of (current-frame)))
-                       (g-application-quit app)))))
-    (connect app 'activate activate)
-    (g-application-run app 0 #f)))
+   (with-test-app
+    (assert-equal <gtk-frame> (class-of (current-frame)))))

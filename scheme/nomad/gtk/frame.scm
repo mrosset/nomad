@@ -80,7 +80,6 @@
                #:init-form   (make <gtk-vbox> #:spacing 0))
   (echo-area   #:accessor    echo-area
                #:init-form   (make <widget-text-view>
-                               #:styles '("textview text { background-color: white; color: black; }")
                                #:top-margin 1
                                #:bottom-margin 1
                                #:buffer minibuffer
@@ -129,7 +128,8 @@
              (lambda _
                (g-application-quit (g-application-get-default))
                #t))
-    (connect self 'key-press-event key-press-cb)
+
+    (connect self 'key-press-event key-press-event)
 
 
     ;; Redraw the windows for the first time.
@@ -148,7 +148,7 @@
 
 
 
-(define (key-press-cb frame event)
+(define (key-press-event frame event)
   (let* ((unicode   (gdk-keyval-to-unicode (gdk-event-key:keyval event)))
          ;; FIXME:  What happens if GDK_KEY_BackSpace is not 8?
          (unichar   (if (= unicode 8) #\del  (integer->char unicode)))
