@@ -135,14 +135,14 @@ backend and modular feature-set fully programmable in Guile.")
   (package
     (inherit webkitgtk)
     (name "webkitgtk-unstable")
-    (version "2.27.4")
+    (version "2.27.90")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   "webkitgtk-" version ".tar.xz"))
               (sha256
                (base32
-                "1xvl93ajqgkar6ij15966mdzq1fijispgjafah60g4s98r2hlmah"))))))
+                "1i3wp87kwbcfm9vlgbgh5x4k4h8839z51dfysz8n898xkxqyrg4s"))))))
 
 (define-public nomad-git
   (let ((commit "37295da03aa1b0fc27b27048dbb5887214e9f13d"))
