@@ -75,6 +75,9 @@
     (propagated-inputs
      `(("glib" ,glib)
        ("glib-networking" ,glib-networking)
+       ("gtk+" ,gtk+)
+       ("webkitgtk" ,webkitgtk-unstable)
+       ("gtksourceview" ,gtksourceview)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -82,6 +85,7 @@
                   (ice-9 popen)
                   (ice-9 rdelim)
                   (srfi srfi-26))
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'start-xorg-server
@@ -145,11 +149,11 @@ backend and modular feature-set fully programmable in Guile.")
                 "1i3wp87kwbcfm9vlgbgh5x4k4h8839z51dfysz8n898xkxqyrg4s"))))))
 
 (define-public nomad-git
-  (let ((commit "37295da03aa1b0fc27b27048dbb5887214e9f13d"))
+  (let ((commit "32fa797e9f23717a7f35b66a7770624fe8b5120f"))
     (package
       (inherit nomad)
       (name "nomad-git")
-      (version (git-version "1" "873" commit))
+      (version (git-version "1" "909" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -158,4 +162,4 @@ backend and modular feature-set fully programmable in Guile.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0mdd065di5sq8lwh5h0azxwsxdklzbp0idj07pqgahalxmj8y4jr")))))))
+                  "0vdx8fl51i0a3i23x13lyyi18iq1c2vl7k9538jkslmkb7zqn3nn")))))))
