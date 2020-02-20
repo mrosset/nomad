@@ -51,6 +51,7 @@ SOURCES =			\
 	nomad/graph.scm		\
 	nomad/gtk/gtk.scm	\
 	nomad/web.scm		\
+	nomad/web-mode.scm	\
 	nomad/bookmark.scm	\
 	nomad/buffer.scm	\
 	nomad/download.scm	\
