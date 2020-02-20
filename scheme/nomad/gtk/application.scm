@@ -93,8 +93,7 @@
 (define-method (initialize (self <nomad-gtk-application>) args)
   (next-method)
   (g-application-set-flags self '(handles-open can-override-app-id))
-  ;; (slot-set! self 'flags '(handles-open can-override-app-id))
-  ;; (connect self 'open open-cb)
+  ;; (connect-after self 'open open-cb)
   (connect self 'startup startup-cb)
   (connect self 'activate activate-cb))
 

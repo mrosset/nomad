@@ -47,28 +47,25 @@
 (define-syntax with-test-app
   (syntax-rules ()
     ((with-test-app body)
-     (let ((app (make-test-app))
-           (open (lambda (app files n-files hint)
-                   body
-                   (g-application-quit app))))
+     (let ((home     (tmpnam))
+           (app      (make <application> #:application-id %test-app-id))
+           (activate (lambda (app)
+                       body
+                       (g-application-quit app))))
        (dynamic-wind
          (lambda _
-           (connect-after app 'open open))
+           (unless (file-exists? home)
+             (mkdir home #o755))
+           (connect-after app 'activate activate))
          (lambda _
-           (application-run app))
+           (with-fluids ((fluid~ home))
+             (application-run app)))
          (lambda _
+           (system* "rm" "-r" home)
            (g-application-quit app)))))))
 
 (define-class <test-application> (<test-case>))
 
-;; (define-method (test-with-application (self <test-application>))
-;;   (with-test-app
-;;                  (assert-equal %test-app-id (application-id))))
-
-;; (define-method (test-application-id (self <test-application>))
-;;   (with-fluids ((~ "/tmp/home"))
-;;     (assert-equal "/tmp/home/.nomad" (user-init-file))
-;;     ;; (let* ((test-id "org.gnu.tests.nomad")
-;;     ;;        (app (make <nomad-gtk-application> #:application-id test-id)))
-;;     ;;   (assert-equal test-id (application-id)))
-;;     ))
+(define-method (test-with-application (self <test-application>))
+  (with-test-app
+   (assert-equal %test-app-id (application-id))))

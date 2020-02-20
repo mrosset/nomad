@@ -9,7 +9,9 @@ TESTS += tests/gtk/text.scm
 TEST_EXTENSIONS = .scm
 
 SCM_LOG_COMPILER  = $(abs_top_builddir)/pre-inst-env \
-		    $(GUILE) -L "$(abs_top_builddir)/test-suite"
+		    $(GUILE) --debug -L "$(abs_top_builddir)/test-suite"
+
+SCM_LOG_DRIVER = $(abs_top_builddir)/tools/test-driver
 
 AM_SCM_LOG_FLAGS = -s test-runner
 

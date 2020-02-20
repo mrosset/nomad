@@ -32,4 +32,6 @@
   (with-test-app
    (let ((buffer (make <web-buffer> #:uri "https://bufio.org")))
      (assert-equal <widget-web-view> (class-of (buffer-widget buffer)))
-     (assert-equal "https://bufio.org/" (widget-uri buffer)))))
+     (assert-equal "https://bufio.org/" (widget-uri buffer))
+     (assert-equal (widget-uri (buffer-widget buffer))
+                   (buffer-uri buffer)))))
