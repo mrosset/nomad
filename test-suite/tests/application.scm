@@ -32,12 +32,12 @@
   (default-duplicate-binding-handler
     '(merge-generics replace warn-override-core warn last))
 
-  (gi-import "Nomad")
   (gi-import "Gio")
-  (for-each (lambda (x)
-              (gi-import-by-name  (car x) (cdr x)))
+  (map (lambda (pair)
+              (gi-import-by-name  (car pair) (cdr pair)))
             '(("Gtk" . "ApplicationWindow")
-              ("Gtk" . "Widget"))))
+              ("Gtk" . "Widget")))
+    (gi-import "Nomad"))
 
 (define-public %test-app-id "org.gnu.test.nomad")
 

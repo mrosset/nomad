@@ -30,14 +30,15 @@
   (default-duplicate-binding-handler
     '(merge-generics replace warn-override-core warn last))
 
-  (gi-import "Nomad")
+
   (gi-import "Gio")
   (map (lambda (pair)
          (gi-import-by-name (car pair) (cdr pair)))
        '(("Gtk" . "Widget")
          ("Gtk" . "Application")
          ("WebKit2" . "WebContext")
-         ("WebKit2" . "CookieManager"))))
+         ("WebKit2" . "CookieManager")))
+  (gi-import "Nomad"))
 
 (define-public (current-application)
   "Returns the default application"
