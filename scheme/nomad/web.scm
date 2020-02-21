@@ -21,15 +21,14 @@
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
   #:use-module (nomad util)
+  #:use-module (nomad text)
   #:use-module (g-golf)
   #:export (%search-provider-format
             %default-home-page
             %search-providers
             %web-mode-map
-            <widget-buffer>
             <web-buffer>
             buffer-uri
-            buffer-widget
             buffer-progress
             buffer-title
             current-search))
@@ -47,10 +46,6 @@
                  "https://duckduckgo.com/?q=~a"))
 
 (define %web-mode-map)
-
-(define-class <widget-buffer> (<buffer>)
-  (widget   #:accessor    buffer-widget
-            #:init-value  #f))
 
 (define-class <web-buffer> (<widget-buffer>)
   (keymap   #:accessor     local-keymap

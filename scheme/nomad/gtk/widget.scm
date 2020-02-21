@@ -21,6 +21,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
+  #:use-module (nomad text)
   #:use-module (nomad web)
   #:use-module (oop goops)
   #:use-module (g-golf)
@@ -183,7 +184,6 @@
   (connect view 'load-changed
            (lambda _
              (let ((buffer (!buffer view)))
-               (dimfi "LOADING...")
                (set! (buffer-title buffer)
                      (!title view))
                (set! (buffer-uri buffer)
@@ -209,6 +209,9 @@
 
 (define-method (make-buffer-widget (buffer <web-buffer>))
   (make <widget-web-view> #:buffer buffer))
+
+(define-method (make-buffer-widget (buffer <ibuffer>))
+  (make <widget-text-view> #:buffer buffer))
 
 ;; Base GTK methods.
 (define-method (show-all (widget <gtk-widget>))

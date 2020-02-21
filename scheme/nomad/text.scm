@@ -19,10 +19,15 @@
 (define-module (nomad text)
   #:use-module (emacsy emacsy)
   #:use-module (g-golf)
-  #:export (buffer-widget))
+  #:export (<widget-buffer>
+            buffer-widget))
 
 (define %default-source-language "scheme")
 (define %default-source-theme "classic")
+
+(define-class <widget-buffer> (<buffer>)
+  (widget   #:accessor    buffer-widget
+            #:init-value  #f))
 
 (define-method (buffer-widget (buffer <text-buffer>))
   (local-var 'widget))
