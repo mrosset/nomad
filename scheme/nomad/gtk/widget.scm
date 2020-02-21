@@ -23,6 +23,7 @@
   #:use-module (emacsy window)
   #:use-module (nomad text)
   #:use-module (nomad web)
+  #:use-module (nomad ibuffer)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<widget-web-view>
