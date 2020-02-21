@@ -57,7 +57,12 @@
 (define (update buffer)
   (delete-region (point-min) (point-max))
   (set! (!index buffer) 0)
-  (set! (!buffers buffer) (buffer-list))
+  (set! (!buffers buffer)
+        (filter-map
+         (lambda (b) (if (is-a? b <ibuffer>)
+                         #f
+                         b))
+         (buffer-list)))
   (for-each (lambda (b)
               (insert (ibuffer-line b)))
             (!buffers buffer))
@@ -67,14 +72,14 @@
 (define (ibuffer-forward-line)
   (let* ((buffer  (current-buffer))
          (index   (!index buffer)))
-    (when (< index (- (length (!buffers buffer)) 2))
+    (when (< index (- (length (!buffers buffer)) 1))
       (set! (!index buffer) (dimfi (+ index 1)))))
   (forward-line))
 
 (define (ibuffer-backward-line)
   (let* ((buffer  (current-buffer))
          (index   (!index buffer)))
-    (when (> index 2)
+    (when (> index 1)
       (set! (!index buffer) (dimfi (- index 1))))
     (backward-line)))
 
@@ -101,3 +106,4 @@
 (define-key ibuffer-map "p" ibuffer-backward-line)
 (define-key ibuffer-map "C-p" ibuffer-backward-line)
 (define-key ibuffer-map "ESC" kill-buffer)
+(define-key ibuffer-map "q" kill-buffer)
