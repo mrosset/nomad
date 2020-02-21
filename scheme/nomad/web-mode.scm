@@ -127,7 +127,7 @@ current buffer is not a @var{<web-buffer>} it will create a new
                      text)))
     (if (or (> u 1)
             (not (is-a? (current-buffer) <web-buffer>)))
-      (make <web-buffer> #:init-uri uri)
+      (make <web-buffer> #:uri uri)
       (buffer-load-uri (current-buffer) uri)))
   #t)
 
