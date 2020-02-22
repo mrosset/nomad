@@ -94,6 +94,10 @@
 (define-method (initialize (self <nomad-gtk-application>) args)
   (next-method)
   (g-application-set-flags self '(handles-open can-override-app-id))
+
+  ;; Connect open signal in C since g-golf can not handle GFile yet.
+  (nomad-app-connect-open self)
+
   ;; (connect-after self 'open open-cb)
   (connect self 'startup startup-cb)
   (connect self 'activate activate-cb))

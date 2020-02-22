@@ -48,10 +48,9 @@ exec @GUILE@ -e main -s "$0" "$@"
           "comiled-path: ~a~%"
           (pretty-string %load-compiled-path)))
 
-(define (main . args)
+(define (main args)
   (let ((app (make <application> #:application-id "org.gnu.nomad")))
-    ;; (g-application-run app 0 #f)
-    (application-run app)))
+    (g-application-run app (length args) args)))
 
 ;; Local Variables:
 ;; mode: scheme
