@@ -51,7 +51,7 @@
   (!widget (user-data window)))
 
 (define-method (widget-container (window <widget-window>))
-  (container (user-data window)))
+  (!container (user-data window)))
 
 (define-method (widget-buffer (window <widget-window>))
   (!buffer (user-data window)))

@@ -40,7 +40,7 @@
             set-point!
             show-all
             grab-focus
-            container
+            !container
             container-child
             container-replace
             container-empty?))
@@ -147,7 +147,7 @@
 
 
 (define-class <window-container> (<widget-with-buffer> <gtk-vbox>)
-  (container #:accessor     container
+  (container #:accessor     !container
              #:init-form    (make <gtk-scrolled-window>))
   (window    #:accessor     !window
              #:init-keyword #:window)
@@ -160,12 +160,14 @@
 
 (define-method (initialize (self <window-container>) args)
   (next-method)
+
   (set! (thunk (!mode-line self))
         (lambda _
           (with-buffer (!buffer self)
-                       (emacsy-mode-line))))
+            (emacsy-mode-line))))
+
   (let ((window (!window self)))
-    (gtk-box-pack-start self (container self) #t #t 0)
+    (gtk-box-pack-start self (!container self) #t #t 0)
     (gtk-box-pack-start self (make <widget-border>) #f #f 0)
     (gtk-box-pack-start self (!mode-line self) #f #f 0)
     (gtk-box-pack-start self (make <widget-border>) #f #f 0)
@@ -197,14 +199,6 @@
 
 (define-method (redisplay (view <widget-web-view>))
   #t)
-
-(define-method (initialize (buffer <widget-buffer>) args)
-  (next-method)
-  (add-hook! (buffer-kill-hook buffer)
-             (lambda _
-               (gtk-widget-destroy (buffer-widget buffer))))
-  (add-buffer! buffer)
-  (switch-to-buffer buffer))
 
 
 

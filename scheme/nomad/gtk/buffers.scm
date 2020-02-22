@@ -19,6 +19,7 @@
 (define-module (nomad gtk buffers)
   #:use-module (ice-9 format)
   #:use-module (emacsy emacsy)
+  #:use-module (emacsy window)
   #:use-module (nomad api)
   #:use-module (nomad util)
   #:use-module (nomad web)
@@ -63,7 +64,6 @@
   (gi-import "WebKit2")
   (gi-import "Nomad"))
 
-
 ;; Methods
 ;;
 ;; <web-buffer>
@@ -129,16 +129,15 @@
   (let ((controller (webkit-web-view-get-find-controller (buffer-widget buffer))))
     (webkit-find-controller-search-finish controller)))
 
+;;
+;; <widget-buffer>
 
-
-
-(define-class <gtk-widget-buffer> ())
-
-(define-method (initialize (self <gtk-widget-buffer>) args)
+(define-method (initialize (buffer <widget-buffer>) args)
   (next-method)
-  (add-hook! (buffer-kill-hook self)
+  (add-hook! (buffer-kill-hook buffer)
              (lambda _
-               (gtk-widget-destroy self)))
-  (switch-to-buffer self))
-
-
+               (gtk-widget-destroy (buffer-widget buffer))
+               (prev-buffer)
+               (set! (window-buffer current-window) (current-buffer))))
+  (add-buffer! buffer)
+  (switch-to-buffer buffer))
