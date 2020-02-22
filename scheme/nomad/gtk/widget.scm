@@ -54,6 +54,7 @@
               (gi-import-by-name  (car x) (cdr x)))
             '(("WebKit2" . "WebView")
               ("Gtk" . "CssProvider")
+              ("Gtk" . "Clipboard")
               ("Gtk" . "StyleContext")
               ("Gtk" . "VBox")
               ("Gtk" . "Label")
@@ -104,6 +105,12 @@
   ;; Set theme and language
   (set-theme! self (!theme self))
   (set-language! self "scheme")
+
+  (connect self 'paste-clipboard
+           (lambda _
+             (let* ((clipboard (gtk-clipboard-get-default (gdk-display-get-default)))
+                    (input     (gtk-clipboard-wait-for-text clipboard)))
+               (insert input))))
 
   ;; https://developer.gnome.org/gtksourceview/stable/GtkSourceView.html
   (for-each (lambda (style)
