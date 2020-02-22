@@ -153,11 +153,11 @@ backend and modular feature-set fully programmable in Guile.")
                 "1i3wp87kwbcfm9vlgbgh5x4k4h8839z51dfysz8n898xkxqyrg4s"))))))
 
 (define-public nomad-git
-  (let ((commit "4a98fa49df4cc646d7d1a2d4c277d5f05fbb4ff9"))
+  (let ((commit "860ef96848b20333a8757de8fa41269eebd6c029"))
     (package
       (inherit nomad)
       (name "nomad-git")
-      (version (git-version "1" "916" commit))
+      (version (git-version "1" "922" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -166,4 +166,4 @@ backend and modular feature-set fully programmable in Guile.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "018ykw0qpsdm10mpfc5knmmxk3771g04x725jahk3fn85agsiwh2")))))))
+                  "1ia4bvh8pik5v1g10sah22qpqya2glw0nm773sdlirwlz6jbji8n")))))))
