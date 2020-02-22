@@ -98,6 +98,7 @@
                          #:orientation 'vertical
                          #:window-children (list current-window)))
 
+    (nomad-set-wrap-mode (echo-area self) #t)
 
     ;; Initialize slots
     (slot-set! self 'title "Nomad")

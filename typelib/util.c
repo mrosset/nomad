@@ -109,6 +109,14 @@ SCM_DEFINE_PUBLIC (scm_nomad_list_to_argv, "list->argv", 1, 0, 0, (SCM lst),
   return scm_from_pointer (argv, scm_nomad_free_argv);
 }
 
+//
+// FIXME: report upstream to g-golf that this can't be handled
+void
+nomad_set_wrap_mode (GtkTextView *view, gboolean wrap_mode)
+{
+  gtk_text_view_set_wrap_mode (view, wrap_mode);
+}
+
 void
 nomad_app_run (GtkApplication *app)
 {
