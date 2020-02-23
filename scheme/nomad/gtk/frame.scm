@@ -78,11 +78,11 @@
 (define-class <gtk-frame> (<nomad-frame> <gtk-application-window>)
   (root        #:accessor    !root
                #:init-form   (make <gtk-vbox> #:spacing 0))
-  (echo-area   #:accessor    echo-area
-               #:init-form   (make <widget-text-view>
+  (echo-area   #:accessor    !echo-area
+               #:init-form   (make <widget-thunk-view>
                                #:top-margin 1
                                #:bottom-margin 1
-                               #:buffer minibuffer
+                               #:language "scheme"
                                #:thunk  emacsy-message-or-echo-area))
   (show        #:accessor     !show
                #:init-keyword #:show
@@ -98,7 +98,7 @@
                          #:orientation 'vertical
                          #:window-children (list current-window)))
 
-    (nomad-set-wrap-mode (echo-area self) #t)
+    (nomad-set-wrap-mode (!echo-area self) #t)
 
     ;; Initialize slots
     (slot-set! self 'title "Nomad")
@@ -111,17 +111,21 @@
     ;; Add buffer hooks for minibuffer
     (add-hook! (buffer-enter-hook minibuffer)
                (lambda _
-                 (grab-focus (echo-area self))))
+                 (grab-focus (!echo-area self))))
 
     (add-hook! (buffer-exit-hook minibuffer)
                (lambda _
                  (grab-focus (buffer-widget
-                              (window-buffer current-window)))))
+                              (window-buffer current-window)))
+                 (g-timeout-add 50
+                                        (lambda _
+                                          (run-hook %thunk-view-hook)
+                                          #f))))
 
     ;; Widget packing
     (gtk-container-add self box)
     (gtk-box-pack-start box (!root self) #t #t 0)
-    (gtk-box-pack-start box (echo-area self) #f #f 0)
+    (gtk-box-pack-start box (!echo-area self) #f #f 0)
 
     ;; FIXME: when using more then one frame this should not quit the
     ;; application. Currently we only support one frame.
@@ -160,6 +164,7 @@
         (begin
           (emacsy-key-event unichar mod-flags)
           (emacsy-tick)
+          (run-hook %thunk-view-hook)
           ;; We need two ticks or we can not test for emacsy-ran-undefined-command?
           (unless emacsy-display-minibuffer?
             (emacsy-tick))

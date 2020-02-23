@@ -30,11 +30,13 @@
             <widget-border>
             <widget-mini-popup>
             <widget-text-view>
+            <widget-thunk-view>
             redisplay
             <window-container>
             make-buffer-widget
             !grid
-            thunk
+            !thunk
+            !mode-line
             set-text!
             get-text
             set-point!
@@ -87,12 +89,12 @@
   (theme      #:accessor     !theme
               #:init-keyword #:theme
               #:init-value   "classic")
+  (lang       #:accessor     !lang
+              #:init-keyword #:language
+              #:init-value   "scheme")
   (styles     #:accessor     !styles
               #:init-keyword #:styles
-              #:init-form   '("textview { font-family: \"DejaVu Sans Mono\"; font-weight: normal; font-stretch: normal}"))
-  (thunk      #:accessor     thunk
-              #:init-keyword #:thunk
-              #:init-value   #f))
+              #:init-form   '("textview { font-family: \"DejaVu Sans Mono\"; font-weight: normal; font-stretch: normal}")))
 
 (define-method (initialize (self <widget-text-view>) args)
   (next-method)
@@ -104,7 +106,7 @@
 
   ;; Set theme and language
   (set-theme! self (!theme self))
-  (set-language! self "scheme")
+  (set-language! self (!lang self))
 
   (connect self 'paste-clipboard
            (lambda _
@@ -117,30 +119,35 @@
               (nomad-app-set-style self style))
             (!styles self))
 
-  (g-timeout-add 50 (lambda _
-                      (redisplay self)
-                      #t)))
-
-;; (define-method (redisplay (self <widget-text-view>))
-;;   (if (thunk self)
-;;       (set-text! self ((thunk self)))
-;;       (set-text! self (buffer:buffer-string (!buffer self))))
-;;   (when (!buffer self)
-;;     (set-point! self (buffer:point (!buffer self)))))
+  (when (!buffer self)
+    (g-timeout-add 50 (lambda _
+                        (redisplay self)
+                        #t))))
 
 (define-method (redisplay (self <widget-text-view>))
-  (let ((buffer (!buffer self))
-        (thunk  (thunk self)))
-    (if thunk
-        (set-text! self (thunk))
-        (unless  (eq? (buffer-modified-tick buffer) (last-tick self))
-          (set-text! self (buffer:buffer-string buffer))
-          (set! (last-tick self) (buffer-modified-tick buffer))
-          (set! (last-pos self) -2)))
-    (when (and buffer
-               (not (eq? (buffer:point buffer) (last-pos self))))
+  (let ((buffer (!buffer self)))
+    (unless  (eq? (buffer-modified-tick buffer) (last-tick self))
+      (set-text! self (buffer:buffer-string buffer))
+      (set! (last-tick self) (buffer-modified-tick buffer))
+      (set! (last-pos self) -2))
+    (unless (and (eq? (buffer:point buffer) (last-pos self)))
       (set-point! self (buffer:point buffer))
       (set! (last-pos self) (buffer:point buffer)))))
+
+
+
+(define-public %thunk-view-hook (make-hook 0))
+
+(define-class <widget-thunk-view> (<widget-text-view>)
+  (thunk #:accessor     !thunk
+         #:init-keyword #:thunk))
+
+
+(define-method (initialize (self <widget-thunk-view>) args)
+  (next-method)
+  (add-hook! %thunk-view-hook
+             (lambda _
+               (set-text! self ((!thunk self))))))
 
 
 
@@ -159,16 +166,23 @@
   (window    #:accessor     !window
              #:init-keyword #:window)
   (mode-line #:accessor     !mode-line
-             #:init-form    (make <widget-text-view>
+             #:init-form    (make <widget-thunk-view>
                               #:styles '("textview text { font-family: \"DejaVu Sans Mono\"; background-color: #BFBFBF; color: black; }")
                               #:top-margin 1
                               #:bottom-margin 1
+                              #:highlight-matching-brackets #f
+                              #:highlight-syntax #f
+                              #:cursor-visible #f
                               #:thunk emacsy-mode-line)))
 
 (define-method (initialize (self <window-container>) args)
   (next-method)
 
-  (set! (thunk (!mode-line self))
+  (let* ((mode-line (!mode-line self))
+         (buf (gtk-text-view-get-buffer mode-line)))
+    (gtk-source-buffer-set-highlight-matching-brackets buf #f))
+
+  (set! (!thunk (!mode-line self))
         (lambda _
           (with-buffer (!buffer self)
             (emacsy-mode-line))))
@@ -200,7 +214,8 @@
                      (!uri view))
                (set! (buffer-progress buffer)
                      (inexact->exact
-                      (round (* 100 (!estimated-load-progress view))))))
+                      (round (* 100 (!estimated-load-progress view)))))
+               (run-hook %thunk-view-hook))
              #t))
   (widget-load-uri view (buffer-uri (!buffer view))))
 
@@ -213,7 +228,12 @@
   (make <widget-web-view> #:buffer buffer))
 
 (define-method (make-buffer-widget (buffer <ibuffer>))
-  (make <widget-text-view> #:buffer buffer))
+  (make <widget-text-view>
+    #:buffer buffer
+    #:highlight-matching-brackets #f
+    #:highlight-syntax #f
+    #:cursor-visible #f
+    #:highlight-current-line #t))
 
 ;; Base GTK methods.
 (define-method (show-all (widget <gtk-widget>))
