@@ -69,9 +69,9 @@
 ;; <web-buffer>
 
 (define-method (emacsy-mode-line (buffer <web-buffer>))
-  (format #f "~a~/~a~/~a~/~a%"
+  (format #f "~a~/~a~/~a%"
           (next-method)
-          (buffer-title buffer)
+          ;; (buffer-title buffer)
           (buffer-uri buffer)
           (buffer-progress buffer)))
 

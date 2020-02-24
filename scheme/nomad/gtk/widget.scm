@@ -170,8 +170,6 @@
                               #:styles '("textview text { font-family: \"DejaVu Sans Mono\"; background-color: #BFBFBF; color: black; }")
                               #:top-margin 1
                               #:bottom-margin 1
-                              #:highlight-matching-brackets #f
-                              #:highlight-syntax #f
                               #:cursor-visible #f
                               #:thunk emacsy-mode-line)))
 
@@ -180,6 +178,7 @@
 
   (let* ((mode-line (!mode-line self))
          (buf (gtk-text-view-get-buffer mode-line)))
+    (gtk-source-buffer-set-highlight-syntax buf #f)
     (gtk-source-buffer-set-highlight-matching-brackets buf #f))
 
   (set! (!thunk (!mode-line self))
@@ -228,12 +227,13 @@
   (make <widget-web-view> #:buffer buffer))
 
 (define-method (make-buffer-widget (buffer <ibuffer>))
-  (make <widget-text-view>
-    #:buffer buffer
-    #:highlight-matching-brackets #f
-    #:highlight-syntax #f
-    #:cursor-visible #f
-    #:highlight-current-line #t))
+  (let* ((view (make <widget-text-view>
+                #:buffer buffer
+                #:highlight-current-line #t))
+         (buf (gtk-text-view-get-buffer view)))
+    (gtk-source-buffer-set-highlight-syntax buf #f)
+    (gtk-source-buffer-set-highlight-matching-brackets buf #f)
+    view))
 
 ;; Base GTK methods.
 (define-method (show-all (widget <gtk-widget>))

@@ -44,7 +44,7 @@
   (insert (format #f "--------~/--------\n")))
 
 (define (ibuffer-line buffer)
-  (format #f "~a~/~/~a\n"
+  (format #f "~a~/~a\n"
           (buffer-name buffer)
            (if (is-a? buffer <web-buffer>)
                (buffer-uri buffer)
@@ -95,8 +95,7 @@
                       (switch-to-buffer current)
                       (make <ibuffer>
                         #:name         "<ibuffer>"
-                        #:buffer-modes `(,ibuffer-mode)
-                        #:keymap        global-map))))
+                        #:buffer-modes `(,ibuffer-mode)))))
     (update buffer)))
 
 (define-key ibuffer-map "RET" switch-to)
