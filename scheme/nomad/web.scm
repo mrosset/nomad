@@ -47,12 +47,27 @@
 
 (define %web-mode-map)
 
+(define (buffer-uniq-name)
+
+  (define (name x)
+    (if (equal? x 0)
+        (format #f "<web-buffer>")
+        (format #f "<web-buffer: ~s>" x)))
+
+  (define lst (map buffer-name (buffer-list)))
+
+  (let loop ((n 0))
+    (if (not (member (name n) lst))
+        (name n)
+        (loop (1+ n)))))
+
 (define-class <web-buffer> (<widget-buffer>)
   (keymap   #:accessor     local-keymap
             #:init-keyword #:keymap
             #:init-form    %web-mode-map)
   (name     #:init-keyword #:name
-            #:init-value   "<web-buffer>")
+            #:init-thunk  (lambda ()
+                            (buffer-uniq-name)))
   (progress #:accessor     buffer-progress
             #:init-value   0)
   (title    #:accessor     buffer-title
