@@ -155,7 +155,7 @@ current buffer is not a @var{<web-buffer>} it will create a new
 ;; Default web-mode key mappings
 (set! %web-mode-map
       (list->keymap '(("C-c u" back)
-                      ("k" kill-buffer)
+                      ("C-k" kill-buffer)
                       ("C-m" forward)
                       ("C-n" scroll-down)
                       ("C-p" scroll-up)
