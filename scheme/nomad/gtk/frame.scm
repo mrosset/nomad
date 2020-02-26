@@ -83,6 +83,7 @@
                                #:top-margin 1
                                #:bottom-margin 1
                                #:language "scheme"
+                               #:buffer minibuffer
                                #:thunk  emacsy-message-or-echo-area))
   (show        #:accessor     !show
                #:init-keyword #:show

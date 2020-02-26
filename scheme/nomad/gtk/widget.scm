@@ -147,7 +147,9 @@
   (next-method)
   (add-hook! %thunk-view-hook
              (lambda _
-               (set-text! self ((!thunk self))))))
+               (set-text! self ((!thunk self)))
+               (when (!buffer self)
+                 (set-point! self (buffer:point (!buffer self)))))))
 
 
 
