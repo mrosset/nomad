@@ -4,6 +4,8 @@
  (guix packages)
  (guix git-download)
  (guix gexp)
+ (ice-9 rdelim)
+ (ice-9 popen)
  (guix download)
  (guix build-system gnu)
  (guix build-system glib-or-gtk)
@@ -167,3 +169,17 @@ backend and modular feature-set fully programmable in Guile.")
                 (sha256
                  (base32
                   "1ia4bvh8pik5v1g10sah22qpqya2glw0nm773sdlirwlz6jbji8n")))))))
+
+(define %source-dir (getcwd))
+
+(define-public nomad.git
+ (let ((version "0.1.3")
+        (revision "alpha")
+        (commit (read-string (open-pipe "git show HEAD | head -1 | cut -d ' ' -f 2" OPEN_READ))))
+    (package
+      (inherit nomad)
+      (name "nomad.git")
+      (version (string-append version "-" revision "." (string-take commit 7)))
+      (source (local-file %source-dir
+                          #:recursive? #t
+                          #:select? (git-predicate %source-dir))))))
