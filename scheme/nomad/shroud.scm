@@ -37,32 +37,32 @@
 ;; Shroud configuration file
 (define shroud-config-file (~/ ".shroud"))
 
-(define shroud-db
-  (delay (load-secrets shroud-database-file)))
+(define-macro (dynamic x)
+  `(eval ,x (interaction-environment)))
 
-(define (shroud-list* config db . args)
+(define (shroud-list config db . args)
   (map (lambda (secret)
          (secret-id secret))
        (force db)))
 
-(define (shroud--list)
-  (shroud-list* shroud-config-file
-                shroud-db))
-
-
 ;; Find matching entries for a given string
 (define (shroud-find-entries text)
   "Returns a list of matches in password list"
-  (filter (cut string-match text <>) (shroud--list)))
+  (filter (cut string-match text <>)
+          (shroud-list (dynamic shroud-config-file)
+                       (delay (load-secrets (dynamic shroud-database-file))))))
 
 (define* (shroud-show-entry entry #:optional key)
   (let ((e (find (compose (cut string-match entry <>) secret-id)
-                 (force shroud-db))))
+                 (force (delay (load-secrets (dynamic shroud-database-file)))))))
     (if (not key) e
         (secret-ref e key))))
 
-(define-interactive (shroud-find-password
-                     #:optional (entry (completing-read "Entry: "
-                                                        (shroud--list))))
+(define-interactive
+  (shroud-find-password
+   #:optional (entry (completing-read "Entry: "
+                                      (shroud-list (dynamic shroud-config-file)
+                                                   (delay (load-secrets
+                                                           (dynamic shroud-database-file)))))))
   "Show password/secrets entry"
   (copy-text (shroud-show-entry entry "password")))
