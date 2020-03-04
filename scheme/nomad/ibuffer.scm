@@ -105,4 +105,7 @@
 (define-key ibuffer-map "p" ibuffer-backward-line)
 (define-key ibuffer-map "C-p" ibuffer-backward-line)
 (define-key ibuffer-map "ESC" kill-buffer)
+(define-key ibuffer-map "k" (lambda _ (let ((buffer (current-buffer)))
+                                        (kill-buffer
+                                         (list-ref (!buffers buffer) (!index buffer))))))
 (define-key ibuffer-map "q" kill-buffer)
