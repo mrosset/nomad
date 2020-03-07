@@ -27,7 +27,8 @@
             ))
 
 (define %use-proxy? (make-parameter #f))
-(define %proxy-uri (make-parameter #f))
+(define %http-proxy (make-parameter (getenv "HTTP_PROXY")))
+(define %proxy-uri (make-parameter (or (%http-proxy))))
 (define %proxy-ignore-hosts (make-parameter #f))
 
 (define (make-proxy proxy-url ignore-list)
