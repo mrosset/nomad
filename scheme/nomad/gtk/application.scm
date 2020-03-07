@@ -24,6 +24,7 @@
   #:use-module (nomad api)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
+  #:use-module (nomad proxy)
   #:export (<nomad-gtk-application>))
 
 (eval-when (expand load eval)
@@ -68,6 +69,15 @@
   (connect (webkit-web-context-get-default)
            'initialize-web-extensions
            initialize-extention-cb)
+  ;; setup proxy
+  (when (and (%use-proxy?)
+             (%proxy-uri)
+             (%proxy-ignore-hosts))
+    (webkit-web-context-set-network-proxy-settings
+     (webkit-web-context-get-default)
+     'custom
+     (webkit-network-proxy-settings-new (%proxy-uri)
+                                        (%proxy-ignore-hosts))))
   (when %use-cookies?
     (let ((manager (webkit-web-context-get-cookie-manager
                     (webkit-web-context-get-default))))
