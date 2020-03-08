@@ -146,6 +146,6 @@
   (let ((widget (buffer-widget buffer)))
     (if widget
         (webkit-web-context-set-network-proxy-settings
-         (buffer-widget buffer)
+         widget
          'custom
          proxy))))
