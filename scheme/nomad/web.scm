@@ -31,6 +31,10 @@
             buffer-uri
             buffer-progress
             buffer-title
+            use-proxy?
+            http-proxy
+            proxy-uri
+            proxy-ignore-hosts
             current-search))
 
 (define %search-provider-format "https://duckduckgo.com/?q=~a")
@@ -80,3 +84,8 @@
 
 (set! buffer-classes (cons* <web-buffer>
                             buffer-classes))
+
+(define use-proxy? (make-parameter #f))
+(define http-proxy (make-parameter (getenv "HTTP_PROXY")))
+(define proxy-uri (make-parameter (or (http-proxy))))
+(define proxy-ignore-hosts (make-parameter #f))
