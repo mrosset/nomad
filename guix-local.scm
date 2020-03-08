@@ -31,13 +31,13 @@
 
 (define %source-dir (dirname (current-filename)))
 
-(define-public nomad.local
+(define-public nomad-local
  (let ((version "0.1.3")
         (revision "alpha")
         (commit (read-string (open-pipe "git show HEAD | head -1 | cut -d ' ' -f 2" OPEN_READ))))
     (package
       (inherit nomad:nomad)
-      (name "nomad.git")
+      (name "nomad-local")
       (version (string-append version "-" revision "." (string-take commit 7)))
       (source (local-file %source-dir
                           #:recursive? #t
