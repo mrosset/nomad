@@ -43,4 +43,4 @@
                           #:recursive? #t
                           #:select? (git-predicate %source-dir))))))
 
-nomad.local
+nomad-local
