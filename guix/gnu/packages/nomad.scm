@@ -76,6 +76,7 @@
        ("glib-networking" ,glib-networking)
        ("gtk+" ,gtk+)
        ("gtksourceview" ,gtksourceview)
+       ("webkitgtk" ,webkitgtk)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
