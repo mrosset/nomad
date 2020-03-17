@@ -68,14 +68,13 @@
        ("gtk+" ,gtk+)
        ("gtk+:bin" ,gtk+ "bin")
        ("gtksourceview" ,gtksourceview)
-       ("webkitgtk" ,webkitgtk-unstable)
+       ("webkitgtk" ,webkitgtk)
        ("g-golf" ,g-golf)
        ("xorg-server" ,xorg-server)))
     (propagated-inputs
      `(("glib" ,glib)
        ("glib-networking" ,glib-networking)
        ("gtk+" ,gtk+)
-       ("webkitgtk" ,webkitgtk-unstable)
        ("gtksourceview" ,gtksourceview)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
