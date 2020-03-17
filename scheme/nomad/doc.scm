@@ -50,3 +50,5 @@
                                                       #:to-string symbol->string)))
   "Interactively get the documention for a Scheme Object."
   (message "~a" (doc-get '(nomad nomad) var)))
+
+;; help

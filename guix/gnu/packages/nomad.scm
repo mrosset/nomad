@@ -3,7 +3,6 @@
 (use-modules
  (guix packages)
  (guix git-download)
- (guix gexp)
  (guix download)
  (guix build-system gnu)
  (guix build-system glib-or-gtk)

@@ -31,6 +31,10 @@
             buffer-uri
             buffer-progress
             buffer-title
+            use-proxy?
+            http-proxy
+            proxy-uri
+            proxy-ignore-hosts
             current-search))
 
 (define %search-provider-format "https://duckduckgo.com/?q=~a")
@@ -47,12 +51,24 @@
 
 (define %web-mode-map)
 
+(define (uniquify-name str lst)
+  (define (name x)
+    (if (equal? x 0)
+        (format #f str "")
+        (format #f str x)))
+
+  (let loop ((n 0))
+    (if (not (member (name n) lst))
+        (name n)
+        (loop (1+ n)))))
+
 (define-class <web-buffer> (<widget-buffer>)
   (keymap   #:accessor     local-keymap
             #:init-keyword #:keymap
             #:init-form    %web-mode-map)
   (name     #:init-keyword #:name
-            #:init-value   "<web-buffer>")
+            #:init-thunk  (lambda ()
+                           (uniquify-name "<web-buffer: ~a>" (map buffer-name (buffer-list)))))
   (progress #:accessor     buffer-progress
             #:init-value   0)
   (title    #:accessor     buffer-title
@@ -68,3 +84,8 @@
 
 (set! buffer-classes (cons* <web-buffer>
                             buffer-classes))
+
+(define use-proxy? (make-parameter #f))
+(define http-proxy (make-parameter (getenv "HTTP_PROXY")))
+(define proxy-uri (make-parameter (or (http-proxy))))
+(define proxy-ignore-hosts (make-parameter #f))

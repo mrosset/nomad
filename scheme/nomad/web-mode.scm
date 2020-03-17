@@ -153,13 +153,20 @@ current buffer is not a @var{<web-buffer>} it will create a new
                   ("M-'" hints))))
 
 ;; Default web-mode key mappings
+(use-modules (nomad doc))
 (set! %web-mode-map
       (list->keymap '(("C-c u" back)
-                      ("k" kill-buffer)
+                      ("C-k" kill-buffer)
                       ("C-m" forward)
                       ("C-n" scroll-down)
                       ("C-p" scroll-up)
                       ("C-f" hints)
+                      ;; help
+                      ;; DONE
+
+                      ;; TODO
+                      ("C-h" help) ;; C-h itself shouldn't be bound.
+                      ;; help end
                       ("C-r" reload)
                       ("C-g" web-keyboard-quit)
                       ("C-s" isearch-forward))))
