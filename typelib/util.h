@@ -29,5 +29,5 @@ void nomad_app_set_style (GtkWidget *widget, const char *style);
 void nomad_app_send_message (WebKitWebView *view, WebKitUserMessage *message);
 gboolean nomad_draw_border (GtkWidget *widget, cairo_t *cr);
 void nomad_set_wrap_mode (GtkTextView *view, gboolean wrap_mode);
-void nomad_app_connect_open (GtkApplication *app);
+
 #endif

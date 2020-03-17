@@ -130,7 +130,7 @@
       (set-text! self (buffer:buffer-string buffer))
       (set! (last-tick self) (buffer-modified-tick buffer))
       (set! (last-pos self) -2))
-    (unless (and (eq? (buffer:point buffer) (last-pos self)))
+    (unless (eq? (buffer:point buffer) (last-pos self))
       (set-point! self (buffer:point buffer))
       (set! (last-pos self) (buffer:point buffer)))))
 

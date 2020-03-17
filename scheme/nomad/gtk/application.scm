@@ -22,6 +22,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad init)
   #:use-module (nomad api)
+  #:use-module (nomad web)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
   #:export (<nomad-gtk-application>))
@@ -29,7 +30,6 @@
 (eval-when (expand load eval)
   (default-duplicate-binding-handler
     '(merge-generics replace warn-override-core warn last))
-
 
   (gi-import "Gio")
   (map (lambda (pair)
@@ -48,10 +48,6 @@
   "Returns the default application id"
   (g-application-get-application-id (current-application)))
 
-(define-public (application-run app)
-  "Returns the default application"
-    (nomad-app-run app))
-
 
 
 (define-class <nomad-gtk-application> (<nomad-application> <gtk-application>))
@@ -62,7 +58,7 @@
    (getenv "NOMAD_WEB_EXTENSION_DIR")))
 
 (define (startup-cb app)
-  (format #t "STARTUP\n")
+  (dimfi "STARTUP")
   (emacsy-initialize #t)
   (init)
   (connect (webkit-web-context-get-default)
@@ -77,28 +73,22 @@
        'sqlite))))
 
 (define (activate-cb app)
-  (format #t "ACTIVATE\n")
+  (dimfi "ACTIVATE")
   (gtk-frame-new app)
   (run-hook (!startup-hook app)))
 
 (define (open-cb app files n-files hint)
   (format #t "OPEN\n")
-  (catch #t
-    (lambda _
-      (gtk-application-get-active-window app))
-    (lambda _
-      (error "Cannot get the active frame")))
-
-  (make <web-buffer> #:uri "http://gnu.org"))
+  (unless (current-frame)
+    (gtk-frame-new app))
+  (for-each (lambda (file)
+              (make <web-buffer> #:uri (g-file-get-uri file)))
+            files))
 
 (define-method (initialize (self <nomad-gtk-application>) args)
   (next-method)
   (g-application-set-flags self '(handles-open can-override-app-id))
-
-  ;; Connect open signal in C since g-golf can not handle GFile yet.
-  (nomad-app-connect-open self)
-
-  ;; (connect-after self 'open open-cb)
+  (connect self 'open open-cb)
   (connect self 'startup startup-cb)
   (connect self 'activate activate-cb))
 

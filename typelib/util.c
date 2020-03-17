@@ -97,38 +97,25 @@ nomad_set_wrap_mode (GtkTextView *view, gboolean wrap_mode)
   gtk_text_view_set_wrap_mode (view, wrap_mode);
 }
 
-static void
-open_cb (GApplication *app, GFile **files, gint n_files, gchar *hint,
-         gpointer user_data)
-{
-  g_print ("OPEN\n");
-
-  if (!gtk_application_get_active_window (GTK_APPLICATION (app)))
-    {
-      scm_call_0 (scm_c_private_ref ("nomad platform ", "make-frame"));
-      gtk_widget_show_all (GTK_WIDGET (
-          gtk_application_get_active_window (GTK_APPLICATION (app))));
-    }
-
-  for (int i = 0; i < n_files; i++)
-    {
-      scm_call_1 (scm_c_private_ref ("nomad web ", "make-web-buffer"),
-                  scm_from_locale_string (g_file_get_uri (files[i])));
-    }
-}
-
-void
-nomad_app_connect_open (GtkApplication *app)
-{
-  GOptionEntry entries[]
-      = { { "quick", 'Q', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, NULL,
-            "Start nomad without using %user-init-file", NULL },
-          { NULL } };
-
-  g_application_add_main_option_entries (G_APPLICATION (app), entries);
-
-  g_signal_connect (app, "open", G_CALLBACK (open_cb), NULL);
-}
+/* static void
+ * open_cb (GApplication *app, GFile **files, gint n_files, gchar *hint,
+ *          gpointer user_data)
+ * {
+ *   g_print ("OPEN\n");
+ *
+ *   if (!gtk_application_get_active_window (GTK_APPLICATION (app)))
+ *     {
+ *       scm_call_0 (scm_c_private_ref ("nomad platform ", "make-frame"));
+ *       gtk_widget_show_all (GTK_WIDGET (
+ *           gtk_application_get_active_window (GTK_APPLICATION (app))));
+ *     }
+ *
+ *   for (int i = 0; i < n_files; i++)
+ *     {
+ *       scm_call_1 (scm_c_private_ref ("nomad web ", "make-web-buffer"),
+ *                   scm_from_locale_string (g_file_get_uri (files[i])));
+ *     }
+ * } */
 
 /* void
  * nomad_app_run (GtkApplication *app)
