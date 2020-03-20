@@ -214,6 +214,7 @@
                (let* ((uri (string->uri (webkit-web-view-get-uri view)))
                       (style (or (assoc-ref %styles (uri-host uri)) %default-style))
                       (manager (webkit-web-view-get-user-content-manager view)))
+                 (webkit-user-content-manager-remove-all-style-sheets manager)
                  (when style
                    (webkit-user-content-manager-add-style-sheet
                     manager
