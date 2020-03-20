@@ -24,6 +24,7 @@
   #:use-module (nomad text)
   #:use-module (nomad web)
   #:use-module (nomad ibuffer)
+  #:use-module (web uri)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:export (<widget-web-view>
@@ -55,6 +56,7 @@
   (for-each (lambda (x)
               (gi-import-by-name  (car x) (cdr x)))
             '(("WebKit2" . "WebView")
+              ("WebKit2" . "UserContentManager")
               ("Gtk" . "CssProvider")
               ("Gtk" . "Clipboard")
               ("Gtk" . "StyleContext")
@@ -207,7 +209,17 @@
 (define-method (initialize (view <widget-web-view>) args)
   (next-method)
   (connect view 'load-changed
-           (lambda _
+           (lambda (view event)
+             (when (equal? event 'committed)
+               (let* ((uri (string->uri (webkit-web-view-get-uri view)))
+                      (style (or (assoc-ref %styles (uri-host uri)) %default-style))
+                      (manager (webkit-web-view-get-user-content-manager view)))
+                 (when style
+                   (webkit-user-content-manager-add-style-sheet
+                    manager
+                    (webkit-user-style-sheet-new style
+                                                 'all-frames
+                                                 'user #f #f)))))
              (let ((buffer (!buffer view)))
                (set! (buffer-title buffer)
                      (!title view))

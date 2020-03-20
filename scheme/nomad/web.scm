@@ -27,6 +27,8 @@
             %default-home-page
             %search-providers
             %web-mode-map
+            %styles
+            %default-style
             <web-buffer>
             buffer-uri
             buffer-progress
@@ -50,6 +52,10 @@
                  "https://duckduckgo.com/?q=~a"))
 
 (define %web-mode-map)
+
+(define %styles #f)
+
+(define %default-style #f)
 
 (define (uniquify-name str lst)
   (define (name x)
