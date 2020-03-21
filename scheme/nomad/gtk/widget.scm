@@ -208,6 +208,16 @@
 
 (define-method (initialize (view <widget-web-view>) args)
   (next-method)
+  (connect view 'decide-policy
+           (lambda (view decision type)
+             (case type
+               ((new-window-action)
+                (let* ((action  (webkit-navigation-policy-decision-get-navigation-action decision))
+                       (request (webkit-navigation-action-get-request action))
+                       (uri     (webkit-uri-request-get-uri request)))
+                  (make <web-buffer> #:uri uri)
+                  #t))
+               (else #f))))
   (connect view 'load-changed
            (lambda (view event)
              (when (equal? event 'committed)
