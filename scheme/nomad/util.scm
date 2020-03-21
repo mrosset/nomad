@@ -77,10 +77,10 @@
   (unless (file-exists? dir)
           (mkdir dir #o755)))
 
-(define-public (safe-message fmt var)
+(define-public (safe-message fmt . vars)
   (catch #t
     (lambda _
-      (message fmt var))
+      (message (apply format #f fmt vars)))
     (lambda (key . vals)
       (format #t "Error: key: ~a value: ~a" key vals))))
 
