@@ -98,4 +98,4 @@
       (lambda _
         (load %user-init-file))
       (lambda (key . vals)
-        (safe-message "~a" (format #f "Error: key: ~a value: ~a" key vals))))))
+        (safe-message "Error: key: ~a value: ~a" key vals)))))
