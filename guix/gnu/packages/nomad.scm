@@ -21,6 +21,7 @@
  (gnu packages gtk)
  (gnu packages guile)
  (gnu packages guile-xyz)
+ (gnu packages gstreamer)
  (gnu packages password-utils)
  (gnu packages perl)
  (gnu packages pkg-config)
@@ -74,6 +75,11 @@
     (propagated-inputs
      `(("glib" ,glib)
        ("glib-networking" ,glib-networking)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gst-plugins-bad" ,gst-plugins-bad)
+       ("gst-plugins-ugly" ,gst-plugins-ugly)
        ("gtk+" ,gtk+)
        ("gtksourceview" ,gtksourceview)
        ("webkitgtk" ,webkitgtk)
@@ -98,7 +104,12 @@
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (gio-deps (map (cut assoc-ref inputs <>) '("glib-networking"
-                                                               "glib")))
+                                                               "glib"
+                                                               "gstreamer"
+                                                               "gst-plugins-base"
+                                                               "gst-plugins-good"
+                                                               "gst-plugins-bad"
+                                                               "gst-plugins-ugly")))
                     (gio-mod-path (map (cut string-append <> "/lib/gio/modules")
                                        gio-deps))
                     (effective (read-line (open-pipe*
