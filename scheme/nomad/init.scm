@@ -89,11 +89,13 @@
   (string-append %user-nomad-directory // "cookies.db"))
 
 (define (init)
-  (remove-buffer! scratch)
-  (remove-buffer! messages)
   (ensure-directory %user-nomad-directory)
   ;; If user-init-file exists and -Q is not passed as a command line argument
   ;; then load the user-init-file
   (when (and (not (option-quick (command-line)))
              (file-exists? %user-init-file))
-    (load %user-init-file)))
+    (catch #t
+      (lambda _
+        (load %user-init-file))
+      (lambda (key . vals)
+        (safe-message "Error: key: ~a value: ~a" key vals)))))

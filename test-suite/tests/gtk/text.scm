@@ -1,4 +1,4 @@
-;; api.scm
+;; text.scm
 ;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,30 +16,25 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad api)
-  #:use-module (nomad init)
+(define-module (tests gtk web)
   #:use-module (emacsy emacsy)
-  #:use-module (oop goops)
   #:use-module (g-golf)
-  #:export (<nomad-application>
-            !startup-hook
-            <nomad-frame>
-            webview-mode))
+  #:use-module (oop goops)
+  #:use-module (nomad nomad)
+  #:use-module (tests application)
+  #:use-module (unit-test))
 
-
+(define-class <test-gtk-text> (<test-case>))
 
-(define-class <nomad-application> ()
-  (startup-hook #:accessor !startup-hook
-                #:init-keyword #:startup-hook
-                #:init-value %startup-hook))
+(gi-import-by-name "Gtk" "init")
 
-(define-method (initialize (self <nomad-application>) args)
-  (next-method)
-  ;; (init)
-  )
-
-
-
-(define-class <nomad-frame> ())
-
-
+(define-method (test-text-buffer (test <test-gtk-text>))
+  (gtk-init 0 #f)
+  (with-buffer scratch
+          (set! (local-var 'widget) (make <widget-text-view> #:buffer scratch))
+          (assert-equal <widget-text-view> (class-of (buffer-widget scratch))))
+  (with-buffer messages
+    (set! (local-var 'widget) (make <widget-text-view> #:buffer messages))
+    (insert "foo")
+    (redisplay (buffer-widget messages))
+    (assert-equal (get-text (buffer-widget (current-buffer))) (buffer-string))))

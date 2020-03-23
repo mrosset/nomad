@@ -21,13 +21,13 @@
 (define-module (nomad bookmark)
  #:use-module (emacsy emacsy)
  #:use-module (ice-9 match)
+ #:use-module (ice-9 optargs)
  #:use-module (ice-9 pretty-print)
  #:use-module (ice-9 regex)
- #:use-module (ice-9 optargs)
- #:use-module (nomad webview)
  #:use-module (nomad init)
- #:use-module (nomad util)
  #:use-module (nomad platform)
+ #:use-module (nomad util)
+ #:use-module (nomad web-mode)
  #:use-module (srfi srfi-1)
  #:use-module (srfi srfi-26)
  #:use-module (srfi srfi-9)
@@ -130,10 +130,12 @@
   (filter (compose (cut string-ci=? key <>) bookmark-id)
           (or books bookmarks)))
 
-(define-interactive (load-bookmark #:optional (str (completing-read "Bookmark: " (map bookmark-id bookmarks))))
+(define-interactive (load-bookmark
+                     #:optional
+                     (str (completing-read "Bookmark: " (map bookmark-id bookmarks))))
   "Opens bookmark by key in current buffer"
-  (buffer-load-uri (current-buffer) (bookmark-contents
-                                     (car (bookmark-find str))))
+  (load-uri (current-buffer)
+            (bookmark-contents (car (bookmark-find str))))
   #t)
 
 (define-interactive (find-bookmark)

@@ -40,15 +40,19 @@ SOURCES =			\
 	nomad/util.scm		\
 	nomad/nomad.scm		\
 	nomad/api.scm		\
+	nomad/ibuffer.scm	\
 	nomad/platform.scm	\
 	nomad/application.scm	\
 	nomad/gtk/application.scm	\
 	nomad/gtk/frame.scm	\
 	nomad/gtk/buffers.scm	\
 	nomad/gtk/widget.scm	\
+	nomad/gtk/window.scm	\
 	nomad/gtk/util.scm	\
 	nomad/graph.scm		\
 	nomad/gtk/gtk.scm	\
+	nomad/web.scm		\
+	nomad/web-mode.scm	\
 	nomad/bookmark.scm	\
 	nomad/buffer.scm	\
 	nomad/download.scm	\
@@ -59,7 +63,5 @@ SOURCES =			\
 	nomad/repl.scm		\
 	nomad/shroud.scm	\
 	nomad/server.scm	\
-	nomad/tests.scm		\
 	nomad/text.scm		\
-	nomad/views.scm		\
-	nomad/webview.scm
+	nomad/views.scm

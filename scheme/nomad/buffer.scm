@@ -19,6 +19,7 @@
 (define-module (nomad buffer)
   #:use-module (emacsy emacsy)
   #:use-module (nomad platform)
+  #:use-module (nomad util)
   #:use-module (g-golf)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
@@ -27,9 +28,6 @@
   #:export (make-buffer-socket
             buffers-contain?
             buffers->uri))
-
-(set! buffer-classes (cons* <webview-buffer>
-                            <popup-buffer> buffer-classes))
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
@@ -93,7 +91,7 @@
   (catch #t
     (lambda _
       (let ((val (eval-string (buffer:buffer-string buffer))))
-        (message "~a" val)
+        (pretty-message "~a" val)
         val))
     (lambda (key . vals)
       (message "Error: key: ~a value: ~a" key vals))))
@@ -104,3 +102,5 @@
 
 (define-interactive (make-popup-buffer)
   (make <popup-buffer> #:name "*buffers*" #:list (buffer-list)))
+
+(define-key fundamental-map (kbd "C-c C-b") eval-buffer)

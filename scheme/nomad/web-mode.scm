@@ -1,4 +1,4 @@
-;; webview.scm
+ ;; web-mode.scm
 ;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,25 +16,12 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad webview)
-  #:use-module (nomad api)
-  #:use-module (oop goops)
+(define-module (nomad web-mode)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad util)
   #:use-module (nomad platform)
-  #:use-module (srfi srfi-1)
-  #:export (%search-provider-format
-            %search-providers))
-
-(define %search-provider-format "https://duckduckgo.com/?q=~a")
-
-(set! %default-home-page "https://www.gnu.org/software/guile")
-
-;; search providers
-(define %search-providers
-  (circular-list "https://searx.info/?q=~a"
-                 "https://google.com/?q=~a"
-                 "https://duckduckgo.com/?q=~a"))
+  #:use-module (nomad util)
+  #:use-module (nomad web)
+  #:use-module (g-golf))
 
 (define-interactive (current-url)
   "Returns the current url"
@@ -56,10 +43,25 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 
 (define-public cycle-search-provider (pick-search-provider))
 
+;; (define-method  (buffer-load-uri (buffer <web-buffer>) uri)
+;;   (next-method))
+
 (define-interactive (edit-uri)
   "Edit the current-url."
   (buffer-load-uri (current-buffer)
                    (read-from-minibuffer "Url: " (buffer-uri (current-buffer))))
+  #t)
+
+(define-interactive (load-uri #:optional
+                              (buffer (current-buffer))
+                              (uri (ensure-protocol (read-from-minibuffer "Url: "))))
+  "Loads @var{uri} with current buffer.  If the current buffer is not a webview
+it will create a new @var{<web-buffer>}.  When used with universal argument
+@var{uri} will be loaded with a new buffer."
+  (if (or (> (universal-argument-pop!) 1)
+          (not (is-a? (current-buffer) <web-buffer>)))
+      (make <web-buffer> #:uri uri)
+      (buffer-load-uri (current-buffer) uri))
   #t)
 
 (define-interactive (hints #:optional (buffer (current-buffer)))
@@ -108,36 +110,24 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
   (search-forward (current-buffer))
   #t)
 
-(define-interactive (webview-keyboard-quit)
+(define-interactive (web-keyboard-quit)
   (hints-finish (current-buffer))
   (search-finish (current-buffer))
   (keyboard-quit)
   #t)
 
-(define-interactive (load-uri #:optional
-                              (buffer (current-buffer))
-                              (uri (ensure-protocol (read-from-minibuffer "Url: "))))
-  "Loads @var{uri} with current buffer.  If the current buffer is not a webview
-it will create a new @var{<webview-buffer>}.  When used with universal argument
-@var{uri} will be loaded with a new buffer."
-  (if (or (> (universal-argument-pop!) 1)
-          (not (is-a? (current-buffer) <webview-buffer>)))
-      (make <webview-buffer> #:init-uri uri)
-      (buffer-load-uri (current-buffer) uri))
-  #t)
-
 (define-interactive (query #:optional
                            (text (read-from-minibuffer "Query: ")))
   "Queries the default search provider @var{%search-provider-format}.  If the
-current buffer is not a @var{<webview-buffer>} it will create a new
-@var{<webview-buffer>} and query the default search provider."
+current buffer is not a @var{<web-buffer>} it will create a new
+@var{<web-buffer>} and query the default search provider."
   (let ((u   (universal-argument-pop!))
         (uri (format #f
                      %search-provider-format
                      text)))
     (if (or (> u 1)
-            (not (is-a? (current-buffer) <webview-buffer>)))
-      (make <webview-buffer> #:init-uri uri)
+            (not (is-a? (current-buffer) <web-buffer>)))
+      (make <web-buffer> #:uri uri)
       (buffer-load-uri (current-buffer) uri)))
   #t)
 
@@ -145,7 +135,7 @@ current buffer is not a @var{<webview-buffer>} it will create a new
 ;; the default webview mode map by using (!set %webview-map
 ;; %firefox-webview-map) in %user-init-file
 (define-public %firefox-webview-map
-  (list->keymap '(("C-g" webview-keyboard-quit)
+  (list->keymap '(("C-g" web-keyboard-quit)
                   ("C-f" isearch-forward)
                   ("C-u" next-buffer)
                   ("C-m" prev-buffer)
@@ -162,13 +152,21 @@ current buffer is not a @var{<webview-buffer>} it will create a new
                   ("C-v" scroll-down)
                   ("M-'" hints))))
 
-;; Default webview-mode key mappings
-(set! %webview-map
+;; Default web-mode key mappings
+(use-modules (nomad doc))
+(set! %web-mode-map
       (list->keymap '(("C-c u" back)
+                      ("C-k" kill-buffer)
                       ("C-m" forward)
                       ("C-n" scroll-down)
                       ("C-p" scroll-up)
                       ("C-f" hints)
+                      ;; help
+                      ;; DONE
+
+                      ;; TODO
+                      ("C-h" help) ;; C-h itself shouldn't be bound.
+                      ;; help end
                       ("C-r" reload)
-                      ("C-g" webview-keyboard-quit)
+                      ("C-g" web-keyboard-quit)
                       ("C-s" isearch-forward))))

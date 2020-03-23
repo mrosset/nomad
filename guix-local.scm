@@ -23,18 +23,24 @@
 
 (use-modules (guix packages)
              (guix gexp)
+             (ice-9 rdelim)
+             (ice-9 popen)
              (guix git-download)
              ((gnu packages nomad) #:prefix nomad:)
              (gnu packages guile-xyz))
 
 (define %source-dir (dirname (current-filename)))
 
-(define nomad-local
-  (package (inherit nomad:nomad)
-           (name "nomad")
-           (version "git")
-           (source (local-file %source-dir
-                               #:recursive? #t
-                               #:select? (git-predicate %source-dir)))))
+(define-public nomad-local
+ (let ((version "0.1.3")
+        (revision "alpha")
+        (commit (read-string (open-pipe "git show HEAD | head -1 | cut -d ' ' -f 2" OPEN_READ))))
+    (package
+      (inherit nomad:nomad)
+      (name "nomad-local")
+      (version (string-append version "-" revision "." (string-take commit 7)))
+      (source (local-file %source-dir
+                          #:recursive? #t
+                          #:select? (git-predicate %source-dir))))))
 
 nomad-local

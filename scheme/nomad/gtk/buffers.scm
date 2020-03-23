@@ -17,10 +17,15 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk buffers)
+  #:use-module (ice-9 format)
   #:use-module (emacsy emacsy)
+  #:use-module (emacsy window)
   #:use-module (nomad api)
   #:use-module (nomad util)
+  #:use-module (nomad web)
+  #:use-module (nomad text)
   #:use-module (nomad gtk widget)
+  #:use-module (nomad gtk window)
   #:use-module (nomad gtk frame)
   #:use-module (oop goops)
   #:use-module (g-golf)
@@ -28,7 +33,9 @@
             <gtk-textview-buffer>
             <gtk-webview-buffer>
             <gtk-popup-buffer>
-            buffer-uri
+            widget-is-loading?
+            widget-uri
+            widget-title
             buffer-load-uri
             buffer-back
             buffer-forward
@@ -37,7 +44,6 @@
             buffer-scroll-up
             buffer-scroll-down
             buffer-reload
-            current-search
             search-forward
             search-finish))
 
@@ -58,151 +64,88 @@
   (gi-import "WebKit2")
   (gi-import "Nomad"))
 
-
+;; Methods
+;;
+;; <web-buffer>
 
-(define-class <gtk-widget-buffer> ()
-  (container #:accessor !container #:init-keyword #:container #:init-value #f))
+(define-method (emacsy-mode-line (buffer <web-buffer>))
+  (format #f "~a~/~a~/~a%"
+          (next-method)
+          ;; (buffer-title buffer)
+          (buffer-uri buffer)
+          (buffer-progress buffer)))
 
-(define-method (initialize (self <gtk-widget-buffer>) args)
+(define-method (initialize (buffer <web-buffer>) arg)
   (next-method)
+  (set! (buffer-modes buffer) `(,web-mode))
+  (set! (buffer-widget buffer) (make <widget-web-view> #:buffer buffer)))
 
-  (unless (!container self)
-       (let* ((app (g-application-get-default))
-              (frame (gtk-application-get-active-window app))
-              (container (slot-ref frame 'container)))
-         (set! (!container self) container)))
+(define-method (widget-title (buffer <web-buffer>))
+  (if (!is-loading (buffer-widget buffer))
+      "loading..."
+      (webkit-web-view-get-title (buffer-widget buffer))))
 
-  (gtk-container-add (!container self) self)
-  (gtk-widget-show-all (!container self))
+(define-method (widget-is-loading? (buffer <web-buffer>))
+  (!is-loading (buffer-widget buffer)))
 
-  (add-hook! (buffer-enter-hook self)
-             (lambda _
-               (let* ((notebook (!container self))
-                      (page (gtk-notebook-page-num notebook self)))
-                 (gtk-notebook-set-current-page notebook page)
-                 (gtk-notebook-set-tab-label-text notebook self (format #f "~a" page))
-                 (gtk-widget-show-all notebook)
-                 (gtk-widget-grab-focus self))))
+(define-method (widget-uri (buffer <web-buffer>))
+  (webkit-web-view-get-uri (buffer-widget buffer)))
 
-  (add-hook! (buffer-kill-hook self)
-             (lambda _
-               (gtk-widget-destroy self)))
-  (switch-to-buffer self))
+(define-method (buffer-load-uri (buffer <web-buffer>) uri)
+  (webkit-web-view-load-uri (buffer-widget buffer)
+                            uri))
 
-
+(define-method (buffer-forward (buffer <web-buffer>))
+  (webkit-web-view-go-forward (buffer-widget buffer)))
 
-(define-class <gtk-popup-buffer> (<nomad-buffer>)
-  (container #:accessor !container #:init-keyword #:container #:init-value #f)
-  (list #:accessor !list #:init-keyword #:list #:init-value '()))
+(define-method (buffer-back (buffer <web-buffer>))
+  (webkit-web-view-go-back (buffer-widget buffer)))
 
-(define-method (initialize (self <gtk-popup-buffer>) args)
-  (next-method)
-  (unless (!container self)
-       (set! (!container self) (!mini-popup (current-frame))))
+(define-method (buffer-reload (buffer <web-buffer>))
+  (webkit-web-view-reload (buffer-widget buffer)))
 
-  (let* ((popup (!container self))
-         (items (!list self))
-         (grid  (!grid popup)))
-    (do ((i 0
-          (+ 1 i)))
-        ((>= i (length items)))
-      (gtk-grid-attach grid
-                       (make <gtk-label>
-                         #:label
-                         (buffer-name (list-ref items i)))
-                       0 i 1 1))
+(define-method (buffer-scroll-up (buffer <web-buffer>))
+  (nomad-app-run-javascript (buffer-widget buffer)
+                            "window.scrollBy(0, -25);"))
 
-    (add-hook! (buffer-enter-hook self)
-               (lambda _
-                 (gtk-widget-show-all popup)))
+(define-method (buffer-scroll-down (buffer <web-buffer>))
+  (nomad-app-run-javascript (buffer-widget buffer)
+                            "window.scrollBy(0, 25);"))
 
-    (add-hook! (buffer-exit-hook self)
-               (lambda _
-                 (gtk-widget-hide popup)))
-    (add-hook! (buffer-kill-hook self)
-               (lambda _
-                 (gtk-widget-hide popup)))))
-
-(define-class <gtk-webview-buffer> (<gtk-widget-buffer>
-                                    <nomad-webview-buffer>
-                                    <webkit-web-view>)
-  (search #:accessor current-search #:init-value #f))
-
-(define-method (initialize (self <gtk-webview-buffer>) args)
-  (next-method)
-  (connect self 'load-changed
-           (lambda _
-             (let ((percent (inexact->exact
-                             (round (* 100 (!estimated-load-progress self))))))
-               (slot-set! self 'name (!uri self)))
-             #t))
-
-  (connect self 'user-message-received
-           (lambda (v m)
-             (safe-message "~a" (webkit-user-message-get-name m))))
-
-  (buffer-load-uri self (!init-uri self)))
-
-(define-method (buffer-load-uri (self <gtk-webview-buffer>) uri)
-  (webkit-web-view-load-uri self uri))
-
-(define-method (buffer-uri (self <gtk-webview-buffer>))
-   (webkit-web-view-get-uri self))
-
-(define-method (buffer-forward (self <gtk-webview-buffer>))
-  (webkit-web-view-go-forward self))
-
-(define-method (buffer-back (self <gtk-webview-buffer>))
-  (webkit-web-view-go-back self))
-
-(define-method (buffer-reload (self <gtk-webview-buffer>))
-  (webkit-web-view-reload self))
-
-(define-method (buffer-scroll-up (self <gtk-webview-buffer>))
-  (nomad-app-run-javascript self "window.scrollBy(0, -25);"))
-
-(define-method (buffer-scroll-down (self <gtk-webview-buffer>))
-  (nomad-app-run-javascript self "window.scrollBy(0, 25);"))
-
-(define-public message-reply #f)
-
-(define-method (hints-finish (self <gtk-webview-buffer>))
-  (nomad-app-send-message self
+(define-method (hints-finish (buffer <web-buffer>))
+  (nomad-app-send-message (buffer-widget buffer)
                           (make <webkit-user-message> #:name "hints-finish")))
 
-(define-method (buffer-hints (self <gtk-webview-buffer>))
-  (nomad-app-send-message self
+(define-method (buffer-hints (buffer <web-buffer>))
+  (nomad-app-send-message (buffer-widget buffer)
                           (make <webkit-user-message> #:name "show-hints")))
 
-(define-method (search-forward (self <gtk-webview-buffer>))
-  (let ((controller (webkit-web-view-get-find-controller self)))
-    (webkit-find-controller-search controller (current-search self) 1 255)))
+(define-method (search-forward (buffer <web-buffer>))
+  (let ((controller (webkit-web-view-get-find-controller (buffer-widget buffer))))
+    (webkit-find-controller-search controller (current-search buffer) 1 255)))
 
-(define-method (search-finish (self <gtk-webview-buffer>))
-  (set! (current-search self) #f)
-  (let ((controller (webkit-web-view-get-find-controller self)))
+(define-method (search-finish (buffer <web-buffer>))
+  (set! (current-search buffer) #f)
+  (let ((controller (webkit-web-view-get-find-controller (buffer-widget buffer))))
     (webkit-find-controller-search-finish controller)))
 
-
+;;
+;; <widget-buffer>
 
-(define-class <gtk-textview-buffer> (<nomad-text-buffer>
-                                     <gtk-widget-buffer>
-                                     <gtk-scrolled-window>)
-  (source-view #:accessor !source-view)
-  (name #:init-value "<gtk-textview-buffer>"))
-
-(define-method (initialize (self <gtk-textview-buffer>) args)
+(define-method (initialize (buffer <widget-buffer>) args)
   (next-method)
-  (let ((view (make <widget-source-view>
-                              #:theme "classic"
-                              #:top-margin 1
-                              #:bottom-margin 1
-                              #:buffer self
-                              #:thunk (lambda _
-                                        (buffer:buffer-string self)))))
-    (set! (!source-view self) view)
-    (gtk-container-add self view)
-    (gtk-widget-show-all self)
-    (gtk-widget-grab-focus view)))
+  (add-hook! (buffer-kill-hook buffer)
+             (lambda _
+               (gtk-widget-destroy (buffer-widget buffer))
+               (prev-buffer)
+               (set! (window-buffer current-window) (current-buffer))))
+  (add-buffer! buffer)
+  (switch-to-buffer buffer))
 
-
+(define-method (buffer-proxy-set! (buffer <widget-buffer>) proxy)
+  (let ((widget (buffer-widget buffer)))
+    (if widget
+        (webkit-web-context-set-network-proxy-settings
+         widget
+         'custom
+         proxy))))

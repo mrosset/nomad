@@ -21,6 +21,7 @@
   #:use-module (nomad init)
   #:use-module (nomad util)
   #:use-module (nomad platform)
+  #:use-module (nomad web)
   #:use-module (g-golf)
   #:export (shutdown-hook
             app-init))
@@ -37,6 +38,7 @@ controls are accessible to scheme"
   (add-hook! shutdown-hook
                           (lambda _
                             (info "running shutdown hook...")))
-  (make <webview-buffer>))
+
+  (make <web-buffer> #:uri %default-home-page))
 
 (add-hook! %startup-hook app-init)

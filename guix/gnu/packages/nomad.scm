@@ -3,7 +3,6 @@
 (use-modules
  (guix packages)
  (guix git-download)
- (guix gexp)
  (guix download)
  (guix build-system gnu)
  (guix build-system glib-or-gtk)
@@ -22,6 +21,7 @@
  (gnu packages gtk)
  (gnu packages guile)
  (gnu packages guile-xyz)
+ (gnu packages gstreamer)
  (gnu packages password-utils)
  (gnu packages perl)
  (gnu packages pkg-config)
@@ -69,12 +69,20 @@
        ("gtk+" ,gtk+)
        ("gtk+:bin" ,gtk+ "bin")
        ("gtksourceview" ,gtksourceview)
-       ("webkitgtk" ,webkitgtk-unstable)
+       ("webkitgtk" ,webkitgtk)
        ("g-golf" ,g-golf)
        ("xorg-server" ,xorg-server)))
     (propagated-inputs
      `(("glib" ,glib)
        ("glib-networking" ,glib-networking)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gst-plugins-bad" ,gst-plugins-bad)
+       ("gst-plugins-ugly" ,gst-plugins-ugly)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("webkitgtk" ,webkitgtk)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -82,6 +90,7 @@
                   (ice-9 popen)
                   (ice-9 rdelim)
                   (srfi srfi-26))
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'start-xorg-server
@@ -95,7 +104,12 @@
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (gio-deps (map (cut assoc-ref inputs <>) '("glib-networking"
-                                                               "glib")))
+                                                               "glib"
+                                                               "gstreamer"
+                                                               "gst-plugins-base"
+                                                               "gst-plugins-good"
+                                                               "gst-plugins-bad"
+                                                               "gst-plugins-ugly")))
                     (gio-mod-path (map (cut string-append <> "/lib/gio/modules")
                                        gio-deps))
                     (effective (read-line (open-pipe*
@@ -124,7 +138,11 @@
      (list (search-path-specification
             (variable "GI_TYPELIB_PATH")
             (separator ":")
-            (files '("lib/girepository-1.0")))))
+            (files '("lib/girepository-1.0")))
+           (search-path-specification
+            (variable "NOMAD_WEB_EXTENSION_DIR")
+            (separator ":")
+            (files '("libexec/nomad")))))
     (home-page "https://savannah.nongnu.org/projects/nomad/")
     (synopsis "Web Browser extensible in Guile scheme")
     (description "Nomad is a Emacs-like web browser that consists of a small C
@@ -135,21 +153,21 @@ backend and modular feature-set fully programmable in Guile.")
   (package
     (inherit webkitgtk)
     (name "webkitgtk-unstable")
-    (version "2.27.4")
+    (version "2.27.90")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   "webkitgtk-" version ".tar.xz"))
               (sha256
                (base32
-                "1xvl93ajqgkar6ij15966mdzq1fijispgjafah60g4s98r2hlmah"))))))
+                "1i3wp87kwbcfm9vlgbgh5x4k4h8839z51dfysz8n898xkxqyrg4s"))))))
 
 (define-public nomad-git
-  (let ((commit "37295da03aa1b0fc27b27048dbb5887214e9f13d"))
+  (let ((commit "860ef96848b20333a8757de8fa41269eebd6c029"))
     (package
       (inherit nomad)
       (name "nomad-git")
-      (version (git-version "1" "873" commit))
+      (version (git-version "1" "922" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -158,4 +176,4 @@ backend and modular feature-set fully programmable in Guile.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0mdd065di5sq8lwh5h0azxwsxdklzbp0idj07pqgahalxmj8y4jr")))))))
+                  "1ia4bvh8pik5v1g10sah22qpqya2glw0nm773sdlirwlz6jbji8n")))))))

@@ -22,35 +22,32 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad init)
   #:use-module (nomad api)
+  #:use-module (nomad web)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
+  #:use-module (nomad web)
   #:export (<nomad-gtk-application>))
 
 (eval-when (expand load eval)
   (default-duplicate-binding-handler
     '(merge-generics replace warn-override-core warn last))
 
-  (gi-import "Nomad")
   (gi-import "Gio")
   (map (lambda (pair)
          (gi-import-by-name (car pair) (cdr pair)))
        '(("Gtk" . "Widget")
          ("Gtk" . "Application")
          ("WebKit2" . "WebContext")
-         ("WebKit2" . "CookieManager"))))
-
-(define-public (application-id)
-  "Returns the default application id"
-  (let ((app (g-application-get-default)))
-    (g-application-get-application-id app)))
+         ("WebKit2" . "CookieManager")))
+  (gi-import "Nomad"))
 
 (define-public (current-application)
   "Returns the default application"
   (g-application-get-default))
 
-(define-public (application-run app)
-  "Returns the default application"
-    (nomad-app-run app))
+(define-public (application-id)
+  "Returns the default application id"
+  (g-application-get-application-id (current-application)))
 
 
 
@@ -62,12 +59,21 @@
    (getenv "NOMAD_WEB_EXTENSION_DIR")))
 
 (define (startup-cb app)
-  (format #t "STARTUP\n")
+  (dimfi "STARTUP")
   (emacsy-initialize #t)
   (init)
   (connect (webkit-web-context-get-default)
            'initialize-web-extensions
            initialize-extention-cb)
+  ;; setup proxy
+  (when (and (use-proxy?)
+             (proxy-uri)
+             (proxy-ignore-hosts))
+    (webkit-web-context-set-network-proxy-settings
+     (webkit-web-context-get-default)
+     'custom
+     (webkit-network-proxy-settings-new (proxy-uri)
+                                        (proxy-ignore-hosts))))
   (when %use-cookies?
     (let ((manager (webkit-web-context-get-cookie-manager
                     (webkit-web-context-get-default))))
@@ -77,25 +83,22 @@
        'sqlite))))
 
 (define (activate-cb app)
-  (format #t "ACTIVATE\n")
+  (dimfi "ACTIVATE")
   (gtk-frame-new app)
   (run-hook (!startup-hook app)))
 
 (define (open-cb app files n-files hint)
   (format #t "OPEN\n")
-  (catch #t
-    (lambda _
-      (gtk-application-get-active-window app))
-    (lambda _
-      (error "Cannot get the active frame")))
-
-  (make <gtk-webview-buffer> #:init-uri "http://google.ca"))
+  (unless (current-frame)
+    (gtk-frame-new app))
+  (for-each (lambda (file)
+              (make <web-buffer> #:uri (g-file-get-uri file)))
+            files))
 
 (define-method (initialize (self <nomad-gtk-application>) args)
   (next-method)
   (g-application-set-flags self '(handles-open can-override-app-id))
-  ;; (slot-set! self 'flags '(handles-open can-override-app-id))
-  ;; (connect self 'open open-cb)
+  (connect self 'open open-cb)
   (connect self 'startup startup-cb)
   (connect self 'activate activate-cb))
 

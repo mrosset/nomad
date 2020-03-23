@@ -19,6 +19,7 @@
 (define-module (nomad util)
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
+  #:use-module (ice-9 threads)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
   #:export (list->keymap
@@ -76,10 +77,10 @@
   (unless (file-exists? dir)
           (mkdir dir #o755)))
 
-(define-public (safe-message fmt var)
+(define-public (safe-message . args)
   (catch #t
     (lambda _
-      (message fmt var))
+      (apply message args))
     (lambda (key . vals)
       (format #t "Error: key: ~a value: ~a" key vals))))
 
@@ -87,3 +88,16 @@
   (message fmt
            (with-output-to-string (lambda _
                                     (pretty-print var))))  )
+(define-interactive (take-a-selfie)
+  (message "say cheese!\n")
+  (call-with-new-thread
+   (lambda _
+     (map (lambda (i)
+            (safe-message "~a..." i)
+            (sleep 1))
+          '(3 2 1))
+     (safe-message "~a" "click!")
+     (safe-message "~a" #t)
+     (usleep 75000)
+     (system* "scrot" "-u")))
+  #t)

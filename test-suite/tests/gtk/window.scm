@@ -16,16 +16,14 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tests api)
+(define-module (tests gtk window)
   #:use-module (oop goops)
-  #:use-module (emacsy emacsy)
-  #:use-module (nomad init)
-  #:use-module (nomad util)
-  #:use-module (nomad api)
+  #:use-module (g-golf)
+  #:use-module (nomad gtk widget)
+  #:use-module (nomad gtk frame)
+  #:use-module (tests application)
   #:use-module (unit-test))
 
-(define-class <test-api> (<test-case>))
+(gi-import "Gio")
 
-(define-method (test-nomad-buffer (self <test-api>))
-  (let ((buffer (make <nomad-text-buffer>)))
-    (assert-equal (current-buffer) buffer)))
+(define-class <test-gtk-window> (<test-case>))

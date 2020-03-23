@@ -39,4 +39,4 @@ test: all
 
 test-url: all
 	echo "test url"
-	$(top_builddir)/pre-inst-env ./nomad "https://bufio.org" $(devel_flags)
+	$(top_builddir)/pre-inst-env ./nomad  "https://www.gnu.org/software/guile" "https://gnu.org" $(devel_flags)

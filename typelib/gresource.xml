@@ -1,6 +1,6 @@
 <!--
 gresource.xml
-Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 This file is part of Nomad
 
@@ -21,8 +21,6 @@ with this program.  If not, see <http://www.gnu.org/licenses/>.
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/org/gnu/nomad">
-    <!-- <file preprocess="xml-stripblanks">window.ui</file> -->
-    <!-- <file preprocess="xml-stripblanks">buffer.ui</file> -->
     <file alias="hints.js">../ext/hints.js</file>
   </gresource>
 </gresources>
