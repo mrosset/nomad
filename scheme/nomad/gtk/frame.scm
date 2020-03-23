@@ -75,6 +75,8 @@
 
 (define-class <gtk-frame> (<nomad-frame> <gtk-application-window>)
   (container #:accessor !container)
+  (overlay #:accessor !overlay)
+  (mini-popup #:accessor !mini-popup)
   (modeline)
   (minibuffer))
 
@@ -82,17 +84,22 @@
   (next-method)
   (let* ((box        (make <gtk-vbox> #:spacing 0))
          (container  (make <gtk-notebook>))
-         (modeline   (make <widget-text-view>
+         (overlay    (make <gtk-overlay>))
+         (mini-popup (make <widget-mini-popup>))
+         (modeline   (make <widget-source-view>
                        #:theme "cobalt"
                        #:top-margin 1
                        #:bottom-margin 1
                        #:thunk emacsy-mode-line))
-         (mini-view  (make <widget-text-view>
+         (mini-view  (make <widget-source-view>
                        #:top-margin 1
                        #:bottom-margin 1
                        #:buffer minibuffer
+                       #:parent self
                        #:thunk  emacsy-message-or-echo-area)))
 
+    (set! (!overlay self) overlay)
+    (set! (!mini-popup self) mini-popup)
     (slot-set! self 'container container)
     (slot-set! self 'modeline modeline)
     (slot-set! self 'minibuffer mini-view)
@@ -107,8 +114,12 @@
     (nomad-app-set-style (slot-ref self 'minibuffer) "textview text { background-color: white; color: black; }")
 
     ;; Widget layout
-    (gtk-container-add self box)
+    (gtk-container-add self overlay)
+    (gtk-container-add overlay box)
 
+    (gtk-overlay-add-overlay overlay mini-popup)
+
+    (gtk-widget-set-margin-bottom mini-popup 41)
     (gtk-box-pack-start box container #t #t 0)
     (gtk-box-pack-start box  modeline #f #f 0)
     (gtk-box-pack-start box (make <widget-border>) #f #f 0)
@@ -123,7 +134,8 @@
                (g-application-quit (g-application-get-default))
                #t))
     (connect self 'key-press-event key-press-cb)
-    (gtk-widget-show-all self)))
+    (gtk-widget-show-all self)
+    (gtk-widget-hide mini-popup)))
 
 (define-method (toggle-tabs* (self <gtk-frame>))
   (let ((notebook (!container self)))
