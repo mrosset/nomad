@@ -83,12 +83,15 @@
        'sqlite))))
 
 (define (activate-cb app)
-  (dimfi "ACTIVATE")
-  (gtk-frame-new app)
-  (run-hook (!startup-hook app)))
+  (dimfi "ACTIVATE" (application-id))
+  (if (current-frame)
+      (dimfi "Nomad only supports one frame.")
+      (begin
+        (gtk-frame-new app)
+        (run-hook (!startup-hook app)))))
 
 (define (open-cb app files n-files hint)
-  (format #t "OPEN\n")
+  (dimfi "OPEN")
   (unless (current-frame)
     (gtk-frame-new app))
   (for-each (lambda (file)
