@@ -112,7 +112,8 @@
 
   (connect (gtk-text-view-get-buffer self) 'paste-done
            (lambda (buffer clipboard)
-             (insert (gtk-clipboard-wait-for-text clipboard))))
+             (when (is-a? (current-buffer) <text-buffer>)
+               (insert (gtk-clipboard-wait-for-text clipboard)))))
 
   ;; https://developer.gnome.org/gtksourceview/stable/GtkSourceView.html
   (for-each (lambda (style)
