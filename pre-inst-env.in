@@ -15,3 +15,7 @@ export GI_TYPELIB_PATH
 exec @abs_top_builddir@/libtool --mode=execute \
      -dlopen "@abs_top_builddir@/typelib/libguile-nomad.la"\
      "$@"
+
+# Local Variables:
+# mode: sh
+# End:

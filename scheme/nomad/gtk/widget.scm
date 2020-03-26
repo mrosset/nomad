@@ -110,11 +110,9 @@
   (set-theme! self (!theme self))
   (set-language! self (!lang self))
 
-  (connect self 'paste-clipboard
-           (lambda _
-             (let* ((clipboard (gtk-clipboard-get-default (gdk-display-get-default)))
-                    (input     (gtk-clipboard-wait-for-text clipboard)))
-               (insert input))))
+  (connect (gtk-text-view-get-buffer self) 'paste-done
+           (lambda (buffer clipboard)
+             (insert (gtk-clipboard-wait-for-text clipboard))))
 
   ;; https://developer.gnome.org/gtksourceview/stable/GtkSourceView.html
   (for-each (lambda (style)
