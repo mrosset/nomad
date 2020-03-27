@@ -64,6 +64,9 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
       (buffer-load-uri (current-buffer) uri))
   #t)
 
+(define-interactive (load-clipboard-uri)
+  (load-uri (current-buffer) (get-clipboard)))
+
 (define-interactive (hints #:optional (buffer (current-buffer)))
   (buffer-hints buffer)
   #t)
@@ -154,6 +157,7 @@ current buffer is not a @var{<web-buffer>} it will create a new
 
 ;; Default web-mode key mappings
 (use-modules (nomad doc))
+
 (set! %web-mode-map
       (list->keymap '(("C-c u" back)
                       ("C-k" kill-buffer)
@@ -161,6 +165,8 @@ current buffer is not a @var{<web-buffer>} it will create a new
                       ("C-n" scroll-down)
                       ("C-p" scroll-up)
                       ("C-f" hints)
+                      ("C-y" load-clipboard-uri)
+
                       ;; help
                       ;; DONE
 

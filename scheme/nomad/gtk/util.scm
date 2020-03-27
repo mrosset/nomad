@@ -30,5 +30,10 @@
 
 (define-public (copy-text text)
   "Copies @var{text} to primary clipboard"
-  (let ((manager (gtk-clipboard-get-default (gdk-display-get-default))))
-    (gtk-clipboard-set-text manager text -1)))
+  (let ((clipboard (gtk-clipboard-get-default (gdk-display-get-default))))
+    (gtk-clipboard-set-text clipboard text -1)))
+
+(define-public (get-clipboard)
+  "Return text from primary clipboard"
+  (let* ((clipboard (gtk-clipboard-get-default (gdk-display-get-default))))
+    (gtk-clipboard-wait-for-text clipboard)))
