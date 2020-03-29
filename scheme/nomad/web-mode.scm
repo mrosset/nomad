@@ -67,6 +67,10 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
 (define-interactive (load-clipboard-uri)
   (load-uri (current-buffer) (get-clipboard)))
 
+(define-interactive (make-buffer-clipboard)
+  (make <web-buffer> #:uri (get-clipboard))
+  #t)
+
 (define-interactive (hints #:optional (buffer (current-buffer)))
   (buffer-hints buffer)
   #t)
@@ -165,7 +169,7 @@ current buffer is not a @var{<web-buffer>} it will create a new
                       ("C-n" scroll-down)
                       ("C-p" scroll-up)
                       ("C-f" hints)
-                      ("C-y" load-clipboard-uri)
+                      ("C-y" make-buffer-clipboard)
 
                       ;; help
                       ;; DONE
