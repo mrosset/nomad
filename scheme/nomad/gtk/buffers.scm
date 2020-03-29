@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk buffers)
+  #:use-module (nomad gtk gi)
   #:use-module (ice-9 format)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
@@ -46,23 +47,6 @@
             buffer-reload
             search-forward
             search-finish))
-
-(eval-when (expand load eval)
-  (default-duplicate-binding-handler
-    '(merge-generics replace warn-override-core warn last))
-
-  (map (lambda (pair)
-         (gi-import-by-name (car pair) (cdr pair)))
-       '(("Gtk" . "Widget")
-         ("Gtk" . "DrawingArea")
-         ("Gtk" . "ApplicationWindow")
-         ("Gtk" . "Notebook")
-         ("Gtk" . "Grid")
-         ("Gtk" . "TextBuffer")
-         ("Gtk" . "ScrolledWindow")
-         ("GtkSource" . "View")))
-  (gi-import "WebKit2")
-  (gi-import "Nomad"))
 
 ;; Methods
 ;;

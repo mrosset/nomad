@@ -17,16 +17,8 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk util)
+  #:use-module (nomad gtk gi)
   #:use-module (g-golf))
-
-(eval-when (expand load eval)
-  (default-duplicate-binding-handler
-    '(merge-generics replace warn-override-core warn last))
-  (gi-import "GdkX11")
-  (map (lambda (pair)
-         (gi-import-by-name (car pair) (cdr pair)))
-       '(("Gtk" . "Clipboard")
-         ("Gdk" . "Display"))))
 
 (define-public (copy-text text)
   "Copies @var{text} to primary clipboard"

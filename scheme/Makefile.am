@@ -43,6 +43,7 @@ SOURCES =			\
 	nomad/ibuffer.scm	\
 	nomad/platform.scm	\
 	nomad/application.scm	\
+	nomad/gtk/gi.scm	\
 	nomad/gtk/application.scm	\
 	nomad/gtk/frame.scm	\
 	nomad/gtk/buffers.scm	\

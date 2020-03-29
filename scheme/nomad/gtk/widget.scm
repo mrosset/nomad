@@ -17,6 +17,8 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk widget)
+  #:use-module (nomad gtk gi)
+  #:use-module (g-golf)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-26)
   #:use-module (emacsy emacsy)
@@ -26,7 +28,6 @@
   #:use-module (nomad ibuffer)
   #:use-module (web uri)
   #:use-module (oop goops)
-  #:use-module (g-golf)
   #:export (<widget-web-view>
             <widget-border>
             <widget-mini-popup>
@@ -47,33 +48,6 @@
             container-child
             container-replace
             container-empty?))
-
-(eval-when (expand load eval)
-  (default-duplicate-binding-handler
-    '(merge-generics replace warn-override-core warn last))
-
-  (gi-import "Gdk")
-  (for-each (lambda (x)
-              (gi-import-by-name  (car x) (cdr x)))
-            '(("WebKit2" . "WebView")
-              ("WebKit2" . "UserContentManager")
-              ("Gtk" . "CssProvider")
-              ("Gtk" . "Clipboard")
-              ("Gtk" . "StyleContext")
-              ("Gtk" . "VBox")
-              ("Gtk" . "Label")
-              ("Gtk" . "DrawingArea")
-              ("Gtk" . "ScrolledWindow")
-              ("Gtk" . "Grid")
-              ("Gtk" . "VSeparator")
-              ("GtkSource" . "View")
-              ("GtkSource" . "Buffer")
-              ("GtkSource" . "Language")
-              ("GtkSource" . "StyleScheme")
-              ("GtkSource" . "StyleSchemeManager")
-              ("GtkSource" . "LanguageManager")))
-  (gi-import "Nomad"))
-
 
 
 ;; Widgets that have an associated buffer

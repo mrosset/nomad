@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk application)
+  #:use-module (nomad gtk gi)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:use-module (emacsy emacsy)
@@ -27,19 +28,6 @@
   #:use-module (nomad gtk frame)
   #:use-module (nomad web)
   #:export (<nomad-gtk-application>))
-
-(eval-when (expand load eval)
-  (default-duplicate-binding-handler
-    '(merge-generics replace warn-override-core warn last))
-
-  (gi-import "Gio")
-  (map (lambda (pair)
-         (gi-import-by-name (car pair) (cdr pair)))
-       '(("Gtk" . "Widget")
-         ("Gtk" . "Application")
-         ("WebKit2" . "WebContext")
-         ("WebKit2" . "CookieManager")))
-  (gi-import "Nomad"))
 
 (define-public (current-application)
   "Returns the default application"

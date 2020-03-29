@@ -1,0 +1,55 @@
+;; gi.scm
+;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
+
+;; This file is part of Nomad
+
+;; Nomad is free software: you can redistribute it and/or modify it
+;; under the terms of the GNU General Public License as published by the
+;; Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; Nomad is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+;; See the GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License along
+;; with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (nomad gtk gi)
+  #:use-module (oop goops)
+  #:use-module (g-golf))
+
+(eval-when (expand load eval)
+  (default-duplicate-binding-handler
+    '(merge-generics replace warn-override-core warn last))
+
+  (gi-import "GdkX11")
+  (for-each (match-lambda ((namespace item)
+                           (gi-import-by-name namespace item)))
+            '(("Gtk" "Application")
+              ("Gtk" "ApplicationWindow")
+              ("Gtk" "Container")
+              ("Gtk" "Clipboard")
+              ("Gtk" "DrawingArea")
+              ("Gtk" "VBox")
+              ("Gtk" "ScrolledWindow")
+              ("GtkSource" "View")
+              ("GtkSource" "Buffer")
+              ("GtkSource" "Language")
+              ("GtkSource" "LanguageManager")
+              ("GtkSource" "StyleScheme")
+              ("GtkSource" "StyleSchemeManager")
+              ("Gdk" "keyval_to_unicode")
+              ("Gdk" "Display")
+              ("WebKit2" "WebView")
+              ("WebKit2" "WebContext")
+              ("WebKit2" "CookieManager")
+              ("WebKit2" "PolicyDecision")
+              ("WebKit2" "UserContentManager")))
+  (gi-import "Nomad"))
+
+(define (event-fix frame event)
+  (let* ((state (!state event))
+         (type  (!type event)))
+    #f))

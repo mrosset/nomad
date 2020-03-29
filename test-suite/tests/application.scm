@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (tests application)
+  #:use-module (nomad gtk gi)
   #:use-module (oop goops)
   #:use-module (nomad application)
   #:use-module (nomad gtk application)
@@ -27,17 +28,6 @@
   #:use-module (unit-test)
   #:export (with-test-app
             make-test-app))
-
-(eval-when (expand load eval)
-  (default-duplicate-binding-handler
-    '(merge-generics replace warn-override-core warn last))
-
-  (gi-import "Gio")
-  (map (lambda (pair)
-              (gi-import-by-name  (car pair) (cdr pair)))
-            '(("Gtk" . "ApplicationWindow")
-              ("Gtk" . "Widget")))
-    (gi-import "Nomad"))
 
 (define-public %test-app-id "org.gnu.test.nomad")
 

@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk window)
+  #:use-module (nomad gtk gi)
   #:use-module (srfi srfi-26)
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
@@ -30,17 +31,6 @@
   #:export (<widget-window>
             widget-container
             window-widget))
-
-(eval-when (expand load eval)
-  (default-duplicate-binding-handler
-    '(merge-generics replace warn-override-core warn last))
-
-  (gi-import "GLib")
-  (for-each (lambda (x)
-              (gi-import-by-name  (car x) (cdr x)))
-            '(("Gtk" . "Box")
-              ("Gtk" . "HBox")
-              ("Gtk" . "Expander"))))
 
 
 

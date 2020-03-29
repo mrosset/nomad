@@ -20,6 +20,7 @@
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
+  #:use-module (nomad gtk gi)
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk widget)
   #:use-module (nomad web)
@@ -30,29 +31,6 @@
             !root
             gtk-frame-new
             current-frame))
-
-(eval-when (expand load eval)
-  (default-duplicate-binding-handler
-    '(merge-generics replace warn-override-core warn last))
-
-  (for-each (lambda (x)
-              (gi-import-by-name  (car x) (cdr x)))
-            '(("Gtk" . "Container")
-              ("Gtk" . "ApplicationWindow")
-              ("Gtk" . "Window")
-              ("Gtk" . "Label")
-              ("Gtk" . "Entry")
-              ("Gtk" . "VBox")
-              ("Gtk" . "Notebook")
-              ("Gtk" . "CssProvider")
-              ("Gtk" . "StyleContext")
-              ("Gtk" . "Overlay")
-              ("Gtk" . "Grid")
-              ("WebKit2" . "WebView")
-              ("GtkSource" . "View")
-              ("GtkSource" . "StyleScheme")
-              ("GtkSource" . "StyleSchemeManager")
-              ("GtkSource" . "LanguageManager"))))
 
 (define-public (current-popup)
   "Returns the current frame"
