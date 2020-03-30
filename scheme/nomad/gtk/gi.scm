@@ -46,6 +46,7 @@
               ("WebKit2" "WebView")
               ("WebKit2" "WebContext")
               ("WebKit2" "CookieManager")
+              ("WebKit2" "FindController")
               ("WebKit2" "PolicyDecision")
               ("WebKit2" "UserMessage")
               ("WebKit2" "UserContentManager"))))
