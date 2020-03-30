@@ -26,6 +26,7 @@
   #:use-module (nomad text)
   #:use-module (nomad web)
   #:use-module (nomad ibuffer)
+  #:use-module (nomad terminal)
   #:use-module (web uri)
   #:use-module (oop goops)
   #:export (<widget-web-view>
@@ -219,6 +220,24 @@
 (define-method (redisplay (view <widget-web-view>))
   #t)
 
+(define-class <widget-terminal> (<vte-terminal>))
+
+(define-method (initialize (vte <widget-terminal>) args)
+  (next-method)
+  (connect vte 'child-exited (lambda (term status)
+                               (kill-buffer (current-buffer))
+                               (dimfi "EXIT" term status)))
+
+  (nomad-spawn-terminal vte %default-shell)
+  ;; (vte-terminal-spawn-sync vte
+  ;;                          '(default)
+  ;;                          (getcwd)
+  ;;                          '("/bin/bash")
+  ;;                          #f
+  ;;                          '(none)
+  ;;                          #f #f #f)
+  )
+
 
 
 (define-method (make-buffer-widget (buffer <web-buffer>))
@@ -232,6 +251,9 @@
     (gtk-source-buffer-set-highlight-syntax buf #f)
     (gtk-source-buffer-set-highlight-matching-brackets buf #f)
     view))
+
+(define-method (make-buffer-widget (buffer <terminal>))
+  (make <widget-terminal>))
 
 ;; Base GTK methods.
 (define-method (show-all (widget <gtk-widget>))

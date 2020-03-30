@@ -34,6 +34,7 @@ libguile_nomad_la_CFLAGS += $(GLIB_CFLAGS)
 libguile_nomad_la_CFLAGS += $(GTK_CFLAGS)
 libguile_nomad_la_CFLAGS += $(WEBKIT_CFLAGS)
 libguile_nomad_la_CFLAGS += $(GTK_SOURCEVIEW_CFLAGS)
+libguile_nomad_la_CFLAGS += $(VTE_CFLAGS)
 
 
 libguile_nomad_la_LIBADD =  $(GUILE_LIBS)
@@ -42,6 +43,7 @@ libguile_nomad_la_LIBADD += $(GLIB_LIBS)
 libguile_nomad_la_LIBADD += $(GTK_LIBS)
 libguile_nomad_la_LIBADD += $(WEBKIT_LIBS)
 libguile_nomad_la_LIBADD += $(GTK_SOURCEVIEW_LIBS)
+libguile_nomad_la_LIBADD += $(VTE_LIBS)
 
 libguile_nomad_la_LDFLAGS = -avoid-version -no-undefined
 

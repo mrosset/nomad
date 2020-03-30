@@ -41,6 +41,7 @@ SOURCES =			\
 	nomad/nomad.scm		\
 	nomad/api.scm		\
 	nomad/ibuffer.scm	\
+	nomad/terminal.scm	\
 	nomad/platform.scm	\
 	nomad/application.scm	\
 	nomad/gtk/gi.scm	\

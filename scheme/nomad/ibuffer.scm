@@ -18,7 +18,6 @@
 
 (define-module (nomad ibuffer)
   #:use-module (emacsy emacsy)
-  #:use-module (g-golf)
   #:use-module (ice-9 format)
   #:use-module (nomad text)
   #:use-module (nomad web)
@@ -73,14 +72,14 @@
   (let* ((buffer  (current-buffer))
          (index   (!index buffer)))
     (when (< index (- (length (!buffers buffer)) 1))
-      (set! (!index buffer) (dimfi (+ index 1)))))
+      (set! (!index buffer) (+ index 1))))
   (forward-line))
 
 (define (ibuffer-backward-line)
   (let* ((buffer  (current-buffer))
          (index   (!index buffer)))
     (when (> index 1)
-      (set! (!index buffer) (dimfi (- index 1))))
+      (set! (!index buffer) (- index 1)))
     (backward-line)))
 
 (define (switch-to)
