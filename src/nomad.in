@@ -27,8 +27,13 @@ exec @GUILE@ -e main -s "$0" "$@"
 (use-modules (ice-9 pretty-print)
              (emacsy emacsy)
              (nomad nomad)
-             (nomad platform)
-             (g-golf))
+             (nomad platform))
+
+(eval-when (expand load eval)
+  (use-modules (oop goops))
+  (default-duplicate-binding-handler
+    '(merge-generics replace warn-override-core warn last))
+  (use-modules (g-golf)))
 
 (define (pretty-string sym)
   (with-output-to-string (lambda _
@@ -48,9 +53,9 @@ exec @GUILE@ -e main -s "$0" "$@"
           "comiled-path: ~a~%"
           (pretty-string %load-compiled-path)))
 
-(define (main args)
+(define (main . args)
   (let ((app (make <application> #:application-id "org.gnu.nomad")))
-    (g-application-run app (length args) args)))
+    (apply g-application-run app (length args) args)))
 
 ;; Local Variables:
 ;; mode: scheme
