@@ -27,7 +27,7 @@
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk util)
   #:use-module (nomad gtk widget)
-  #:duplicates (merge-generics)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<application>
             <app-frame>))
 

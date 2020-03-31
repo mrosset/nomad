@@ -18,6 +18,7 @@
 
 (define-module (nomad gtk frame)
   #:use-module (oop goops)
+  #:use-module (g-golf)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
   #:use-module (nomad gtk gi)
@@ -26,8 +27,6 @@
   #:use-module (nomad web)
   #:use-module (nomad text)
   #:use-module (nomad api)
-  ;; #:use-module (g-golf gdk events)
-  #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<gtk-frame>
             !root
