@@ -123,7 +123,7 @@
 
     (when (not (eq? buffer (!buffer (user-data window))))
       (dimfi "SWITCH")
-      (gtk-widget-unparent widget)
+      ;; (gtk-widget-unparent widget)
       (set! (!buffer (user-data window)) buffer)
       (container-replace container widget)
       (run-hook %thunk-view-hook))))
