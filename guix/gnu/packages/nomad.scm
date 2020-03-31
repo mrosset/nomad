@@ -70,6 +70,7 @@
        ("gtk+:bin" ,gtk+ "bin")
        ("gtksourceview" ,gtksourceview)
        ("webkitgtk" ,webkitgtk)
+       ("vte" ,vte)
        ("g-golf" ,g-golf)
        ("xorg-server" ,xorg-server)))
     (propagated-inputs
@@ -163,11 +164,11 @@ backend and modular feature-set fully programmable in Guile.")
                 "1i3wp87kwbcfm9vlgbgh5x4k4h8839z51dfysz8n898xkxqyrg4s"))))))
 
 (define-public nomad-git
-  (let ((commit "fd700be061d30832c3a70942bdcf8428ed78015b"))
+  (let ((commit "544d796ea59b01c57ee88aaf56a5a870e7839c30"))
     (package
       (inherit nomad)
       (name "nomad-git")
-      (version (git-version "1" "963" commit))
+      (version (git-version "1" "976" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -176,4 +177,4 @@ backend and modular feature-set fully programmable in Guile.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "14wr62k4p1z0swwnlsyb30vq4678l0g9ybp9s6kn33skxc0lkpwq")))))))
+                  "1nf74s3nbb7l050l0vzwysqyqaasfbn4apa4fmd2pnbgxbayf2pq")))))))
