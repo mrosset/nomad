@@ -29,6 +29,7 @@
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk frame)
   #:use-module (oop goops)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:use-module (g-golf)
   #:export (<gtk-widget-buffer>
             <gtk-textview-buffer>

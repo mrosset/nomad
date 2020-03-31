@@ -18,6 +18,8 @@
 
 (define-module (nomad text)
   #:use-module (emacsy emacsy)
+  #:use-module (oop goops)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:use-module (g-golf)
   #:export (<widget-buffer>
             buffer-widget))

@@ -18,8 +18,8 @@
 
 (define-module (nomad gtk gi)
   #:use-module (oop goops)
-  #:duplicates (merge-generics replace warn-override-core warn last)
-  #:use-module (g-golf))
+  #:use-module (g-golf)
+  #:duplicates (merge-generics replace warn-override-core warn last))
 
 (eval-when (expand load eval)
   (gi-import "Gdk")

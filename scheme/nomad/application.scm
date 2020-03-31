@@ -22,7 +22,9 @@
   #:use-module (nomad util)
   #:use-module (nomad platform)
   #:use-module (nomad web)
+  #:use-module (oop goops)
   #:use-module (g-golf)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (shutdown-hook
             app-init))
 

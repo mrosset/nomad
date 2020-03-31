@@ -22,6 +22,8 @@
   #:use-module (nomad api)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
+  #:use-module (oop goops)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:use-module (g-golf)
   #:export (<gtk-cairo-buffer>))
 

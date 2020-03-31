@@ -26,7 +26,9 @@
   #:use-module (nomad web)
   #:use-module (nomad text)
   #:use-module (nomad api)
+  ;; #:use-module (g-golf gdk events)
   #:use-module (g-golf)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<gtk-frame>
             !root
             gtk-frame-new
@@ -133,11 +135,11 @@
 
 
 (define (key-press-event frame event)
-  (let* ((unicode   (gdk-keyval-to-unicode (gdk-event-key:keyval event)))
+  (let* ((unicode   (gdk-keyval-to-unicode (!keyval event)))
          ;; FIXME:  What happens if GDK_KEY_BackSpace is not 8?
          (unichar   (if (= unicode 8) #\del  (integer->char unicode)))
-         (state     (gdk-event-key:state event))
-         (type      (gdk-event:type event))
+         (state     (!state event))
+         (type      (!type event))
          (mod-flags (gdk-state->emacsy-flags state)))
     (if (equal? type 'key-press)
         (begin

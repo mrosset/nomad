@@ -18,6 +18,7 @@
 
 (define-module (nomad gtk widget)
   #:use-module (nomad gtk gi)
+  #:use-module (oop goops)
   #:use-module (g-golf)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-26)
@@ -28,7 +29,7 @@
   #:use-module (nomad ibuffer)
   #:use-module (nomad terminal)
   #:use-module (web uri)
-  #:use-module (oop goops)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<widget-web-view>
             <widget-border>
             <widget-mini-popup>

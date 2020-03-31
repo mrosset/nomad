@@ -17,12 +17,14 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad web)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
   #:use-module (nomad util)
   #:use-module (nomad text)
-  #:use-module (g-golf)
+  #:use-module (oop goops)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (%search-provider-format
             %default-home-page
             %search-providers

@@ -20,8 +20,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad platform)
   #:use-module (nomad util)
-  #:use-module (nomad web)
-  #:use-module (g-golf))
+  #:use-module (nomad web))
 
 (define-interactive (current-url)
   "Returns the current url"

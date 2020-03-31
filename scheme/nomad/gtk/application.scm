@@ -27,6 +27,7 @@
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
   #:use-module (nomad web)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<nomad-gtk-application>))
 
 (define-public (current-application)

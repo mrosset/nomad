@@ -20,6 +20,7 @@
   #:use-module (nomad init)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:use-module (g-golf)
   #:export (<nomad-application>
             !startup-hook

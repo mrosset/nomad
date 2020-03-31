@@ -40,7 +40,7 @@
   #:use-module (nomad web)
   #:use-module (nomad web-mode)
   #:use-module (nomad graph)
-  #:duplicates (merge-generics))
+  #:duplicates (merge-generics replace warn-override-core warn last))
 
 (re-export-modules
  '(nomad api)

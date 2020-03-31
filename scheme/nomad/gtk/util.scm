@@ -18,6 +18,8 @@
 
 (define-module (nomad gtk util)
   #:use-module (nomad gtk gi)
+  #:use-module (oop goops)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:use-module (g-golf))
 
 (define-public (copy-text text)
