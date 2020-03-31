@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad web-mode)
+  #:use-module (oop goops)
   #:use-module (emacsy emacsy)
   #:use-module (nomad platform)
   #:use-module (nomad util)
@@ -41,9 +42,6 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
       (set! s (cdr s)))))
 
 (define-public cycle-search-provider (pick-search-provider))
-
-;; (define-method  (buffer-load-uri (buffer <web-buffer>) uri)
-;;   (next-method))
 
 (define-interactive (edit-uri)
   "Edit the current-url."
