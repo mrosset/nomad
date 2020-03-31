@@ -70,11 +70,10 @@
                  (make <gtk-vbox>)
                  (make <gtk-hbox>))))
     (for-each (lambda (widget)
-                (if  (!parent widget)
-                    (begin
-                      (gtk-container-remove (!parent widget) widget)
-                      (gtk-box-pack-start box widget #t #t 0))
-                    (gtk-box-pack-start box widget #t #t 0))) list)
+                (when  (!parent widget)
+                  (gtk-box-pack-start box widget #t #t 0))
+                (gtk-box-pack-start box widget #t #t 0) )
+              list)
     (gtk-widget-show-all box)
     box))
 
@@ -124,6 +123,7 @@
 
     (when (not (eq? buffer (!buffer (user-data window))))
       (dimfi "SWITCH")
+      (gtk-widget-unparent widget)
       (set! (!buffer (user-data window)) buffer)
       (container-replace container widget)
       (run-hook %thunk-view-hook))))
