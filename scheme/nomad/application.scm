@@ -26,6 +26,8 @@
   #:export (shutdown-hook
             app-init))
 
+(define-public load-home-page? (make-parameter #t))
+
 (define shutdown-hook (make-hook 0))
 
 (define (shutdown)
@@ -39,6 +41,7 @@ controls are accessible to scheme"
                           (lambda _
                             (info "running shutdown hook...")))
 
-  (make <web-buffer> #:uri %default-home-page))
+  (when (load-home-page?)
+    (make <web-buffer> #:uri %default-home-page)))
 
 (add-hook! %startup-hook app-init)
