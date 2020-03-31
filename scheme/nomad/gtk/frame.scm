@@ -64,6 +64,9 @@
                                #:language "scheme"
                                #:buffer minibuffer
                                #:thunk  emacsy-message-or-echo-area))
+  (window      #:accessor    !emacsy-window
+               #:init-form   (make <widget-window>
+                                #:window-buffer (current-buffer)))
   (show        #:accessor     !show
                #:init-keyword #:show
                #:init-value   #t))
@@ -72,13 +75,13 @@
   (next-method)
   (let* ((box (make <gtk-vbox> #:spacing 0)))
     ;; Initialize root window
-    (set! current-window (make <widget-window>
-                           #:window-buffer (current-buffer)))
+    (set! current-window (!emacsy-window self))
     (set! root-window  (make <internal-window>
                          #:orientation 'vertical
-                         #:window-children (list current-window)))
+                         #:window-children `(,current-window)))
 
     (nomad-set-wrap-mode (!echo-area self) #t)
+
 
     ;; Initialize slots
     (slot-set! self 'title "Nomad")
@@ -98,27 +101,28 @@
                  (grab-focus (buffer-widget
                               (window-buffer current-window)))
                  (g-timeout-add 50
-                                        (lambda _
-                                          (run-hook %thunk-view-hook)
-                                          #f))))
+                                (lambda _
+                                  (run-hook %thunk-view-hook)
+                                  #f))))
 
     ;; Widget packing
     (gtk-container-add self box)
     (gtk-box-pack-start box (!root self) #t #t 0)
     (gtk-box-pack-start box (!echo-area self) #f #f 0)
 
-    ;; FIXME: when using more then one frame this should not quit the
-    ;; application. Currently we only support one frame.
-    (connect self 'destroy
-             (lambda _
-               (g-application-quit (g-application-get-default))
-               #t))
-
     (connect self 'key-press-event key-press-event)
 
+    (connect self 'focus-in-event
+             (lambda (widget event)
+               (set! current-window (!emacsy-window self))
+               (set! root-window  (make <internal-window>
+                                    #:orientation 'vertical
+                                    #:window-children `(,current-window)))
+               #f))
 
     ;; Redraw the windows for the first time.
     (window-config-change root-window)
+
 
     (g-timeout-add 200 (lambda _
                         (redisplay root-window)
