@@ -31,6 +31,7 @@
             %web-mode-map
             %styles
             %default-style
+            %load-committed-hook
             <web-buffer>
             buffer-uri
             buffer-progress
@@ -44,6 +45,8 @@
 (define %search-provider-format "https://duckduckgo.com/?q=~a")
 
 (define %default-home-page "https://www.gnu.org/software/guile")
+
+(define %load-committed-hook (make-hook 1))
 
 (define-public web-mode (make <mode> #:mode-name "web"))
 
@@ -59,24 +62,13 @@
 
 (define %default-style #f)
 
-(define (uniquify-name str lst)
-  (define (name x)
-    (if (equal? x 0)
-        (format #f str "")
-        (format #f str x)))
-
-  (let loop ((n 0))
-    (if (not (member (name n) lst))
-        (name n)
-        (loop (1+ n)))))
-
 (define-class <web-buffer> (<widget-buffer>)
   (keymap   #:accessor     local-keymap
             #:init-keyword #:keymap
             #:init-form    %web-mode-map)
   (name     #:init-keyword #:name
-            #:init-thunk  (lambda ()
-                           (uniquify-name "<web-buffer: ~a>" (map buffer-name (buffer-list)))))
+            #:init-form    (uniquify-name "<web-buffer~a>"
+                                          (map buffer-name (buffer-list))))
   (progress #:accessor     buffer-progress
             #:init-value   0)
   (title    #:accessor     buffer-title

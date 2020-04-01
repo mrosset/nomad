@@ -87,7 +87,19 @@
 (define-public (pretty-message fmt var)
   (message fmt
            (with-output-to-string (lambda _
-                                    (pretty-print var))))  )
+                                    (pretty-print var)))))
+
+(define-public (uniquify-name str lst)
+  (define (name x)
+    (if (equal? x 0)
+        (format #f str "")
+        (format #f str x)))
+
+  (let loop ((n 0))
+    (if (not (member (name n) lst))
+        (name n)
+        (loop (1+ n)))))
+
 (define-interactive (take-a-selfie)
   (message "say cheese!\n")
   (call-with-new-thread

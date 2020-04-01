@@ -214,6 +214,7 @@
                (set! (buffer-progress buffer)
                      (inexact->exact
                       (round (* 100 (!estimated-load-progress view)))))
+               (run-hook %load-committed-hook buffer)
                (run-hook %thunk-view-hook))
              #t))
   (widget-load-uri view (buffer-uri (!buffer view))))
