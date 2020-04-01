@@ -136,6 +136,10 @@
   (make <gtk-frame> #:application (slot-ref app 'g-inst)
         #:icon-name "nomad"))
 
+(define-public (delete-frame)
+  (gtk-widget-destroy (current-frame))
+  #t)
+
 
 
 (define (key-press-event frame event)

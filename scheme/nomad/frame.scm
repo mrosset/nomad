@@ -24,3 +24,13 @@
 ;; (define (make-frame-socket url socket)
 ;;   "Write `make-frame' comand with arg URL to a SOCKET."
 ;;   (write-socket (format #f "~S" `(make-frame ,url)) socket))
+
+(define-interactive (make-frame-command)
+  (make-frame))
+
+(define frame-map (make-keymap))
+
+(define-key global-map "C-x 5" frame-map)
+
+(define-key frame-map "5 2" 'make-frame-command)
+(define-key frame-map "5 0" 'delete-frame)
