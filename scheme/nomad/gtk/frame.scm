@@ -118,6 +118,7 @@
                (set! root-window  (make <internal-window>
                                     #:orientation 'vertical
                                     #:window-children `(,current-window)))
+               (switch-to-buffer (window-buffer current-window))
                #f))
 
     ;; Redraw the windows for the first time.
