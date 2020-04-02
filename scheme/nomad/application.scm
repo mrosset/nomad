@@ -22,6 +22,7 @@
   #:use-module (nomad util)
   #:use-module (nomad platform)
   #:use-module (nomad web)
+  #:use-module (nomad web-mode)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
@@ -44,6 +45,6 @@ controls are accessible to scheme"
                             (info "running shutdown hook...")))
 
   (when (load-home-page?)
-    (make <web-buffer> #:uri %default-home-page)))
+    (home)))
 
 (add-hook! %startup-hook app-init)

@@ -92,8 +92,10 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
   (buffer-back buffer)
   #t)
 
-(define-interactive (home)
-  (buffer-load-uri (current-buffer) %default-home-page)
+(define-interactive (home #:optional (buffer (current-buffer)))
+  (if (is-a? buffer <web-buffer>)
+      (buffer-load-uri buffer  %default-home-page)
+      (make <web-buffer> #:uri %default-home-page #:name "home-page"))
   #t)
 
 (define-interactive (reload #:optional (buffer (current-buffer)))
