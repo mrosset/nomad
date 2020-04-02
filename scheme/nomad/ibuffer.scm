@@ -97,6 +97,8 @@
                         #:buffer-modes `(,ibuffer-mode)))))
     (update buffer)))
 
+(define-key global-map "C-x b" 'ibuffer)
+
 (define-key ibuffer-map "RET" switch-to)
 (define-key ibuffer-map "g" (lambda _ (update (current-buffer))))
 (define-key ibuffer-map "C-n" ibuffer-forward-line)
