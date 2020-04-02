@@ -226,6 +226,12 @@
 
 (define-method (initialize (vte <widget-terminal>) args)
   (next-method)
+
+  (vte-terminal-set-color-foreground vte
+                                     (nomad-color-parse (terminal-foreground)))
+  (vte-terminal-set-color-background vte
+                                     (nomad-color-parse (terminal-background)))
+
   (connect vte 'child-exited (lambda (term status)
                                (kill-buffer (current-buffer))
                                (dimfi "EXIT" term status)))

@@ -32,6 +32,7 @@
          ("Nomad" "app_send_message")
          ("Nomad" "app_run_javascript")
          ("Nomad" "spawn_terminal")
+         ("Nomad" "color_parse")
          ("Gtk" "Application")
          ("Gtk" "ApplicationWindow")
          ("Gtk" "Clipboard")

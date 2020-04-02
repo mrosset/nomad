@@ -80,6 +80,14 @@ nomad_spawn_terminal (GtkWidget *terminal, const char *shell)
   // clang-format on
 }
 
+GdkRGBA *
+nomad_color_parse (const char *spec)
+{
+  GdkRGBA color;
+  gdk_rgba_parse (&color, spec);
+  return gdk_rgba_copy (&color);
+}
+
 static void
 scm_nomad_free_argv (void *data)
 {
