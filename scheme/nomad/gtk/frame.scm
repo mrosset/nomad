@@ -29,7 +29,7 @@
   #:use-module (nomad api)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<gtk-frame>
-            !root
+            !container
             gtk-frame-new
             current-frame))
 
@@ -55,7 +55,7 @@
 
 
 (define-class <gtk-frame> (<nomad-frame> <gtk-application-window>)
-  (root        #:accessor    !root
+  (container   #:accessor    !container
                #:init-form   (make <gtk-vbox> #:spacing 0))
   (echo-area   #:accessor    !echo-area
                #:init-form   (make <widget-thunk-view>
@@ -107,7 +107,7 @@
 
     ;; Widget packing
     (gtk-container-add self box)
-    (gtk-box-pack-start box (!root self) #t #t 0)
+    (gtk-box-pack-start box (!container self) #t #t 0)
     (gtk-box-pack-start box (!echo-area self) #f #f 0)
 
     (connect self 'key-press-event key-press-event)

@@ -50,7 +50,7 @@
 
 
 (define-public (window-config-change window)
-   (container-replace (!root (current-frame)) (instantiate-window root-window)))
+   (container-replace (!container (current-frame)) (instantiate-window root-window)))
 
 ;; Redisplay current window on each event read. This is mainly used to redisplay the
 ;; cursor.
