@@ -21,7 +21,8 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad platform)
   #:use-module (nomad util)
-  #:use-module (nomad web))
+  #:use-module (nomad web)
+  #:use-module (web uri))
 
 (define-interactive (current-url)
   "Returns the current url"
@@ -51,15 +52,23 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 
 (define-interactive (load-uri #:optional
                               (buffer (current-buffer))
-                              (uri (ensure-protocol (read-from-minibuffer "Url: "))))
+                              (input (ensure-protocol (read-from-minibuffer "Url: "))))
   "Loads @var{uri} with current buffer.  If the current buffer is not a webview
 it will create a new @var{<web-buffer>}.  When used with universal argument
 @var{uri} will be loaded with a new buffer."
-  (if (or (> (universal-argument-pop!) 1)
-          (not (is-a? (current-buffer) <web-buffer>)))
-      (make <web-buffer> #:uri uri)
-      (buffer-load-uri (current-buffer) uri))
-  #t)
+  (catch #t
+    (lambda _
+      (let ((uri (string->uri input)))
+        (unless uri
+          (error "Input is not a valid URI"))
+        (if (or (> (universal-argument-pop!) 1)
+                (not (is-a? (current-buffer) <web-buffer>)))
+            (make <web-buffer> #:uri (uri->string uri))
+            (buffer-load-uri (current-buffer) (uri->string uri))))
+      #t)
+    (lambda (key . args)
+      (message "Error: Failed to load URI ~a\nkey: ~a args: ~a" input key args)
+      #f)))
 
 (define-interactive (load-clipboard-uri)
   (load-uri (current-buffer) (get-clipboard)))
