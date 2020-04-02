@@ -119,6 +119,9 @@
                                     #:orientation 'vertical
                                     #:window-children `(,current-window)))
                (switch-to-buffer (window-buffer current-window))
+               (redisplay root-window)
+               (grab-focus (buffer-widget
+                              (window-buffer current-window)))
                #f))
 
     ;; Redraw the windows for the first time.
