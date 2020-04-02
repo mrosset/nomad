@@ -86,6 +86,13 @@
       (begin (switch-to-buffer buffer)
              #t)))
 
+(define-interactive (rename-buffer
+                     #:optional
+                     (buffer (current-buffer))
+                     (input (read-from-minibuffer "Name: ")))
+  "Renames the @var{buffer} to @var{input}."
+  (set-buffer-name! input buffer))
+
 (define-interactive (eval-buffer #:optional (buffer (current-buffer)))
   (catch #t
     (lambda _

@@ -67,7 +67,7 @@
             #:init-keyword #:keymap
             #:init-form    %web-mode-map)
   (name     #:init-keyword #:name
-            #:init-form    (uniquify-name "<web-buffer~a>"
+            #:init-form    (uniquify-name "*web-buffer*<~a>"
                                           (map buffer-name (buffer-list))))
   (progress #:accessor     buffer-progress
             #:init-value   0)

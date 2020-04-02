@@ -53,9 +53,9 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 (define-interactive (load-uri #:optional
                               (buffer (current-buffer))
                               (input (ensure-protocol (read-from-minibuffer "Url: "))))
-  "Loads @var{uri} with current buffer.  If the current buffer is not a webview
+  "Loads @var{input} with current buffer.  If the current buffer is not a webview
 it will create a new @var{<web-buffer>}.  When used with universal argument
-@var{uri} will be loaded with a new buffer."
+@var{input} will be loaded with a new buffer."
   (catch #t
     (lambda _
       (let ((uri (string->uri input)))
