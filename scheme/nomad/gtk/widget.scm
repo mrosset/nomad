@@ -24,6 +24,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
+  #:use-module (nomad util)
   #:use-module (nomad text)
   #:use-module (nomad web)
   #:use-module (nomad ibuffer)
@@ -226,17 +227,20 @@
 
 (define-method (initialize (vte <widget-terminal>) args)
   (next-method)
+  (catch #t
+    (lambda _
+      (vte-terminal-set-color-foreground vte
+                                         (nomad-color-parse (terminal-foreground)))
+      (vte-terminal-set-color-background vte
+                                         (nomad-color-parse (terminal-background)))
 
-  (vte-terminal-set-color-foreground vte
-                                     (nomad-color-parse (terminal-foreground)))
-  (vte-terminal-set-color-background vte
-                                     (nomad-color-parse (terminal-background)))
+      (connect vte 'child-exited (lambda (term status)
+                                   (kill-buffer (current-buffer))))
 
-  (connect vte 'child-exited (lambda (term status)
-                               (kill-buffer (current-buffer))
-                               (dimfi "EXIT" term status)))
+      (nomad-spawn-terminal vte %default-shell))
+    (lambda (key . vals)
+      (safe-message "Error: key: ~a value: ~a" key vals)))
 
-  (nomad-spawn-terminal vte %default-shell)
   ;; (vte-terminal-spawn-sync vte
   ;;                          '(default)
   ;;                          (getcwd)
