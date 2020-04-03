@@ -29,10 +29,10 @@
 
 (define-public %default-shell "/bin/bash")
 
-(define-public terminal-foreground (make-parameter "#ABB2BF"))
-(define-public terminal-background (make-parameter "#282C34"))
+(define terminal-foreground (make-parameter "#ABB2BF"))
+(define terminal-background (make-parameter "#282C34"))
 
-(define-public shell-mode (make <mode>
+(define shell-mode (make <mode>
                               #:mode-name "Shell"
                               #:mode-map shell-map))
 

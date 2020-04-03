@@ -73,7 +73,7 @@
               #:init-value   "scheme")
   (styles     #:accessor     !styles
               #:init-keyword #:styles
-              #:init-form   '("textview { font-family: \"DejaVu Sans Mono\"; font-weight: normal; font-stretch: normal}")))
+              #:init-form    '()))
 
 (define-method (initialize (self <widget-text-view>) args)
   (next-method)
@@ -82,6 +82,8 @@
   ;; Since emacsy does all of the editing. We can use
   ;; overwrite mode which provides a block cursor.
   (gtk-text-view-set-overwrite self #t)
+
+  (gtk-text-view-set-monospace self #t)
 
   ;; Set theme and language
   (set-theme! self (!theme self))
@@ -147,7 +149,7 @@
              #:init-keyword #:window)
   (mode-line #:accessor     !mode-line
              #:init-form    (make <widget-thunk-view>
-                              #:styles '("textview text { font-family: \"DejaVu Sans Mono\"; background-color: #BFBFBF; color: black; }")
+                              #:styles  '("textview text { background-color: #BFBFBF; color: black; }")
                               #:top-margin 1
                               #:bottom-margin 1
                               #:cursor-visible #f
