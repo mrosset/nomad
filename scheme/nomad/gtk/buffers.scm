@@ -25,6 +25,7 @@
   #:use-module (nomad util)
   #:use-module (nomad web)
   #:use-module (nomad text)
+  #:use-module (nomad terminal)
   #:use-module (nomad gtk widget)
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk frame)
@@ -59,6 +60,12 @@
           ;; (buffer-title buffer)
           (buffer-uri buffer)
           (buffer-progress buffer)))
+
+(define-method (emacsy-mode-line (buffer <terminal>))
+  (let ((vte (buffer-widget buffer)))
+    (format #f "~a~/~a"
+            (next-method)
+            (vte-terminal-get-window-title vte))))
 
 (define-method (initialize (buffer <web-buffer>) arg)
   (next-method)

@@ -36,6 +36,7 @@
             <widget-mini-popup>
             <widget-text-view>
             <widget-thunk-view>
+            <widget-terminal>
             redisplay
             <window-container>
             make-buffer-widget
@@ -238,6 +239,9 @@
 
       (connect vte 'child-exited (lambda (term status)
                                    (kill-buffer (current-buffer))))
+
+      (connect vte 'window-title-changed (lambda _
+                                          (run-hook %thunk-view-hook)))
 
       (nomad-spawn-terminal vte %default-shell))
     (lambda (key . vals)
