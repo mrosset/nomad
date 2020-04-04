@@ -33,6 +33,7 @@
          ("Nomad" "app_run_javascript")
          ("Nomad" "spawn_terminal")
          ("Nomad" "color_parse")
+         ("Nomad" "vte_set_colors")
          ("Gtk" "Application")
          ("Gtk" "ApplicationWindow")
          ("Gtk" "Clipboard")

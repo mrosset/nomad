@@ -64,11 +64,11 @@ nomad_draw_border (GtkWidget *widget, cairo_t *cr)
 }
 
 void
-nomad_spawn_terminal (GtkWidget *terminal, const char *shell)
+nomad_spawn_terminal (GtkWidget *widget, const char *shell)
 {
   gchar **command = (gchar *[]){ g_strdup (shell), NULL };
   // clang-format off
-  vte_terminal_spawn_async (VTE_TERMINAL (terminal), VTE_PTY_DEFAULT,
+  vte_terminal_spawn_async (VTE_TERMINAL (widget), VTE_PTY_DEFAULT,
                             NULL,
                             command,
                             NULL,
@@ -86,6 +86,55 @@ nomad_color_parse (const char *spec)
   GdkRGBA color;
   gdk_rgba_parse (&color, spec);
   return gdk_rgba_copy (&color);
+}
+
+static GdkRGBA
+palette_color (int key)
+{
+  GdkRGBA color;
+  SCM palette = scm_c_public_ref ("nomad terminal", "terminal-palette");
+  char *c_string
+      = scm_to_locale_string (scm_list_ref (palette, scm_from_int (key)));
+  gdk_rgba_parse (&color, c_string);
+  return color;
+}
+
+void
+nomad_vte_set_colors (GtkWidget *widget)
+{
+  SCM foreground, background;
+
+  foreground = scm_call_0 (
+      scm_c_public_ref ("nomad terminal", "terminal-foreground"));
+  background = scm_call_0 (
+      scm_c_public_ref ("nomad terminal", "terminal-background"));
+
+  vte_terminal_set_colors (
+      VTE_TERMINAL (widget),
+      nomad_color_parse (scm_to_locale_string (foreground)),
+      nomad_color_parse (scm_to_locale_string (background)),
+      (const GdkRGBA[]){
+          palette_color (0),
+          palette_color (1),
+          palette_color (2),
+          palette_color (3),
+          palette_color (4),
+          palette_color (5),
+          palette_color (6),
+          palette_color (7),
+          palette_color (8),
+          palette_color (9),
+          palette_color (10),
+          palette_color (11),
+          palette_color (12),
+          palette_color (13),
+          palette_color (14),
+          palette_color (15),
+      },
+      16);
+
+  /* vte_terminal_set_colors (VTE_TERMINAL (widget), NULL, NULL, *colors, 8);
+   */
 }
 
 static void

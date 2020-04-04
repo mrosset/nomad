@@ -23,7 +23,8 @@
   #:export (<terminal>
             %default-shell
             terminal-foreground
-            terminal-background))
+            terminal-background
+            terminal-palette))
 
 (define shell-map (make-keymap))
 
@@ -31,6 +32,25 @@
 
 (define terminal-foreground (make-parameter "#ABB2BF"))
 (define terminal-background (make-parameter "#282C34"))
+
+(define tango '("rgb(0,0,0)"
+                "rgb(204,0,0)"
+                "rgb(78,154,6)"
+                "rgb(196,160,0)"
+                "rgb(52,101,164)"
+                "rgb(117,80,123)"
+                "rgb(6,152,154)"
+                "rgb(211,215,207)"
+                "rgb(85,87,83)"
+                "rgb(239,41,41)"
+                "rgb(138,226,52)"
+                "rgb(252,233,79)"
+                "rgb(114,159,207)"
+                "rgb(173,127,168)"
+                "rgb(52,226,226)"
+                "rgb(238,238,236)"))
+
+(define terminal-palette tango)
 
 (define shell-mode (make <mode>
                               #:mode-name "Shell"
