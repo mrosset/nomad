@@ -19,7 +19,7 @@
 (define-module (nomad frame)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
-  #:use-module (nomad platform))
+  #:export (<nomad-frame>))
 
 ;; (define (make-frame-socket url socket)
 ;;   "Write `make-frame' comand with arg URL to a SOCKET."
@@ -33,4 +33,6 @@
 (define-key global-map "C-x 5" frame-map)
 
 (define-key frame-map "5 2" 'make-frame-command)
-(define-key frame-map "5 0" 'delete-frame)
+;; (define-key frame-map "5 0" 'delete-frame)
+
+(define-class <nomad-frame> ())

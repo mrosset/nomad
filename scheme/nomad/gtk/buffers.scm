@@ -21,7 +21,6 @@
   #:use-module (ice-9 format)
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
-  #:use-module (nomad api)
   #:use-module (nomad util)
   #:use-module (nomad web)
   #:use-module (nomad text)

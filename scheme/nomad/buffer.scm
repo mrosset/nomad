@@ -20,6 +20,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad util)
   #:use-module (nomad web)
+  #:use-module (nomad platform)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
   #:use-module (oop goops)

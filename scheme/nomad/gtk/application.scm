@@ -17,16 +17,15 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk application)
-  #:use-module (nomad gtk gi)
-  #:use-module (oop goops)
-  #:use-module (g-golf)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad init)
-  #:use-module (nomad api)
-  #:use-module (nomad web)
+  #:use-module (g-golf)
+  #:use-module (nomad application)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
+  #:use-module (nomad gtk gi)
+  #:use-module (nomad init)
   #:use-module (nomad web)
+  #:use-module (oop goops)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<nomad-gtk-application>))
 
@@ -37,8 +36,6 @@
 (define-public (application-id)
   "Returns the default application id"
   (g-application-get-application-id (current-application)))
-
-
 
 (define-class <nomad-gtk-application> (<nomad-application> <gtk-application>))
 
@@ -77,7 +74,7 @@
       (dimfi "Nomad only supports one frame.")
       (begin
         (gtk-frame-new app)
-        (run-hook (!startup-hook app)))))
+        (run-hook %startup-hook))))
 
 (define (open-cb app files n-files hint)
   (dimfi "OPEN")

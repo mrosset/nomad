@@ -19,7 +19,6 @@
 (define-module (nomad gtk cairo)
   #:use-module (cairo)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad api)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
   #:use-module (oop goops)

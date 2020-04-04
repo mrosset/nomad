@@ -25,8 +25,8 @@
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk widget)
   #:use-module (nomad web)
+  #:use-module (nomad frame)
   #:use-module (nomad text)
-  #:use-module (nomad api)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<gtk-frame>
             !container
