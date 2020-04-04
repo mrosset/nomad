@@ -17,15 +17,21 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad init)
-  #:use-module (nomad util)
-  #:use-module (nomad options)
   #:use-module (emacsy emacsy)
+  #:use-module (ice-9 pretty-print)
+  #:use-module (nomad buffer)
+  #:use-module (nomad options)
+  #:use-module (nomad util)
+  #:use-module (nomad web)
+  #:use-module (oop goops)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (init
             %use-cookies?
             %user-cookie-file
             %user-init-file
             %user-nomad-directory
             %startup-hook
+            %shutdown-hook
             %download-directory
             %session-file
             define-ident))
@@ -43,6 +49,7 @@
        (export var)))))
 
 (define %startup-hook (make-hook))
+(define %shutdown-hook (make-hook))
 
 ;; Path of user's initialization file. This is a top level identifier, it's
 ;; default value is @code{$HOME/.nomad}.
@@ -72,15 +79,14 @@
          (buffers (read port)))
     (close-port port)
     (for-each (lambda (uri)
-                (when (not (buffers-contain? uri))
-                  (make-buffer uri)))
+                (make <web-buffer> #:uri uri))
               buffers)))
 
 (define-interactive (write-session)
   "Write session to file"
   (let* ((port (open-output-file %session-file))
-         (buffers (buffers->uri)))
-    (pretty-print buffers port)
+         (urls (buffers->uri)))
+    (pretty-print urls port)
     (close-port port)))
 
 (define %use-cookies? #f)

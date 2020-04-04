@@ -1,10 +1,12 @@
 TESTS  = tests/util.scm
 TESTS += tests/init.scm
-TESTS += tests/frame.scm
-TESTS += tests/application.scm
-TESTS += tests/gtk/window.scm
-TESTS += tests/gtk/web.scm
-TESTS += tests/gtk/text.scm
+TESTS += tests/buffer.scm
+
+# TESTS += tests/frame.scm
+# TESTS += tests/application.scm
+# TESTS += tests/gtk/window.scm
+# TESTS += tests/gtk/web.scm
+# TESTS += tests/gtk/text.scm
 
 TEST_EXTENSIONS = .scm
 

@@ -92,6 +92,8 @@
   (g-application-set-flags self '(handles-open can-override-app-id))
   (connect self 'open open-cb)
   (connect self 'startup startup-cb)
-  (connect self 'activate activate-cb))
+  (connect self 'activate activate-cb)
+  (connect self 'shutdown (lambda (app)
+                            (run-hook %shutdown-hook))))
 
 

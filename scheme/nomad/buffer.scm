@@ -18,8 +18,8 @@
 
 (define-module (nomad buffer)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad platform)
   #:use-module (nomad util)
+  #:use-module (nomad web)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
   #:use-module (oop goops)
@@ -45,7 +45,7 @@
   (let ((contains #f))
     (for-each (lambda (buffer)
                 (when (string= uri
-                               (buffer-name buffer))
+                               (buffer-uri buffer))
                   (set! contains #t)))
               (buffer-list))
     contains))
@@ -53,17 +53,10 @@
 (define (buffers->uri)
   "Returns a list of uri's for all buffers"
   (filter-map (lambda (buffer)
-                (if (eq? (class-of buffer) <webview-buffer>)
-                    (buffer-name buffer)
+                (if (is-a? buffer <web-buffer>)
+                    (buffer-uri buffer)
                     #f))
               (buffer-list)))
-
-(define-interactive (show-buffers)
-  "Displays buffers in minipopup"
-  (begin (render-popup completion-view
-                       (buffers->uri)
-                       -1)
-         (length (buffers->uri))))
 
 (define-interactive (message-buffers)
   "Pretty prints the buffers to echo area"
@@ -105,8 +98,5 @@
 (define-interactive (class-of-buffer #:optional (buffer (current-buffer)))
   (message "~a" (class-of buffer))
   #t)
-
-(define-interactive (make-popup-buffer)
-  (make <popup-buffer> #:name "*buffers*" #:list (buffer-list)))
 
 (define-key fundamental-map (kbd "C-c C-b") eval-buffer)
