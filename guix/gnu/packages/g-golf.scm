@@ -20,7 +20,7 @@
   (let ((commit "4a4edf25e4877df9182c77843bdd98ab59e13ef7"))
     (package
       (name "g-golf")
-      (version (git-version "1" "682" commit))
+      (version (git-version "1" "683" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -47,9 +47,15 @@
       (propagated-inputs
        `(("gobject-introspection" ,gobject-introspection)))
       (arguments
-       `(#:tests? #f
+       `(#:tests? #t
          #:phases
          (modify-phases %standard-phases
+           (add-before 'configure 'tests-work-arounds
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; In build environment, There is no /dev/tty
+               (substitute*
+                   "test-suite/tests/gobject.scm"
+                 (("/dev/tty") "/dev/null"))))
            (add-before 'configure 'substitute-libs
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((get (lambda (key lib)
