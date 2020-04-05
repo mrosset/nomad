@@ -26,7 +26,6 @@
   #:use-module (nomad gtk widget)
   #:use-module (nomad web)
   #:use-module (nomad text)
-  #:use-module (nomad api)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<gtk-frame>
             !container
@@ -54,7 +53,7 @@
 
 
 
-(define-class <gtk-frame> (<nomad-frame> <gtk-application-window>)
+(define-class <gtk-frame> (<gtk-application-window>)
   (container   #:accessor    !container
                #:init-form   (make <gtk-vbox> #:spacing 0))
   (echo-area   #:accessor    !echo-area

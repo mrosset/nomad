@@ -30,8 +30,6 @@
             %user-cookie-file
             %user-init-file
             %user-nomad-directory
-            %startup-hook
-            %shutdown-hook
             %download-directory
             %session-file
             define-ident))
@@ -47,9 +45,6 @@
          (identifier-syntax
           val))
        (export var)))))
-
-(define %startup-hook (make-hook))
-(define %shutdown-hook (make-hook))
 
 ;; Path of user's initialization file. This is a top level identifier, it's
 ;; default value is @code{$HOME/.nomad}.

@@ -22,7 +22,7 @@
   #:use-module (g-golf)
   #:use-module (emacsy emacsy)
   #:use-module (nomad init)
-  #:use-module (nomad api)
+  #:use-module (nomad application)
   #:use-module (nomad web)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
@@ -38,16 +38,14 @@
   "Returns the default application id"
   (g-application-get-application-id (current-application)))
 
-
-
-(define-class <nomad-gtk-application> (<nomad-application> <gtk-application>))
+(define-class <nomad-gtk-application> (<gtk-application>))
 
 (define (initialize-extention-cb ctx)
   (webkit-web-context-set-web-extensions-directory
    ctx
    (getenv "NOMAD_WEB_EXTENSION_DIR")))
 
-(define (startup-cb app)
+(define (startup app)
   (dimfi "STARTUP")
   (emacsy-initialize #t)
   (init)
@@ -71,15 +69,15 @@
        %user-cookie-file
        'sqlite))))
 
-(define (activate-cb app)
+(define (activate app)
   (dimfi "ACTIVATE" (application-id))
   (if (current-frame)
       (dimfi "Nomad only supports one frame.")
       (begin
         (gtk-frame-new app)
-        (run-hook (!startup-hook app)))))
+        (run-hook %startup-hook))))
 
-(define (open-cb app files n-files hint)
+(define (open app files n-files hint)
   (dimfi "OPEN")
   (unless (current-frame)
     (gtk-frame-new app))
@@ -90,10 +88,8 @@
 (define-method (initialize (self <nomad-gtk-application>) args)
   (next-method)
   (g-application-set-flags self '(handles-open can-override-app-id))
-  (connect self 'open open-cb)
-  (connect self 'startup startup-cb)
-  (connect self 'activate activate-cb)
+  (connect self 'open open)
+  (connect self 'startup startup)
+  (connect self 'activate activate)
   (connect self 'shutdown (lambda (app)
                             (run-hook %shutdown-hook))))
-
-

@@ -18,7 +18,6 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 (define-module (nomad nomad)
-  #:use-module (nomad api)
   #:use-module (nomad application)
   #:use-module (nomad bookmark)
   #:use-module (nomad buffer)
@@ -43,7 +42,6 @@
   #:duplicates (merge-generics replace warn-override-core warn last))
 
 (re-export-modules
- '(nomad api)
  '(nomad application)
  '(nomad bookmark)
  '(nomad buffer)
