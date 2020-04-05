@@ -59,5 +59,8 @@
 (define-class <terminal> (<widget-buffer>)
   (name #:init-value "*terminal*"))
 
+(set! buffer-classes (cons* <terminal>
+                            buffer-classes))
+
 (define-interactive (terminal)
   (make <terminal> #:buffer-modes `(,shell-mode)))

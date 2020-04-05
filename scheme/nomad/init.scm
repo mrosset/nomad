@@ -74,7 +74,8 @@
          (buffers (read port)))
     (close-port port)
     (for-each (lambda (uri)
-                (make <web-buffer> #:uri uri))
+                (unless (buffers-contain? uri)
+                  (make <web-buffer> #:uri uri)))
               buffers)))
 
 (define-interactive (write-session)

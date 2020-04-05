@@ -18,10 +18,25 @@
 
 (define-module (tests buffer)
   #:use-module (oop goops)
+  #:use-module (oop goops describe)
   #:use-module (nomad buffer)
-  #:use-module (unit-test))
+  #:use-module (emacsy emacsy)
+  #:use-module (nomad web)
+  #:use-module (unit-test)
+  #:duplicates (merge-generics replace warn-override-core warn last))
 
 (define-class <test-buffer> (<test-case>))
 
- (define-method (test-buffer (self <test-buffer>))
-   (assert-equal #t #t))
+(define-class <uri-buffer> (<web-buffer>))
+
+(define-method (buffer-uri (buffer <uri-buffer>))
+  (slot-ref buffer 'uri))
+
+(define-method (test-buffers (self <test-buffer>))
+  (emacsy-initialize #f)
+  (assert-equal 2 (length (buffer-list)))
+  ;; (let ((buffers `(,(make <uri-buffer>)
+  ;;                  ,(make <uri-buffer> #:uri "https://gnu.org"))))
+  ;;   (assert-true (is-a? (car buffers) <uri-buffer>))
+  ;;   (assert-equal %default-home-page (buffer-uri (car buffers))))
+  )

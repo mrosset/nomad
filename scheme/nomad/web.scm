@@ -75,7 +75,7 @@
             #:init-value   "")
   (uri      #:accessor     buffer-uri
             #:init-keyword #:uri
-            #:init-value   %default-home-page)
+            #:init-form    %default-home-page)
   (search   #:accessor     current-search
             #:init-value   #f))
 

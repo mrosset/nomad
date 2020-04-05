@@ -38,6 +38,9 @@
   (buffers #:accessor   !buffers
            #:init-thunk buffer-list))
 
+(set! buffer-classes (cons <ibuffer>
+                            buffer-classes))
+
 (define (ibuffer-header)
   (insert (format #f "Name~/Uri/Filename\n"))
   (insert (format #f "--------~/--------\n")))
@@ -49,9 +52,6 @@
                (buffer-uri buffer)
                (or (buffer-file-name buffer)
                    "--"))))
-
-(set! buffer-classes (cons <ibuffer>
-                            buffer-classes))
 
 (define (update buffer)
   (delete-region (point-min) (point-max))

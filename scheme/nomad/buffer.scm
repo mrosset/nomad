@@ -18,10 +18,11 @@
 
 (define-module (nomad buffer)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad util)
-  #:use-module (nomad web)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
+  #:use-module (nomad platform)
+  #:use-module (nomad util)
+  #:use-module (nomad web)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:export (make-buffer-socket
@@ -41,20 +42,20 @@
             (buffer-list)))
 
 (define (buffers-contain? uri)
-  "Returns #t of buffer-list contains URI"
-  (let ((contains #f))
-    (for-each (lambda (buffer)
-                (when (string= uri
-                               (buffer-uri buffer))
-                  (set! contains #t)))
-              (buffer-list))
-    contains))
+  "Returns #t if buffer-list contains @var{uri}"
+  (if (is-a? (find (lambda (buffer)
+               (and (is-a? buffer <web-buffer>)
+                    (string= (widget-uri buffer) uri)))
+                   (buffer-list))
+             <web-buffer>)
+      #t
+      #f))
 
 (define (buffers->uri)
   "Returns a list of uri's for all buffers"
   (filter-map (lambda (buffer)
                 (if (is-a? buffer <web-buffer>)
-                    (buffer-uri buffer)
+                    (widget-uri buffer)
                     #f))
               (buffer-list)))
 

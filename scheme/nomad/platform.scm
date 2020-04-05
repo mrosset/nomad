@@ -35,10 +35,6 @@
                      #:optional  (class (completing-read "Class: " (map symbol->string platform-classes))))
   (describe (primitive-eval (string->symbol class))))
 
-(define-interactive (make-webview-buffer
-                     #:optional (uri (read-from-minibuffer "Url: ")))
-  (make <webview-buffer> #:init-uri uri))
-
 (define-interactive (make-frame #:optional (app (current-application)))
   (gtk-frame-new app)
   (switch-to-buffer (next-buffer)))
