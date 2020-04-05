@@ -20,7 +20,6 @@
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 format)
   #:use-module (ice-9 pretty-print)
-  #:use-module (nomad platform)
   #:use-module (nomad util)
   #:use-module (nomad web)
   #:use-module (oop goops)
@@ -28,6 +27,8 @@
   #:export (make-buffer-socket
             buffers-contain?
             buffers->uri))
+
+(define widget-uri (module-ref (resolve-interface '(nomad gtk buffers)) 'widget-uri))
 
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
