@@ -39,6 +39,7 @@ SOURCES =			\
 	nomad/init.scm		\
 	nomad/util.scm		\
 	nomad/nomad.scm		\
+	nomad/api.scm		\
 	nomad/ibuffer.scm	\
 	nomad/terminal.scm	\
 	nomad/platform.scm	\

@@ -1,4 +1,4 @@
-;; frame.scm
+;; api.scm
 ;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,21 +16,31 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad frame)
+(define-module (nomad api)
+  #:use-module (nomad init)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
-  #:use-module (nomad platform))
+  #:duplicates (merge-generics replace warn-override-core warn last)
+  #:use-module (g-golf)
+  #:export (<nomad-application>
+            !startup-hook
+            <nomad-frame>
+            webview-mode))
 
-;; (define (make-frame-socket url socket)
-;;   "Write `make-frame' comand with arg URL to a SOCKET."
-;;   (write-socket (format #f "~S" `(make-frame ,url)) socket))
+
 
-(define-interactive (make-frame-command)
-  (make-frame))
+(define-class <nomad-application> ()
+  (startup-hook #:accessor !startup-hook
+                #:init-keyword #:startup-hook
+                #:init-value %startup-hook))
 
-(define frame-map (make-keymap))
+(define-method (initialize (self <nomad-application>) args)
+  (next-method)
+  ;; (init)
+  )
 
-(define-key global-map "C-x 5" frame-map)
+
 
-(define-key frame-map "5 2" 'make-frame-command)
-(define-key frame-map "5 0" 'delete-frame)
+(define-class <nomad-frame> ())
+
+

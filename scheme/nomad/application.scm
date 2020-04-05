@@ -18,36 +18,33 @@
 
 (define-module (nomad application)
   #:use-module (emacsy emacsy)
+  #:use-module (nomad init)
   #:use-module (nomad util)
+  #:use-module (nomad platform)
   #:use-module (nomad web)
+  #:use-module (nomad web-mode)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
-  #:export (%startup-hook
-            %shutdown-hook
-            app-init
-            <nomad-application>))
+  #:export (shutdown-hook
+            app-init))
 
 (define-public load-home-page? (make-parameter #t))
 
-(define %startup-hook (make-hook 0))
-
-(define %shutdown-hook (make-hook 0))
-
-(define-class <nomad-application> ())
+(define shutdown-hook (make-hook 0))
 
 (define (shutdown)
   "Cleans up after guile and runs user shutdown hooks"
-  (run-hook %shutdown-hook))
+  (run-hook shutdown-hook))
 
 (define (app-init)
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
-  (add-hook! %shutdown-hook
+  (add-hook! shutdown-hook
                           (lambda _
                             (info "running shutdown hook...")))
 
   (when (load-home-page?)
-    (make <web-buffer> #:uri %default-home-page)))
+    (home)))
 
 (add-hook! %startup-hook app-init)
