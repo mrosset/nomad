@@ -79,9 +79,6 @@
   (search   #:accessor     current-search
             #:init-value   #f))
 
-(define-public (make-web-buffer uri)
-  (make <web-buffer> #:uri uri))
-
 (set! buffer-classes (cons* <web-buffer>
                             buffer-classes))
 

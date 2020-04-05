@@ -31,7 +31,7 @@
   (split-and-decode-uri-path (uri-path (request-uri request))))
 
 (define (redirect)
-  (values (dimfi (build-response #:code 301))
+  (values (build-response #:code 301)
           "Location: https://bufio.org"))
 
 (define (test-handler request body)

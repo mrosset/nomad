@@ -21,6 +21,7 @@
   #:use-module (nomad init)
   #:use-module (nomad util)
   #:use-module (nomad web)
+  #:use-module (nomad log)
   #:use-module (oop goops)
   #:export (%shutdown-hook
             %startup-hook
@@ -44,4 +45,4 @@ controls are accessible to scheme"
 
 (add-hook! %shutdown-hook
            (lambda _
-             (info "running shutdown hook...")))
+             (log-info "Running shutdown hook")))

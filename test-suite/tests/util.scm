@@ -19,6 +19,7 @@
 (define-module (tests util)
   #:use-module (oop goops)
   #:use-module (nomad util)
+  #:use-module (nomad log)
   #:use-module (unit-test))
 
 (define-class <test-util> (<test-case>))
@@ -27,11 +28,6 @@
   (with-fluids ((fluid~ "/tmp/home"))
     (assert-equal "/tmp/home" ~)
     (assert-equal "/tmp/home/file" (~/ "file"))))
-
-(define-method (test-info (self <test-util>))
-  (let ((proc (lambda _
-                (info "test"))))
-    (assert-equal "INFO: test\n" (with-output-to-string proc))))
 
 (define-method (test-ensure-directory (self <test-util>))
   (let ((dir (tmpnam)))

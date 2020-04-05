@@ -25,9 +25,7 @@
   #:use-module (emacsy self-doc)
   #:export (doc-names
             doc-object
-            doc-get
-            halp
-            describe-symbol))
+            doc-get))
 ;;
 (define (doc-names module kind depth)
   "In MODULE, find available objects of KIND, recurse until DEPTH."

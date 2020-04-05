@@ -18,18 +18,14 @@
 
 (define-module (nomad graph)
   #:use-module (emacsy emacsy)
-  #:use-module (term ansi-color)
+  #:use-module (nomad log)
   #:use-module (nomad platform))
-
-(define (yellow string)
-  (colorize-string string 'YELLOW))
 
 (catch #t
   (lambda _
     (load-extension "libgv_guile.so" "SWIG_init"))
   (lambda (key . vals)
-    (format #t "~a can not load guile graphviz extension libgv_guile.so\n" (yellow "WARNING:"))
-    (format #t "~a key: ~a value: ~a\n" (yellow "WARNING:") key vals)))
+    (log-warn "Can not load guile graphviz extension libgv_guile.so")))
 
 (define (format-slots class)
   (let ((slots (class-direct-slots class)))

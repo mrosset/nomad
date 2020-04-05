@@ -52,15 +52,6 @@
 (define-public (window-config-change window)
    (container-replace (!container (current-frame)) (instantiate-window root-window)))
 
-;; Redisplay current window on each event read. This is mainly used to redisplay the
-;; cursor.
-;; (add-hook! read-event-hook (lambda (x)
-;;                              (set! %redisplay? #t)
-;;                              ;; (dimfi current-window)
-;;                              ;; (window-config-change root-window)
-;;                              ))
-
-
 (add-hook! window-configuration-change-hook window-config-change)
 
 
@@ -108,7 +99,6 @@
                            (local-var 'widget))
                           (else (error "Buffer not implimented")))))
     (unless widget
-      (dimfi "CREATE")
       (cond
        ((is-a? buffer <widget-buffer>)
         (set! widget (make-buffer-widget buffer))
@@ -122,7 +112,6 @@
       (run-hook %thunk-view-hook))
 
     (when (not (eq? buffer (!buffer (user-data window))))
-      (dimfi "SWITCH")
       ;; (gtk-widget-unparent widget)
       (set! (!buffer (user-data window)) buffer)
       (container-replace container widget)
@@ -132,40 +121,10 @@
          (let* ((buffer (window-buffer window))
                 (buffer-tick (buffer-modified-tick buffer))
                 (window-tick (last-tick window)))
-           (dimfi (or (not (= buffer-tick window-tick))
-                (!thunk widget)))))
+           (or (not (= buffer-tick window-tick))
+                     (!thunk widget))))
 
 (define-method (redisplayed! (window <widget-window>))
   (let* ((buffer (window-buffer window))
          (buffer-tick (buffer-modified-tick buffer)))
     (set! (last-tick window) buffer-tick)))
-
-;; (define-method (redisplay (self <nomad-gtk-window>))
-;;   (let* ((buffer    (window-buffer self)))
-
-;;     (when (not (eq? (!last-buffer self) buffer))
-;;       (dimfi "Remove control" last-buffer)
-;;       (set! (!last-tick self) -1)
-;;       (set! (user-data self) #f))
-
-;;     (when (needs-redisplay? self)
-;;     (dimfi "Redisplay" (user-data self) buffer)
-;;       (cond
-;;        ((is-a? buffer <text-buffer>)
-;;         (when (not (user-data self))
-;;           (dimfi "Create control")
-;;           (set! (user-data self) (make <widget-text-view>)))
-;;         (set-source-text! (user-data self) (buffer:buffer-string buffer))
-;;         (set-source-point! (user-data self) (buffer:point buffer)))
-;;        ((is-a? buffer <gtk-widget-buffer>)
-;;         (when (not (user-data self))
-;;           (set! (user-data self) buffer)))
-;;        (else
-;;         (error (format #t "user-data for class-of: ~a Not implemented"
-;;                        (class-of buffer))))))
-;;     (redisplayed! self)
-;;     ;; Make sure the window contains the control
-;;     (set-child self)
-;;     (set! (!last-buffer self) buffer)))
-
-

@@ -27,6 +27,8 @@
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
   #:use-module (nomad web)
+  #:use-module (nomad log)
+  #:use-module (logging logger)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<nomad-gtk-application>))
 
@@ -46,9 +48,8 @@
    (getenv "NOMAD_WEB_EXTENSION_DIR")))
 
 (define (startup app)
-  (dimfi "STARTUP")
-  (emacsy-initialize #t)
   (init)
+  (log-info "STARTUP")
   (connect (webkit-web-context-get-default)
            'initialize-web-extensions
            initialize-extention-cb)
@@ -70,15 +71,15 @@
        'sqlite))))
 
 (define (activate app)
-  (dimfi "ACTIVATE" (application-id))
+  (log-info "ACTIVATE" (application-id))
   (if (current-frame)
-      (dimfi "Nomad only supports one frame.")
+      (log-msg 'WARN "Nomad only supports one frame.")
       (begin
         (gtk-frame-new app)
         (run-hook %startup-hook))))
 
 (define (open app files n-files hint)
-  (dimfi "OPEN")
+  (log-info "OPEN")
   (unless (current-frame)
     (gtk-frame-new app))
   (for-each (lambda (file)

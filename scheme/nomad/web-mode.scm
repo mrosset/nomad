@@ -44,10 +44,6 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 
 (define-public cycle-search-provider (pick-search-provider))
 
-(define-interactive (make-web-buffer
-                     #:optional (uri (read-from-minibuffer "Url: ")))
-  (make <web-buffer> #:uri (ensure-protocol uri)))
-
 (define-interactive (edit-uri)
   "Edit the current-url."
   (buffer-load-uri (current-buffer)

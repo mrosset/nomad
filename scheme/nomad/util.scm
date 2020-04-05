@@ -23,13 +23,10 @@
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
   #:export (list->keymap
-            info
-            log-info?
             fluid~
             ~
             ~/
             //
-            ensure-fluid-directory
             ensure-directory))
 
 ;;; Taken from Emacsy
@@ -50,15 +47,6 @@
                              (define-key keymap key command)))
               lst)
     keymap))
-
-(define log-info? (make-fluid #t))
-
-;; FIXME: maybe use the emacsy logger here instead?
-(define (info fmt . args)
-  "Formats ARGS with FMT to current output port"
-  (when (fluid-ref log-info?)
-    (let ((ifmt (format #f "INFO: ~a~%" fmt)))
-      (apply format #t ifmt args))))
 
 ;; @var{fluid~} Expands to current users home directory
 (define fluid~ (make-fluid (getenv "HOME")))

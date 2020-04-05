@@ -22,6 +22,7 @@
   #:use-module (nomad buffer)
   #:use-module (nomad options)
   #:use-module (nomad util)
+  #:use-module (nomad log)
   #:use-module (nomad web)
   #:use-module (oop goops)
   #:duplicates (merge-generics replace warn-override-core warn last)
@@ -91,6 +92,7 @@
   (string-append %user-nomad-directory // "cookies.db"))
 
 (define (init)
+  (emacsy-initialize #t)
   (ensure-directory %user-nomad-directory)
   ;; If user-init-file exists and -Q is not passed as a command line argument
   ;; then load the user-init-file
