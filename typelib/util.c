@@ -132,9 +132,6 @@ nomad_vte_set_colors (GtkWidget *widget)
           palette_color (15),
       },
       16);
-
-  /* vte_terminal_set_colors (VTE_TERMINAL (widget), NULL, NULL, *colors, 8);
-   */
 }
 
 static void
