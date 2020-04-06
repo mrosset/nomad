@@ -95,7 +95,7 @@
   (emacsy-initialize #t)
   (ensure-directory %user-nomad-directory)
   ;; If user-init-file exists and -Q is not passed as a command line argument
-  ;; then load the user-init-file
+  ;; then load the %user-init-file
   (when (and (not (option-quick (command-line)))
              (file-exists? %user-init-file))
     (catch #t
