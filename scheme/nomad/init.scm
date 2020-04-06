@@ -93,6 +93,7 @@
 
 (define (init)
   (emacsy-initialize #t)
+  (set! emacsy-log? #f)
   (ensure-directory %user-nomad-directory)
   ;; If user-init-file exists and -Q is not passed as a command line argument
   ;; then load the %user-init-file

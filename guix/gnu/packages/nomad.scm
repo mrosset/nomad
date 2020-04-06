@@ -70,7 +70,6 @@
        ("gtk+:bin" ,gtk+ "bin")
        ("gtksourceview" ,gtksourceview)
        ("webkitgtk" ,webkitgtk)
-       ("vte" ,vte)
        ("g-golf" ,g-golf)
        ("xorg-server" ,xorg-server)))
     (propagated-inputs
@@ -83,6 +82,7 @@
        ("gst-plugins-ugly" ,gst-plugins-ugly)
        ("gtk+" ,gtk+)
        ("gtksourceview" ,gtksourceview)
+       ("vte" ,vte)
        ("webkitgtk" ,webkitgtk)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
@@ -178,3 +178,19 @@ backend and modular feature-set fully programmable in Guile.")
                 (sha256
                  (base32
                   "1nf74s3nbb7l050l0vzwysqyqaasfbn4apa4fmd2pnbgxbayf2pq")))))))
+
+(define-public emacsy-minimal
+  (let ((commit "7cf68acf00c359bce33697ae648cf0bb8fba5c7b"))
+    (package
+      (inherit emacsy)
+      (name "emacsy-minimal")
+      (version (git-version "v0.4.1" "26" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/emacsy.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0avypnpq6ydwb4gr5z500ppgqv5f7w86y6sjwy7kg8ff2cs20jnk")))))))
