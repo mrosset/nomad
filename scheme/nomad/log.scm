@@ -23,11 +23,11 @@
   #:use-module (logging logger)
   #:use-module (logging rotating-log)
   #:use-module (logging port-log)
-  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (log-formatter
             log-info
             log-warn
-            log-crit))
+            log-crit
+            log-debug))
 
 (define (log-info . msg)
   (log-msg 'INFO msg))
@@ -38,22 +38,22 @@
 (define (log-crit . msg)
   (log-msg 'CRITICAL msg))
 
+(define (log-debug . msg)
+  (log-msg 'DEBUG msg))
+
+(define level-alist '((CRITICAL . RED)
+                      (DEBUG . MAGENTA)
+                      (WARN . YELLOW)
+                      (INFO . BLUE)))
+
 (eval-when (expand load eval)
   ;; Same as default-log-formatter but colorized
   (define (log-formatter lvl time str)
-    (let ((color (cond
-                  ((equal? lvl 'CRITICAL)
-                   'RED)
-                  ((equal? lvl 'WARN)
-                   'YELLOW)
-                  ((equal? lvl 'INFO)
-                   'BLUE)
-                  (else 'CLEAR))))
+    (let ((color (or (assoc-ref level-alist lvl) 'CLEAR)))
       (format #f "~a (~a): ~a~%"
               (strftime "%F %H:%M:%S" (localtime time))
               (colorize-string (symbol->string lvl) color)
               str)))
-
   (let ((lgr     (make <logger>))
         (handler (make <port-log>
                    #:port (current-error-port)

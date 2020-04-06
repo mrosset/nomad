@@ -83,6 +83,9 @@
 
 
     ;; Initialize slots
+    ;;
+    ;; FIXME: These should be set before next-method or using the make
+    ;; keywords
     (slot-set! self 'title "Nomad")
     (slot-set! self 'default-height 480)
     (slot-set! self 'default-width 640)
