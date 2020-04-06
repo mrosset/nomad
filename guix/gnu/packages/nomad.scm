@@ -164,11 +164,11 @@ backend and modular feature-set fully programmable in Guile.")
                 "1i3wp87kwbcfm9vlgbgh5x4k4h8839z51dfysz8n898xkxqyrg4s"))))))
 
 (define-public nomad-git
-  (let ((commit "544d796ea59b01c57ee88aaf56a5a870e7839c30"))
+  (let ((commit "73755f2f800313cafa813445b8dad52ceb22560c"))
     (package
       (inherit nomad)
       (name "nomad-git")
-      (version (git-version "1" "976" commit))
+      (version (git-version (package-version nomad) "299" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -177,14 +177,14 @@ backend and modular feature-set fully programmable in Guile.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1nf74s3nbb7l050l0vzwysqyqaasfbn4apa4fmd2pnbgxbayf2pq")))))))
+                  "0rf114f9hvgl6cyr4xvy4bc2hg2dmp1jaf3pw8rw7zwrfhnk0z28")))))))
 
 (define-public emacsy-minimal
-  (let ((commit "7cf68acf00c359bce33697ae648cf0bb8fba5c7b"))
+  (let ((commit "7e21a740d2efd3242fa673de8c88d873b1fd8232"))
     (package
       (inherit emacsy)
       (name "emacsy-minimal")
-      (version (git-version "v0.4.1" "26" commit))
+      (version (git-version "v0.4.1" "27" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -193,4 +193,4 @@ backend and modular feature-set fully programmable in Guile.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0avypnpq6ydwb4gr5z500ppgqv5f7w86y6sjwy7kg8ff2cs20jnk")))))))
+                  "15nkxmfkyfxg0aj03s9j4130svb5qwv73alcfcns4h27x5is8l1f")))))))
