@@ -47,13 +47,10 @@ libguile_nomad_la_LIBADD += $(VTE_LIBS)
 
 libguile_nomad_la_LDFLAGS = -avoid-version -no-undefined
 
-G_RESOURCES = gresource.xml
-
+G_RESOURCES   = gresource.xml
 BUILT_SOURCES = resources.c
-
-EXTRA_DIST = $(G_RESOURCES)
-
-CLEANFILES = $(BUILT_SOURCES)
+EXTRA_DIST    = $(G_RESOURCES)
+CLEANFILES    = $(BUILT_SOURCES)
 
 .PHONY: format
 

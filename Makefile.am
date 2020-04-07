@@ -22,12 +22,9 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
 
-EXTRA_DIST = build-aux/test-driver.scm
-## FIXME this is hackish. promote init.el to emacs package
-EXTRA_DIST = init.el m4/introspection.m4
+EXTRA_DIST = m4/introspection.m4 tools/test-driver
 
 nomaddir = "$(datadir)/nomad"
-nomad_DATA = ## init.el
 
 dist_doc_DATA = README
 

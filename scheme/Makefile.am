@@ -24,7 +24,7 @@ ccachedir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 nobase_mod_DATA = $(SOURCES) $(NOCOMP_SOURCES)
 nobase_ccache_DATA = $(GOBJECTS)
 
-EXTRA_DIST = $(SOURCES) $(NOCOMP_SOURCES) $(TESTS) nomad/lib.in
+EXTRA_DIST = $(SOURCES) $(NOCOMP_SOURCES)
 CLEANFILES = $(GOBJECTS)
 
 guile_install_go_files = install-nobase_ccacheDATA

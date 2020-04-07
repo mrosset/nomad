@@ -22,8 +22,6 @@ AM_TESTS_ENVIRONMENT = GUILE_LOAD_PATH="$(abs_top_builddir)/test-suite"
 # TESTS_ENVIRONMENT = GUILE_LOAD_PATH="$(abs_top_builddir)/test-suite" \
 #		    $(abs_top_builddir)/pre-inst-env ./test-runner
 
-
-
 test-list:
 	echo $(TESTS)
 
@@ -33,6 +31,7 @@ do_subst = sed -e 's,[@]GUILE[@],$(GUILE),g'	\
 
 all-local: test-runner
 
+EXTRA_DIST = test-runner.in $(TESTS)
 CLEANFILES = test-runner
 
 test-runner: test-runner.in
