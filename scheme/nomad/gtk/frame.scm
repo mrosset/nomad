@@ -113,6 +113,7 @@
     (gtk-box-pack-start box (!echo-area self) #f #f 0)
 
     (connect self 'key-press-event key-press-event)
+    (connect self 'key-release-event key-press-event)
 
     (connect self 'focus-in-event
              (lambda (widget event)
@@ -154,15 +155,22 @@
          (state     (!state event))
          (type      (!type event))
          (mod-flags (gdk-state->emacsy-flags state)))
-    (if (equal? type 'key-press)
-        (begin
-          (emacsy-key-event unichar mod-flags)
-          (emacsy-tick)
-          (run-hook %thunk-view-hook)
-          ;; We need two ticks or we can not test for emacsy-ran-undefined-command?
-          (unless emacsy-display-minibuffer?
-            (emacsy-tick))
-          (if emacsy-ran-undefined-command?
-              #f
-              #t))
-        #f)))
+    (cond
+     ;; Key release
+     ((equal? type 'key-release)
+      #t)
+     ;; Key press
+     ((and (equal? type 'key-press)
+           (> unicode 0))
+      (emacsy-key-event unichar mod-flags)
+      (emacsy-tick)
+      (run-hook %thunk-view-hook)
+      ;; We need two ticks or we can not test for emacsy-ran-undefined-command?
+      (unless emacsy-display-minibuffer?
+        (emacsy-tick))
+      (if emacsy-ran-undefined-command?
+          #f
+          #t))
+     ;; Should not reach here but if we do return #f. So other controls handle
+     ;; key-press-event
+     (else #f))))
