@@ -49,7 +49,7 @@
 
 (define (gdk-state->emacsy-flags states)
   (filter-map (lambda (state)
-         (assoc-ref emacsy-flag-map state)) states))
+                (assoc-ref emacsy-flag-map state)) states))
 
 
 
@@ -65,7 +65,7 @@
                                #:thunk  emacsy-message-or-echo-area))
   (window      #:accessor    !emacsy-window
                #:init-form   (make <widget-window>
-                                #:window-buffer (current-buffer)))
+                               #:window-buffer (current-buffer)))
   (show        #:accessor     !show
                #:init-keyword #:show
                #:init-value   #t))
@@ -123,7 +123,7 @@
                (switch-to-buffer (window-buffer current-window))
                (redisplay root-window)
                (grab-focus (buffer-widget
-                              (window-buffer current-window)))
+                            (window-buffer current-window)))
                #f))
 
     ;; Redraw the windows for the first time.
@@ -131,8 +131,8 @@
 
 
     (g-timeout-add 200 (lambda _
-                        (redisplay root-window)
-                        #t))
+                         (redisplay root-window)
+                         #t))
 
     (when (!show self)
       (show-all self))))
