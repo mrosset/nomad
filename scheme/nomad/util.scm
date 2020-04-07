@@ -27,7 +27,11 @@
             ~
             ~/
             //
+            co-message
             ensure-directory))
+
+(codefine* (co-message fmt . args)
+           (apply message fmt args))
 
 ;;; Taken from Emacsy
 (define-public (re-export-modules . modules)

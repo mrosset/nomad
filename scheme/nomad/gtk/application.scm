@@ -22,6 +22,7 @@
   #:use-module (g-golf)
   #:use-module (emacsy emacsy)
   #:use-module (nomad init)
+  #:use-module (nomad util)
   #:use-module (nomad application)
   #:use-module (nomad web)
   #:use-module (nomad gtk buffers)
@@ -49,7 +50,7 @@
 
 (define (startup app)
   (init)
-  (log-info "STARTUP")
+  (co-message "~a" "STARTUP")
   (connect (webkit-web-context-get-default)
            'initialize-web-extensions
            initialize-extention-cb)
@@ -71,15 +72,16 @@
        'sqlite))))
 
 (define (activate app)
-  (log-info "ACTIVATE" (application-id))
+  (co-message "~a ~a" "ACTIVATE" (application-id))
   (if (current-frame)
       (log-msg 'WARN "Nomad only supports one frame.")
       (begin
         (gtk-frame-new app)
-        (run-hook %startup-hook))))
+        (run-hook %startup-hook)))
+  (emacsy-tick))
 
 (define (open app files n-files hint)
-  (log-info "OPEN")
+  (co-message "~a ~a" "OPEN" files)
   (unless (current-frame)
     (gtk-frame-new app))
   (for-each (lambda (file)
