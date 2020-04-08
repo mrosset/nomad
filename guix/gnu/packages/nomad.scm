@@ -63,7 +63,7 @@
        ("guile-readline" ,guile-readline)
        ("gnutls" ,gnutls)
        ("shroud" ,shroud)
-       ("emacsy" ,emacsy-minimal)
+       ("emacsy" ,emacsy-git)
        ("glib" ,glib)
        ("dbus-glib" ,dbus-glib)
        ("gtk+" ,gtk+)
@@ -178,19 +178,3 @@ backend and modular feature-set fully programmable in Guile.")
                 (sha256
                  (base32
                   "0a3rbiyfpd5519xad60w3kjy5b5kx96ywx81pcf5gqca1vsc18wj")))))))
-
-(define-public emacsy-minimal
-  (let ((commit "d459ca1d3d09e7624e662bc4cfc3596850796fc6"))
-    (package
-      (inherit emacsy)
-      (name "emacsy-minimal")
-      (version (git-version "v0.4.1" "28" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.savannah.gnu.org/git/emacsy.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1ps15w8cxj9kc18gmvys9jv9xa1qqa7m43ismv34l3cmhddrn0sr")))))))
