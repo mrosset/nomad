@@ -156,21 +156,24 @@
          (type      (!type event))
          (mod-flags (gdk-state->emacsy-flags state)))
     (cond
-     ;; Key release
-     ((equal? type 'key-release)
-      #t)
+     ;; If unicode is 0 then it is not a regular key sequence. Return #f so
+     ;; child controls can handle the event.
+     ((= unicode 0)
+      #f)
      ;; Key press
-     ((and (equal? type 'key-press)
-           (> unicode 0))
+     ((equal? type 'key-press)
       (emacsy-key-event unichar mod-flags)
       (emacsy-tick)
       (run-hook %thunk-view-hook)
       ;; We need two ticks or we can not test for emacsy-ran-undefined-command?
-      (unless emacsy-display-minibuffer?
-        (emacsy-tick))
+      ;; (unless emacsy-display-minibuffer?
+      ;;   (emacsy-tick))
       (if emacsy-ran-undefined-command?
           #f
           #t))
-     ;; Should not reach here but if we do return #f. So other controls handle
-     ;; key-press-event
+     ;; Key release
+     ((equal? type 'key-release)
+      #t)
+     ;; Should not reach here but if we do return #f. So child controls handle
+     ;; the event.
      (else #f))))

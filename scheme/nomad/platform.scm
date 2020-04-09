@@ -36,8 +36,7 @@
   (describe (primitive-eval (string->symbol class))))
 
 (define-interactive (make-frame #:optional (app (current-application)))
-  (gtk-frame-new app)
-  (switch-to-buffer (next-buffer)))
+  (gtk-frame-new app))
 
 (re-export-modules
  '(nomad gtk gtk))

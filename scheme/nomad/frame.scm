@@ -32,5 +32,5 @@
 
 (define-key global-map "C-x 5" frame-map)
 
-(define-key frame-map "5 2" 'make-frame-command)
-(define-key frame-map "5 0" 'delete-frame)
+(define-key frame-map "2" 'make-frame-command)
+(define-key frame-map "0" 'delete-frame)
