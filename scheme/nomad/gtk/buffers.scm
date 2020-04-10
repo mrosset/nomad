@@ -130,8 +130,8 @@
                (gtk-widget-destroy (buffer-widget buffer))
                (prev-buffer)
                (set! (window-buffer current-window) (current-buffer))))
-  (add-buffer! buffer)
-  (switch-to-buffer buffer))
+  (when (slot-ref buffer 'add)
+    (add-buffer! buffer)))
 
 (define-method (buffer-proxy-set! (buffer <widget-buffer>) proxy)
   (let ((widget (buffer-widget buffer)))

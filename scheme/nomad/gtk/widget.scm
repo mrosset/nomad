@@ -194,7 +194,7 @@
                 (let* ((action  (webkit-navigation-policy-decision-get-navigation-action decision))
                        (request (webkit-navigation-action-get-request action))
                        (uri     (webkit-uri-request-get-uri request)))
-                  (make <web-buffer> #:uri uri)
+                  (switch-to-buffer (make <web-buffer> #:uri uri))
                   #t))
                (else #f))))
   (connect view 'load-changed

@@ -92,9 +92,9 @@
                         (buffer-list)))
          (buffer  (if current
                       (switch-to-buffer current)
-                      (make <ibuffer>
-                        #:name         "<ibuffer>"
-                        #:buffer-modes `(,ibuffer-mode)))))
+                      (switch-to-buffer (make <ibuffer>
+                                          #:name         "<ibuffer>"
+                                          #:buffer-modes `(,ibuffer-mode))))))
     (update buffer)))
 
 (define-key global-map "C-x b" 'ibuffer)

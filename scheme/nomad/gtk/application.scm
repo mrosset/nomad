@@ -85,7 +85,7 @@
   (unless (current-frame)
     (gtk-frame-new app))
   (for-each (lambda (file)
-              (make <web-buffer> #:uri (g-file-get-uri file)))
+              (switch-to-buffer (make <web-buffer> #:uri (g-file-get-uri file))))
             files))
 
 (define-method (initialize (self <nomad-gtk-application>) args)

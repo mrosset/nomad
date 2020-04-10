@@ -23,12 +23,11 @@
   #:export (<widget-buffer>
             buffer-widget))
 
-(define %default-source-language "scheme")
-(define %default-source-theme "classic")
-
 (define-class <widget-buffer> (<buffer>)
-  (widget   #:accessor    buffer-widget
-            #:init-value  #f))
+  (widget #:accessor    buffer-widget
+          #:init-value  #f)
+  (add    #:init-keyword #:add
+          #:init-value  #t))
 
 (define-method (buffer-widget (buffer <text-buffer>))
   (local-var 'widget))

@@ -39,7 +39,7 @@
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
   (when (load-home-page?)
-    (make <web-buffer>)))
+    (switch-to-buffer (make <web-buffer>))))
 
 (add-hook! %startup-hook app-init)
 
