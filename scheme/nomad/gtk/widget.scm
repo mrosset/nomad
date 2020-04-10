@@ -57,8 +57,6 @@
 (define-class <widget-with-buffer> ()
   (buffer #:accessor !buffer #:init-keyword #:buffer #:init-value #f))
 
-
-
 (define-class <widget-text-view> (<widget-with-buffer>
                                   <gtk-source-view>)
   (last-tick  #:accessor     last-tick
@@ -114,8 +112,6 @@
       (set-point! self (buffer:point buffer))
       (set! (last-pos self) (buffer:point buffer)))))
 
-
-
 (define-public %thunk-view-hook (make-hook 0))
 
 (define-class <widget-thunk-view> (<widget-text-view>)
@@ -131,16 +127,12 @@
                (when (!buffer self)
                  (set-point! self (buffer:point (!buffer self)))))))
 
-
-
 (define-class <widget-border> (<gtk-drawing-area>))
 
 (define-method (initialize (self <widget-border>) args)
   (next-method)
   (gtk-widget-set-size-request self -1 1)
   (connect self 'draw nomad-draw-border))
-
-
 
 (define-class <window-container> (<widget-with-buffer> <gtk-vbox>)
   (container #:accessor     !container
@@ -175,7 +167,40 @@
     (gtk-box-pack-start self (make <widget-border>) #f #f 0)
     (set! (user-data window) self)))
 
-
+
+(define (decide-policy view decision type)
+  (case type
+    ((new-window-action)
+     (let* ((action  (webkit-navigation-policy-decision-get-navigation-action decision))
+            (request (webkit-navigation-action-get-request action))
+            (uri     (webkit-uri-request-get-uri request)))
+       (make-buffer <web-buffer> #:uri uri)
+       #t))
+    (else #f)))
+
+(define (load-change view event)
+  (when (equal? event 'committed)
+    (let* ((uri (string->uri (webkit-web-view-get-uri view)))
+           (style (or (assoc-ref %styles (uri-host uri)) %default-style))
+           (manager (webkit-web-view-get-user-content-manager view)))
+      (webkit-user-content-manager-remove-all-style-sheets manager)
+      (when style
+        (webkit-user-content-manager-add-style-sheet
+         manager
+         (webkit-user-style-sheet-new style
+                                      'all-frames
+                                      'user #f #f)))))
+  (let ((buffer (!buffer view)))
+    (set! (buffer-title buffer)
+          (!title view))
+    (set! (buffer-uri buffer)
+          (!uri view))
+    (set! (buffer-progress buffer)
+          (inexact->exact
+           (round (* 100 (!estimated-load-progress view)))))
+    (run-hook %load-committed-hook buffer)
+    (run-hook %thunk-view-hook))
+  #t)
 
 (define-class <widget-web-view> (<widget-with-buffer>
                                  <webkit-web-view>))
@@ -186,40 +211,8 @@
 
 (define-method (initialize (view <widget-web-view>) args)
   (next-method)
-  (connect view 'decide-policy
-           (lambda (view decision type)
-             (case type
-               ((new-window-action)
-                (let* ((action  (webkit-navigation-policy-decision-get-navigation-action decision))
-                       (request (webkit-navigation-action-get-request action))
-                       (uri     (webkit-uri-request-get-uri request)))
-                  (make-buffer <web-buffer> #:uri uri)
-                  #t))
-               (else #f))))
-  (connect view 'load-changed
-           (lambda (view event)
-             (when (equal? event 'committed)
-               (let* ((uri (string->uri (webkit-web-view-get-uri view)))
-                      (style (or (assoc-ref %styles (uri-host uri)) %default-style))
-                      (manager (webkit-web-view-get-user-content-manager view)))
-                 (webkit-user-content-manager-remove-all-style-sheets manager)
-                 (when style
-                   (webkit-user-content-manager-add-style-sheet
-                    manager
-                    (webkit-user-style-sheet-new style
-                                                 'all-frames
-                                                 'user #f #f)))))
-             (let ((buffer (!buffer view)))
-               (set! (buffer-title buffer)
-                     (!title view))
-               (set! (buffer-uri buffer)
-                     (!uri view))
-               (set! (buffer-progress buffer)
-                     (inexact->exact
-                      (round (* 100 (!estimated-load-progress view)))))
-               (run-hook %load-committed-hook buffer)
-               (run-hook %thunk-view-hook))
-             #t))
+  (connect view 'decide-policy decide-policy)
+  (connect view 'load-changed load-change)
   (widget-load-uri view (buffer-uri (!buffer view))))
 
 (define-method (redisplay (view <widget-web-view>))
@@ -251,8 +244,6 @@
   ;;                          '(none)
   ;;                          #f #f #f)
   )
-
-
 
 (define-method (make-buffer-widget (buffer <web-buffer>))
   (make <widget-web-view> #:buffer buffer))
