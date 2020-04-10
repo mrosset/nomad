@@ -19,6 +19,7 @@
 (define-module (nomad terminal)
   #:use-module (emacsy emacsy)
   #:use-module (nomad text)
+  #:use-module (nomad util)
   #:use-module (oop goops)
   #:export (<terminal>
             %default-shell
@@ -56,11 +57,12 @@
                               #:mode-name "Shell"
                               #:mode-map shell-map))
 
-(define-class <terminal> (<widget-buffer>)
-  (name #:init-value "*terminal*"))
+(define-class <terminal> (<widget-buffer>))
 
 (set! buffer-classes (cons* <terminal>
                             buffer-classes))
 
 (define-interactive (terminal)
-  (make <terminal> #:buffer-modes `(,shell-mode)))
+  (make-buffer <terminal>
+               #:name "terminal"
+               #:buffer-modes `(,shell-mode)))

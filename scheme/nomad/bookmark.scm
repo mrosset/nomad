@@ -27,6 +27,7 @@
  #:use-module (nomad init)
  #:use-module (nomad platform)
  #:use-module (nomad util)
+ #:use-module (nomad web)
  #:use-module (nomad web-mode)
  #:use-module (srfi srfi-1)
  #:use-module (srfi srfi-26)
@@ -134,7 +135,7 @@
                      #:optional
                      (str (completing-read "Bookmark: " (map bookmark-id bookmarks))))
   "Opens bookmark by key in current buffer"
-  (load-uri (current-buffer)
+  (make-buffer <web-buffer> #:uri
             (bookmark-contents (car (bookmark-find str))))
   #t)
 

@@ -52,7 +52,6 @@
             container-child
             container-replace
             container-empty?))
-
 
 ;; Widgets that have an associated buffer
 (define-class <widget-with-buffer> ()
@@ -194,7 +193,7 @@
                 (let* ((action  (webkit-navigation-policy-decision-get-navigation-action decision))
                        (request (webkit-navigation-action-get-request action))
                        (uri     (webkit-uri-request-get-uri request)))
-                  (switch-to-buffer (make <web-buffer> #:uri uri))
+                  (make-buffer <web-buffer> #:uri uri)
                   #t))
                (else #f))))
   (connect view 'load-changed

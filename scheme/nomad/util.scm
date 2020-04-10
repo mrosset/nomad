@@ -33,6 +33,11 @@
 (codefine* (co-message fmt . args)
            (apply message fmt args))
 
+(define-public (make-buffer class . args)
+  (let ((buffer (apply make class args)))
+    (add-buffer! buffer)
+    (switch-to-buffer buffer)))
+
 ;;; Taken from Emacsy
 (define-public (re-export-modules . modules)
   "Re-export modules"

@@ -63,7 +63,7 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
           (error "Input is not a valid URI"))
         (if (or (> (universal-argument-pop!) 1)
                 (not (is-a? (current-buffer) <web-buffer>)))
-            (switch-to-buffer (make <web-buffer> #:uri (uri->string uri)))
+            (make-buffer <web-buffer> #:uri (uri->string uri))
             (buffer-load-uri (current-buffer) (uri->string uri))))
       #t)
     (lambda (key . args)
@@ -74,8 +74,8 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
   (load-uri (current-buffer) (get-clipboard)))
 
 (define-interactive (make-buffer-clipboard)
-  (switch-to-buffer (make <web-buffer>
-                      #:uri (get-clipboard)))
+  (make-buffer <web-buffer>
+               #:uri (get-clipboard))
   #t)
 
 (define-interactive (hints #:optional (buffer (current-buffer)))
@@ -103,9 +103,9 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
   #t)
 
 (define-interactive (home #:optional (buffer (current-buffer)))
-  (switch-to-buffer (make <web-buffer>
-                      #:uri %default-home-page
-                      #:name "Home Page"))
+  (make-buffer <web-buffer>
+               #:uri %default-home-page
+               #:name "Home Page")
   #t)
 
 (define-interactive (reload #:optional (buffer (current-buffer)))
@@ -143,7 +143,7 @@ current buffer is not a @var{<web-buffer>} it will create a new
                      text)))
     (if (or (> u 1)
             (not (is-a? (current-buffer) <web-buffer>)))
-        (switch-to-buffer (make <web-buffer> #:uri uri))
+        (make-buffer <web-buffer> #:uri uri)
       (buffer-load-uri (current-buffer) uri)))
   #t)
 

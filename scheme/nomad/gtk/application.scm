@@ -29,7 +29,6 @@
   #:use-module (nomad gtk frame)
   #:use-module (nomad web)
   #:use-module (nomad log)
-  #:use-module (logging logger)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<nomad-gtk-application>))
 
@@ -74,7 +73,7 @@
 (define (activate app)
   (co-message "~a ~a" "ACTIVATE" (application-id))
   (if (current-frame)
-      (log-msg 'WARN "Nomad only supports one frame.")
+      (log-crit "Nomad only supports one frame.")
       (begin
         (gtk-frame-new app)
         (run-hook %startup-hook)))
@@ -85,7 +84,7 @@
   (unless (current-frame)
     (gtk-frame-new app))
   (for-each (lambda (file)
-              (switch-to-buffer (make <web-buffer> #:uri (g-file-get-uri file))))
+              (make-buffer <web-buffer> #:uri (g-file-get-uri file)))
             files))
 
 (define-method (initialize (self <nomad-gtk-application>) args)

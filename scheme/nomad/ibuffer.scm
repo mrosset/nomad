@@ -21,6 +21,7 @@
   #:use-module (ice-9 format)
   #:use-module (nomad text)
   #:use-module (nomad web)
+  #:use-module (nomad util)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -92,9 +93,9 @@
                         (buffer-list)))
          (buffer  (if current
                       (switch-to-buffer current)
-                      (switch-to-buffer (make <ibuffer>
-                                          #:name         "<ibuffer>"
-                                          #:buffer-modes `(,ibuffer-mode))))))
+                      (make-buffer <ibuffer>
+                                   #:name         "ibuffer"
+                                   #:buffer-modes `(,ibuffer-mode)))))
     (update buffer)))
 
 (define-key global-map "C-x b" 'ibuffer)
