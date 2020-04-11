@@ -35,7 +35,8 @@ nomad: nomad.in Makefile
 devel_flags = --gapplication-app-id "org.gnu.devel.nomad"
 
 test: all
-	$(top_builddir)/pre-inst-env ./nomad $(devel_flags)
+	-pkill Xephyr
+	start-xephyr $(top_builddir)/pre-inst-env ./nomad $(devel_flags)
 
 test-url: all
 	echo "test url"

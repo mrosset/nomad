@@ -5,9 +5,11 @@ GUILE_LOAD_PATH="@abs_top_builddir@/scheme:$GUILE_LOAD_PATH"
 GUILE_LOAD_COMPILED_PATH="@abs_top_srcdir@/scheme:$GUILE_LOAD_COMPILED_PATH"
 GUILE_LOAD_COMPILED_PATH="@abs_top_builddir@/scheme:$GUILE_LOAD_COMPILED_PATH"
 
-GI_TYPELIB_PATH="@abs_top_builddir@/typelib:$GI_TYPELIB_PATH"
+GI_TYPELIB_PATH="@abs_top_builddir@/typelib:$GI_TYPELIB_PATH:/usr/lib/x86_64-linux-gnu/mutter-6"
 
 export NOMAD_WEB_EXTENSION_DIR="@abs_top_builddir@/ext/.libs/"
+
+export G_MESSAGES_DEBUG="Nomad"
 
 export GUILE_LOAD_COMPILED_PATH
 export GI_TYPELIB_PATH

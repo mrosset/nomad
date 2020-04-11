@@ -50,15 +50,19 @@ AC_ARG_WITH([gtksourceview], AS_HELP_STRING([--with-gtksourceview],
 
 # pkg-config modules
 PKG_CHECK_MODULES([GUILE], [guile-2.2])
+PKG_CHECK_MODULES(GUILE_LIB, [guile-lib-1.0])
 PKG_CHECK_MODULES([EMACSY], [emacsy])
 PKG_CHECK_MODULES([G_GOLF], [g-golf-1.0])
 PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])
 PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
 PKG_CHECK_MODULES(VTE, [vte-2.91])
+PKG_CHECK_MODULES(WAYLAND_CLIENT, [wayland-client])
+PKG_CHECK_MODULES(WAYLAND_SERVER, [wayland-server])
+PKG_CHECK_MODULES(MUTTER, [libmutter-6])
 
 PKG_CHECK_MODULES(GLIB, [glib-2.0])
-PKG_CHECK_MODULES(GUILE_LIB, [guile-lib-1.0])
+
 
 AS_IF([test "$with_gtksourceview" = "4"], [
 	    AC_SUBST([GISOURCEVIEW], ["GtkSource-4"])

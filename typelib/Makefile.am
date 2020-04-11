@@ -18,13 +18,16 @@
 
 ## ACLOCAL_AMFLAG = -I m4
 
-AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement
+AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement -DG_LOG_DOMAIN=\"Nomad\"
 
 libguile_nomad_LTLIBRARIES = libguile-nomad.la
 libguile_nomaddir = $(libexecdir)/nomad/
 
 libguile_nomad_la_SOURCES  = scheme.c scheme.h
 libguile_nomad_la_SOURCES += util.c util.h
+libguile_nomad_la_SOURCES += wayland.c wayland.h
+libguile_nomad_la_SOURCES += plugin.c plugin.h
+
 libguile_nomad_la_SOURCES += resources.c
 
 libguile_nomad_la_CFLAGS =  $(AM_CFLAGS)
@@ -35,7 +38,9 @@ libguile_nomad_la_CFLAGS += $(GTK_CFLAGS)
 libguile_nomad_la_CFLAGS += $(WEBKIT_CFLAGS)
 libguile_nomad_la_CFLAGS += $(GTK_SOURCEVIEW_CFLAGS)
 libguile_nomad_la_CFLAGS += $(VTE_CFLAGS)
-
+libguile_nomad_la_CFLAGS += $(WAYLAND_CLIENT_CFLAGS)
+libguile_nomad_la_CFLAGS += $(WAYLAND_SERVER_CFLAGS)
+libguile_nomad_la_CFLAGS += $(MUTTER_CFLAGS)
 
 libguile_nomad_la_LIBADD =  $(GUILE_LIBS)
 libguile_nomad_la_LIBADD += $(EMACSY_LIBS)
@@ -44,6 +49,9 @@ libguile_nomad_la_LIBADD += $(GTK_LIBS)
 libguile_nomad_la_LIBADD += $(WEBKIT_LIBS)
 libguile_nomad_la_LIBADD += $(GTK_SOURCEVIEW_LIBS)
 libguile_nomad_la_LIBADD += $(VTE_LIBS)
+libguile_nomad_la_LIBADD += $(WAYLAND_SERVER_LIBS)
+libguile_nomad_la_LIBADD += $(WAYLAND_CLIENT_LIBS)
+libguile_nomad_la_LIBADD += $(MUTTER_LIBS)
 
 libguile_nomad_la_LDFLAGS = -avoid-version -no-undefined
 
@@ -72,7 +80,7 @@ INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all \
 
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
 
-introspection_sources = scheme.h util.h
+introspection_sources = scheme.h util.h wayland.h plugin.h
 
 Nomad-1.0.gir: libguile-nomad.la
 Nomad_1_0_INCLUDES =

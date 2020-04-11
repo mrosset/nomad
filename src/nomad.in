@@ -54,8 +54,19 @@ exec @GUILE@ -e main -s "$0" "$@"
           (pretty-string %load-compiled-path)))
 
 (define (main args)
-  (let ((app (make <application> #:application-id "org.gnu.nomad")))
-    (g-application-run app (length args) args)))
+  ;; (gi-import "Meta")
+  ;; (nomad-wayland-start-server)
+  (nomad-start-mutter)
+  (when #t
+      (let ((app (make <application> #:application-id "org.gnu.nomad")))
+        (g-application-run app (length args) args)))
+  (log-debug "DISPLAY ON" (getenv "WAYLAND_DISPLAY"))
+  ;; (let (((make <nomad-wayland-client>)))
+  ;;   (nomad-wayland-client-connect display)
+  ;;   ;; (log-debug (class-of display))
+  ;;   (nomad-wayland-client-disconnect display)
+  ;;   )
+  )
 
 ;; Local Variables:
 ;; mode: scheme
