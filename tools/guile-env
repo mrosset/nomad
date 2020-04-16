@@ -1,0 +1,7 @@
+(use-modules (g-golf))
+
+(gi-import "Nomad")
+
+;; Local Variables:
+;; mode: scheme
+;; End:

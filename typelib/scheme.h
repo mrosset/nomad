@@ -22,8 +22,21 @@
 #define __NOMAD_SCHEME_H__
 
 #include <glib-object.h>
-#include <gtk/gtk.h>
-#include <webkit2/webkit2.h>
+#include <libguile.h>
+
+#define scm_shell_startup_hook                                                \
+  scm_c_public_ref ("nomad shell", "%shell-startup-hook")
+
+#define scm_log_debug_ref scm_c_public_ref ("nomad log", "log-debug")
+
+#define scm_log_crit(x)                                                       \
+  scm_call_1 (scm_c_public_ref ("nomad log", "log-crit"),                     \
+              scm_from_utf8_string (x))
+
+#define scm_log_debug(x)                                                      \
+  scm_call_1 (scm_log_debug_ref, scm_from_utf8_string (x))
+
+#define scm_log_func() scm_log_debug (__func__)
 
 G_BEGIN_DECLS
 

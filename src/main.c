@@ -1,6 +1,6 @@
 /*
- * main.c
- * Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+ * nomad-shell.c
+ * Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
  *
  * This file is part of Nomad
  *
@@ -18,87 +18,26 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../guile/app.h"
-#include "../guile/frame.h"
-#include "../guile/util.h"
-#include <emacsy.h>
-#include <gtk/gtk.h>
 #include <libguile.h>
-#include <libguile/hooks.h>
-
-static void
-startup (GApplication *app, gpointer data)
-{
-}
-
-static void
-shutdown (GApplication *app, gpointer data)
-{
-  scm_call_0 (scm_c_public_ref ("nomad application", "shutdown"));
-}
-
-static void
-register_c_modules ()
-{
-  // Modules that are used before defining have a scheme file. This
-  // allows mixing pure scheme with C scheme.
-
-  // Use essential modules
-  scm_c_use_module ("nomad init");
-  scm_c_use_module ("emacsy emacsy");
-  scm_c_use_module ("nomad util");
-  scm_c_use_module ("nomad views");
-  scm_c_use_module ("nomad options");
-  scm_c_use_module ("nomad repl");
-}
 
 static void
 inner_main (void *data, int argc, char **argv)
 {
-  int err;
-  NomadApp *app;
+  /* scm_c_use_module ("nomad gtk gi"); */
+  scm_c_use_module ("nomad nomad");
+  /* scm_c_use_module ("nomad platform"); */
 
-  err = emacsy_initialize (EMACSY_INTERACTIVE);
-  if (err)
-    exit (err);
-
-  register_c_modules ();
-
-  app = nomad_app_new ();
-
-  // App signals
-  g_signal_connect (app, "startup", G_CALLBACK (startup), NULL);
-  g_signal_connect (app, "shutdown", G_CALLBACK (shutdown), NULL);
   // We need to call init for so things like GDK_SCALE are used by our
   // GApplication
-  scm_call_0 (scm_c_public_ref ("nomad init", "init"));
-  exit (g_application_run (G_APPLICATION (app), argc, argv));
-}
-
-static void
-init_environment ()
-{
-  const char *env_ccache;
-  char *ccache;
-
-  // If GUILE_LOAD_COMPILED_PATH is set. Append Nomad's site-ccache to
-  // the environment
-  env_ccache = g_getenv ("GUILE_LOAD_COMPILED_PATH");
-  if (env_ccache)
-    {
-      ccache = g_strconcat (env_ccache, ":", NOMAD_GUILE_LOAD_COMPILED_PATH,
-                            NULL);
-    }
-  else
-    {
-      ccache = NOMAD_GUILE_LOAD_COMPILED_PATH;
-    }
-  g_setenv ("GUILE_LOAD_COMPILED_PATH", ccache, TRUE);
+  /* scm_call_0 (scm_c_public_ref ("nomad init", "init")); */
+  /* scm_call_0 (scm_c_public_ref ("nomad gtk gtk", "main")); */
+  /* nomad_start_mutter (); */
 }
 
 int
 main (int argc, char *argv[])
 {
-  /* init_environment (); */
+
   scm_boot_guile (argc, argv, inner_main, NULL);
+  return 0;
 }

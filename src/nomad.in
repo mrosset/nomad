@@ -25,6 +25,7 @@ exec @GUILE@ -e main -s "$0" "$@"
              %load-compiled-path))
 
 (use-modules (ice-9 pretty-print)
+             (ice-9 threads)
              (emacsy emacsy)
              (nomad nomad)
              (nomad platform))
@@ -53,20 +54,28 @@ exec @GUILE@ -e main -s "$0" "$@"
           "comiled-path: ~a~%"
           (pretty-string %load-compiled-path)))
 
+(define application-thread #f)
+
+(define (start-gtk-application args)
+  (log-debug "application start")
+  (let ((thread (call-with-new-thread
+                 (lambda _
+                   (let ((app (make <application> #:application-id "org.gnu.nomad")))
+                     (g-application-run app (length args) args))))))
+    (set! application-thread thread)))
+
 (define (main args)
-  ;; (gi-import "Meta")
-  ;; (nomad-wayland-start-server)
-  (nomad-start-mutter)
-  (when #t
-      (let ((app (make <application> #:application-id "org.gnu.nomad")))
-        (g-application-run app (length args) args)))
-  (log-debug "DISPLAY ON" (getenv "WAYLAND_DISPLAY"))
-  ;; (let (((make <nomad-wayland-client>)))
-  ;;   (nomad-wayland-client-connect display)
-  ;;   ;; (log-debug (class-of display))
-  ;;   (nomad-wayland-client-disconnect display)
-  ;;   )
-  )
+  (use-modules (nomad shell))
+  (add-hook! %shell-startup-hook (lambda _ (start-gtk-application args)))
+  ;; (call-with-new-thread
+  ;;  (lambda _ (nomad-server-start)))
+  ;; (while (not application-thread)
+  ;;   (usleep 100))
+  ;; (join-thread application-thread)
+  (nomad-wayland-server-start)
+  (let ((client (make <nomad-wayland-client>)))
+    (nomad-wayland-client-connect client)
+    (nomad-wayland-client-disconnect client)))
 
 ;; Local Variables:
 ;; mode: scheme

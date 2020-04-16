@@ -84,6 +84,7 @@
        ("gst-plugins-ugly" ,gst-plugins-ugly)
        ("gtk+" ,gtk+)
        ("gtksourceview" ,gtksourceview)
+       ("gtk-layer-shell", gtk-layer-shell)
        ("vte" ,vte)
        ("webkitgtk" ,webkitgtk)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))

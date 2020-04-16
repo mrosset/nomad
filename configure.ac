@@ -59,10 +59,12 @@ PKG_CHECK_MODULES(WEB_EXTENSION, [webkit2gtk-web-extension-4.0])
 PKG_CHECK_MODULES(VTE, [vte-2.91])
 PKG_CHECK_MODULES(WAYLAND_CLIENT, [wayland-client])
 PKG_CHECK_MODULES(WAYLAND_SERVER, [wayland-server])
-PKG_CHECK_MODULES(MUTTER, [libmutter-6])
-
 PKG_CHECK_MODULES(GLIB, [glib-2.0])
-
+dnl PKG_CHECK_MODULES(CLUTTER, [clutter-1.0])
+dnl PKG_CHECK_MODULES(CLUTTER_WAYLAND, [clutter-wayland-1.0])
+dnl PKG_CHECK_MODULES(MUTTER, [libmutter-6])
+PKG_CHECK_MODULES(WLROOTS, [wlroots])
+dnl PKG_CHECK_MODULES(LIBWESTON, [libweston-desktop-9])
 
 AS_IF([test "$with_gtksourceview" = "4"], [
 	    AC_SUBST([GISOURCEVIEW], ["GtkSource-4"])

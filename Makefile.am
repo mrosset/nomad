@@ -40,8 +40,8 @@ coverage: lcov.info
 clean-scheme:
 	$(MAKE) -C ./scheme clean
 
-clean-guile:
-	$(MAKE) -C ./guile clean
+clean-typelib:
+	$(MAKE) -C ./typelib clean
 
 run: all
 	$(MAKE) -C ./src test
@@ -70,5 +70,7 @@ CLEANFILES =		\
 
 DISTCLEANFILES = check-guile.log
 
+enter-guile: all
+	$(top_builddir)/pre-inst-env guile -l $(top_builddir)/tools/guile-env
 attach:
 	$(MAKE) -C docker attach

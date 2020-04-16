@@ -27,6 +27,7 @@
   #:use-module (nomad web)
   #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
+  #:use-module (nomad gtk widget)
   #:use-module (nomad web)
   #:use-module (nomad log)
   #:duplicates (merge-generics replace warn-override-core warn last)
@@ -76,6 +77,7 @@
       (log-crit "Nomad only supports one frame.")
       (begin
         (gtk-frame-new app)
+        ;; (make <layer-bar>)
         (run-hook %startup-hook)))
   (emacsy-tick))
 

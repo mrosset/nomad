@@ -22,7 +22,6 @@
 #define __NOMAD_WAYLAND_H
 
 #include <glib-object.h>
-#include <meta/meta-plugin.h>
 
 G_BEGIN_DECLS
 
@@ -37,12 +36,10 @@ G_DECLARE_FINAL_TYPE (NomadWaylandClient, nomad_wayland_client, NOMAD,
  * Returns: (transfer full):
  */
 
-void nomad_wayland_start_server ();
+void nomad_wayland_server_start ();
 
 void nomad_wayland_client_connect (NomadWaylandClient *self);
 void nomad_wayland_client_disconnect (NomadWaylandClient *self);
-
-void nomad_start_mutter ();
 
 G_END_DECLS
 

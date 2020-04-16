@@ -19,8 +19,9 @@
  */
 
 #include "wayland.h"
-#include "plugin.h"
-#include <meta/main.h>
+#include "scheme.h"
+#include <assert.h>
+#include <libguile.h>
 #include <wayland-client.h>
 #include <wayland-server.h>
 
@@ -50,28 +51,6 @@ nomad_wayland_client_init (NomadWaylandClient *self)
   self->priv = nomad_wayland_client_get_instance_private (self);
 }
 
-void
-nomad_wayland_start_server ()
-{
-  const char *socket;
-
-  struct wl_display *display = wl_display_create ();
-
-  if (!display)
-    {
-      g_critical ("Cound not create Display");
-      return;
-    }
-
-  socket = wl_display_add_socket_auto (display);
-  if (!socket)
-    {
-      g_critical ("Failed to create socket");
-      return;
-    }
-  setenv ("WAYLAND_DISPLAY", socket, 1);
-}
-
 NomadWaylandClient *
 nomad_wayland_client_create ()
 {
@@ -90,18 +69,33 @@ nomad_wayland_client_create ()
   return display;
 }
 
+struct wl_compositor *compositor = NULL;
+struct wl_surface *surface;
+struct wl_shell *shell;
+struct wl_shell_surface *shell_surface;
+
 static void
-nomad_registry_handler (void *data, struct wl_registry *registry, uint32_t id,
-                        const char *interface, uint32_t version)
+global_registry_handler (void *data, struct wl_registry *registry, uint32_t id,
+                         const char *interface, uint32_t version)
 {
-  g_debug ("Got a registry event for %s id %d\n", interface, id);
-  g_debug ("%s %d\n", interface, id);
+
+  if (strcmp (interface, "wl_compositor") == 0)
+    {
+      g_debug ("binding interface %s", interface);
+      compositor
+          = wl_registry_bind (registry, id, &wl_compositor_interface, 1);
+    }
+  else if (strcmp (interface, "wl_shell") == 0)
+    {
+      g_debug ("binding interface %s", interface);
+      shell = wl_registry_bind (registry, id, &wl_shell_interface, version);
+    }
 }
 
 static void
-nomad_registry_remover (void *data, struct wl_registry *registry, uint32_t id)
+global_registry_remover (void *data, struct wl_registry *registry, uint32_t id)
 {
-  g_debug ("Got a registry losing event for %d\n", id);
+  printf ("Got a registry losing event for %d\n", id);
 }
 
 void
@@ -111,28 +105,54 @@ nomad_wayland_client_connect (NomadWaylandClient *self)
   NomadWaylandClientPrivate *priv
       = nomad_wayland_client_get_instance_private (self);
 
-  // clang-format off
   static const struct wl_registry_listener registry_listener
-      = { nomad_registry_handler,
-          nomad_registry_remover };
-  //clang-format on
+      = { global_registry_handler, global_registry_remover };
 
   priv->display = wl_display_connect (NULL);
 
-  if (!priv->display)
-    {
-      g_critical ("Could not connect to display");
-      return;
-    }
-
-  g_debug ("Connnected to Wayland display");
+  assert (priv->display && "Could not connect to display");
 
   priv->registry = wl_display_get_registry (priv->display);
 
+  assert (priv->registry);
   wl_registry_add_listener (priv->registry, &registry_listener, NULL);
-  /* wl_display_dispatch (priv->display); */
+
   wl_display_dispatch_pending (priv->display);
   wl_display_roundtrip (priv->display);
+
+  g_debug ("Connnected to Wayland display");
+
+  if (compositor == NULL)
+    {
+      g_error ("Can't find compositor");
+      exit (0);
+    }
+  else
+    {
+      g_debug ("Found compositor\n");
+    }
+
+  surface = wl_compositor_create_surface (compositor);
+  if (surface == NULL)
+    {
+      g_error ("Can't create surface\n");
+      exit (1);
+    }
+  else
+    {
+      g_debug ("Created surface\n");
+    }
+
+  /* shell_surface = wl_shell_get_shell_surface (shell, surface);
+   * if (shell_surface == NULL)
+   *   {
+   *     g_error ("Can't create shell surface\n");
+   *   }
+   * else
+   *   {
+   *     g_debug ("Created shell surface\n");
+   *   } */
+  /* wl_shell_surface_set_toplevel (shell_surface); */
 }
 
 void
@@ -141,10 +161,11 @@ nomad_wayland_client_disconnect (NomadWaylandClient *self)
   NomadWaylandClientPrivate *priv
       = nomad_wayland_client_get_instance_private (self);
 
-  if(!priv->display) {
-    g_critical ("Display not connected");
-    return;
-  }
+  if (!priv->display)
+    {
+      g_critical ("Display not connected");
+      return;
+    }
 
   wl_display_disconnect (priv->display);
 
@@ -156,12 +177,91 @@ nomad_wayland_client_class_init (NomadWaylandClientClass *class)
 {
 }
 
+struct compositor
+{
+  struct wl_display *display;
+  struct wl_listener listener;
+  struct wl_client *client;
+  struct wl_global *global;
+};
+
+static void
+create_surface (struct wl_client *client, struct wl_resource *resource,
+                uint32_t id)
+{
+  g_debug ("%s Not Implimented", __func__);
+}
+
+static void
+create_region (struct wl_client *client, struct wl_resource *resource,
+               uint32_t id)
+{
+  g_debug ("%s Not Implimented", __func__);
+}
+
+static const struct wl_compositor_interface compositor_impl = {
+  .create_surface = create_surface,
+  .create_region = create_region,
+};
+
+static void
+bind_compositor (struct wl_client *client, void *data, uint32_t version,
+                 uint32_t id)
+{
+  struct wl_resource *resource;
+
+  resource
+      = wl_resource_create (client, &wl_compositor_interface, version, id);
+  if (!resource)
+    {
+      wl_client_post_no_memory (client);
+      return;
+    }
+  wl_resource_set_implementation (resource, &compositor_impl, NULL, NULL);
+}
+
+gpointer
+display_run (gpointer data)
+{
+  struct compositor *compositor = data;
+
+  wl_display_run (compositor->display);
+
+  wl_display_destroy_clients (compositor->display);
+  wl_display_destroy (compositor->display);
+  return NULL;
+}
+
 void
-nomad_start_mutter() {
-  meta_plugin_manager_set_plugin_type(nomad_shell_plugin_get_type());
-  meta_get_option_context();
-  /* meta_get_option_context (); */
-  meta_init();
-  /* meta_get_replace_current_wm(); */
-  meta_run();
+setup_compositor (struct compositor *compositor)
+{
+  const char *socket;
+
+  compositor->display = wl_display_create ();
+  compositor->global
+      = wl_global_create (compositor->display, &wl_compositor_interface, 4,
+                          NULL, &bind_compositor);
+
+  socket = wl_display_add_socket_auto (compositor->display);
+
+  g_debug ("Server Started");
+
+  setenv ("WAYLAND_DISPLAY", socket, 1);
+
+  if (fork () == 0)
+    {
+      execl ("/bin/sh", "/bin/sh", "-c", "weston-info", (void *)NULL);
+    }
+
+  g_thread_new ("compositor", display_run, compositor);
+  sleep (1);
+}
+
+void
+nomad_wayland_server_start ()
+{
+
+  struct compositor compositor = { 0 };
+
+  setup_compositor (&compositor);
 }

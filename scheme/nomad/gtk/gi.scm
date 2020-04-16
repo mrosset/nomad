@@ -22,8 +22,6 @@
   #:duplicates (merge-generics replace warn-override-core warn last))
 
 (eval-when (expand load eval)
-  (gi-import "Gdk")
-  (gi-import "GdkX11")
   (map (match-lambda ((namespace item)
                       (gi-import-by-name namespace item)))
        '(("Gtk" "Application")
@@ -44,4 +42,9 @@
          ("GtkSource" "StyleSchemeManager")))
   (gi-import "Vte")
   (gi-import "WebKit2")
+  (gi-import "Gdk")
+  (gi-import "GdkX11")
+  (gi-import "GtkLayerShell")
+  ;; (gi-import "ClutterGdk")
+  ;; (gi-import "Clutter")
   (gi-import "Nomad"))

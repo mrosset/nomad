@@ -37,6 +37,7 @@
             <widget-text-view>
             <widget-thunk-view>
             <widget-terminal>
+            <layer-bar>
             redisplay
             <window-container>
             make-buffer-widget
@@ -201,6 +202,24 @@
     (run-hook %load-committed-hook buffer)
     (run-hook %thunk-view-hook))
   #t)
+
+(define-class <layer-bar> (<gtk-application-window>))
+
+(define-method (initialize (bar <layer-bar>) args)
+  (next-method)
+  (gtk-layer-init-for-window bar)
+
+  (gtk-layer-set-layer bar 'string)
+  (gtk-layer-set-anchor bar 'none #t)
+  (gtk-layer-set-anchor bar 'string #t)
+  (gtk-layer-set-anchor bar 'int #f)
+  (gtk-layer-set-anchor bar 'callback #t)
+
+  (gtk-layer-auto-exclusive-zone-enable bar)
+  ;; (let ((label (make <gtk-label> #:label "input")))
+  ;;   (gtk-label-set-markup label ))
+  (gtk-container-add bar (make <gtk-text-view>))
+  (gtk-widget-show-all bar))
 
 (define-class <widget-web-view> (<widget-with-buffer>
                                  <webkit-web-view>))
