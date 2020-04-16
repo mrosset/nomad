@@ -1,5 +1,5 @@
 /*
- * wayland.h
+ * compositor.c
  * Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
  *
  * This file is part of Nomad
@@ -18,27 +18,25 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __NOMAD_WAYLAND_H
-#define __NOMAD_WAYLAND_H
+#ifndef __NOMAD_COMPOSITOR_H
+#define __NOMAD_COMPOSITOR_H
 
 #include <glib-object.h>
+#include <wayland-client.h>
+#include <wayland-server.h>
 
 G_BEGIN_DECLS
 
-#define NOMAD_TYPE_WAYLAND_CLIENT nomad_wayland_client_get_type ()
-
-G_DECLARE_FINAL_TYPE (NomadWaylandClient, nomad_wayland_client, NOMAD,
-                      WAYLAND_CLIENT, GObject)
-
-/**
- * example:
- *
- * Returns: (transfer full):
- */
-
-void nomad_wayland_client_connect (NomadWaylandClient *self);
-void nomad_wayland_client_disconnect (NomadWaylandClient *self);
+struct compositor
+{
+  struct wl_display *display;
+  struct wl_listener listener;
+  struct wl_client *client;
+  struct wl_global *global;
+};
 
 G_END_DECLS
+
+void nomad_compositor_start ();
 
 #endif

@@ -32,7 +32,8 @@ xdg-shell-protocol.c: xdg-shell-protocol.h
 		$(WAYLAND_PROTOCOLS)/stable/xdg-shell/xdg-shell.xml $@
 
 bin_PROGRAMS  = main
-main_SOURCES  = main.c wayland.c wayland.h xdg-shell-protocol.h xdg-shell-protocol.c
+main_SOURCES  = main.c wayland.c wayland.h compositor.c compositor.h
+
 
 main_CFLAGS   = $(libguile_nomad_la_CFLAGS)
 main_CFLAGS  += $(WAYLAND_SERVER_CFLAGS)
