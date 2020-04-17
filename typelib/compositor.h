@@ -33,6 +33,7 @@ struct compositor
   struct wl_listener listener;
   struct wl_client *client;
   struct wl_global *global;
+  struct wl_global *shell;
 };
 
 G_END_DECLS

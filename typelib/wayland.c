@@ -129,29 +129,29 @@ nomad_wayland_client_connect (NomadWaylandClient *self)
     }
   else
     {
-      g_debug ("Found compositor\n");
+      g_debug ("Found compositor");
     }
 
   surface = wl_compositor_create_surface (compositor);
   if (surface == NULL)
     {
-      g_error ("Can't create surface\n");
+      g_error ("Can't create surface");
       exit (1);
     }
   else
     {
-      g_debug ("Created surface\n");
+      g_debug ("Created surface");
     }
 
-  /* shell_surface = wl_shell_get_shell_surface (shell, surface);
-   * if (shell_surface == NULL)
-   *   {
-   *     g_error ("Can't create shell surface\n");
-   *   }
-   * else
-   *   {
-   *     g_debug ("Created shell surface\n");
-   *   } */
+  shell_surface = wl_shell_get_shell_surface (shell, surface);
+  if (shell_surface == NULL)
+    {
+      g_error ("Can't create shell surface");
+    }
+  else
+    {
+      g_debug ("Created shell surface");
+    }
   /* wl_shell_surface_set_toplevel (shell_surface); */
 }
 

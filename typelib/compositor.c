@@ -56,6 +56,7 @@ static void
 bind_compositor (struct wl_client *client, void *data, uint32_t version,
                  uint32_t id)
 {
+
   struct wl_resource *resource;
 
   resource
@@ -68,20 +69,70 @@ bind_compositor (struct wl_client *client, void *data, uint32_t version,
   wl_resource_set_implementation (resource, &compositor_impl, NULL, NULL);
 }
 
+static void
+get_shell_surface (struct wl_client *client, struct wl_resource *resource,
+                   uint32_t id, struct wl_resource *surface_resource)
+{
+  g_debug ("%s Not Implimented", __func__);
+
+  /* struct surface *surface = wl_resource_get_user_data (surface_resource);
+   * struct shell_surface *shell_surface;
+   *
+   * shell_surface = shell_surface_new (
+   *     client, wl_resource_get_version (resource), id, surface);
+   *
+   * if (!shell_surface)
+   *   wl_resource_post_no_memory (resource); */
+}
+
+static const struct wl_shell_interface shell_implementation = {
+  .get_shell_surface = get_shell_surface,
+};
+
+static void
+bind_shell (struct wl_client *client, void *data, uint32_t version,
+            uint32_t id)
+{
+  struct wl_resource *resource;
+
+  resource = wl_resource_create (client, &wl_shell_interface, version, id);
+  if (!resource)
+    {
+      wl_client_post_no_memory (client);
+      return;
+    }
+  wl_resource_set_implementation (resource, &shell_implementation, NULL, NULL);
+}
+
+struct compositor *
+compositor_new ()
+{
+  struct compositor *compositor;
+
+  compositor = calloc (1, sizeof (struct compositor));
+  compositor->display = wl_display_create ();
+
+  compositor->global
+      = wl_global_create (compositor->display, &wl_compositor_interface, 4,
+                          NULL, &bind_compositor);
+
+  compositor->shell = wl_global_create (
+      compositor->display, &wl_shell_interface, 1, NULL, &bind_shell);
+
+  return compositor;
+}
+
 void
 nomad_compositor_start ()
 {
-
-  struct compositor compositor = { 0 };
   const char *socket;
+  struct compositor *compositor;
 
-  compositor.display = wl_display_create ();
-  compositor.global = wl_global_create (
-      compositor.display, &wl_compositor_interface, 4, NULL, &bind_compositor);
+  compositor = compositor_new ();
 
-  socket = wl_display_add_socket_auto (compositor.display);
+  socket = wl_display_add_socket_auto (compositor->display);
 
-  g_debug ("Server Started");
+  g_debug ("Server Started on %s", socket);
 
   setenv ("WAYLAND_DISPLAY", socket, 1);
 
@@ -90,6 +141,6 @@ nomad_compositor_start ()
       execl ("/bin/sh", "/bin/sh", "-c", "weston-info", (void *)NULL);
     }
 
-  g_thread_new ("compositor", display_run, &compositor);
-  /* sleep (1); */
+  g_thread_new ("compositor", display_run, compositor);
+  sleep (1);
 }
