@@ -18,7 +18,7 @@
 
 ## ACLOCAL_AMFLAG = -I m4
 
-AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement
+AM_CFLAGS = -Wall -Werror -Wdeclaration-after-statement -DG_LOG_DOMAIN=\"Nomad\"
 
 libguile_nomad_LTLIBRARIES = libguile-nomad.la
 libguile_nomaddir = $(libexecdir)/nomad/
@@ -37,6 +37,8 @@ libguile_nomad_la_CFLAGS += $(GTK_SOURCEVIEW_CFLAGS)
 libguile_nomad_la_CFLAGS += $(VTE_CFLAGS)
 
 
+libguile_nomad_la_LDFLAGS = -avoid-version -no-undefined
+
 libguile_nomad_la_LIBADD =  $(GUILE_LIBS)
 libguile_nomad_la_LIBADD += $(EMACSY_LIBS)
 libguile_nomad_la_LIBADD += $(GLIB_LIBS)
@@ -44,8 +46,6 @@ libguile_nomad_la_LIBADD += $(GTK_LIBS)
 libguile_nomad_la_LIBADD += $(WEBKIT_LIBS)
 libguile_nomad_la_LIBADD += $(GTK_SOURCEVIEW_LIBS)
 libguile_nomad_la_LIBADD += $(VTE_LIBS)
-
-libguile_nomad_la_LDFLAGS = -avoid-version -no-undefined
 
 G_RESOURCES   = gresource.xml
 BUILT_SOURCES = resources.c
