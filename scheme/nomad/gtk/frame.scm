@@ -139,7 +139,7 @@
       (show-all self))))
 
 (define (gtk-frame-new app)
-  (make <gtk-frame> #:application (slot-ref app 'g-inst)
+  (make <gtk-frame> #:application app
         #:icon-name "nomad"))
 
 (define-public (delete-frame)
