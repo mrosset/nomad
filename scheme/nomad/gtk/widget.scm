@@ -230,20 +230,18 @@
                                    (kill-buffer (current-buffer))))
 
       (connect vte 'window-title-changed (lambda _
-                                          (run-hook %thunk-view-hook)))
-
-      (nomad-spawn-terminal vte %default-shell))
+                                           (run-hook %thunk-view-hook)))
+      (vte-terminal-spawn-async vte
+                                '(default)
+                                (getcwd)
+                                `(,%default-shell)
+                                #f
+                                '(default)
+                                #f #f #f
+                                -1
+                                #f #f #f))
     (lambda (key . vals)
-      (safe-message "Error: key: ~a value: ~a" key vals)))
-
-  ;; (vte-terminal-spawn-sync vte
-  ;;                          '(default)
-  ;;                          (getcwd)
-  ;;                          '("/bin/bash")
-  ;;                          #f
-  ;;                          '(none)
-  ;;                          #f #f #f)
-  )
+      (safe-message "Error: key: ~a value: ~a" key vals))))
 
 (define-method (make-buffer-widget (buffer <web-buffer>))
   (make <widget-web-view> #:buffer buffer))

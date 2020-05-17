@@ -63,23 +63,6 @@ nomad_draw_border (GtkWidget *widget, cairo_t *cr)
   return FALSE;
 }
 
-void
-nomad_spawn_terminal (GtkWidget *widget, const char *shell)
-{
-  gchar **command = (gchar *[]){ g_strdup (shell), NULL };
-  // clang-format off
-  vte_terminal_spawn_async (VTE_TERMINAL (widget), VTE_PTY_DEFAULT,
-                            NULL,
-                            command,
-                            NULL,
-                            0,
-                            NULL, NULL,
-                            NULL,
-                            -1,
-                            NULL, NULL, NULL);
-  // clang-format on
-}
-
 GdkRGBA *
 nomad_color_parse (const char *spec)
 {
