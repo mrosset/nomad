@@ -1,12 +1,13 @@
 (define-module (gnu packages g-golf)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (gnu packages guile-xyz))
 
 (define-public g-golf-git
-  (let ((commit   "e99f40e15f6f9e08a6ca5235a5dc002ba4ca999b")
+  (let ((commit   "30148389eed34a06f16e679be9ae59d9782d559f")
         (revision "0"))
-    (package
+     (package
       (inherit g-golf)
       (name "g-golf-git")
       (version (git-version "0.1.0" revision commit))
@@ -18,4 +19,8 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0aph503xsb4q82hagnvslvw2017lvgvw9g3ffgz2zy55rq40y8q1")))))))
+                  "1yzfwv5fdpzszv0crx2n8biavqmhmn3nyivzqqv8zkx27wq8b1qb"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments g-golf)
+         ;; Tests are disabled since they require a DISPLAY
+         ((#:tests? _ #f) #f))))))
