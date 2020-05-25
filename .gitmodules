@@ -1,0 +1,9 @@
+[submodule "3rdparty/g-golf"]
+	path = 3rdparty/g-golf
+	url = https://git.savannah.gnu.org/git/g-golf.git
+[submodule "3rdparty/emacsy"]
+	path = 3rdparty/emacsy
+	url = mrosset@git.sv.gnu.org:/srv/git/emacsy.git
+[submodule "3rdparty/shroud"]
+	path = 3rdparty/shroud
+	url = git://dthompson.us/shroud.git
