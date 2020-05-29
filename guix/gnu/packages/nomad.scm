@@ -12,7 +12,6 @@
  (gnu packages bash)
  (gnu packages code)
  (gnu packages curl)
- (gnu packages emacsy)
  (gnu packages gettext)
  (gnu packages glib)
  (gnu packages g-golf)
