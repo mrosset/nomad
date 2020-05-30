@@ -148,7 +148,7 @@ backend and modular feature-set fully programmable in Guile.")
     (license license:gpl3+)))
 
 (define-public nomad-git
-  (let ((commit "0.1.2-alpha-316-ga563ef0"))
+  (let ((commit "0.1.2-alpha-319-g9c2ffc9"))
     (package
       (inherit nomad)
       (name "nomad-git")
@@ -161,4 +161,4 @@ backend and modular feature-set fully programmable in Guile.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "03fw9qkb7igi8a31nwmm74xznkrs8hhs047g6avhcrbb71ff0cpn")))))))
+                  "1hy55rsy5r4v8k2gmszy11mwfpyafdakyg1ckq9bj7z63fy72nzk")))))))
