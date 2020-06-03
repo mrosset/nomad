@@ -156,6 +156,7 @@ AC_MSG_NOTICE([summary of build options:
   Compiler:             ${CC}
   CFlags:               ${CFLAGS}
   Library types:        Shared=${enable_shared}, Static=${enable_static}
+  Guile version:        ${GUILE_EFFECTIVE_VERSION}
 ])
 
 AC_MSG_NOTICE([summary of GTK libraries:

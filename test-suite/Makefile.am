@@ -1,6 +1,7 @@
 TESTS  = tests/util.scm
 TESTS += tests/init.scm
 TESTS += tests/buffer.scm
+TESTS += tests/gtk/widget.scm
 
 # TESTS += tests/frame.scm
 # TESTS += tests/application.scm

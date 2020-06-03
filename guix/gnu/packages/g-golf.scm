@@ -5,8 +5,8 @@
   #:use-module (gnu packages guile-xyz))
 
 (define-public g-golf-git
-  (let ((commit   "30148389eed34a06f16e679be9ae59d9782d559f")
-        (revision "0"))
+  (let ((commit   "654991ca911caf56e692df40e2e1cc44c22011ea")
+        (revision "751"))
      (package
       (inherit g-golf)
       (name "g-golf-git")
@@ -19,7 +19,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1yzfwv5fdpzszv0crx2n8biavqmhmn3nyivzqqv8zkx27wq8b1qb"))))
+                  "00xqgl1a7ca0g1pk6jjavmricj5xwpgwgq2ghpn1711hbcm48088"))))
       (arguments
        (substitute-keyword-arguments (package-arguments g-golf)
          ;; Tests are disabled since they require a DISPLAY
