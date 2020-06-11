@@ -213,6 +213,8 @@
   (next-method)
   (connect view 'decide-policy decide-policy)
   (connect view 'load-changed load-change)
+  (when (%default-web-settings)
+    (webkit-web-view-set-settings view (%default-web-settings)))
   (widget-load-uri view (buffer-uri (!buffer view))))
 
 (define-method (redisplay (view <widget-web-view>))

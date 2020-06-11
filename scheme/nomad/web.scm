@@ -31,6 +31,7 @@
             %web-mode-map
             %styles
             %default-style
+            %default-web-settings
             %load-committed-hook
             <web-buffer>
             buffer-uri
@@ -61,6 +62,8 @@
 (define %styles #f)
 
 (define %default-style #f)
+
+(define %default-web-settings (make-parameter #f))
 
 (define-class <web-buffer> (<widget-buffer>)
   (keymap   #:accessor     local-keymap
