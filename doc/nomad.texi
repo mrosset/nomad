@@ -202,7 +202,7 @@ keybindings.
 @chapter API
 
 The modules and features provided by Nomad are in flux. The best option is
-to consult the source directly. @uref{@value{GIT}}
+to consult the source directly. @uref{@value{GITWEB}}
 
 @c @include api.texi
 
