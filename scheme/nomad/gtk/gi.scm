@@ -21,6 +21,8 @@
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last))
 
+(set! %gi-method-short-names-skip '(insert reload))
+
 (eval-when (expand load eval)
   (gi-import "Gdk")
   (gi-import "GdkX11")
@@ -43,5 +45,5 @@
          ("GtkSource" "StyleScheme")
          ("GtkSource" "StyleSchemeManager")))
   (gi-import "Vte")
-  (gi-import "WebKit2")
-  (gi-import "Nomad"))
+  (gi-import "Nomad")
+  (gi-import "WebKit2"))
