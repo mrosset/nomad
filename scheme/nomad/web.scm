@@ -49,7 +49,7 @@
 
 (define %load-committed-hook (make-hook 1))
 
-(define-public web-mode (make <mode> #:mode-name "web"))
+(define-public web-mode (make <mode> #:mode-name "Web"))
 
 ;; search providers
 (define %search-providers
