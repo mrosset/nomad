@@ -45,5 +45,5 @@
          ("GtkSource" "StyleScheme")
          ("GtkSource" "StyleSchemeManager")))
   (gi-import "Vte")
-  (gi-import "Nomad")
-  (gi-import "WebKit2"))
+  (gi-import "WebKit2")
+  (gi-import "Nomad"))
