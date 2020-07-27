@@ -71,6 +71,11 @@ AS_IF([test "$with_gtksourceview" = "3"], [
 ])
 
 dnl guile modules
+GUILE_MODULE_AVAILABLE([guile_gcrypt], [(gcrypt hash)])
+if test "$guile_gcrypt" = "no"; then
+   AC_MSG_ERROR([guile-gcrypt is missing; please install it.])
+fi
+
 GUILE_MODULE_AVAILABLE([guile_readline], [(ice-9 readline)])
 if test "$guile_readline" = "no"; then
    AC_MSG_ERROR([guile-readline is missing; please install it.])
@@ -94,6 +99,16 @@ fi
 GUILE_MODULE_AVAILABLE([guile_curl], [(curl)])
 if test "$guile_curl" = "no"; then
    AC_MSG_WARN([not using guile-curl])
+fi
+
+GUILE_MODULE_AVAILABLE([guile_shroud], [(shroud secret)])
+if test "$guile_shroud" = "no"; then
+   AC_MSG_ERROR([guile shroud is missing; please install it.])
+fi
+
+GUILE_MODULE_AVAILABLE([guile_gnutls], [(gnutls)])
+if test "$guile_gnutls" = "no"; then
+   AC_MSG_WARN([guile gnutls is missing; please install it.])
 fi
 
 top_builddir_absolute=`pwd`
