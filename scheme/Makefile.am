@@ -33,7 +33,7 @@ $(guile_install_go_files): install-nobase_modDATA
 SUFFIXES = .scm .go
 
 .scm.go:
-	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILD) compile $(GUILE_WARNINGS) -o "$@" "$<"
+	$(AM_V_GEN)$(top_builddir)/pre-inst-env $(GUILE_TOOLS) compile $(GUILE_WARNINGS) -o "$@" "$<"
 
 SOURCES =			\
 	nomad/init.scm		\
