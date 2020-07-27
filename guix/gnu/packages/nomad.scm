@@ -30,8 +30,8 @@
  (gnu packages xorg))
 
 (define-public nomad
-  (let ((commit "0.1.2-alpha-329-g9bc2b08")
-        (hash   (base32 "099ina849di91r49lr4jjval7svpfp56jhx5laydhdi6ydh0pwip")))
+  (let ((commit "0.1.2-alpha-334-g3c64373")
+        (hash   (base32 "0441hbw78icrm9d6aqfryjarg068qa0jmhhg80wj241b3ss7744l")))
     (package
       (name "nomad")
       (version commit)
@@ -142,9 +142,8 @@
               (separator ":")
               (files '("libexec/nomad")))))
       (home-page "https://savannah.nongnu.org/projects/nomad/")
-      (synopsis "Web Browser extensible in Guile scheme")
-      (description "Nomad is a Emacs-like web browser that consists of a small C
-backend and modular feature-set fully programmable in Guile.")
+      (synopsis "Extensible Web Browser in Guile Scheme")
+      (description "Nomad is a Emacs-like web browser that consists of a modular feature-set fully programmable in Guile Scheme.")
       (license license:gpl3+))))
 
 (define-public nomad-git
