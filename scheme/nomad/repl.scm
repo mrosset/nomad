@@ -1,5 +1,5 @@
 ;; repl.scm
-;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
 
@@ -26,8 +26,7 @@
   #:use-module (ice-9 textual-ports)
   #:use-module (system repl coop-server)
   #:use-module (system repl server)
-  #:export (
-            repl-server
+  #:export (repl-server
             server-force-delete
             server-start
             server-start-coop
@@ -70,12 +69,6 @@ value of socket-file."
 client connections first."
   (stop-server-and-clients!)
   (delete-file socket-file))
-
-(define (read-socket port)
-  (do ((line (read-line port) (read-line port)))
-      ((eof-object? line))
-    (display line)
-    (newline)))
 
 (define client-port #f)
 
