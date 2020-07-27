@@ -60,7 +60,6 @@ doc-snarf-api:
 		$(top_builddir)/scheme/nomad/nomad.scm			\
 		$(top_builddir)/scheme/nomad/options.scm		\
 		$(top_builddir)/scheme/nomad/repl.scm			\
-		$(top_builddir)/scheme/nomad/server.scm				\
 		$(top_builddir)/scheme/nomad/shroud.scm				\
 		$(top_builddir)/scheme/nomad/tests.scm			\
 		$(top_builddir)/scheme/nomad/text.scm			\
