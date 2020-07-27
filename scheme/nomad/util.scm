@@ -33,6 +33,9 @@
 (codefine* (co-message fmt . args)
            (apply message fmt args))
 
+(define-interactive (undefined-command)
+  (message "Undefined command"))
+
 (define-public (make-buffer class . args)
   (let ((buffer (apply make class args)))
     (add-buffer! buffer)

@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad frame)
+  #:use-module (nomad util)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
   #:use-module (nomad platform))
@@ -31,6 +32,9 @@
 (define frame-map (make-keymap))
 
 (define-key global-map "C-x 5" frame-map)
+
+(define-key global-map "C-x 2" 'undefined-command)
+(define-key global-map "C-x 3" 'undefined-command)
 
 (define-key frame-map "2" 'make-frame-command)
 (define-key frame-map "0" 'delete-frame)
