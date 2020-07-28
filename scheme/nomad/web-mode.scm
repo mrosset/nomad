@@ -175,6 +175,7 @@ current buffer is not a @var{<web-buffer>} it will create a new
                       ("C-n" scroll-down)
                       ("C-p" scroll-up)
                       ("C-f" hints)
+                      ("C-o" load-uri)
                       ("C-y" make-buffer-clipboard)
                       ("C-r" reload)
                       ("C-g" web-keyboard-quit)

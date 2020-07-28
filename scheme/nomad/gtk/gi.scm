@@ -21,7 +21,9 @@
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last))
 
-(set! %gi-method-short-names-skip '(insert reload))
+(set! %gi-method-short-names-skip '(insert
+                                    reload
+                                    load-uri))
 
 (eval-when (expand load eval)
   (gi-import "Gdk")
