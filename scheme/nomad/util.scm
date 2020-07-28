@@ -101,6 +101,7 @@
         (loop (1+ n)))))
 
 (define-interactive (nomad-version)
+  "Returns a string describing the version of Nomad running."
   (message "~a" ((@ (g-golf) nomad-get-version)))
   ((@ (g-golf) nomad-get-version)))
 
