@@ -29,24 +29,34 @@
 
 (define test-uri "https://mirrors.kernel.org/gnu/make/make-4.3.tar.gz")
 
+(define online? #t)
+
+(catch 'getaddrinfo-error
+  (lambda _
+    (getaddrinfo "mirrors.kernel.org" "https"))
+  (lambda (key code)
+    ;; if we get here no network, so disable online tests
+    (set! online? #f)))
+
 (define-method (test-procedures (self <test-download>))
   (parameterize ((%download-directory (tmpnam)))
     (assert-equal "make-4.3.tar.gz" (uri->filename test-uri))
     (assert-equal (string-append (%download-directory) "/make-4.3.tar.gz") (download-path test-uri))))
 
-(define-method (test-download (self <test-download>))
-  (parameterize ((%download-directory (tmpnam) ))
-    (let ((file (string-append (%download-directory) "/make-4.3.tar.gz")))
-      (dynamic-wind
-        (lambda ()
-          (ensure-directory (%download-directory))
-          (assert-true (file-exists? (%download-directory))))
-        (lambda ()
-          (http-download test-uri)
-          (assert-true (file-exists? file))
-          (assert-equal "e05fdde47c5f7ca45cb697e973894ff4f5d79e13b750ed57d7b66d8defc78e19"
-                        (bytevector->base16-string (file-sha256 file))))
-        (lambda ()
-          (when (file-exists? file)
-            (delete-file file))
-          (rmdir (%download-directory)))))))
+(when online?
+  (define-method (test-download (self <test-download>))
+   (parameterize ((%download-directory (tmpnam) ))
+     (let ((file (string-append (%download-directory) "/make-4.3.tar.gz")))
+       (dynamic-wind
+         (lambda ()
+           (ensure-directory (%download-directory))
+           (assert-true (file-exists? (%download-directory))))
+         (lambda ()
+           (http-download test-uri)
+           (assert-true (file-exists? file))
+           (assert-equal "e05fdde47c5f7ca45cb697e973894ff4f5d79e13b750ed57d7b66d8defc78e19"
+                         (bytevector->base16-string (file-sha256 file))))
+         (lambda ()
+           (when (file-exists? file)
+             (delete-file file))
+           (rmdir (%download-directory))))))))
