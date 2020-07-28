@@ -58,8 +58,7 @@
   (~/ ".nomad.d"))
 
 ;; The directory where downloads should be saved to.
-(define-ident %download-directory
-  (~/ "downloads"))
+(define %download-directory (make-parameter (~/ "downloads")))
 
 (define session '())
 

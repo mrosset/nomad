@@ -25,6 +25,6 @@
 
 (define-class <test-frame> (<test-case>))
 
- (define-method (test-frame (self <test-frame>))
-   (with-test-app
-    (assert-equal <gtk-frame> (class-of (current-frame)))))
+(define-method (test-frame (self <test-frame>))
+  (with-test-app
+   (assert-equal <gtk-frame> (class-of (current-frame)))))

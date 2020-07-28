@@ -32,12 +32,13 @@
             download-function
             http-download))
 
-(define (uri->filename url)
-  (basename (uri-path (string->uri url))))
+(define (uri->filename uri)
+  "Returns the filename at the end of @var{uri}"
+  (basename (uri-path (string->uri uri))))
 
 (define (download-path url)
   "Returns full path of URI download location"
-  (string-append (fluid-ref download-directory)
+  (string-append (%download-directory)
                  //
                  (uri->filename url)))
 
