@@ -100,6 +100,10 @@
         (name n)
         (loop (1+ n)))))
 
+(define-interactive (nomad-version)
+  (message "~a" ((@ (g-golf) nomad-get-version)))
+  ((@ (g-golf) nomad-get-version)))
+
 (define-interactive (take-a-selfie)
   (message "say cheese!\n")
   (call-with-new-thread

@@ -150,7 +150,7 @@ nomad_set_wrap_mode (GtkTextView *view, gboolean wrap_mode)
 }
 
 const char *
-nomad_version ()
+nomad_get_version ()
 {
   return VERSION;
 }

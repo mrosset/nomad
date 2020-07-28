@@ -32,6 +32,6 @@ gboolean nomad_draw_border (GtkWidget *widget, cairo_t *cr);
 void nomad_set_wrap_mode (GtkTextView *view, gboolean wrap_mode);
 GdkRGBA *nomad_color_parse (const char *spec);
 void nomad_vte_set_colors (GtkWidget *widget);
-const char *nomad_version ();
+const char *nomad_get_version ();
 
 #endif
