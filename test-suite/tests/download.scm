@@ -45,7 +45,7 @@
 
 (when online?
   (define-method (test-download (self <test-download>))
-   (parameterize ((%download-directory (tmpnam) ))
+   (parameterize ((%download-directory (tmpnam)))
      (let ((file (string-append (%download-directory) "/make-4.3.tar.gz")))
        (dynamic-wind
          (lambda ()
