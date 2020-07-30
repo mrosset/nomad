@@ -45,6 +45,8 @@
             hints-finish
             buffer-scroll-up
             buffer-scroll-down
+            buffer-scroll-top
+            buffer-scroll-bottom
             buffer-reload
             search-forward
             search-finish))
@@ -102,6 +104,14 @@
 (define-method (buffer-scroll-down (buffer <web-buffer>))
   (nomad-app-run-javascript (buffer-widget buffer)
                             "window.scrollBy(0, 25);"))
+
+(define-method (buffer-scroll-top (buffer <web-buffer>))
+  (nomad-app-run-javascript (buffer-widget buffer)
+                            "window.scrollTo(0, 0);"))
+
+(define-method (buffer-scroll-bottom (buffer <web-buffer>))
+  (nomad-app-run-javascript (buffer-widget buffer)
+                            "window.scrollTo(0,document.body.scrollHeight);"))
 
 (define-method (hints-finish (buffer <web-buffer>))
   (nomad-app-send-message (buffer-widget buffer)
