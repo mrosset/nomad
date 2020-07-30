@@ -102,6 +102,16 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
   (buffer-scroll-bottom buffer)
   #t)
 
+(define-interactive (web-page-up #:optional (buffer (current-buffer)))
+  "Page up web buffer"
+  (buffer-page-up buffer)
+  #t)
+
+(define-interactive (web-page-down #:optional (buffer (current-buffer)))
+  "Page down web buffer"
+  (buffer-page-down buffer)
+  #t)
+
 (define-interactive (forward #:optional (buffer (current-buffer)))
   "Go backwards in history"
   (buffer-forward buffer)
@@ -186,6 +196,8 @@ current buffer is not a @var{<web-buffer>} it will create a new
                       ("C-p" scroll-up)
                       ("M-<" web-beginning-of-buffer)
                       ("M->" web-end-of-buffer)
+                      ("M-v" web-page-up)
+                      ("C-v" web-page-down)
                       ("C-f" hints)
                       ("C-o" load-uri)
                       ("C-y" make-buffer-clipboard)
