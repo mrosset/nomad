@@ -33,6 +33,9 @@
             widget-container
             window-widget))
 
+(g-export widget-container
+          window-widget)
+
 (define-class <widget-window> (<window>)
   (last-tick #:accessor last-tick #:init-value -1))
 

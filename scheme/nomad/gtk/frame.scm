@@ -28,9 +28,10 @@
   #:use-module (nomad text)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<gtk-frame>
-            !container
             gtk-frame-new
             current-frame))
+
+(g-export !container)
 
 (define-public (current-popup)
   "Returns the current frame"

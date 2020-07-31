@@ -34,24 +34,25 @@
   #:export (<gtk-widget-buffer>
             <gtk-textview-buffer>
             <gtk-webview-buffer>
-            <gtk-popup-buffer>
-            widget-is-loading?
-            widget-uri
-            widget-title
-            buffer-load-uri
-            buffer-back
-            buffer-forward
-            buffer-hints
-            hints-finish
-            buffer-scroll-up
-            buffer-scroll-down
-            buffer-scroll-top
-            buffer-page-up
-            buffer-page-down
-            buffer-scroll-bottom
-            buffer-reload
-            search-forward
-            search-finish))
+            <gtk-popup-buffer>))
+
+(g-export widget-is-loading?
+          widget-uri
+          widget-title
+          buffer-load-uri
+          buffer-back
+          buffer-forward
+          buffer-hints
+          hints-finish
+          buffer-scroll-up
+          buffer-scroll-down
+          buffer-scroll-top
+          buffer-page-up
+          buffer-page-down
+          buffer-scroll-bottom
+          buffer-reload
+          search-forward
+          search-finish)
 
 ;; Methods
 ;;

@@ -1,4 +1,4 @@
-;; widgets.scm
+ ;; widgets.scm
 ;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -37,21 +37,22 @@
             <widget-text-view>
             <widget-thunk-view>
             <widget-terminal>
-            redisplay
-            <window-container>
-            make-buffer-widget
-            !grid
-            !thunk
-            !mode-line
-            set-text!
-            get-text
-            set-point!
-            show-all
-            grab-focus
-            !container
-            container-child
-            container-replace
-            container-empty?))
+            <window-container>))
+
+(g-export !container
+          !grid
+          !mode-line
+          !thunk
+          container-child
+          container-empty?
+          container-replace
+          get-text
+          grab-focus
+          make-buffer-widget
+          redisplay
+          set-point!
+          set-text!
+          show-all)
 
 ;; Widgets that have an associated buffer
 (define-class <widget-with-buffer> ()
