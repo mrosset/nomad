@@ -69,7 +69,7 @@
   (let ((vte (buffer-widget buffer)))
     (format #f "~a~/~a"
             (next-method)
-            (vte-terminal-get-window-title vte))))
+            (get-window-title vte))))
 
 (define-method (initialize (buffer <web-buffer>) arg)
   (next-method)
@@ -79,49 +79,49 @@
 (define-method (widget-title (buffer <web-buffer>))
   (if (!is-loading (buffer-widget buffer))
       "loading..."
-      (webkit-web-view-get-title (buffer-widget buffer))))
+      (get-title (buffer-widget buffer))))
 
 (define-method (widget-is-loading? (buffer <web-buffer>))
   (!is-loading (buffer-widget buffer)))
 
 (define-method (widget-uri (buffer <web-buffer>))
-  (webkit-web-view-get-uri (buffer-widget buffer)))
+  (get-uri (buffer-widget buffer)))
 
 (define-method (buffer-load-uri (buffer <web-buffer>) uri)
   (webkit-web-view-load-uri (buffer-widget buffer)
                             uri))
 
 (define-method (buffer-forward (buffer <web-buffer>))
-  (webkit-web-view-go-forward (buffer-widget buffer)))
+  (go-forward (buffer-widget buffer)))
 
 (define-method (buffer-back (buffer <web-buffer>))
-  (webkit-web-view-go-back (buffer-widget buffer)))
+  (go-back (buffer-widget buffer)))
 
 (define-method (buffer-reload (buffer <web-buffer>))
   (webkit-web-view-reload (buffer-widget buffer)))
 
 (define-method (buffer-scroll-up (buffer <web-buffer>))
-  (nomad-app-run-javascript (buffer-widget buffer)
+  (run-javascript (buffer-widget buffer)
                             "window.scrollBy(0, -25);"))
 
 (define-method (buffer-scroll-down (buffer <web-buffer>))
-  (nomad-app-run-javascript (buffer-widget buffer)
+  (run-javascript (buffer-widget buffer)
                             "window.scrollBy(0, 25);"))
 
 (define-method (buffer-scroll-top (buffer <web-buffer>))
-  (nomad-app-run-javascript (buffer-widget buffer)
+  (run-javascript (buffer-widget buffer)
                             "window.scrollTo(0, 0);"))
 
 (define-method (buffer-scroll-bottom (buffer <web-buffer>))
-  (nomad-app-run-javascript (buffer-widget buffer)
+  (run-javascript (buffer-widget buffer)
                             "window.scrollTo(0,document.body.scrollHeight);"))
 
 (define-method (buffer-page-up (buffer <web-buffer>))
-  (nomad-app-run-javascript (buffer-widget buffer)
+  (run-javascript (buffer-widget buffer)
                             "window.scrollBy(0, -window.innerHeight);"))
 
 (define-method (buffer-page-down (buffer <web-buffer>))
-  (nomad-app-run-javascript (buffer-widget buffer)
+  (run-javascript (buffer-widget buffer)
                             "window.scrollBy(0,window.innerHeight);"))
 
 (define-method (hints-finish (buffer <web-buffer>))
@@ -133,13 +133,13 @@
                           (make <webkit-user-message> #:name "show-hints")))
 
 (define-method (search-forward (buffer <web-buffer>))
-  (let ((controller (webkit-web-view-get-find-controller (buffer-widget buffer))))
-    (webkit-find-controller-search controller (current-search buffer) 1 255)))
+  (let ((controller (get-find-controller (buffer-widget buffer))))
+    (search controller (current-search buffer) 1 255)))
 
 (define-method (search-finish (buffer <web-buffer>))
   (set! (current-search buffer) #f)
-  (let ((controller (webkit-web-view-get-find-controller (buffer-widget buffer))))
-    (webkit-find-controller-search-finish controller)))
+  (let ((controller (get-find-controller (buffer-widget buffer))))
+    (search-finish controller)))
 
 ;;
 ;; <widget-buffer>
@@ -148,14 +148,14 @@
   (next-method)
   (add-hook! (buffer-kill-hook buffer)
              (lambda _
-               (gtk-widget-destroy (buffer-widget buffer))
+               (destroy (buffer-widget buffer))
                (prev-buffer)
                (set! (window-buffer current-window) (current-buffer)))))
 
 (define-method (buffer-proxy-set! (buffer <widget-buffer>) proxy)
   (let ((widget (buffer-widget buffer)))
     (if widget
-        (webkit-web-context-set-network-proxy-settings
+        (set-network-proxy-settings
          widget
          'custom
          proxy))))
