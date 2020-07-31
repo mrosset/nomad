@@ -51,8 +51,6 @@
   (filter-map (lambda (state)
                 (assoc-ref emacsy-flag-map state)) states))
 
-
-
 (define-class <gtk-frame> (<gtk-application-window>)
   (container   #:accessor    !container
                #:init-form   (make <gtk-vbox> #:spacing 0))
@@ -145,8 +143,6 @@
 (define-public (delete-frame)
   (gtk-widget-destroy (current-frame))
   #t)
-
-
 
 (define (key-press-event frame event)
   (let* ((unicode   (gdk-keyval-to-unicode (!keyval event)))

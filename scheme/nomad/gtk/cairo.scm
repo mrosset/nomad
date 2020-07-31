@@ -26,8 +26,6 @@
   #:use-module (g-golf)
   #:export (<gtk-cairo-buffer>))
 
-
-
 (define-class <gtk-cairo-buffer> (<nomad-text-buffer>
                                   <gtk-widget-buffer>
                                   <gtk-drawing-area>)
@@ -38,8 +36,6 @@
   (slot-set! self 'name "*cairo*")
   (connect self 'draw draw-class)
   (gtk-widget-show-all self))
-
-
 
 (define (draw-class widget ctx)
   (let* ((cairo  (cairo-pointer->scm ctx))

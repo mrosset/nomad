@@ -33,8 +33,6 @@
             widget-container
             window-widget))
 
-
-
 (define-class <widget-window> (<window>)
   (last-tick #:accessor last-tick #:init-value -1))
 
@@ -47,14 +45,10 @@
 (define-method (widget-buffer (window <widget-window>))
   (!buffer (user-data window)))
 
-
-
 (define-public (window-config-change window)
    (container-replace (!container (current-frame)) (instantiate-window root-window)))
 
 (add-hook! window-configuration-change-hook window-config-change)
-
-
 
 (define (make-gtk-window list vertical)
   (let ((box (if vertical
@@ -74,8 +68,6 @@
 (define-method (instantiate-window (window <internal-window>))
   (make-gtk-window (map instantiate-window (window-children window))
                    (eq? (orientation window) 'vertical)))
-
-
 
 (define-method (redisplay (window <internal-window>))
   (for-each redisplay (window-children window)))
