@@ -29,6 +29,7 @@
   #:use-module (nomad web)
   #:use-module (nomad ibuffer)
   #:use-module (nomad terminal)
+  #:use-module (nomad log)
   #:use-module (web uri)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<widget-web-view>
@@ -172,12 +173,17 @@
 (define (decide-policy view decision type)
   (case type
     ((new-window-action)
-     (let* ((action  (webkit-navigation-policy-decision-get-navigation-action decision))
-            (request (webkit-navigation-action-get-request action))
-            (uri     (webkit-uri-request-get-uri request)))
-       (make-buffer <web-buffer> #:uri uri)
-       #t))
-    (else #f)))
+     (log-info "New window request")
+     (dimfi (nomad-get-navigation-policy decision))
+     ;; (let* ((action  (webkit-navigation-policy-decision-get-navigation-action decision))
+     ;;        (request (webkit-navigation-action-get-request action))
+     ;;        (uri     (webkit-uri-request-get-uri request)))
+     ;;   (format #t "action: ~a request: ~a uri: ~a" action request uri))
+     (make-buffer <web-buffer> #:uri (nomad-get-navigation-uri decision))
+     #t)
+    (else (begin
+            (co-message "~a: decision policy not implemented" type)
+            #f))))
 
 (define (load-change view event)
   (when (equal? event 'committed)
