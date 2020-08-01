@@ -34,14 +34,12 @@ GdkRGBA *nomad_color_parse (const char *spec);
 void nomad_vte_set_colors (GtkWidget *widget);
 
 /**
- * nomad_get_navigation_policy:
+ * nomad_get_navigation_action:
  *
- * Returns: (transfer full): a constant, free when you used it
+ * Returns: (transfer full):
  */
-WebKitNavigationPolicyDecision *
-nomad_get_navigation_policy (WebKitPolicyDecision *decision);
-
-const gchar *nomad_get_navigation_uri (WebKitPolicyDecision *decision);
+WebKitNavigationAction *
+nomad_get_navigation_action (WebKitPolicyDecision *decision);
 
 const char *nomad_get_version ();
 

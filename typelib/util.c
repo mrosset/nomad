@@ -149,23 +149,11 @@ nomad_set_wrap_mode (GtkTextView *view, gboolean wrap_mode)
   gtk_text_view_set_wrap_mode (view, wrap_mode);
 }
 
-const gchar *
-nomad_get_navigation_uri (WebKitPolicyDecision *decision)
+WebKitNavigationAction *
+nomad_get_navigation_action (WebKitPolicyDecision *decision)
 {
-  WebKitNavigationPolicyDecision *policy;
-  WebKitNavigationAction *action;
-  WebKitURIRequest *request;
-
-  policy = WEBKIT_NAVIGATION_POLICY_DECISION (decision);
-  action = webkit_navigation_policy_decision_get_navigation_action (policy);
-  request = webkit_navigation_action_get_request (action);
-  return webkit_uri_request_get_uri (request);
-}
-
-WebKitNavigationPolicyDecision *
-nomad_get_navigation_policy (WebKitPolicyDecision *decision)
-{
-  return WEBKIT_NAVIGATION_POLICY_DECISION (decision);
+  return webkit_navigation_policy_decision_get_navigation_action (
+      WEBKIT_NAVIGATION_POLICY_DECISION (decision));
 }
 
 const char *
