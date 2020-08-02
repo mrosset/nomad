@@ -102,27 +102,27 @@
 
 (define-method (buffer-scroll-up (buffer <web-buffer>))
   (run-javascript (buffer-widget buffer)
-                            "window.scrollBy(0, -25);"))
+                            "window.scrollBy(0, -25);" #f #f #f))
 
 (define-method (buffer-scroll-down (buffer <web-buffer>))
   (run-javascript (buffer-widget buffer)
-                            "window.scrollBy(0, 25);"))
+                  "window.scrollBy(0, 25);" #f #f #f))
 
 (define-method (buffer-scroll-top (buffer <web-buffer>))
   (run-javascript (buffer-widget buffer)
-                            "window.scrollTo(0, 0);"))
+                  "window.scrollTo(0, 0);" #f #f #f))
 
 (define-method (buffer-scroll-bottom (buffer <web-buffer>))
   (run-javascript (buffer-widget buffer)
-                            "window.scrollTo(0,document.body.scrollHeight);"))
+                  "window.scrollTo(0,document.body.scrollHeight);" #f #f #f))
 
 (define-method (buffer-page-up (buffer <web-buffer>))
   (run-javascript (buffer-widget buffer)
-                            "window.scrollBy(0, -window.innerHeight);"))
+                  "window.scrollBy(0, -window.innerHeight);" #f #f #f))
 
 (define-method (buffer-page-down (buffer <web-buffer>))
   (run-javascript (buffer-widget buffer)
-                            "window.scrollBy(0,window.innerHeight);"))
+                  "window.scrollBy(0,window.innerHeight);" #f #f #f))
 
 (define-method (hints-finish (buffer <web-buffer>))
   (nomad-app-send-message (buffer-widget buffer)
