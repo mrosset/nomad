@@ -253,7 +253,7 @@
                                 -1
                                 #f #f #f))
     (lambda (key . vals)
-      (safe-message "Error: key: ~a value: ~a" key vals))))
+      (co-message "Error: key: ~a value: ~a" key vals))))
 
 (define-method (make-buffer-widget (buffer <web-buffer>))
   (make <widget-web-view> #:buffer buffer))

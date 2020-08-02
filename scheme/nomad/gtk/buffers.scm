@@ -100,6 +100,12 @@
 (define-method (buffer-reload (buffer <web-buffer>))
   (webkit-web-view-reload (buffer-widget buffer)))
 
+;; (define-syntax call-javascript
+;;   (lambda (x)
+;;     (syntax-case x ()
+;;       ((_ js)
+;;        #`(run-javascript #,(datum->syntax x '(buffer-widget buffer)) js #f #f #f)))))
+
 (define-method (buffer-scroll-up (buffer <web-buffer>))
   (run-javascript (buffer-widget buffer)
                             "window.scrollBy(0, -25);" #f #f #f))
