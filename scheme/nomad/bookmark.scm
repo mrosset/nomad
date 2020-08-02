@@ -96,7 +96,7 @@
        '(((id . "nomad")
           (contents . "https://savannah.nongnu.org/projects/nomad"))
          ((id . "nomad-git")
-          (contents . "http://git.savannah.nongnu.org/cgit/nomad.git"))
+          (contents . "https://git.savannah.nongnu.org/cgit/nomad.git"))
          ((id . "gnu")
           (contents . "https://gnu.org"))
          ((id . "emacsy")
