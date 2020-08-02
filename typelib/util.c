@@ -156,6 +156,30 @@ nomad_get_navigation_action (WebKitPolicyDecision *decision)
       WEBKIT_NAVIGATION_POLICY_DECISION (decision));
 }
 
+WebKitResponsePolicyDecision *
+nomad_get_response_decision (WebKitPolicyDecision *decision)
+{
+  return WEBKIT_RESPONSE_POLICY_DECISION (decision);
+}
+
+void
+nomad_handle_response_policy (WebKitPolicyDecision *decision)
+{
+  WebKitResponsePolicyDecision *resp_decision;
+  /* WebKitURIResponse *response; */
+
+  resp_decision = WEBKIT_RESPONSE_POLICY_DECISION (decision);
+  /* response = webkit_response_policy_decision_get_response (resp_decision); */
+
+  if (!webkit_response_policy_decision_is_mime_type_supported (resp_decision))
+    {
+      /* const gchar *uri = webkit_uri_response_get_uri (response); */
+      webkit_policy_decision_download (decision);
+      /* scm_call_1 (scm_c_public_ref ("nomad download", "download"),
+       *             scm_from_locale_string (uri)); */
+    }
+}
+
 const char *
 nomad_get_version ()
 {

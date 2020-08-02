@@ -38,8 +38,20 @@ void nomad_vte_set_colors (GtkWidget *widget);
  *
  * Returns: (transfer full):
  */
+
 WebKitNavigationAction *
 nomad_get_navigation_action (WebKitPolicyDecision *decision);
+
+/**
+ * nomad_get_response_decision:
+ *
+ * Returns: (transfer full):
+ */
+
+WebKitResponsePolicyDecision *
+nomad_get_response_decision (WebKitPolicyDecision *decision);
+
+void nomad_handle_response_policy (WebKitPolicyDecision *decision);
 
 const char *nomad_get_version ();
 

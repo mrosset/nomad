@@ -169,39 +169,38 @@
     (gtk-box-pack-start self (make <widget-border>) #f #f 0)
     (set! (user-data window) self)))
 
-
 (define (decide-policy view decision type)
   (case type
     ((new-window-action)
-     (log-info "New window request")
-     (dimfi (nomad-get-navigation-policy decision))
-     ;; (let* ((action  (webkit-navigation-policy-decision-get-navigation-action decision))
-     ;;        (request (webkit-navigation-action-get-request action))
-     ;;        (uri     (webkit-uri-request-get-uri request)))
-     ;;   (format #t "action: ~a request: ~a uri: ~a" action request uri))
-     (make-buffer <web-buffer> #:uri (nomad-get-navigation-uri decision))
+     (let* ((action  (nomad-get-navigation-action decision))
+            (request (webkit-navigation-action-get-request action))
+            (uri     (webkit-uri-request-get-uri request)))
+       (make-buffer <web-buffer> #:uri uri)
+       #t))
+    ((navigation)
      #t)
-    (else (begin
-            (co-message "~a: decision policy not implemented" type)
-            #f))))
+    ((response)
+     (nomad-handle-response-policy decision)
+     #t)
+    (else #f)))
 
 (define (load-change view event)
-  (when (equal? event 'committed)
-    (let* ((uri (string->uri (webkit-web-view-get-uri view)))
-           (style (or (assoc-ref %styles (uri-host uri)) %default-style))
-           (manager (webkit-web-view-get-user-content-manager view)))
-      (webkit-user-content-manager-remove-all-style-sheets manager)
-      (when style
-        (webkit-user-content-manager-add-style-sheet
-         manager
-         (webkit-user-style-sheet-new style
-                                      'all-frames
-                                      'user #f #f)))))
+  ;; (when (equal? event 'finished)
+  ;;   (let* ((uri (string->uri (webkit-web-view-get-uri view)))
+  ;;          (style (or (assoc-ref %styles (uri-host uri)) %default-style))
+  ;;          (manager (webkit-web-view-get-user-content-manager view)))
+  ;;     (webkit-user-content-manager-remove-all-style-sheets manager)
+  ;;     (when style
+  ;;       (webkit-user-content-manager-add-style-sheet
+  ;;        manager
+  ;;        (webkit-user-style-sheet-new style
+  ;;                                     'all-frames
+  ;;                                     'user #f #f)))))
   (let ((buffer (!buffer view)))
     (set! (buffer-title buffer)
           (!title view))
     (set! (buffer-uri buffer)
-          (webkit-uri-for-display (!uri view)))
+          (!uri view))
     (set! (buffer-progress buffer)
           (inexact->exact
            (round (* 100 (!estimated-load-progress view)))))
@@ -218,7 +217,11 @@
 
 (define-method (initialize (view <widget-web-view>) args)
   (next-method)
-  (connect view 'decide-policy decide-policy)
+  (connect (webkit-web-view-get-context view) 'download-started
+           (lambda (context download)
+             (let ((uri (get-uri (get-request download))))
+               (co-message "Download: ~a. But downloads are not implemented." uri))))
+    (connect view 'decide-policy decide-policy)
   (connect view 'load-changed load-change)
   (when (%default-web-settings)
     (webkit-web-view-set-settings view (%default-web-settings)))

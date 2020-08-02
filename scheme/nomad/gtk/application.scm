@@ -49,7 +49,6 @@
 
 (define (startup app)
   (init)
-  (co-message "~a" "STARTUP")
   (connect (webkit-web-context-get-default)
            'initialize-web-extensions
            initialize-extention-cb)
@@ -71,16 +70,13 @@
        'sqlite))))
 
 (define (activate app)
-  (co-message "~a ~a" "ACTIVATE" (application-id))
   (if (current-frame)
-      (log-crit "Nomad only supports one frame.")
+      (co-message "Nomad only supports one frame.")
       (begin
         (gtk-frame-new app)
-        (run-hook %startup-hook)))
-  (emacsy-tick))
+        (run-hook %startup-hook))))
 
 (define (open app files n-files hint)
-  (co-message "~a ~a" "OPEN" files)
   (unless (current-frame)
     (gtk-frame-new app))
   (for-each (lambda (file)
