@@ -191,21 +191,6 @@
     (lambda (key . vals)
       (co-message "Error: key: ~a Value: ~a" key vals))))
 
-;; (define (decide-policy view decision type)
-;;   (case type
-;;     ((new-window-action)
-;;      (let* ((action  (nomad-get-navigation-action decision))
-;;             (request (webkit-navigation-action-get-request action))
-;;             (uri     (webkit-uri-request-get-uri request)))
-;;        (make-buffer <web-buffer> #:uri uri)
-;;        #t))
-;;     ((navigation)
-;;      #t)
-;;     ((response)
-;;      (nomad-handle-response-policy decision)
-;;      #t)
-;;     (else #f)))
-
 (define (load-change view event)
   (catch #t
     (lambda _
