@@ -44,7 +44,6 @@
            read-bookmarks
            write-bookmarks
            bookmarks
-           pp-bookmarks
            load-bookmark
            save-bookmark))
 
@@ -118,11 +117,6 @@
   (message "~a"
            (with-output-to-string (lambda _
                                     (pretty-print bookmarks)))))
-
-(define (pp-bookmarks)
-  (define (print-bookmark arg)
-    (format #t "~s\t~s\n" (bookmark-id arg) (bookmark-contents arg)))
-  (for-each print-bookmark bookmarks))
 
 (define* (bookmark-list #:optional books)
   (map bookmark-id (or books bookmarks)))
