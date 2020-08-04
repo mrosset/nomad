@@ -170,43 +170,69 @@
     (set! (user-data window) self)))
 
 (define (decide-policy view decision type)
-  (case type
-    ((new-window-action)
-     (let* ((action  (nomad-get-navigation-action decision))
-            (request (webkit-navigation-action-get-request action))
-            (uri     (webkit-uri-request-get-uri request)))
-       (make-buffer <web-buffer> #:uri uri)
-       #t))
-    ((navigation)
-     #t)
-    ((response)
-     (nomad-handle-response-policy decision)
-     #t)
-    (else #f)))
+  (catch #t
+    (lambda _
+      (case type
+        ((new-window-action)
+         (change-class decision <webkit-navigation-policy-decision>)
+         (let* ((action  (get-navigation-action decision))
+                (request (webkit-navigation-action-get-request action))
+                (uri     (get-uri request)))
+           (make-buffer <web-buffer> #:uri uri)
+           #t))
+        ((response)
+         (change-class decision <webkit-response-policy-decision>)
+         (unless (is-mime-type-supported decision)
+           (webkit-policy-decision-download decision))
+         #t)
+        ((navigation)
+         #f)
+        (else #t)))
+    (lambda (key . vals)
+      (co-message "Error: key: ~a Value: ~a" key vals))))
+
+;; (define (decide-policy view decision type)
+;;   (case type
+;;     ((new-window-action)
+;;      (let* ((action  (nomad-get-navigation-action decision))
+;;             (request (webkit-navigation-action-get-request action))
+;;             (uri     (webkit-uri-request-get-uri request)))
+;;        (make-buffer <web-buffer> #:uri uri)
+;;        #t))
+;;     ((navigation)
+;;      #t)
+;;     ((response)
+;;      (nomad-handle-response-policy decision)
+;;      #t)
+;;     (else #f)))
 
 (define (load-change view event)
-  ;; (when (equal? event 'finished)
-  ;;   (let* ((uri (string->uri (webkit-web-view-get-uri view)))
-  ;;          (style (or (assoc-ref %styles (uri-host uri)) %default-style))
-  ;;          (manager (webkit-web-view-get-user-content-manager view)))
-  ;;     (webkit-user-content-manager-remove-all-style-sheets manager)
-  ;;     (when style
-  ;;       (webkit-user-content-manager-add-style-sheet
-  ;;        manager
-  ;;        (webkit-user-style-sheet-new style
-  ;;                                     'all-frames
-  ;;                                     'user #f #f)))))
-  (let ((buffer (!buffer view)))
-    (set! (buffer-title buffer)
-          (!title view))
-    (set! (buffer-uri buffer)
-          (!uri view))
-    (set! (buffer-progress buffer)
-          (inexact->exact
-           (round (* 100 (!estimated-load-progress view)))))
-    (run-hook %load-committed-hook buffer)
-    (run-hook %thunk-view-hook))
-  #t)
+  (catch #t
+    (lambda _
+      (let ((buffer (!buffer view)))
+        (set! (buffer-title buffer)
+              (!title view))
+        (set! (buffer-uri buffer)
+              (!uri view))
+        (set! (buffer-progress buffer)
+              (inexact->exact
+               (round (* 100 (!estimated-load-progress view)))))
+        (run-hook %load-committed-hook buffer)
+        (run-hook %thunk-view-hook))
+      (case event
+        ((finished)
+         (let* ((uri (string->uri (webkit-web-view-get-uri view)))
+                (style (or (assoc-ref %styles (uri-host uri)) %default-style))
+                (manager (webkit-web-view-get-user-content-manager view)))
+           (webkit-user-content-manager-remove-all-style-sheets manager)
+           (when style
+             (webkit-user-content-manager-add-style-sheet
+              manager
+              (webkit-user-style-sheet-new style
+                                           'all-frames
+                                           'user #f #f)))))))
+    (lambda (key . vals)
+      (co-message "Error: key: ~a value: ~a" key vals))))
 
 (define-class <widget-web-view> (<widget-with-buffer>
                                  <webkit-web-view>))
