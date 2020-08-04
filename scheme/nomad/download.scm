@@ -23,14 +23,19 @@
   #:use-module (web uri)
   #:use-module (web client)
   #:use-module (web response)
-  #:use-module (nomad init)
   #:use-module (nomad util)
-  #:export (uri->filename
+  #:use-module (nomad log)
+  #:export (%download-directory
+            allow-downloads?
+            uri->filename
             url-fetch
             copy-to-port
             download-path
             download-function
             http-download))
+
+;; The directory where downloads should be saved to.
+(define %download-directory (make-parameter (~/ "downloads")))
 
 (define (uri->filename uri)
   "Returns the filename at the end of @var{uri}"
@@ -81,16 +86,18 @@ request fails it will return the http status code."
 (define download-function
   (lambda (url)
     (if (download-exists? url)
-        (format #t "download ~a exists.. skipping~%"
-                url)
-        (begin (format #t "downloading ~a~%" url)
+        (co-message "download ~a exists.. skipping" url)
+        (begin (co-message "downloading ~a" url)
                (http-download url)
-               (format #t "download complete ~a~%" url)))))
+               (co-message "download complete ~a" url)))))
 
-(define-interactive (download #:optional (url (read-from-minibuffer "Url: ")))
-  (let ((confirm (read-from-minibuffer (format #f
-                                               "~s is requesting to download ~s~% continue: y/n? "
-                                               (current-url)
-                                               url))))
-    (when (and (string= confirm "y") allow-downloads)
-      (download-function url))))
+(define-interactive (nomad-download referrer #:optional (url (co-read-from-minibuffer "Url: ")))
+  (if allow-downloads?
+      (download-function url)
+      (co-message "downloads are not allowed. You can enable by setting 'allow-downloads? to #t")))
+;; (let ((confirm (co-read-from-minibuffer (format #f
+;;                                              "~s is requesting to download ~s continue: y/n? "
+;;                                              referrer
+;;                                              url))))
+;;   (when (and (string= confirm "y") allow-downloads?)
+;;     (download-function url)))

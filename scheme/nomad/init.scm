@@ -31,7 +31,6 @@
             %user-cookie-file
             %user-init-file
             %user-nomad-directory
-            %download-directory
             %session-file
             define-ident))
 
@@ -56,9 +55,6 @@
 ;; is @code{$HOME/.nomad.d}.
 (define-ident %user-nomad-directory
   (~/ ".nomad.d"))
-
-;; The directory where downloads should be saved to.
-(define %download-directory (make-parameter (~/ "downloads")))
 
 (define session '())
 
