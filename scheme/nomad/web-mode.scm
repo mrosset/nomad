@@ -154,18 +154,11 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
 
 (define-interactive (query #:optional
                            (text (read-from-minibuffer "Query: ")))
-  "Queries the default search provider @var{%search-provider-format}.  If the
-current buffer is not a @var{<web-buffer>} it will create a new
-@var{<web-buffer>} and query the default search provider."
-  (let ((u   (universal-argument-pop!))
-        (uri (format #f
-                     %search-provider-format
-                     text)))
-    (if (or (> u 1)
-            (not (is-a? (current-buffer) <web-buffer>)))
-        (make-buffer <web-buffer> #:uri uri)
-      (buffer-load-uri (current-buffer) uri)))
-  #t)
+  "Queries the default search provider @var{%search-provider-format}. This creates  a new
+@var{<web-buffer>}."
+  (let ((uri (format #f %search-provider-format text)))
+    (make-buffer <web-buffer> #:uri uri)
+    #t))
 
 ;; Provides firefox key mappings for webview-mode. This can be set as
 ;; the default webview mode map by using (!set %webview-map
