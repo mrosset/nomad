@@ -1,18 +1,29 @@
 * Installation
-** With Guix
-Nomad is not yet available in the official Guix
-
-Clone the Nomad source repository
+** Guix
+*** Installing with Guix
+#+begin_src shell
+guix install nomad
+#+end_src
+*** Developing with Git
+**** Clone the Nomad source repository
 #+begin_src shell
 git clone https://git.savannah.gnu.org/git/nomad.git
 cd nomad
 #+end_src
-
-Build and install Nomad
+**** Create a Nomad environment
 #+begin_src shell
-guix package -f ./guix.scm
+guix environment -L ./guix nomad-git
 #+end_src
-
+**** Bootstrap Autotools
+#+begin_src shell
+./autogen.sh
+#+end_src
+**** Build and Run development Nomad
+#+begin_src shell
+./configure
+make -j(nproc)
+make run
+#+end_src
 * Run Nomad
 ** From the command line
 Nomad doesn't yet support the full set of command line options. However, It

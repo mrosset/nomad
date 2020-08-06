@@ -1,8 +1,13 @@
+Mike Rosset
+
+
 Table of Contents
 _________________
 
 1 Installation
-.. 1.1 With Guix
+.. 1.1 Guix
+..... 1.1.1 Installing with Guix
+..... 1.1.2 Developing with Git
 2 Run Nomad
 .. 2.1 From the command line
 .. 2.2 Keybinds
@@ -14,20 +19,48 @@ _________________
 1 Installation
 ==============
 
-1.1 With Guix
-~~~~~~~~~~~~~
+1.1 Guix
+~~~~~~~~
 
-  Nomad is not yet available in the official Guix
+1.1.1 Installing with Guix
+--------------------------
 
-  Clone the Nomad source repository
+  ,----
+  | guix install nomad
+  `----
+
+
+1.1.2 Developing with Git
+-------------------------
+
+* 1.1.2.1 Clone the Nomad source repository
+
   ,----
   | git clone https://git.savannah.gnu.org/git/nomad.git
   | cd nomad
   `----
 
-  Build and install Nomad
+
+* 1.1.2.2 Create a Nomad environment
+
   ,----
-  | guix package -f ./guix.scm
+  | guix environment -L ./guix nomad-git
+  `----
+
+
+* 1.1.2.3 Bootstrap Autotools
+
+  ,----
+  | ./autogen.sh
+  `----
+
+
+* 1.1.2.4 Build and Run development Nomad
+
+  ,----
+  | ./configure
+  | make -j(nproc)
+  | make run
   `----
 
 
@@ -60,25 +93,25 @@ _________________
   the following keybinds.
 
   ---------------------------
-   Key stroke  Command
+   Key stroke  Command       
   ---------------------------
-   "C-b"       (next-buffer)
-   "C-u"       (back)
-   "C-m"       (forward)
-   "C-n"       (scroll-down)
-   "C-f"       (hints)
-   "C-p"       (scroll-up)
-   "C-r"       (reload)
+   "C-b"       (next-buffer) 
+   "C-u"       (back)        
+   "C-m"       (forward)     
+   "C-n"       (scroll-down) 
+   "C-f"       (hints)       
+   "C-p"       (scroll-up)   
+   "C-r"       (reload)      
   ---------------------------
 
   In Nomad's Ibuffer menu the `ctrl-x-map` is active which has these
   keybindings.
 
   ---------------------------
-   Key stroke  Command
+   Key stroke  Command       
   ---------------------------
-   "b"         (next-buffer)
-   "k"         (kill-buffer)
+   "b"         (next-buffer) 
+   "k"         (kill-buffer) 
   ---------------------------
 
 
