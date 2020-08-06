@@ -1,6 +1,3 @@
-Mike Rosset
-
-
 Table of Contents
 _________________
 
