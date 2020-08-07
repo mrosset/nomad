@@ -252,8 +252,8 @@ make
 Once you've built Nomad without errors, to run Nomad from the local
 build.
 @example
-make test
-./pre-inst-env ./src/nomad
+make check
+make run
 @end example
 
 @c *********************************************************************
