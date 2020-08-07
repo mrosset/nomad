@@ -237,7 +237,7 @@ libgtksourceview-4-dev
 Using Guix, the following snippet will install all required dependencies
 in a temporary shell.
 @example
-guix environment -l ./guix.scm
+guix environment -L guix/ nomad-git
 @end example
 
 Then build the package with
