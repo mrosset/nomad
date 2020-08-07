@@ -204,6 +204,20 @@ keybindings.
 The modules and features provided by Nomad are in flux. The best option is
 to consult the source directly. @uref{@value{GITWEB}}
 
+@section Webkit-Settings
+
+Use the default web-settings.
+@example
+(use-modules (nomad nomad))
+(%default-web-settings (webkit-settings-new))
+@end example
+
+Enable developer inspection. (Right click; Inspect Element)
+@example
+(webkit-settings-set-enable-developer-extras (%default-web-settings) #t)
+@end example
+
+
 @c @include api.texi
 
 @c *********************************************************************
