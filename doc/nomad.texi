@@ -224,6 +224,8 @@ Enable developer inspection. (Right click; Inspect Element)
 @node Extensions
 @chapter Extensions
 
+@section Configuration File
+
 You can customize nomad by writing your configurations to `~/.nomad`,
 which is just a scheme file!
 
