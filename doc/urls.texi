@@ -3,3 +3,4 @@
 @set RELEASES https://download.savannah.nongnu.org/releases/nomad/
 @set HOMEPAGE https://www.nongnu.org/nomad/
 @set MANUALS https://www.nongnu.org/nomad/manual/
+@set WEBKITGTK_REF_UNSTABLE https://webkitgtk.org/reference/webkit2gtk/unstable

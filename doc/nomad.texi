@@ -217,6 +217,8 @@ Enable developer inspection. (Right click; Inspect Element)
 (webkit-settings-set-enable-developer-extras (%default-web-settings) #t)
 @end example
 
+To see more about WebkitGtk see:
+@uref{@value{WEBKITGTK_REF_UNSTABLE}}
 
 @c @include api.texi
 
@@ -260,7 +262,7 @@ Then build the package with
 @example
 autoreconf -vif
 ./configure
-make
+make -j$(nproc)
 @end example
 
 @section Run from Source
