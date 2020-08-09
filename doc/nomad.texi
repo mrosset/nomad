@@ -212,6 +212,11 @@ Use the default web-settings.
 (%default-web-settings (webkit-settings-new))
 @end example
 
+Equivalent, but a common way is to use goops:
+@example
+(%default-web-settings (make <webkit-settings> #:enable-developer-extras #t))
+@end example
+
 Enable developer inspection. (Right click; Inspect Element)
 @example
 (webkit-settings-set-enable-developer-extras (%default-web-settings) #t)
