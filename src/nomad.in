@@ -41,11 +41,11 @@ exec @GUILE@ --no-auto-compile -e main -s "$0" "$@"
 
 (define (debug-paths)
   (format #t
+          "tyeplib:      ~a~%"
+          (getenv "GI_TYPELIB_PATH"))
+  (format #t
           "version:      ~a~%"
           (nomad-version))
-  (format #t
-          "dynamic-lib:  ~a~%"
-          (dynamic-path))
   (format #t
           "load-path:    ~a~%"
           (pretty-string %load-path))

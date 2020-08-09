@@ -116,8 +116,11 @@
         (loop (1+ n)))))
 
 (define-interactive (nomad-version)
-  "Returns a string describing the version of Nomad running."
-  (message "~a" (nomad-get-version)))
+  "Returns a string describing the version of Nomad running.  When
+@var{emacsy-interactive?} is true then it also messages to the echo area."
+  (if emacsy-interactive?
+      (message "~a" (nomad-get-version))
+      (nomad-get-version)))
 
 (define-interactive (take-a-selfie)
   (message "say cheese!\n")

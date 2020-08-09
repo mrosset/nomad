@@ -1,16 +1,45 @@
 #!/bin/sh
 export GUILE_AUTO_COMPILE=0
-GUILE_LOAD_PATH="@abs_top_srcdir@/scheme:$GUILE_LOAD_PATH"
-GUILE_LOAD_PATH="@abs_top_builddir@/scheme:$GUILE_LOAD_PATH"
-GUILE_LOAD_COMPILED_PATH="@abs_top_srcdir@/scheme:$GUILE_LOAD_COMPILED_PATH"
-GUILE_LOAD_COMPILED_PATH="@abs_top_builddir@/scheme:$GUILE_LOAD_COMPILED_PATH"
 
-GI_TYPELIB_PATH="@abs_top_builddir@/typelib:$GI_TYPELIB_PATH"
+###
+### GUILE_LOAD_PATH
+###
+
+if [ x"$GUILE_LOAD_PATH" = x ]
+then
+    GUILE_LOAD_PATH="@abs_top_builddir@/scheme/:@abs_top_srcdir@/scheme/"
+else
+    GUILE_LOAD_PATH="@abs_top_builddir@/scheme/:@abs_top_srcdir@/scheme/:$GUILE_LOAD_PATH"
+fi
+## echo $GUILE_LOAD_PATH
+export GUILE_LOAD_PATH
+
+
+###
+### GUILE_LOAD_COMPILED_PATH
+###
+
+if [ x"$GUILE_LOAD_COMPILED_PATH" = x ]
+then
+    GUILE_LOAD_COMPILED_PATH="@abs_top_builddir@/scheme/:@abs_top_srcdir@/scheme/"
+else
+    GUILE_LOAD_COMPILED_PATH="@abs_top_builddir@/scheme/:@abs_top_srcdir@/scheme/:$GUILE_LOAD_COMPILED_PATH"
+fi
+export GUILE_LOAD_COMPILED_PATH
+
+###
+### GI_TYPELIB_PATH
+###
+
+if [ x"$GI_TYPELIB_PATH" = x ]
+then
+    GI_TYPELIB_PATH="@abs_top_builddir@/typelib"
+else
+    GI_TYPELIB_PATH="@abs_top_builddir@/typelib:$GI_TYPELIB_PATH"
+fi
+export GI_TYPELIB_PATH
 
 export NOMAD_WEB_EXTENSION_DIR="@abs_top_builddir@/ext/.libs/"
-
-export GUILE_LOAD_COMPILED_PATH
-export GI_TYPELIB_PATH
 
 exec @abs_top_builddir@/libtool --mode=execute \
      -dlopen "@abs_top_builddir@/typelib/libguile-nomad.la"\
