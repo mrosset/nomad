@@ -1,5 +1,5 @@
 #! /bin/sh
-exec @GUILE@ -e main -s "$0" "$@"
+exec @GUILE@ --no-auto-compile -e main -s "$0" "$@"
 !#
 
 ;; nomad.in
