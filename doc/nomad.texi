@@ -218,7 +218,7 @@ Enable developer inspection. (Right click; Inspect Element)
 @end example
 
 To see more about WebkitGtk see:
-@uref{@value{WEBKITGTK_REF_UNSTABLE}}
+@uref{@value{WEBKITGTK_REF}}
 
 @c @include api.texi
 
