@@ -17,10 +17,25 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk util)
+  #:use-module (nomad log)
   #:use-module (nomad gtk gi)
   #:use-module (oop goops)
+  #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
-  #:use-module (g-golf))
+  #:export (yes-or-no-p))
+
+(define (yes-or-no-p prompt thunk)
+  "Creates a Yes or No message dialog with @var{prompt}. If the Ok button is
+clicked @var{thunk} is called."
+  (let ((dialog (make <gtk-message-dialog>
+                  #:text prompt
+                  #:buttons 'ok-cancel)))
+    (let* ((response (run dialog))
+           (enum     (gi-cache-ref 'enum 'gtk-response-type))
+           (ok       (assoc-ref (slot-ref enum 'enum-set) 'ok)))
+      (when (= response ok)
+        (thunk))
+      (destroy dialog))))
 
 (define-public (copy-text text)
   "Copies @var{text} to primary clipboard"
