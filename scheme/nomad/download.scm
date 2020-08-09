@@ -86,15 +86,15 @@ request fails it will return the http status code."
 (define download-function
   (lambda (url)
     (if (download-exists? url)
-        (co-message "download ~a exists.. skipping" url)
+        (display-message "download ~a exists.. skipping" url)
         (begin (co-message "downloading ~a" url)
                (http-download url)
-               (co-message "download complete ~a" url)))))
+               (display-message "download complete ~a" url)))))
 
-(define-interactive (nomad-download referrer #:optional (url (co-read-from-minibuffer "Url: ")))
+(define-interactive (nomad-download referrer #:optional (url (read-from-minibuffer "Url: ")))
   (if allow-downloads?
       (download-function url)
-      (co-message "downloads are not allowed. You can enable by setting 'allow-downloads? to #t")))
+      (display-message "downloads are not allowed. You can enable by setting 'allow-downloads? to #t")))
 ;; (let ((confirm (co-read-from-minibuffer (format #f
 ;;                                              "~s is requesting to download ~s continue: y/n? "
 ;;                                              referrer

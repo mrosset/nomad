@@ -175,14 +175,12 @@
     (lambda _
       (case type
         ((new-window-action)
-         (change-class decision <webkit-navigation-policy-decision>)
          (let* ((action  (get-navigation-action decision))
                 (request (webkit-navigation-action-get-request action))
                 (uri     (get-uri request)))
            (make-buffer <web-buffer> #:uri uri)
            #t))
         ((response)
-         (change-class decision <webkit-response-policy-decision>)
          (unless (is-mime-type-supported decision)
            (let ((uri (get-uri (get-request decision))))
              (webkit-policy-decision-download decision)))
@@ -221,6 +219,13 @@
     (lambda (key . vals)
       (co-message "Error: key: ~a value: ~a" key vals))))
 
+(define (mouse-target-changed view hit modifiers)
+  (cond
+   ((context-is-link hit)
+    (display-message (get-link-uri hit)))
+   (else
+    (kill-message))))
+
 (define-class <widget-web-view> (<widget-with-buffer>
                                  <webkit-web-view>))
 
@@ -231,11 +236,14 @@
 (define-method (initialize (view <widget-web-view>) args)
   (next-method)
   (connect (webkit-web-view-get-context view) 'download-started
-           (lambda (context download)
-             (let ((uri (get-uri (get-request download))))
-               (nomad-download (get-uri view) uri))))
+           (lambda (context obj)
+             (let ((referrer (get-uri view))
+                   (uri      (get-uri (get-request obj))))
+                   (nomad-download referrer uri))))
   (connect view 'decide-policy decide-policy)
   (connect view 'load-changed load-change)
+  (connect view 'mouse-target-changed mouse-target-changed)
+
   (when (%default-web-settings)
     (webkit-web-view-set-settings view (%default-web-settings)))
   (widget-load-uri view (buffer-uri (!buffer view))))
@@ -266,7 +274,7 @@
                                 -1
                                 #f #f #f))
     (lambda (key . vals)
-      (co-message "Error: key: ~a value: ~a" key vals))))
+      (co-message "Error: key: ~a Value: ~a" key vals))))
 
 (define-method (make-buffer-widget (buffer <web-buffer>))
   (make <widget-web-view> #:buffer buffer))

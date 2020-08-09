@@ -27,11 +27,26 @@
             ~
             ~/
             //
+            display-message
+            kill-message
             co-message
             ensure-directory))
 
+(define (nomad-get-version) ((@ (g-golf) nomad-get-version)))
+
+(define (display-message fmt . args)
+  "Displays @var{fmt} with @var{args} in the @var{minibuffer} echo-area."
+  (with-buffer minibuffer
+               (kill-message)
+               (insert (apply format #f fmt args))))
+
+(define (kill-message)
+  "Kills the last message in the @var{minibuffer} echo-area."
+  (with-buffer minibuffer
+               (delete-region (point-min) (point-max))))
+
 (codefine* (co-message fmt . args)
-           (apply message fmt args))
+          (apply message fmt args))
 
 (define-interactive (undefined-command)
   (message "Undefined command"))
@@ -102,19 +117,18 @@
 
 (define-interactive (nomad-version)
   "Returns a string describing the version of Nomad running."
-  (message "~a" ((@ (g-golf) nomad-get-version)))
-  ((@ (g-golf) nomad-get-version)))
+  (message "~a" (nomad-get-version)))
 
 (define-interactive (take-a-selfie)
   (message "say cheese!\n")
   (call-with-new-thread
    (lambda _
      (map (lambda (i)
-            (safe-message "~a..." i)
+            (co-message "~a..." i)
             (sleep 1))
           '(3 2 1))
-     (safe-message "~a" "click!")
-     (safe-message "~a" #t)
+     (co-message "~a" "click!")
+     (co-message "~a" #t)
      (usleep 75000)
      (system* "scrot" "-u")))
   #t)
