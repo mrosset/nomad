@@ -27,8 +27,6 @@
             %startup-hook
             app-init))
 
-(define-public load-home-page? (make-parameter #t))
-
 ;; This is run once during initial program startup
 (define %startup-hook (make-hook))
 
@@ -38,7 +36,7 @@
 (define (app-init)
   "This is called when the application is activated. Which ensures
 controls are accessible to scheme"
-  (when (load-home-page?)
+  (when %default-home-page
     (make-buffer <web-buffer>)))
 
 (add-hook! %startup-hook app-init)
