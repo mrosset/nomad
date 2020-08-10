@@ -222,7 +222,8 @@
 (define (mouse-target-changed view hit modifiers)
   (cond
    ((context-is-link hit)
-    (display-message (get-link-uri hit)))
+    (unless emacsy-display-minibuffer?
+      (display-message (get-link-uri hit))))
    (else
     (kill-message))))
 
