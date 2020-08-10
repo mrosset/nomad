@@ -39,18 +39,21 @@ exec @GUILE@ --no-auto-compile -e main -s "$0" "$@"
   (with-output-to-string (lambda _
                            (pretty-print sym))))
 
-(define (debug-paths)
-  (format #t
-          "tyeplib:      ~a~%"
-          (getenv "GI_TYPELIB_PATH"))
+(define (display-paths)
   (format #t
           "version:      ~a~%"
           (nomad-version))
   (format #t
+          "tyeplib-path: ~a~%"
+          (getenv "GI_TYPELIB_PATH"))
+  (format #t
           "load-path:    ~a~%"
           (pretty-string %load-path))
   (format #t
-          "comiled-path: ~a~%"
+          "extention-dir ~a~%"
+          (getenv "NOMAD_WEB_EXTENSION_DIR"))
+  (format #t
+          "compiled-path: ~a~%"
           (pretty-string %load-compiled-path)))
 
 (define (main args)

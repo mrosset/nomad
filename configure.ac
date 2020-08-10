@@ -186,6 +186,7 @@ AC_MSG_NOTICE([summary of GI typelibs:
 
 AC_MSG_NOTICE([summary of guile libraries:
 
+  Guile:               ${GUILE}
   Guile Compiler:      ${GUILE_TOOLS}
   Emacsy:              ${guile_emacsy}
   GnuTLS:              ${guile_gnutls}
