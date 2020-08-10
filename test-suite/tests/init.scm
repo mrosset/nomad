@@ -31,3 +31,7 @@
     (assert-equal "/tmp/home/.nomad.d" %user-nomad-directory)
     (assert-equal "/tmp/home/.nomad.d/session.scm" %session-file)
     (assert-equal "/tmp/home/.nomad.d/cookies.db" %user-cookie-file)))
+
+(define-method (test-environment-file (self <test-init>))
+  (parameterize ((%environment-file "/tmp/environment.scm"))
+    (assert-equal "/tmp/environment.scm" (%environment-file))))

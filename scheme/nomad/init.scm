@@ -27,9 +27,11 @@
   #:use-module (oop goops)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (init
+            load-environment
             %use-cookies?
             %user-cookie-file
             %user-init-file
+            %environment-file
             %user-nomad-directory
             %session-file
             define-ident))
@@ -45,6 +47,18 @@
          (identifier-syntax
           val))
        (export var)))))
+
+;; %environment-file is the file that's loaded when (load-environment) is called. It is
+;; used to extend nomad with an environment that might be required before the
+;; graphical toolkit is used.
+(define %environment-file
+  (make-parameter (~/ ".nomad.d/environment.scm")))
+
+(define (load-environment)
+  "Loads @var{%environment-file}. "
+  (let ((file (%environment-file)))
+    (when (file-exists? file)
+      (load file))))
 
 ;; Path of user's initialization file. This is a top level identifier, it's
 ;; default value is @code{$HOME/.nomad}.

@@ -57,6 +57,7 @@ exec @GUILE@ --no-auto-compile -e main -s "$0" "$@"
           (pretty-string %load-compiled-path)))
 
 (define (main args)
+  (load-environment)
   (let ((app (make <application> #:application-id "org.gnu.nomad")))
     (g-application-run app (length args) args)))
 
