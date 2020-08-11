@@ -31,6 +31,9 @@ dist_doc_DATA = README
 desktopdir = $(datadir)/applications
 dist_desktop_DATA = etc/nomad.desktop
 
+repl: all
+	./pre-inst-env guile -l $(top_builddir)/src/nomad
+
 lcov.info: all
 	$(top_builddir)/pre-inst-env $(top_builddir)/tools/coverage
 

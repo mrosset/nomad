@@ -220,12 +220,16 @@
       (co-message "Error: key: ~a value: ~a" key vals))))
 
 (define (mouse-target-changed view hit modifiers)
-  (cond
-   ((context-is-link hit)
-    (unless emacsy-display-minibuffer?
-      (display-message (get-link-uri hit))))
-   (else
-    (kill-message))))
+  (catch #t
+    (lambda _
+      (cond
+       ((context-is-link hit)
+        (unless emacsy-display-minibuffer?
+          (display-message "~a"(get-link-uri hit))))
+       (else
+        (kill-message))))
+    (lambda (key . vals)
+      (co-message "Error: key: ~a Values: ~a" key vals))))
 
 (define-class <widget-web-view> (<widget-with-buffer>
                                  <webkit-web-view>))
