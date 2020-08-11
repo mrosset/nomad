@@ -30,6 +30,7 @@
             display-message
             kill-message
             co-message
+            nomad-get-version
             ensure-directory))
 
 (define (nomad-get-version) ((@ (g-golf) nomad-get-version)))

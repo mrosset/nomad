@@ -20,7 +20,6 @@
 
 #include "util.h"
 #include "../config.h"
-#include <libguile.h>
 
 void
 nomad_app_run_javascript (WebKitWebView *view, const char *js)
@@ -153,4 +152,24 @@ const char *
 nomad_get_version ()
 {
   return VERSION;
+}
+
+void
+uri_request_cb (WebKitURISchemeRequest *request, gpointer user_data)
+{
+  SCM uri, pointer;
+
+  uri = scm_from_locale_string (webkit_uri_scheme_request_get_uri (request));
+
+  pointer = scm_from_pointer (webkit_uri_scheme_request_get_web_view (request),
+                              NULL);
+
+  scm_call_2 (scm_c_public_ref ("nomad uri", "handle-uri"), pointer, uri);
+}
+
+void
+nomad_register_uri_scheme (WebKitWebContext *context, const gchar *scheme)
+{
+  webkit_web_context_register_uri_scheme (context, scheme, uri_request_cb,
+                                          NULL, NULL);
 }

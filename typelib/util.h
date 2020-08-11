@@ -22,6 +22,7 @@
 #define __NOMAD_UTIL_H
 
 #include <gtk/gtk.h>
+#include <libguile.h>
 #include <vte/vte.h>
 #include <webkit2/webkit2.h>
 
@@ -33,5 +34,7 @@ void nomad_set_wrap_mode (GtkTextView *view, gboolean wrap_mode);
 GdkRGBA *nomad_color_parse (const char *spec);
 void nomad_vte_set_colors (GtkWidget *widget);
 const char *nomad_get_version ();
+void nomad_register_uri_scheme (WebKitWebContext *context,
+                                const gchar *scheme);
 
 #endif

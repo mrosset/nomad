@@ -38,6 +38,7 @@ SUFFIXES = .scm .go
 SOURCES =			\
 	nomad/init.scm		\
 	nomad/util.scm		\
+	nomad/uri.scm		\
 	nomad/nomad.scm		\
 	nomad/ibuffer.scm	\
 	nomad/log.scm	\
@@ -48,6 +49,8 @@ SOURCES =			\
 	nomad/gtk/gi.scm	\
 	nomad/gtk/application.scm	\
 	nomad/gtk/frame.scm	\
+	nomad/gtk/foreign.scm	\
+	nomad/gtk/uri.scm	\
 	nomad/gtk/buffers.scm	\
 	nomad/gtk/widget.scm	\
 	nomad/gtk/window.scm	\

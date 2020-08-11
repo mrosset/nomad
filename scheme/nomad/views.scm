@@ -20,48 +20,10 @@
   #:use-module (nomad application)
   #:use-module (emacsy emacsy)
   #:use-module (nomad buffer)
+  #:use-module (nomad util)
   #:use-module (nomad html)
-  #:export (render-completion-popup-view))
-
-(define style-sheet "
-table {
-font-size: 14px;
-border-collapse: collapse;
-width: 100%;
-}
-
-.fill {
-min-height: 100%;
-width: 100%;
-}
-
-.grid-container {
-display: grid;
-grid-template-columns: auto auto auto auto;
-grid-gap: 1px;
-}
-
-.grid-item {
-background-color: rgba(255, 255, 255, 0.8);
-text-align: left;
-}
-
-.selected {
-background-color: steelblue;
-color: white;
-}
-
-.key-cell {
-text-align: right;
-color: steelblue;
-width: 2em;
-font-weight: bolder;
-}
-
-.accent {
-color: steelblue;
-}
-")
+  #:export (restful-view
+            %nomad-restful-views))
 
 (define-syntax define-popup-view
   (syntax-rules ()
@@ -77,41 +39,34 @@ color: steelblue;
                 (div (@ (class "fill"))
                      ,thunk))))))))
 
-(define-popup-view (which-key-view-old lst selection)
-  `(table ,@(map (lambda (cmd)
-                   `(tr (td (@ (class "accent")) ,(car cmd)) (td ,(car (cdr cmd)))))
-                 lst)))
+(define (about-view)
+  (sxml->html-string
+   `(html
+     (head
+      (title "About Nomad"))
+     (body
+      (h1 "About Nomad ")))))
 
-(define-popup-view (which-key-view lst selection)
-  `(div (@ (class "grid-container")) ,@(map (lambda (cmd)
-                                 `(div (@ (class "grid-item"))
-                                       (table
-                                        (tr
-                                         (td (@ (class "key-cell")) ,(car cmd))
-                                         (td ,(car (cdr cmd)))))))
-                               lst)))
+(define (404-view)
+  (sxml->html-string
+   `(html
+     (head
+      (title "View not found"))
+     (body
+      (h1 "404 view not found ")))))
 
-(define-popup-view (completion-view lst selection)
-  `(table
-         ,(let ((count 0))
-            (map (lambda (item)
-                   (let ((tr `(tr (td ,item)))
-                         (selected `(tr (@ (id "selected") (class "selected")) (td ,item))))
-                     (when (= count selection)
-                       (set! tr selected))
-                     (set! count (+ count 1))
-                     tr))
-                 lst))))
+(use-modules (g-golf)
+             (oop goops))
 
-(define-interactive (render-completion-popup-view)
-  "Renders the current minibuffer completion state"
-  (with-buffer minibuffer
-    (let* ((contents (substring (minibuffer-contents) 0 (- (point) (point-min))))
-           (completions (all-completions
-                         contents
-                         (fluid-ref (@@ (emacsy minibuffer) minibuffer-completion-table))
-                         (fluid-ref (@@ (emacsy minibuffer) minibuffer-completion-predicate))))
-           (view (local-var 'view))
-           (row (local-var 'selection)))
-      (set! (local-var 'completions) completions)
-      (render-popup view completions row))))
+(define (restful-ref views path)
+  "Returns a sxml @var{path} from a alist @var{views}"
+  (let ((view (assoc-ref views path)))
+    (if view
+        view
+        404-view)))
+
+(define (restful-view path)
+  (let ((view (restful-ref %nomad-restful-views path)))
+    (view)))
+
+(define %nomad-restful-views `(("about" . ,about-view)))

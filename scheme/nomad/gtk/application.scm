@@ -18,6 +18,7 @@
 
 (define-module (nomad gtk application)
   #:use-module (nomad gtk gi)
+  #:use-module (nomad gtk uri)
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:use-module (emacsy emacsy)
@@ -52,6 +53,9 @@
   (connect (webkit-web-context-get-default)
            'initialize-web-extensions
            initialize-extention-cb)
+
+  (register-uri-handlers)
+
   ;; setup proxy
   (when (and (use-proxy?)
              (proxy-uri)
