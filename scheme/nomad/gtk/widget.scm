@@ -272,7 +272,7 @@
       (vte-terminal-spawn-async vte
                                 '(default)
                                 (getcwd)
-                                `(,%default-shell)
+                                (list (%default-shell))
                                 #f
                                 '(default)
                                 #f #f #f

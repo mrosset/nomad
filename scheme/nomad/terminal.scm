@@ -29,7 +29,7 @@
 
 (define shell-map (make-keymap))
 
-(define-public %default-shell "/bin/bash")
+(define %default-shell (make-parameter "/bin/sh"))
 
 (define terminal-foreground (make-parameter "#ABB2BF"))
 (define terminal-background (make-parameter "#282C34"))
