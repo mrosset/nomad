@@ -45,7 +45,7 @@
 
 (define %search-provider-format "https://duckduckgo.com/?q=~a")
 
-(define %default-home-page "https://www.gnu.org/software/guile")
+(define %default-home-page "nomad:")
 
 (define %load-committed-hook (make-hook 1))
 

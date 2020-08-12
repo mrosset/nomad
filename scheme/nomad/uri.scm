@@ -32,15 +32,15 @@
             %uri-schemes
             handle-uri))
 
-(define-class <uri-handler> ())
-
-(define-class <nomad-uri-handler> (<uri-handler>)
+(define-class <uri-handler> ()
   (pointer #:accessor    pointer
            #:init-keyword #:pointer
            #:init-value  #f)
   (uri     #:accessor    uri
            #:init-keyword #:uri
            #:init-value #f))
+
+(define-class <nomad-uri-handler> (<uri-handler>))
 
 (define %uri-schemes `(("nomad" . ,<nomad-uri-handler>)))
 
