@@ -35,6 +35,7 @@
 
 (define-key global-map "C-x 2" 'undefined-command)
 (define-key global-map "C-x 3" 'undefined-command)
+(define-key global-map "C-x o" 'undefined-command)
 
 (define-key frame-map "2" 'make-frame-command)
 (define-key frame-map "0" 'delete-frame)
