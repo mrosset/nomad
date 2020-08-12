@@ -38,7 +38,7 @@
 
 (g-export widget-is-loading?
           widget-uri
-          widget-title
+          buffer-title
           buffer-load-uri
           buffer-back
           buffer-forward
@@ -76,7 +76,7 @@
   (set! (buffer-modes buffer) `(,web-mode))
   (set! (buffer-widget buffer) (make <widget-web-view> #:buffer buffer)))
 
-(define-method (widget-title (buffer <web-buffer>))
+(define-method (buffer-title (buffer <web-buffer>))
   (if (!is-loading (buffer-widget buffer))
       "loading..."
       (get-title (buffer-widget buffer))))

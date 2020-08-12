@@ -160,6 +160,11 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
     (make-buffer <web-buffer> #:uri uri)
     #t))
 
+(define-interactive (title #:optional buffer)
+  "Returns the html title for @var{buffer} if no @var{buffer} is passed. Then
+it uses the current buffer."
+  (message "~a" (buffer-title (current-buffer))))
+
 ;; Provides firefox key mappings for webview-mode. This can be set as
 ;; the default webview mode map by using (!set %webview-map
 ;; %firefox-webview-map) in %user-init-file
