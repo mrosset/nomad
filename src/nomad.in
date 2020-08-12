@@ -24,20 +24,15 @@ exec @GUILE@ --no-auto-compile -e main -s "$0" "$@"
       (cons* "@CCACHEDIR@"
              %load-compiled-path))
 
-(use-modules (ice-9 pretty-print)
-             (emacsy emacsy)
-             (nomad nomad)
-             (nomad platform))
+(use-modules (nomad nomad)
+             (nomad platform)
+             (emacsy emacsy))
 
 (eval-when (expand load eval)
   (use-modules (oop goops))
   (default-duplicate-binding-handler
     '(merge-generics replace warn-override-core warn last))
   (use-modules (g-golf)))
-
-(define (pretty-string sym)
-  (with-output-to-string (lambda _
-                           (pretty-print sym))))
 
 (define (display-paths)
   (format #t

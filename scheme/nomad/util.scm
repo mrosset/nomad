@@ -27,6 +27,7 @@
             ~
             ~/
             //
+            pretty-string
             display-message
             kill-message
             co-message
@@ -34,6 +35,10 @@
             ensure-directory))
 
 (define (nomad-get-version) ((@ (g-golf) nomad-get-version)))
+
+(define (pretty-string sym)
+  (with-output-to-string (lambda _
+                           (pretty-print sym))))
 
 (define (display-message fmt . args)
   "Displays @var{fmt} with @var{args} in the @var{minibuffer} echo-area."
@@ -124,7 +129,7 @@
       (nomad-get-version)))
 
 (define-interactive (take-a-selfie)
-  (message "say cheese!\n")
+  (co-message "say cheese!\n")
   (call-with-new-thread
    (lambda _
      (map (lambda (i)
