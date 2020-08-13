@@ -77,8 +77,8 @@ This is the Nomad User Manual for the Nomad Web Browser,
 * Distribution::        Get the source code
 * Installation::        Install Nomad using Guix
 * Usage::               Using Nomad from the command line, application keybinds
-* API::                 The programming interface
 * Extensions::          Modules and extensions for Nomad
+* API::                 The programming interface
 * Development::         Making changes to the source code and contributing
 * Copying::             The GNU General Public License gives you permission to redistribute Nomad
 * Documentation License::      The license for this documentation
@@ -198,6 +198,21 @@ keybindings.
 @end multitable
 
 @c *********************************************************************
+@node Extensions
+@chapter Extensions
+
+@section Configuration File
+
+You can customize nomad by writing your configurations to `~/.nomad`,
+which is just a scheme file!
+
+Examples
+@example
+(set! search-provider-format "https://google.ca/search?q=~a")
+@end example
+
+
+@c *********************************************************************
 @node API
 @chapter API
 
@@ -226,20 +241,6 @@ To see more about WebkitGtk see:
 @uref{@value{WEBKITGTK_REF}}
 
 @c @include api.texi
-
-@c *********************************************************************
-@node Extensions
-@chapter Extensions
-
-@section Configuration File
-
-You can customize nomad by writing your configurations to `~/.nomad`,
-which is just a scheme file!
-
-Examples
-@example
-(set! search-provider-format "https://google.ca/search?q=~a")
-@end example
 
 @c *********************************************************************
 @node Development
