@@ -213,10 +213,18 @@ Examples
 
 Start the remote REPL with the startup hook.
 @example
+(use-modules (nomad repl))
 (add-hook! %startup-hook
 	   (lambda _
 	     (server-start-coop socket-file)))
 @end example
+
+Then in Emacs
+@example
+M-x geiser-connect-local /tmp/nomad-socket
+@end example
+
+See also, scheme/nomad/repl.scm variable 'socket-file'.
 
 @c *********************************************************************
 @node API
