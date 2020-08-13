@@ -211,6 +211,12 @@ Examples
 (set! search-provider-format "https://google.ca/search?q=~a")
 @end example
 
+Start the remote REPL with the startup hook.
+@example
+(add-hook! %startup-hook
+	   (lambda _
+	     (server-start-coop socket-file)))
+@end example
 
 @c *********************************************************************
 @node API
