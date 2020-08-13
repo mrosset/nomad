@@ -53,18 +53,13 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
 (define-interactive (load-uri #:optional
                               (buffer (current-buffer))
                               (input (ensure-protocol (read-from-minibuffer "Url: "))))
-  "Loads @var{input} with current buffer.  If the current buffer is not a webview
-it will create a new @var{<web-buffer>}.  When used with universal argument
-@var{input} will be loaded with a new buffer."
+  "Creates a new web buffer and loads @var{input}"
   (catch #t
     (lambda _
       (let ((uri (string->uri input)))
         (unless uri
           (error "Input is not a valid URI"))
-        (if (or (> (universal-argument-pop!) 1)
-                (not (is-a? (current-buffer) <web-buffer>)))
-            (make-buffer <web-buffer> #:uri (uri->string uri))
-            (buffer-load-uri (current-buffer) (uri->string uri))))
+            (make-buffer <web-buffer> #:uri (uri->string uri)))
       #t)
     (lambda (key . args)
       (message "Error: Failed to load URI ~a\nkey: ~a args: ~a" input key args)
@@ -74,11 +69,14 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
   (load-uri (current-buffer) (get-clipboard)))
 
 (define-interactive (make-buffer-clipboard)
+  "Creates a new @var{<web-buffer>} and loads the URI found in clipboard."
   (make-buffer <web-buffer>
                #:uri (get-clipboard))
   #t)
 
 (define-interactive (hints #:optional (buffer (current-buffer)))
+  "Activates hyperlink hint numbers. Pressing the corresponding number will
+follow that link."
   (buffer-hints buffer)
   #t)
 
@@ -123,9 +121,13 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
   #t)
 
 (define-interactive (home #:optional (buffer (current-buffer)))
-  (make-buffer <web-buffer>
-               #:uri %default-home-page
-               #:name "Home Page")
+  (if %default-home-page
+    (make-buffer <web-buffer>
+                 #:uri %default-home-page
+                 #:name "Home Page")
+    (make-buffer <web-buffer>
+                 #:uri "nomad:"
+                 #:name "Welcome"))
   #t)
 
 (define-interactive (reload #:optional (buffer (current-buffer)))
@@ -142,11 +144,13 @@ it will create a new @var{<web-buffer>}.  When used with universal argument
 (define-interactive (isearch-forward
                      #:optional (text (or (current-search (current-buffer))
                                           (read-from-minibuffer "I-search: "))))
+  "Do incremental search forward in web buffer"
   (set! (current-search (current-buffer)) text)
   (search-forward (current-buffer))
   #t)
 
 (define-interactive (web-keyboard-quit)
+  "Quit hints, isearch and finally calls @url{keyboard-quit}"
   (hints-finish (current-buffer))
   (search-finish (current-buffer))
   (keyboard-quit)

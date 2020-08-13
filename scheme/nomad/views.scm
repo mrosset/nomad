@@ -20,6 +20,7 @@
   #:use-module (ice-9 match)
   #:use-module (nomad application)
   #:use-module (emacsy emacsy)
+  #:use-module (nomad doc)
   #:use-module (nomad buffer)
   #:use-module (nomad util)
   #:use-module (nomad html)
@@ -33,7 +34,7 @@ table, th, td {
 }
 
 td {
-width: 50%;
+width: 33.3%;
 }
 ")
 
@@ -79,28 +80,39 @@ width: 50%;
 (use-modules (g-golf))
 
 (define (keymap->table keymap)
-  `(table (th "Key") (th "interactive command")
+  `(table (th "Key") (th "interactive command") (th "description")
           ,(map (lambda (value)
-                   `(tr (td  ,(car value))
-                        (td ,(if (command? (cdr value))
-                                 (command->proc-name (cdr value))
-                                 (class-name (class-of (cdr value)))))))
-                 (hash-map->list cons (entries keymap)))))
+                  `(tr (td (@ (style "text-align:center;")) ,(car value))
+                       (td ,(if (command? (cdr value))
+                                (command->proc-name (cdr value))
+                                (class-name (class-of (cdr value)))))
+                       (td ,(catch 'misc-error
+                              (lambda _
+                                (if (command? (cdr value))
+                                    (doc-get '(nomad nomad) (string->symbol (command->proc-name (cdr value))))
+                                    "keymap"))
+                              (lambda _
+                                "unresolved symbol")))))
+                (hash-map->list cons (entries keymap)))))
 
 (define-view (root-view)
-  `((h3 (@ (align "center")) "Welcome to " (a (@ (href "https://www.nongnu.org/nomad/index.html")) "Nomad"))
-    (p "Nomad is a Emacs-like web browser (and more) that consists of a modular feature-set, fully programmable in Guile Scheme.")
-    ;; (h3 "Getting Started")
-    (h4 "Web View Keymap")
-    ,(keymap->table (@ (nomad web) %web-mode-map))
-    (h5 "Global Keymap")
-    ,(keymap->table global-map)))
+  (begin
+    (rename-buffer (current-buffer) "Welcome")
+    `((h3 (@ (align "center")) "Welcome to " (a (@ (href "https://www.nongnu.org/nomad/index.html")) "Nomad"))
+      (p "Nomad is a Emacs-like web browser (and more) that consists of a modular feature-set, fully programmable in Guile Scheme.")
+      ;; (h3 "Getting Started")
+      (h4 "Web View Keymap")
+      ,(keymap->table (@ (nomad web) %web-mode-map))
+      ;; (h5 "Global Keymap")
+      ;; ,(keymap->table (@ (nomad ibuffer) ibuffer-map))
+      )))
 
 (define-view (404-view)
-  '(h1 "404 view not found "))
+  (begin
+    '(h1 "404 view not found ")))
 
 (define-view (info-view)
-   `((h2 (@ (align "center")) "Info")))
+  `((h2 (@ (align "center")) "Info")))
 
 (define %nomad-restful-views `(("" . ("Welcome" . ,root-view))))
 
