@@ -23,14 +23,19 @@
   #:use-module (nomad doc)
   #:use-module (nomad buffer)
   #:use-module (nomad util)
+  #:use-module (nomad uri)
   #:use-module (nomad html)
   #:use-module (oop goops)
   #:export (restful-view
             %nomad-restful-views))
 
+(define (a key body)
+  `(a (@ (target "_blank") (href ,(assoc-ref %links key))) ,body))
+
 (define style-sheet "
 table, th, td {
- border: 1px solid black;
+border: 1px solid black;
+border-collapse: collapse;
 }
 
 td {
@@ -80,7 +85,7 @@ width: 33.3%;
 (use-modules (g-golf))
 
 (define (keymap->table keymap)
-  `(table (th "Key") (th "interactive command") (th "description")
+  `(table (th "Key") (th "Command") (th "Description")
           ,(map (lambda (value)
                   `(tr (td (@ (style "text-align:center;")) ,(car value))
                        (td ,(if (command? (cdr value))
@@ -98,8 +103,9 @@ width: 33.3%;
 (define-view (root-view)
   (begin
     (rename-buffer (current-buffer) "Welcome")
-    `((h3 (@ (align "center")) "Welcome to " (a (@ (href "https://www.nongnu.org/nomad/index.html")) "Nomad"))
-      (p "Nomad is a Emacs-like web browser (and more) that consists of a modular feature-set, fully programmable in Guile Scheme.")
+    `((h3 (@ (align "center")) "Welcome to "  ,(a 'nomad "Nomad"))
+      (p "Nomad is a " ,(a 'emacs "Emacs-like") " web browser (and more) that consists of a modular feature-set, fully programmable in "
+         ,(a 'guile "Guile Scheme") ".")
       ;; (h3 "Getting Started")
       (h4 "Web View Keymap")
       ,(keymap->table (@ (nomad web) %web-mode-map))

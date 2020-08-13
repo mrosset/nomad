@@ -27,10 +27,19 @@
   #:use-module (g-golf)
   #:use-module (system foreign)
   #:duplicates (merge-generics replace warn-override-core warn last)
-  #:export (<uri-handler>
+  #:export (%links
+            <uri-handler>
             <nomad-uri-handler>
             %uri-schemes
             handle-uri))
+
+(define %links '((nomad        . "https://www.nongnu.org/nomad")
+                 (nomad-git    . "https://git.savannah.nongnu.org/cgit/nomad.git")
+                 (gnu          . "https://gnu.org")
+                 (guile        . "https://www.gnu.org/software/guile")
+                 (emacs        . "https://www.gnu.org/software/emacs")
+                 (emacsy       . "https://savannah.nongnu.org/projects/emacsy")
+                 (guile-manual . "https://www.gnu.org/software/guile/manual/html_node")))
 
 (define-class <uri-handler> ()
   (pointer #:accessor    pointer
