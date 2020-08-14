@@ -129,15 +129,7 @@
       (nomad-get-version)))
 
 (define-interactive (take-a-selfie)
-  (co-message "say cheese!\n")
-  (call-with-new-thread
-   (lambda _
-     (map (lambda (i)
-            (co-message "~a..." i)
-            (sleep 1))
-          '(3 2 1))
-     (co-message "~a" "click!")
-     (co-message "~a" #t)
-     (usleep 75000)
-     (system* "scrot" "-u")))
+  (message "📷 Click!")
+  (usleep 75000)
+  (system* "scrot" "-u")
   #t)
