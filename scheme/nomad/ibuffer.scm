@@ -19,6 +19,7 @@
 (define-module (nomad ibuffer)
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 optargs)
   #:use-module (nomad text)
   #:use-module (nomad web)
   #:use-module (nomad util)
@@ -69,12 +70,14 @@
   (backward-delete-char 1)
   (goto-char (point-min)))
 
-(define (ibuffer-forward-line)
+(define* (ibuffer-forward-line #:optional (n 1))
   (let* ((buffer  (current-buffer))
          (index   (!index buffer)))
-    (when (< index (- (length (!buffers buffer)) 1))
-      (set! (!index buffer) (+ index 1))
-      (forward-line))))
+    (do ((i 0 (+ i 1)))
+        ((>= i n))
+      (when (< index (- (length (!buffers buffer)) 1))
+        (set! (!index buffer) (+ index 1))
+        (forward-line)))))
 
 (define (ibuffer-backward-line)
   (let* ((buffer  (current-buffer))
@@ -88,7 +91,17 @@
     (switch-to-buffer
      (list-ref (!buffers buffer) (!index buffer)))))
 
-(define-interactive (ibuffer)
+(define-interactive (ibuffer-kill-buffer)
+  (let* ((buffer   (current-buffer))
+         (selected (list-ref (!buffers buffer) (!index buffer)))
+         (index    (!index buffer)))
+    (with-buffer selected
+      (kill-buffer))
+    (switch-to-buffer buffer)
+    (update buffer)
+    (ibuffer-forward-line index)))
+
+(define-interactive (ibuffer #:optional (index 0))
   (let* ((current (find (compose (cut is-a? <> <ibuffer>))
                         (buffer-list)))
          (buffer  (if current
@@ -96,7 +109,8 @@
                       (make-buffer <ibuffer>
                                    #:name         "ibuffer"
                                    #:buffer-modes `(,ibuffer-mode)))))
-    (update buffer)))
+    (update buffer)
+    (ibuffer-forward-line index)))
 
 (define-key ibuffer-map "RET" switch-to)
 (define-key ibuffer-map "g" (lambda _ (update (current-buffer))))
@@ -105,5 +119,5 @@
 (define-key ibuffer-map "p" ibuffer-backward-line)
 (define-key ibuffer-map "C-p" ibuffer-backward-line)
 (define-key ibuffer-map "ESC" kill-buffer)
-(define-key ibuffer-map "k" (compose kill-buffer switch-to))
+(define-key ibuffer-map "k" ibuffer-kill-buffer)
 (define-key ibuffer-map "q" kill-buffer)
