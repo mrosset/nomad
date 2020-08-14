@@ -28,6 +28,7 @@
   #:use-module (system foreign)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (%links
+            !uri
             <uri-handler>
             <nomad-uri-handler>
             %uri-schemes
@@ -45,7 +46,7 @@
   (pointer #:accessor    pointer
            #:init-keyword #:pointer
            #:init-value  #f)
-  (uri     #:accessor    uri
+  (uri     #:accessor    !uri
            #:init-keyword #:uri
            #:init-value #f))
 
@@ -56,11 +57,11 @@
 (define-method (handle-uri (handler <nomad-uri-handler>))
   (catch #t
     (lambda _
-      (let* ((path (uri-path (uri handler)))
+      (let* ((path (uri-path (!uri handler)))
              (html (restful-view path)))
         (unless (string? html)
           (error (format #f "HTML view is not a string. ~a" (class-of html))))
-        (load-view (pointer handler) html (uri handler))))
+        (load-view (pointer handler) html (!uri handler))))
     (lambda (key . vals)
       (format #t "Error: key: ~a Value: ~a" key vals))))
 
