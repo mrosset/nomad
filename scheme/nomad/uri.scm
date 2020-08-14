@@ -17,14 +17,12 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad uri)
-  #:use-module (nomad log)
   #:use-module (nomad views)
   #:use-module (nomad util)
   ;; FIXME: we should not use GTK from here make this generic
   #:use-module (nomad gtk foreign)
   #:use-module (web uri)
   #:use-module (oop goops)
-  #:use-module (g-golf)
   #:use-module (system foreign)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (%links

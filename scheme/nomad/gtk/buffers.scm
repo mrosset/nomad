@@ -124,11 +124,11 @@
 
 (define-method (buffer-page-up (buffer <web-buffer>))
   (run-javascript (buffer-widget buffer)
-                  "window.scrollBy(0, -window.innerHeight);" #f #f #f))
+                  "window.scrollBy(0, -window.innerHeight + 25);" #f #f #f))
 
 (define-method (buffer-page-down (buffer <web-buffer>))
   (run-javascript (buffer-widget buffer)
-                  "window.scrollBy(0,window.innerHeight);" #f #f #f))
+                  "window.scrollBy(0,window.innerHeight - 25);" #f #f #f))
 
 (define-method (hints-finish (buffer <web-buffer>))
   (nomad-app-send-message (buffer-widget buffer)
