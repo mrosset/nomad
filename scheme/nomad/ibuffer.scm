@@ -79,7 +79,7 @@
 (define (ibuffer-backward-line)
   (let* ((buffer  (current-buffer))
          (index   (!index buffer)))
-    (when (> index 1)
+    (when (> index 0)
       (set! (!index buffer) (- index 1)))
     (backward-line)))
 
@@ -97,8 +97,6 @@
                                    #:name         "ibuffer"
                                    #:buffer-modes `(,ibuffer-mode)))))
     (update buffer)))
-
-(define-key global-map "C-x b" 'ibuffer)
 
 (define-key ibuffer-map "RET" switch-to)
 (define-key ibuffer-map "g" (lambda _ (update (current-buffer))))
