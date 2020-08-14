@@ -33,6 +33,7 @@
             %user-init-file
             %environment-file
             %user-nomad-directory
+            %module-directory
             %session-file
             define-ident))
 
@@ -69,6 +70,9 @@
 ;; is @code{$HOME/.nomad.d}.
 (define-ident %user-nomad-directory
   (~/ ".nomad.d"))
+
+(define-ident %module-directory
+  (string-append %user-nomad-directory "/modules"))
 
 (define session '())
 

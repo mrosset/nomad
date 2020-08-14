@@ -28,6 +28,8 @@ exec @GUILE@ --no-auto-compile -e main -s "$0" "$@"
              (nomad platform)
              (emacsy emacsy))
 
+(add-to-load-path %module-directory)
+
 (eval-when (expand load eval)
   (use-modules (oop goops))
   (default-duplicate-binding-handler
