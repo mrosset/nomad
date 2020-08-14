@@ -6,9 +6,9 @@
   #:use-module (gnu packages guile-xyz))
 
 (define-public g-golf-git
-  (let ((commit   "4e9847582367e66ba2aae07507765855e0f9c3d6")
-        (revision "816")
-        (hash     (base32 "05pppka6bqswpymydf5wpphm5v0ijlv36apg6mqcwbs2vjf8dnqy")))
+  (let ((commit   "84e894eb7945c3bcdf7f8d5135c1be3efa524c92")
+        (revision "822")
+        (hash     (base32 "1pkcij65zy2lkip5yrfzj85nq17pp9mrf0d4sk6hpjqr4kd0bxd5")))
      (package
       (inherit g-golf)
       (name "g-golf-git")
@@ -22,8 +22,8 @@
                 (sha256 hash))))))
 
 (define-public nomad-git
-  (let ((commit "0.1.2-alpha-337-g8962d4d")
-        (hash   (base32 "0x7vpa8vnjgccm92p7l6yw25i1659ywig9pyar995ggr378dx1al")))
+  (let ((commit "0.2.0-alpha-44-ge58805d")
+        (hash   (base32 "18qiqhp9wfxxvlwa8sjcfravdrqpnzylxcc5b6qgampims7v44ky")))
     (package
       (inherit nomad)
       (name "nomad-git")
