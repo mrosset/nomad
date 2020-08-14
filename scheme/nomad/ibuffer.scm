@@ -44,19 +44,20 @@
                             buffer-classes))
 
 (define (ibuffer-header)
-  (insert (format #f "Name~/Uri/Filename\n"))
-  (insert (format #f "--------~/--------\n")))
+  (insert (format #f "MR     Name ~/~/   Uri/Filename~%"))
+  (insert (format #f "--     -----~/~/   ------------~%")))
 
 (define (ibuffer-line buffer)
-  (format #f "~a~/~a\n"
+  (format #f "       ~a~/~/    ~a\n"
           (buffer-name buffer)
            (if (is-a? buffer <web-buffer>)
                (buffer-uri buffer)
                (or (buffer-file-name buffer)
                    "--"))))
 
-(define (update buffer)
+(define* (update #:optional (buffer (current-buffer)))
   (delete-region (point-min) (point-max))
+  (ibuffer-header)
   (set! (!index buffer) 0)
   (set! (!buffers buffer)
         (filter-map
@@ -68,7 +69,8 @@
               (insert (ibuffer-line b)))
             (!buffers buffer))
   (backward-delete-char 1)
-  (goto-char (point-min)))
+  (goto-char (point-min))
+  (forward-line 2))
 
 (define* (ibuffer-forward-line #:optional (n 1))
   (let* ((buffer  (current-buffer))
@@ -114,10 +116,12 @@
 
 (define-key ibuffer-map "RET" switch-to)
 (define-key ibuffer-map "g" (lambda _ (update (current-buffer))))
-(define-key ibuffer-map "C-n" ibuffer-forward-line)
-(define-key ibuffer-map "n" ibuffer-forward-line)
-(define-key ibuffer-map "p" ibuffer-backward-line)
-(define-key ibuffer-map "C-p" ibuffer-backward-line)
+(for-each (lambda (key)
+            (define-key ibuffer-map key ibuffer-forward-line))
+          '("C-n" "n"))
+(for-each (lambda (key)
+            (define-key ibuffer-map key ibuffer-backward-line))
+          '("C-p" "p"))
 (define-key ibuffer-map "ESC" kill-buffer)
-(define-key ibuffer-map "k" ibuffer-kill-buffer)
+(define-key ibuffer-map "d" ibuffer-kill-buffer)
 (define-key ibuffer-map "q" kill-buffer)
