@@ -91,20 +91,25 @@ target-new:tab;
 (define (key< x y)
   (string< (car x) (car y)))
 
+(define (entries->row entry)
+  (let* ((key     (car entry))
+         (command (if (command? (cdr entry))
+                      (command->proc-name (cdr entry))
+                      (class-name (class-of (cdr entry)))))
+         (desc    (catch 'misc-error
+                    (lambda _
+                      (if (command? (cdr entry))
+                          (doc->shtml (string->symbol (command->proc-name (cdr entry))))
+                          (class-name (class-of (cdr entry)))))
+                    (lambda _
+                      "Unresolved command."))))
+    `(tr (td (@ (style "text-align:center;")) ,key)
+         (td ,command)
+         (td ,desc))))
+
 (define (keymap->table keymap)
   `(table (th "Key") (th "Command") (th "Description")
-          ,(map (lambda (value)
-                  `(tr (td (@ (style "text-align:center;")) ,(car value))
-                       (td ,(if (command? (cdr value))
-                                (command->proc-name (cdr value))
-                                (class-name (class-of (cdr value)))))
-                       (td ,(catch 'misc-error
-                              (lambda _
-                                (if (command? (cdr value))
-                                     (doc->shtml (string->symbol (command->proc-name (cdr value))))
-                                    "keymap"))
-                              (lambda _
-                                "unresolved symbol")))))
+          ,(map entries->row
                 (sort-list (hash-map->list cons (entries keymap)) key<))))
 
 (define-view (root-view)
