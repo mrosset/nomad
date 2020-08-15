@@ -18,6 +18,8 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 (define-module (nomad doc)
+  #:use-module (texinfo)
+  #:use-module (texinfo html)
   #:use-module (ice-9 documentation)
   #:use-module (emacsy command)
   #:use-module (emacsy minibuffer)
@@ -25,7 +27,12 @@
   #:use-module (emacsy self-doc)
   #:export (doc-names
             doc-object
-            doc-get))
+            doc-get
+            doc->shtml))
+
+;; (add-ref-resolver! (lambda (node manual)
+;;                      (format #t "node: ~a manual: ~a" node manual)
+;;                      #f))
 ;;
 (define (doc-names module kind depth)
   "In MODULE, find available objects of KIND, recurse until DEPTH."
@@ -41,6 +48,12 @@
   "Get the documentation for an object, looking in MODULE, for NAME."
   (object-documentation (doc-object module name)))
 
+(define (doc->stexi sym)
+  (let ((doc (doc-get '(nomad nomad) sym)))
+    (texi-fragment->stexi doc)))
+
+(define (doc->shtml sym)
+  (stexi->shtml (doc->stexi sym)))
 
 (define-interactive (help
                      #:optional (var (completing-read "Var: "

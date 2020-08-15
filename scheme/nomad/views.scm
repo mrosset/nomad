@@ -26,6 +26,7 @@
   #:use-module (nomad uri)
   #:use-module (nomad html)
   #:use-module (oop goops)
+  #:use-module (srfi srfi-19)
   #:export (restful-view
             %nomad-restful-views))
 
@@ -40,6 +41,11 @@ border-collapse: collapse;
 
 td {
 width: 33.3%;
+}
+
+a {
+target-name:new;
+target-new:tab;
 }
 ")
 
@@ -78,11 +84,12 @@ width: 33.3%;
   (let* ((name       (command-name command))
          (trampoline (if (symbol? name)
                          (symbol->string (command-name command))
-                         (begin (dimfi name) "failed-trampoline")))
+                         "failed-trampoline"))
          (proc       (string-drop-right trampoline 11)))
       proc))
 
-(use-modules (g-golf))
+(define (key< x y)
+  (string< (car x) (car y)))
 
 (define (keymap->table keymap)
   `(table (th "Key") (th "Command") (th "Description")
@@ -94,11 +101,11 @@ width: 33.3%;
                        (td ,(catch 'misc-error
                               (lambda _
                                 (if (command? (cdr value))
-                                    (doc-get '(nomad nomad) (string->symbol (command->proc-name (cdr value))))
+                                     (doc->shtml (string->symbol (command->proc-name (cdr value))))
                                     "keymap"))
                               (lambda _
                                 "unresolved symbol")))))
-                (hash-map->list cons (entries keymap)))))
+                (sort-list (hash-map->list cons (entries keymap)) key<))))
 
 (define-view (root-view)
   (begin
@@ -106,11 +113,10 @@ width: 33.3%;
     `((h3 (@ (align "center")) "Welcome to "  ,(a 'nomad "Nomad"))
       (p "Nomad is a " ,(a 'emacs "Emacs-like") " web browser (and more) that consists of a modular feature-set, fully programmable in "
          ,(a 'guile "Guile Scheme") ".")
-      ;; (h3 "Getting Started")
       (h4 "Web View Keymap")
       ,(keymap->table (@ (nomad web) %web-mode-map))
       ;; (h5 "Global Keymap")
-      ;; ,(keymap->table (@ (nomad ibuffer) ibuffer-map))
+      ;; ,(keymap->table (@@ (nomad ibuffer) global-map))
       )))
 
 (define-view (404-view)
