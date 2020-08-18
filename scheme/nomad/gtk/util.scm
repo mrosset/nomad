@@ -22,7 +22,15 @@
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
-  #:export (yes-or-no-p))
+  #:export (yes-or-no-p
+            g-run-hook))
+
+(define (g-run-hook hook . args)
+  "Runs @var{hook} once with @var{args} on main GLib thread."
+  (g-timeout-add 50
+                 (lambda _
+                   (apply run-hook hook args)
+                   #f)))
 
 (define (yes-or-no-p prompt thunk)
   "Creates a Yes or No message dialog with @var{prompt}. If the Ok button is

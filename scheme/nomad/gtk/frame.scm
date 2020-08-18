@@ -24,6 +24,7 @@
   #:use-module (nomad gtk gi)
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk widget)
+  #:use-module (nomad gtk util)
   #:use-module (nomad web)
   #:use-module (nomad text)
   #:duplicates (merge-generics replace warn-override-core warn last)
@@ -95,16 +96,13 @@
     ;; Add buffer hooks for minibuffer
     (add-hook! (buffer-enter-hook minibuffer)
                (lambda _
+                 (g-run-hook %thunk-view-hook)
                  (grab-focus (!echo-area self))))
 
     (add-hook! (buffer-exit-hook minibuffer)
                (lambda _
                  (grab-focus (buffer-widget
-                              (window-buffer current-window)))
-                 (g-timeout-add 50
-                                (lambda _
-                                  (run-hook %thunk-view-hook)
-                                  #f))))
+                              (window-buffer current-window)))))
 
     ;; Widget packing
     (gtk-container-add self box)
@@ -129,6 +127,9 @@
     ;; Redraw the windows for the first time.
     (window-config-change root-window)
 
+    (add-hook! after-buffer-change-hook
+               (lambda (m)
+                 (g-run-hook %thunk-view-hook)))
 
     (g-timeout-add 200 (lambda _
                          (redisplay root-window)
@@ -161,7 +162,6 @@
      ((equal? type 'key-press)
       (emacsy-key-event unichar mod-flags)
       (emacsy-tick)
-      (run-hook %thunk-view-hook)
       ;; We need two ticks or we can not test for emacsy-ran-undefined-command?
       ;; (unless emacsy-display-minibuffer?
       ;;   (emacsy-tick))
