@@ -141,7 +141,7 @@
   (make <gtk-frame> #:application app
         #:icon-name "nomad"))
 
-(define-public (delete-frame)
+(define-interactive (delete-frame)
   (gtk-widget-destroy (current-frame))
   #t)
 
