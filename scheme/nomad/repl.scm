@@ -22,6 +22,7 @@
   #:use-module (ice-9 threads)
   #:use-module (nomad application)
   #:use-module (nomad options)
+  #:use-module (nomad platform)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 textual-ports)
   #:use-module (system repl coop-server)
@@ -46,7 +47,10 @@
     (delete-file socket-file))
   (set! repl-server
         (spawn-coop-repl-server (make-unix-domain-server-socket #:path socket-file)))
-  (make-thread (poll-server)))
+  (timeout-add 200
+               (lambda _
+                 (poll-coop-repl-server repl-server)
+                 #t)))
 
 (define (server-start socket-file)
   "Spawn a UNIX domain sockert REPL in a new thread. The file is the

@@ -38,5 +38,7 @@
 (define-interactive (make-frame #:optional (app (current-application)))
   (gtk-frame-new app))
 
+(define-public timeout-add (@ (g-golf) g-timeout-add))
+
 (re-export-modules
  '(nomad gtk gtk))
