@@ -51,8 +51,8 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
   #t)
 
 (define-interactive (load-uri #:optional
-                              (buffer (current-buffer))
-                              (input (ensure-protocol (read-from-minibuffer "Url: "))))
+                              (input (ensure-protocol (read-from-minibuffer "Url: ")))
+                              (buffer (current-buffer)))
   "Creates a new web buffer and loads @var{input}"
   (catch #t
     (lambda _
