@@ -85,6 +85,10 @@
 (set! buffer-classes (cons* <web-buffer>
                             buffer-classes))
 
+(define-method (buffer-uri (buffer <buffer>))
+  (message "~a has no 'buffer-uri method"
+           (class-name (class-of buffer))))
+
 (define use-proxy? (make-parameter #f))
 (define http-proxy (make-parameter (getenv "HTTP_PROXY")))
 (define proxy-uri (make-parameter (or (http-proxy))))
