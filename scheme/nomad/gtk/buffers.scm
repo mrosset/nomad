@@ -29,8 +29,8 @@
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk frame)
   #:use-module (oop goops)
-  #:duplicates (merge-generics replace warn-override-core warn last)
   #:use-module (g-golf)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<gtk-widget-buffer>
             <gtk-textview-buffer>
             <gtk-webview-buffer>
@@ -40,6 +40,7 @@
           widget-uri
           buffer-title
           buffer-load-uri
+          load-view
           buffer-back
           buffer-forward
           buffer-hints
@@ -90,6 +91,11 @@
 (define-method (buffer-load-uri (buffer <web-buffer>) uri)
   (webkit-web-view-load-uri (buffer-widget buffer)
                             uri))
+
+(define-method (load-view (buffer <web-buffer>)
+                          (html <string>)
+                          uri)
+  (load-html (buffer-widget buffer) html uri))
 
 (define-method (buffer-forward (buffer <web-buffer>))
   (go-forward (buffer-widget buffer)))

@@ -25,6 +25,8 @@
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (load-view))
 
-(define (load-view pointer html uri)
+(define-method (load-view (pointer <foreign>)
+                          (html <string>)
+                          uri)
   (let ((view (make <webkit-web-view> #:g-inst pointer)))
     (webkit-web-view-load-html view html (uri->string uri))))
