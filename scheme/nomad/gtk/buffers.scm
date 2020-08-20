@@ -74,8 +74,8 @@
 
 (define-method (initialize (buffer <web-buffer>) arg)
   (next-method)
-  (set! (buffer-modes buffer) `(,web-mode))
-  (set! (buffer-widget buffer) (make <widget-web-view> #:buffer buffer)))
+  (set! (buffer-widget buffer)
+        (make <widget-web-view> #:buffer buffer)))
 
 (define-method (buffer-title (buffer <web-buffer>))
   (if (!is-loading (buffer-widget buffer))

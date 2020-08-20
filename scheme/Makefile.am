@@ -37,9 +37,10 @@ SUFFIXES = .scm .go
 
 SOURCES =			\
 	nomad/init.scm		\
+	nomad/help-mode.scm     \
 	nomad/util.scm		\
 	nomad/uri.scm		\
-	nomad/nomad.scm		\
+	nomad/nomad.scm         \
 	nomad/ibuffer.scm	\
 	nomad/log.scm	\
 	nomad/terminal.scm	\

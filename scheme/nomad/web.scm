@@ -72,6 +72,7 @@
   (name     #:init-keyword #:name
             #:init-form    (uniquify-name "*web-buffer*<~a>"
                                           (map buffer-name (buffer-list))))
+  (buffer-modes #:accessor buffer-modes #:init-value `(,web-mode))
   (progress #:accessor     buffer-progress
             #:init-value   0)
   (title    #:accessor     buffer-title

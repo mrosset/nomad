@@ -55,11 +55,11 @@
 (define (doc->shtml sym)
   (stexi->shtml (doc->stexi sym)))
 
-(define-interactive (help
-                     #:optional (var (completing-read "Var: "
-                                                      (doc-names '(nomad nomad) #f 1)
-                                                      #:to-string symbol->string)))
-  "Interactively get the documention for a Scheme Object."
-  (message "~a" (doc-get '(nomad nomad) var)))
+;; (define-interactive (help
+;;                      #:optional (var (completing-read "Var: "
+;;                                                       (doc-names '(nomad nomad) #f 1)
+;;                                                       #:to-string symbol->string)))
+;;   "Interactively get the documention for a Scheme Object."
+;;   (message "~a" (doc-get '(nomad nomad) var)))
 
 ;; help
