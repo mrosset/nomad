@@ -29,4 +29,4 @@
                           (html <string>)
                           uri)
   (let ((view (make <webkit-web-view> #:g-inst pointer)))
-    (webkit-web-view-load-html view html (uri->string uri))))
+    (load-html view html (uri->string uri))))
