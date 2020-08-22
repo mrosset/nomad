@@ -40,7 +40,7 @@ LT_INIT([dlopen])
 # Guile
 GUILE_PKG([3.0 2.2 2.0])
 GUILE_PROGS
-dnl GUILE_FLAGS
+GUILE_FLAGS
 GUILE_SITE_DIR
 
 AC_ARG_WITH([gtksourceview], AS_HELP_STRING([--with-gtksourceview],
@@ -49,7 +49,6 @@ AC_ARG_WITH([gtksourceview], AS_HELP_STRING([--with-gtksourceview],
 			     [with_gtksourceview=4])
 
 # pkg-config modules
-PKG_CHECK_MODULES([GUILE], [guile-2.2])
 PKG_CHECK_MODULES([EMACSY], [emacsy])
 PKG_CHECK_MODULES([G_GOLF], [g-golf-1.0])
 PKG_CHECK_MODULES([GTK], [gtk+-3.0])
@@ -73,7 +72,7 @@ AS_IF([test "$with_gtksourceview" = "3"], [
 dnl guile modules
 GUILE_MODULE_AVAILABLE([guile_gcrypt], [(gcrypt hash)])
 if test "$guile_gcrypt" = "no"; then
-   AC_MSG_ERROR([guile-gcrypt is missing; please install it.])
+   AC_MSG_WARN([guile-gcrypt is missing; please install it.])
 fi
 
 GUILE_MODULE_AVAILABLE([guile_readline], [(ice-9 readline)])
