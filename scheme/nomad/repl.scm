@@ -47,7 +47,7 @@
     (delete-file socket-file))
   (set! repl-server
         (spawn-coop-repl-server (make-unix-domain-server-socket #:path socket-file)))
-  (timeout-add 200
+  (timeout-add 50
                (lambda _
                  (poll-coop-repl-server repl-server)
                  #t)))
