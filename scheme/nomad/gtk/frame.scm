@@ -162,6 +162,7 @@
      ((equal? type 'key-press)
       (emacsy-key-event unichar mod-flags)
       (emacsy-tick)
+      (run-hook %thunk-view-hook)
       ;; We need two ticks or we can not test for emacsy-ran-undefined-command?
       ;; (unless emacsy-display-minibuffer?
       ;;   (emacsy-tick))
