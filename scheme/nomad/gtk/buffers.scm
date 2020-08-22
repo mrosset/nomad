@@ -40,7 +40,7 @@
           widget-uri
           buffer-title
           buffer-load-uri
-          load-view
+          load-html
           buffer-back
           buffer-forward
           buffer-hints
@@ -92,7 +92,7 @@
   (webkit-web-view-load-uri (buffer-widget buffer)
                             uri))
 
-(define-method (load-view (buffer <web-buffer>)
+(define-method (load-html (buffer <web-buffer>)
                           (html <string>)
                           uri)
   (load-html (buffer-widget buffer) html uri))
