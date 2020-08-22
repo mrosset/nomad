@@ -33,8 +33,6 @@
 
 (define %help-mode-map (make-keymap))
 
-(define load-html (@ (nomad gtk buffers) load-html))
-
 (define-class <help-buffer> (<web-buffer>)
   (keymap #:accessor local-keymap
           #:init-keyword #:keymap

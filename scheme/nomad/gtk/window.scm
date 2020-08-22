@@ -26,7 +26,6 @@
   #:use-module (nomad text)
   #:use-module (nomad gtk widget)
   #:use-module (nomad gtk frame)
-  #:use-module (nomad gtk buffers)
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<widget-window>

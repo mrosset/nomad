@@ -52,7 +52,7 @@ SOURCES =			\
 	nomad/gtk/frame.scm	\
 	nomad/gtk/foreign.scm	\
 	nomad/gtk/uri.scm	\
-	nomad/gtk/buffers.scm	\
+	nomad/gtk/web.scm	\
 	nomad/gtk/widget.scm	\
 	nomad/gtk/window.scm	\
 	nomad/gtk/util.scm	\

@@ -26,7 +26,6 @@
   #:use-module (nomad util)
   #:use-module (nomad application)
   #:use-module (nomad web)
-  #:use-module (nomad gtk buffers)
   #:use-module (nomad gtk frame)
   #:use-module (nomad web)
   #:use-module (nomad log)

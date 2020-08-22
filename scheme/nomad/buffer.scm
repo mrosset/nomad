@@ -28,8 +28,6 @@
             buffers-contain?
             buffers->uri))
 
-(define widget-uri (module-ref (resolve-interface '(nomad gtk buffers)) 'widget-uri))
-
 (define (make-buffer-socket url socket)
   "Write `make-buffer' comand with arg URL to a SOCKET."
   (write-socket (format #f "~S" `(make-buffer ,url))

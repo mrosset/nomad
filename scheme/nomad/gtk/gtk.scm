@@ -22,7 +22,7 @@
   #:use-module (nomad util)
   #:use-module (oop goops)
   #:use-module (nomad gtk application)
-  #:use-module (nomad gtk buffers)
+  #:use-module (nomad gtk web)
   #:use-module (nomad gtk frame)
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk util)
@@ -38,6 +38,6 @@
 (re-export-modules
  '(nomad gtk application)
  '(nomad gtk widget)
- '(nomad gtk buffers)
+ '(nomad gtk web)
  '(nomad gtk frame)
  '(nomad gtk util))
