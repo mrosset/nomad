@@ -57,7 +57,7 @@
   "returns a HTML string describing @var{symbol}"
   (let* ((str   (symbol->string symbol))
          (ref   (eval symbol (current-module)))
-         (class (if (command? ref)
+         (class (if (memq symbol (commands global-cmdset))
                     "interactive command"
                     (class-name (class-of ref)))))
     `((p ,(format #f "~a is a ~a in FIXME: location" str class))
