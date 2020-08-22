@@ -51,15 +51,14 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
   #t)
 
 (define-interactive (load-uri #:optional
-                              (input (ensure-protocol (read-from-minibuffer "Url: ")))
+                              (uri (string->uri (ensure-protocol (read-from-minibuffer "Url: "))))
                               (buffer (current-buffer)))
-  "Creates a new web buffer and loads @var{input}"
+  "Creates a new web buffer and loads @var{uri}"
   (catch #t
     (lambda _
-      (let ((uri (string->uri input)))
-        (unless uri
-          (error "Input is not a valid URI"))
-            (make-buffer <web-buffer> #:uri (uri->string uri)))
+      (unless uri
+        (error "Input is not a valid URI"))
+      (make-buffer <web-buffer> #:uri (uri->string uri))
       #t)
     (lambda (key . args)
       (message "Error: Failed to load URI ~a\nkey: ~a args: ~a" input key args)
