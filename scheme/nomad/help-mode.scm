@@ -25,7 +25,6 @@
   #:use-module (nomad web)
   #:use-module (nomad html)
   #:use-module (nomad views)
-  #:use-module (nomad platform)
   #:export (<help-buffer>
             %help-mode-map
             help-mode))
@@ -33,6 +32,8 @@
 (define help-mode (make <mode> #:mode-name "Help"))
 
 (define %help-mode-map (make-keymap))
+
+(define load-html (@ (nomad gtk buffers) load-html))
 
 (define-class <help-buffer> (<web-buffer>)
   (keymap #:accessor local-keymap
