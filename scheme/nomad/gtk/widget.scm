@@ -225,7 +225,9 @@
       (cond
        ((context-is-link hit)
         (unless emacsy-display-minibuffer?
-          (display-message "~a"(get-link-uri hit))))
+          ;; Clear any prompts before echoing the hit link.
+          (slot-set! minibuffer 'prompt "")
+          (co-message "~a"(get-link-uri hit))))
        (else
         (kill-message))))
     (lambda (key . vals)
