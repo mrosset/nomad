@@ -23,14 +23,15 @@
   #:use-module (nomad terminal)
   #:use-module (nomad text)
   #:use-module (nomad gtk widget)
+  #:use-module (nomad gtk window)
   #:use-module (emacsy emacsy)
+  #:use-module (emacsy window)
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last))
 
 (save-module-excursion
  (lambda _
    (set-current-module (resolve-module '(nomad web)))
-
    (g-export widget-is-loading?
              emacsy-mode-line
              widget-uri

@@ -28,12 +28,11 @@
   #:use-module (nomad gtk frame)
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
-  #:export (<widget-window>
-            widget-container
-            window-widget))
+  #:export (<widget-window>))
 
 (g-export widget-container
-          window-widget)
+          window-widget
+          window-buffer)
 
 (define-class <widget-window> (<window>)
   (last-tick #:accessor last-tick #:init-value -1))
