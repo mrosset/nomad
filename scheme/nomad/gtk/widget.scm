@@ -254,8 +254,10 @@
   (when (%default-web-settings)
     (webkit-web-view-set-settings view (%default-web-settings)))
   (let ((uri (buffer-uri (!buffer view))))
-    (when uri
-        (widget-load-uri view uri))))
+    (when (and uri
+               (string= (symbol->string
+                         (class-name (class-of (!buffer view)))) "<web-buffer>"))
+      (widget-load-uri view uri))))
 
 (define-method (redisplay (view <widget-web-view>))
   #t)
