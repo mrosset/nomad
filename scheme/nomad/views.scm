@@ -26,14 +26,22 @@
   #:use-module (nomad uri)
   #:use-module (nomad html)
   #:use-module (oop goops)
+  #:use-module (oop goops describe)
   #:use-module (srfi srfi-19)
+  #:use-module (system vm coverage)
+  #:use-module (system vm vm)
   #:export (restful-view
+            define-view
             %nomad-restful-views))
 
 (define (a key body)
   `(a (@ (target "_blank") (href ,(assoc-ref %links key))) ,body))
 
 (define style-sheet "
+body {
+background-color: #F0EAD6;
+}
+
 table, th, td {
 border: 1px solid black;
 border-collapse: collapse;
@@ -68,15 +76,15 @@ target-new:tab;
 
 (define-syntax define-view
   (syntax-rules ()
-    ((_ (proc) thunk)
-     (define-public (proc title)
-       "proc returns a html string"
+    ((_ (proc . args) doc thunk)
+     (define-public (proc title . args)
+       doc
        (sxml->html-string
         `(html
           (head
            (style ,style-sheet)
-           (title ,title))
-          (body (@ (style "background-color: #F0EAD6;" )) ,thunk)))))))
+           (title "*Help*"))
+          (body ,thunk)))))))
 
 (define entries (@@ (emacsy keymap) entries))
 
@@ -108,27 +116,32 @@ target-new:tab;
          (td ,desc))))
 
 (define (keymap->table keymap)
-  `(table (th "Key") (th "Command") (th "Description")
+  `(table (@ (align "center") (width "75%")) (th "Key") (th "Command") (th "Description")
           ,(map entries->row
                 (sort-list (hash-map->list cons (entries keymap)) key<))))
 
 (define-view (root-view)
+  "Returns the root @url{nomad:} scheme URI view."
   (begin
     (rename-buffer (current-buffer) "Welcome")
     `((h3 (@ (align "center")) "Welcome to "  ,(a 'nomad "Nomad"))
       (p "Nomad is a " ,(a 'emacs "Emacs-like") " web browser (and more) that consists of a modular feature-set, fully programmable in "
          ,(a 'guile "Guile Scheme") ".")
-      (h4 "Web View Keymap")
+      (h4 "Web Mode Keymap")
       ,(keymap->table (@ (nomad web) %web-mode-map))
-      ;; (h5 "Global Keymap")
-      ;; ,(keymap->table (@@ (nomad ibuffer) global-map))
-      )))
+      (h4 "Global Keymap")
+      ,(keymap->table global-map)
+      ;; (h4 "Minibuffer Keymap")
+      ;; ,(keymap->table minibuffer-local-map)
+      (h4 "Help Mode Keymap")
+      ,(keymap->table (@ (nomad help-mode) %help-mode-map)))))
 
 (define-view (404-view)
-  (begin
-    '(h1 "404 view not found ")))
+  "Returns HTML string with 404 error."
+  '(h1 "404 view not found "))
 
 (define-view (info-view)
+  "TODO:"
   `((h2 (@ (align "center")) "Info")))
 
 (define %nomad-restful-views `(("" . ("Welcome" . ,root-view))))
