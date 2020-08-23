@@ -40,6 +40,12 @@
   (buffers #:accessor   !buffers
            #:init-thunk buffer-list))
 
+(define-method (initialize (buffer <ibuffer>) args)
+  (next-method)
+  (add-hook! (buffer-enter-hook buffer)
+             (lambda ()
+               (update buffer))))
+
 (set! buffer-classes (cons <ibuffer>
                             buffer-classes))
 
@@ -100,7 +106,6 @@
     (with-buffer selected
       (kill-buffer))
     (switch-to-buffer buffer)
-    (update buffer)
     (ibuffer-forward-line index)))
 
 (define-interactive (ibuffer #:optional (index 0))
@@ -111,7 +116,6 @@
                       (make-buffer <ibuffer>
                                    #:name         "ibuffer"
                                    #:buffer-modes `(,ibuffer-mode)))))
-    (update buffer)
     (ibuffer-forward-line index)))
 
 (define-key ibuffer-map "RET" switch-to)
