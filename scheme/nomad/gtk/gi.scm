@@ -21,7 +21,8 @@
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last))
 
-(set! %gi-method-short-names-skip '(insert
+(set! %gi-method-short-names-skip '(setenv
+                                    insert
                                     reload
                                     load-uri))
 
