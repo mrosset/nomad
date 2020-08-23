@@ -61,7 +61,7 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
       (make-buffer <web-buffer> #:uri (uri->string uri))
       #t)
     (lambda (key . args)
-      (message "Error: Failed to load URI ~a\nkey: ~a args: ~a" input key args)
+      (message "Error: Failed to load URI ~a\nkey: ~a args: ~a" uri key args)
       #f)))
 
 (define-interactive (load-clipboard-uri)

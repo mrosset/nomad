@@ -28,8 +28,6 @@
             ~/
             //
             pretty-string
-            display-message
-            kill-message
             co-message
             nomad-get-version
             ensure-directory))
@@ -39,17 +37,6 @@
 (define (pretty-string sym)
   (with-output-to-string (lambda _
                            (pretty-print sym))))
-
-(define (display-message fmt . args)
-  "Displays @var{fmt} with @var{args} in the @var{minibuffer} echo-area."
-  (with-buffer minibuffer
-               (kill-message)
-               (insert (apply format #f fmt args))))
-
-(define (kill-message)
-  "Kills the last message in the @var{minibuffer} echo-area."
-  (with-buffer minibuffer
-               (delete-region (point-min) (point-max))))
 
 (codefine* (co-message fmt . args)
           (apply message fmt args))
