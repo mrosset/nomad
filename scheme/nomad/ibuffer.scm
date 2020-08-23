@@ -118,6 +118,7 @@
                                    #:buffer-modes `(,ibuffer-mode)))))
     (ibuffer-forward-line index)))
 
+;; Ibuffer map
 (define-key ibuffer-map "RET" switch-to)
 (define-key ibuffer-map "g" (lambda _ (update (current-buffer))))
 (for-each (lambda (key)
@@ -129,3 +130,6 @@
 (define-key ibuffer-map "ESC" kill-buffer)
 (define-key ibuffer-map "d" ibuffer-kill-buffer)
 (define-key ibuffer-map "q" kill-buffer)
+
+;; Global map
+(define-key global-map (kbd "C-x b") 'ibuffer)
