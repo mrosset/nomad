@@ -27,6 +27,7 @@
   #:use-module (nomad application)
   #:use-module (nomad web)
   #:use-module (nomad gtk frame)
+  #:use-module (nomad gtk util)
   #:use-module (nomad web)
   #:use-module (nomad log)
   #:duplicates (merge-generics replace warn-override-core warn last)
@@ -94,3 +95,9 @@
   (connect self 'activate activate)
   (connect self 'shutdown (lambda (app)
                             (run-hook %shutdown-hook))))
+
+(define-interactive (kill-nomad)
+  (yes-or-no-p "Exit Nomad?"
+               (lambda _
+                 (g-application-quit (current-application))))
+  #t)

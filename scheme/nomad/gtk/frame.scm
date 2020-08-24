@@ -25,6 +25,7 @@
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk widget)
   #:use-module (nomad gtk util)
+  #:use-module (nomad gtk application)
   #:use-module (nomad web)
   #:use-module (nomad text)
   #:duplicates (merge-generics replace warn-override-core warn last)
@@ -132,6 +133,8 @@
                  (g-run-hook %thunk-view-hook)))
 
     (g-timeout-add 200 (lambda _
+                         (when emacsy-quit-application?
+                           (kill-nomad))
                          (redisplay root-window)
                          #t))
 
