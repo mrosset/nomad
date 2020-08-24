@@ -25,9 +25,10 @@
   #:use-module (web uri))
 
 (define-interactive (current-url)
-  "Returns the current url"
-  (message "~a"
-           (buffer-uri (current-buffer))))
+  "Returns the current url and echos to the @var{minibuffer}."
+  (let ((url (buffer-uri (current-buffer))))
+    (co-message "~a" url)
+    url))
 
 (define (ensure-protocol url)
   "Returns a full protocol URI for domain URI.
@@ -137,7 +138,6 @@ follow that link."
 (define-interactive (copy-current-url)
   "Copy current url to clipboard"
   (copy-text (current-url))
-  (message (current-url))
   #t)
 
 (define-interactive (isearch-forward
