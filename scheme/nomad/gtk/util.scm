@@ -23,7 +23,9 @@
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (yes-or-no-p
-            g-run-hook))
+            g-run-hook
+            copy-text
+            get-clipboard))
 
 (define (g-run-hook hook . args)
   "Runs @var{hook} once with @var{args} on main GLib thread."
@@ -45,12 +47,12 @@ clicked @var{thunk} is called."
         (thunk))
       (destroy dialog))))
 
-(define-public (copy-text text)
+(define (copy-text text)
   "Copies @var{text} to primary clipboard"
   (let ((clipboard (gtk-clipboard-get-default (gdk-display-get-default))))
     (gtk-clipboard-set-text clipboard text -1)))
 
-(define-public (get-clipboard)
+(define (get-clipboard)
   "Return text from primary clipboard"
   (let* ((clipboard (gtk-clipboard-get-default (gdk-display-get-default))))
     (gtk-clipboard-wait-for-text clipboard)))
