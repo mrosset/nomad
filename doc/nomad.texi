@@ -224,6 +224,18 @@ Then in Emacs
 M-x geiser-connect-local /tmp/nomad-socket
 @end example
 
+For those working on the Nomad source or using it from the git tree:
+@example
+(add-hook! %startup-hook
+  	   (lambda _
+  	     (if (string= (application-id)
+  			  "org.gnu.devel.nomad")
+  		 (server-start-coop "/tmp/nomad-devel")
+  		 (server-start-coop "/tmp/nomad-socket")))
+  	   #t)
+@end example
+This will avoid some problems with running Nomad in development mode.
+
 See also, scheme/nomad/repl.scm variable 'socket-file'.
 
 @c *********************************************************************
