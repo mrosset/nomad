@@ -245,6 +245,24 @@ See also, scheme/nomad/repl.scm variable 'socket-file'.
 The modules and features provided by Nomad are in flux. The best option is
 to consult the source directly. @uref{@value{GITWEB}}
 
+* Zooming in and out.
+@example
+(define-interactive (zoom-web-view -/+)
+  (catch #t
+    (let* ((zoom webkit-web-view-set-zoom-level)
+           (view (buffer-widget (current-buffer)))
+           (zoom-level (webkit-web-view-get-zoom-level view)))
+      (zoom view (-/+ zoom-level .1)))
+    (lambda (key . vals) (safe-message "Error: key: ~a value: ~a"
+                                       key vals))))
+@end example
+
+Function: define-key MAP KEY-PATTERN THUNK
+@example
+(define-key global-map (kbd "C-x +") (lambda () (zoom-web-view +)))
+(define-key global-map (kbd "C-x -") (lambda () (zoom-web-view -)))
+@end example
+
 @section Webkit-Settings
 
 Use the default web-settings.
