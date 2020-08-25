@@ -3,6 +3,7 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix download)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages guile-xyz))
 
 (define-public g-golf-git
@@ -22,8 +23,8 @@
                 (sha256 hash))))))
 
 (define-public nomad-git
-  (let ((commit "0.2.0-alpha-44-ge58805d")
-        (hash   (base32 "18qiqhp9wfxxvlwa8sjcfravdrqpnzylxcc5b6qgampims7v44ky")))
+  (let ((commit "0.2.0-alpha-84-g23e8450")
+        (hash   (base32 "0fimar4kfnwknlxshrzfcmxf04msyshpfxdxvjxr324vjyfszpp0")))
     (package
       (inherit nomad)
       (name "nomad-git")
@@ -35,5 +36,7 @@
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256 hash)))
+      (native-inputs (cons `("gettext" ,gnu-gettext)
+                           (package-native-inputs nomad)))
       (inputs (cons `("g-golf" ,g-golf-git)
                     (alist-delete "g-golf" (package-inputs nomad)))))))
