@@ -197,8 +197,6 @@
       (let ((buffer (!buffer view)))
         (set! (buffer-title buffer)
               (!title view))
-        (set! (buffer-uri buffer)
-              (!uri view))
         (set! (buffer-progress buffer)
               (inexact->exact
                (round (* 100 (!estimated-load-progress view)))))

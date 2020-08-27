@@ -83,7 +83,7 @@
   (search   #:accessor     current-search
             #:init-value   #f))
 
-(set! buffer-classes (cons* <web-buffer>
+(set! buffer-classes (cons <web-buffer>
                             buffer-classes))
 
 (define-method (buffer-uri (buffer <buffer>))

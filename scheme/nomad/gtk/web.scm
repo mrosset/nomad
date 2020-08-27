@@ -69,10 +69,8 @@
      (get-uri (buffer-widget buffer)))
 
    (define-method (emacsy-mode-line (buffer <web-buffer>))
-     (format #f "~a~/~a~/~a%"
+     (format #f "~a~/~a%"
              (next-method)
-             ;; (buffer-title buffer)
-             (buffer-uri buffer)
              (buffer-progress buffer)))
 
    (define-method (emacsy-mode-line (buffer <terminal>))
