@@ -254,6 +254,12 @@
   (connect view 'load-changed load-change)
   (connect view 'mouse-target-changed mouse-target-changed)
 
+  (connect view 'permission-request
+           (lambda (v r)
+             (log-debug r)
+             (webkit-permission-request-allow r)
+             #t))
+
   (when (%default-web-settings)
     (webkit-web-view-set-settings view (%default-web-settings)))
   (let ((uri (buffer-uri (!buffer view))))
