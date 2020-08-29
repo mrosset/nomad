@@ -163,3 +163,9 @@
             widget
             'custom
             proxy))))))
+
+(define-interactive (webkit-version)
+  (message "~a.~a.~a"
+              (webkit-get-major-version)
+              (webkit-get-minor-version)
+              (webkit-get-micro-version)))
