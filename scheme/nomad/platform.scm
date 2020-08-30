@@ -35,9 +35,6 @@
                      #:optional  (class (completing-read "Class: " (map symbol->string platform-classes))))
   (describe (primitive-eval (string->symbol class))))
 
-(define-interactive (make-frame #:optional (app (current-application)))
-  (gtk-frame-new app))
-
 (define-public timeout-add (@ (g-golf) g-timeout-add))
 
 (re-export-modules

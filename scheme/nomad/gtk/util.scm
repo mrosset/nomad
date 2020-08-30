@@ -17,10 +17,14 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk util)
+  #:use-module (nomad util)
   #:use-module (nomad log)
   #:use-module (nomad gtk gi)
   #:use-module (oop goops)
   #:use-module (g-golf)
+  #:use-module (emacsy emacsy)
+  #:use-module (nomad gtk application)
+  #:use-module (nomad gtk frame)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (yes-or-no-p
             g-run-hook
@@ -56,3 +60,10 @@ clicked @var{thunk} is called."
   "Return text from primary clipboard"
   (let* ((clipboard (gtk-clipboard-get-default (gdk-display-get-default))))
     (gtk-clipboard-wait-for-text clipboard)))
+
+(define-interactive (make-frame #:optional (app (current-application)))
+  "Create a new frame with @var{app}. @var{app} defaults
+to (current-application)"
+  (gtk-frame-new app)
+  (switch-to-buffer (next-buffer))
+  (co-message "New frame: ~a" (application-id)))

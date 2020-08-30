@@ -75,7 +75,7 @@
 
 (define (activate app)
   (if (current-frame)
-      (co-message "Nomad only supports one frame.")
+      (make-frame)
       (begin
         (gtk-frame-new app)
         (run-hook %startup-hook))))
