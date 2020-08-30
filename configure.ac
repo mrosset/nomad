@@ -77,7 +77,7 @@ fi
 
 GUILE_MODULE_AVAILABLE([guile_readline], [(ice-9 readline)])
 if test "$guile_readline" = "no"; then
-   AC_MSG_ERROR([guile-readline is missing; please install it.])
+   AC_MSG_WARN([guile-readline is missing; please install it.])
 fi
 
 GUILE_MODULE_AVAILABLE([guile_lib], [(debugging assert)])
