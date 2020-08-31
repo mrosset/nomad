@@ -33,14 +33,6 @@
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<nomad-gtk-application>))
 
-(define-public (current-application)
-  "Returns the default application"
-  (g-application-get-default))
-
-(define-public (application-id)
-  "Returns the default application id"
-  (g-application-get-application-id (current-application)))
-
 (define-class <nomad-gtk-application> (<gtk-application>))
 
 (define (initialize-extention-cb ctx)
@@ -96,8 +88,21 @@
   (connect self 'shutdown (lambda (app)
                             (run-hook %shutdown-hook))))
 
-(define-interactive (kill-nomad)
-  (yes-or-no-p "Exit Nomad?"
-               (lambda _
-                 (g-application-quit (current-application))))
-  #t)
+(save-module-excursion
+ (lambda _
+   (set-current-module (resolve-module '(nomad application)))
+
+   (g-export current-application
+             application-id
+             application-quit)
+
+   (define-method (application-quit (app <nomad-gtk-application>))
+     (g-application-quit app))
+
+   (define-method (current-application)
+     "Returns the default application"
+     (g-application-get-default))
+
+   (define-method (application-id)
+     "Returns the default application id"
+     (g-application-get-application-id (current-application)))))

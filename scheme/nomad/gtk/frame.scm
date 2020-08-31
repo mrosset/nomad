@@ -133,8 +133,6 @@
                  (g-run-hook %thunk-view-hook)))
 
     (g-timeout-add 200 (lambda _
-                         (when emacsy-quit-application?
-                           (kill-nomad))
                          (redisplay root-window)
                          #t))
 

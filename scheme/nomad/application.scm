@@ -44,3 +44,14 @@ controls are accessible to scheme"
 (add-hook! %shutdown-hook
            (lambda _
              (log-info "Running shutdown hook")))
+
+(define-interactive (kill-nomad)
+  "Prompts user if they would like to quit Nomad."
+  (let ((input (read-from-minibuffer "Would you like to exit Nomad: y or n? ")))
+    (when (or (string= input "y")
+              (string= input "yes"))
+      (application-quit (current-application))
+      (quit-application)))
+  #t)
+
+(define-key global-map (kbd "C-x C-c") kill-nomad)
