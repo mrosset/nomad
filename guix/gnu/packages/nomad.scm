@@ -265,7 +265,8 @@ This package provides the core library and elements.")
                 (sha256 hash))))))
 
 (define-public nomad-git
-  (let ((commit "0.2.0-alpha-95-gbac1d3f")
+  (let ((parent nomad)
+        (commit "0.2.0-alpha-95-gbac1d3f")
         (hash   (base32 "1l5l2q2bs7fm7fgycsjrj6qwzivxm2lpwjwnwnyybvs3fy6i9h3d")))
     (package
       (inherit parent)
