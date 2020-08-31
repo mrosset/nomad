@@ -23,7 +23,7 @@
   #:use-module (oop goops)
   #:use-module (g-golf)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad gtk application)
+  #:use-module (nomad application)
   #:use-module (nomad gtk frame)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (yes-or-no-p
