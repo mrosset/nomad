@@ -169,20 +169,36 @@ following keybinds.
 @multitable {aaaaaaaaaa} {aaaaaaaaaaaaa}
 @headitem Key stroke
 @tab Command
-@item "C-b"
-@tab (next-buffer)
-@item "C-u"
-@tab (back)
+@item "C-c u"
+@tab back
+@item "C-k"
+@tab kill-buffer
 @item "C-m"
-@tab (forward)
+@tab forward
 @item "C-n"
-@tab (scroll-down)
-@item "C-f"
-@tab (hints)
+@tab scroll-down
 @item "C-p"
-@tab (scroll-up)
+@tab scroll-up
+@item "M-<"
+@tab web-beginning-of-buffer
+@item "M->"
+@tab web-end-of-buffer
+@item "M-v"
+@tab web-page-up
+@item "C-v"
+@tab web-page-down
+@item "C-f"
+@tab hints
+@item "C-o"
+@tab load-uri
+@item "C-y"
+@tab make-buffer-clipboard
 @item "C-r"
-@tab (reload)
+@tab reload
+@item "C-g"
+@tab web-keyboard-quit
+@item "C-s"
+@tab isearch-forward
 @end multitable
 
 In Nomad's Ibuffer menu the `ctrl-x-map` is active which has these
@@ -191,10 +207,20 @@ keybindings.
 @multitable {aaaaaaaaaa} {aaaaaaaaaaaaa}
 @headitem Key stroke
 @tab Command
-@item "b"
-@tab (next-buffer)
-@item "k"
-@tab (kill-buffer)
+@item "g"
+@tab (update (current-buffer))
+@item "n"
+@tab forward-line
+@item "C-n"
+@tab forward-line
+@item "ESC"
+@tab kill-buffer
+@item "d"
+@tab ibuffer-kill-buffer
+@item "q"
+@tab kill-buffer
+@item "RET"
+@tab switch-to
 @end multitable
 
 @c *********************************************************************
