@@ -163,7 +163,7 @@ users should be able to define their own keymaps.
 At the top level you might want to use `M-x` (Meta/Alt X) to use the
 execute command menu.
 
-In a Webview buffer the `webview-mode-map` is active which contains the
+In a Webview buffer the `%web-mode-map` is active which contains the
 following keybinds.
 
 @multitable {aaaaaaaaaa} {aaaaaaaaaaaaa}
