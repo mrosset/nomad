@@ -55,4 +55,12 @@
                            (package-native-inputs nomad)))
       (inputs (cons* `("g-golf" ,g-golf-git)
                      `("emacsy" ,emacsy-git)
-                    (alist-delete "emacsy" (alist-delete "g-golf" (package-inputs nomad))))))))
+                     (alist-delete "emacsy" (alist-delete "g-golf" (package-inputs nomad))))))))
+
+(define-public nomad-aarch64
+  (let ((parent nomad-git))
+    (package
+      (inherit parent)
+      (name "nomad-aarch64")
+      (propagated-inputs (alist-delete "gst-plugins-good"
+                                       (package-propagated-inputs parent))))))
