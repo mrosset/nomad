@@ -42,7 +42,8 @@ SOURCES =			\
 	nomad/uri.scm		\
 	nomad/nomad.scm         \
 	nomad/ibuffer.scm	\
-	nomad/log.scm	\
+	nomad/log.scm		\
+	nomad/menu.scm		\
 	nomad/terminal.scm	\
 	nomad/platform.scm	\
 	nomad/application.scm	\
@@ -53,6 +54,7 @@ SOURCES =			\
 	nomad/gtk/foreign.scm	\
 	nomad/gtk/uri.scm	\
 	nomad/gtk/web.scm	\
+	nomad/gtk/menu.scm	\
 	nomad/gtk/widget.scm	\
 	nomad/gtk/window.scm	\
 	nomad/gtk/util.scm	\

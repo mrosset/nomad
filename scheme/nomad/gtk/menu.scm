@@ -1,0 +1,87 @@
+;; menu.scm
+;; Copyright (C) 2017-2019 Michael Rosset <mike.rosset@gmail.com>
+
+;; This file is part of Nomad
+
+;; Nomad is free software: you can redistribute it and/or modify it
+;; under the terms of the GNU General Public License as published by the
+;; Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; Nomad is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+;; See the GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License along
+;; with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (nomad gtk menu)
+  #:use-module (nomad gtk gi)
+  #:use-module (g-golf)
+  #:use-module (oop goops)
+  #:use-module (emacsy emacsy)
+  #:use-module (nomad menu)
+  #:use-module (nomad util)
+  #:use-module (nomad web)
+  #:use-module (nomad ibuffer)
+  #:use-module (nomad web-mode)
+  #:use-module (nomad gtk widget)
+  #:duplicates (merge-generics replace warn-override-core warn last)
+  #:export (<widget-menu-bar>))
+
+(g-export set-menu-uri
+          menu-uri)
+
+(define-class <menu-entry> (<gtk-entry>))
+
+(define-method (initialize (self <menu-entry>) args)
+  (next-method)
+  (set-width-chars self 100))
+
+(define-class <widget-menu-bar> (<gtk-header-bar> <gtk-widget>)
+  (entry #:accessor  !entry
+         #:init-form (make <menu-entry>)))
+
+(define-method (initialize (self <widget-menu-bar>) args)
+  (next-method)
+  (add-hook! %menu-bar-hook
+             (lambda _
+               (set-menu-uri self (buffer-uri (current-buffer)))))
+  (set-custom-title self (!entry self))
+  (let ((forward (make <gtk-button> #:label "forward"))
+        (back    (make <gtk-button> #:label "back"))
+        (buffers (make <gtk-button> #:label "buffers"))
+        (m-x     (make <gtk-button> #:label "M-x")))
+    ;; Packing
+    (pack-start self back)
+    (pack-start self forward)
+
+    (pack-end self m-x)
+    (pack-end self buffers)
+    ;; Signals
+    (connect back 'clicked
+             (lambda _
+               (buffer-back (current-buffer))))
+    (connect forward 'clicked
+             (lambda _
+               (buffer-forward (current-buffer))))
+    (connect buffers 'clicked
+             (lambda _
+               (ibuffer)))
+    (connect m-x 'clicked
+             (lambda _
+               (catch #t
+                 (lambda _
+                   (emacsy-key-event #\x '("alt"))
+                   (emacsy-tick)
+                   (run-hook %thunk-view-hook))
+                (lambda (key . vals)
+                  (co-message "Error: key: ~a Value: ~a" key vals)))))))
+
+(define-method (set-menu-uri (self <widget-menu-bar>)
+                             (uri <string>))
+  (set! (!text (!entry self)) uri))
+
+(define-method (menu-uri (self <widget-menu-bar>))
+  (!text (!entry self)))

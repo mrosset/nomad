@@ -26,6 +26,8 @@
   #:use-module (nomad gtk widget)
   #:use-module (nomad gtk util)
   #:use-module (nomad gtk application)
+  #:use-module (nomad gtk menu)
+  #:use-module (nomad menu)
   #:use-module (nomad web)
   #:use-module (nomad text)
   #:duplicates (merge-generics replace warn-override-core warn last)
@@ -39,11 +41,14 @@
   "Returns the current frame"
   (!mini-popup (current-frame)))
 
-(define-public (current-frame)
+(define (current-frame)
   "Returns the current frame"
   (let* ((app (g-application-get-default))
          (frame (gtk-application-get-active-window app)))
     frame))
+
+(define (current-menu-bar)
+  (!menu (current-frame)))
 
 (define emacsy-flag-map '((mod1-mask . meta)
                           (control-mask . control)
@@ -64,6 +69,11 @@
                                #:language "scheme"
                                #:buffer minibuffer
                                #:thunk  emacsy-message-or-echo-area))
+  (menu        #:accessor    !menu
+               #:init-form   (if (%menu-bar-mode)
+                                 (make <widget-menu-bar>)
+                                 #f))
+
   (window      #:accessor    !emacsy-window
                #:init-form   (make <widget-window>
                                #:window-buffer (current-buffer)))
@@ -82,6 +92,8 @@
 
     (nomad-set-wrap-mode (!echo-area self) #t)
 
+    (when (%menu-bar-mode)
+      (set-titlebar self (!menu self)))
 
     ;; Initialize slots
     ;;

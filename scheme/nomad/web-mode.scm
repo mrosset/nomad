@@ -19,7 +19,6 @@
 (define-module (nomad web-mode)
   #:use-module (oop goops)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad platform)
   #:use-module (nomad util)
   #:use-module (nomad web)
   #:use-module (web uri))
@@ -137,7 +136,7 @@ follow that link."
 
 (define-interactive (copy-current-url)
   "Copy current url to clipboard"
-  (copy-text (current-url))
+  (copy-text (buffer-uri (current-buffer)))
   #t)
 
 (define-interactive (isearch-forward

@@ -19,6 +19,7 @@
 (define-module (nomad gtk web)
   #:use-module (ice-9 format)
   #:use-module (nomad gtk gi)
+  #:use-module (nomad menu)
   #:use-module (nomad web)
   #:use-module (nomad terminal)
   #:use-module (nomad text)
@@ -54,6 +55,9 @@
 
    (define-method (initialize (buffer <web-buffer>) arg)
      (next-method)
+     (add-hook! (buffer-enter-hook buffer)
+                (lambda _
+                  (run-hook %menu-bar-hook)))
      (set! (buffer-widget buffer)
            (make <widget-web-view> #:buffer buffer)))
 

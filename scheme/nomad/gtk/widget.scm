@@ -28,6 +28,7 @@
   #:use-module (nomad download)
   #:use-module (nomad text)
   #:use-module (nomad web)
+  #:use-module (nomad menu)
   #:use-module (nomad ibuffer)
   #:use-module (nomad terminal)
   #:use-module (nomad log)
@@ -198,6 +199,7 @@
 (define (load-change view event)
   (catch #t
     (lambda _
+      (run-hook %menu-bar-hook)
       (let ((buffer (!buffer view)))
         (set! (buffer-title buffer)
               (!title view))

@@ -116,6 +116,5 @@
 
 (define-interactive (take-a-selfie)
   (message "📷 Click!")
-  (usleep 75000)
   (system* "scrot" "-u")
   #t)
