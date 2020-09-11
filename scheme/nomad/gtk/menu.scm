@@ -27,38 +27,56 @@
   #:use-module (nomad ibuffer)
   #:use-module (nomad web-mode)
   #:use-module (nomad gtk widget)
+  #:use-module (nomad gtk util)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<widget-menu-bar>))
 
-(g-export set-menu-uri
-          menu-uri)
+(define-method (make-menu-button (id <string>))
+  (gtk-button-new-from-icon-name id (enum-ref 'gtk-icon-size 'small-toolbar)))
 
-(define-class <menu-entry> (<gtk-entry>))
+;; Menu box
+(define-class <title-box> (<gtk-stack>)
+  (entry #:accessor !entry
+         #:init-form (make <gtk-entry>
+                       #:hexpand #t
+                       #:single-line-mode #t)))
 
-(define-method (initialize (self <menu-entry>) args)
+(define-method (initialize (self <title-box>) args)
   (next-method)
-  (set-width-chars self 100))
+  (let ((hbox (make <gtk-hbox>)))
+    (add self hbox)
+    (pack-start hbox (!entry self) #t #t 0))
+  (show-all self))
 
-(define-class <widget-menu-bar> (<gtk-header-bar> <gtk-widget>)
-  (entry #:accessor  !entry
-         #:init-form (make <menu-entry>)))
+(define-method (set-text (self <title-box>)
+                         (text <string>))
+  (set-text (!entry self) text))
+
+;; Menu bar
+(define-class <widget-menu-bar> (<gtk-header-bar>)
+  (title-box #:accessor  !title-box
+            #:init-form (make <title-box>)))
 
 (define-method (initialize (self <widget-menu-bar>) args)
   (next-method)
   (add-hook! %menu-bar-hook
              (lambda _
-               (set-menu-uri self (buffer-uri (current-buffer)))))
-  (set-custom-title self (!entry self))
-  (let ((forward (make <gtk-button> #:label "forward"))
-        (back    (make <gtk-button> #:label "back"))
-        (buffers (make <gtk-button> #:label "buffers"))
+               (set-text (!title-box self) (buffer-uri (current-buffer)) )))
+  (let ((back    (make-menu-button "gtk-go-back"))
+        (forward (make-menu-button "gtk-go-forward"))
+        (buffers (make-menu-button "gtk-dnd-multiple"))
         (m-x     (make <gtk-button> #:label "M-x")))
+
+    (set-custom-title self (!title-box self))
+
     ;; Packing
+    ;; (gtk-menu-shell-append self menu)
     (pack-start self back)
     (pack-start self forward)
 
     (pack-end self m-x)
     (pack-end self buffers)
+
     ;; Signals
     (connect back 'clicked
              (lambda _
@@ -78,10 +96,3 @@
                    (run-hook %thunk-view-hook))
                 (lambda (key . vals)
                   (co-message "Error: key: ~a Value: ~a" key vals)))))))
-
-(define-method (set-menu-uri (self <widget-menu-bar>)
-                             (uri <string>))
-  (set! (!text (!entry self)) uri))
-
-(define-method (menu-uri (self <widget-menu-bar>))
-  (!text (!entry self)))

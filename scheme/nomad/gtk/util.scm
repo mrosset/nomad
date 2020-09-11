@@ -29,7 +29,16 @@
   #:export (yes-or-no-p
             g-run-hook
             copy-text
-            get-clipboard))
+            get-clipboard
+            enum-ref))
+
+(define (enum-ref enum member)
+  "Returns the value of @var{enum}'s @var{member}.  If the @var{enum} or
+@var{member} are not found returns #f"
+  (let ((ref (gi-cache-ref 'enum enum)))
+    (if ref
+        (assoc-ref (!enum-set ref) member)
+        #f)))
 
 (define (g-run-hook hook . args)
   "Runs @var{hook} once with @var{args} on main GLib thread."

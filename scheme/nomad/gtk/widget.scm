@@ -333,7 +333,7 @@
          (lang    (gtk-source-language-manager-get-language manager text)))
     (gtk-source-buffer-set-language buf lang)))
 
-(define-method (set-text! (self <gtk-source-view>) text)
+(define-method (set-text! (self <gtk-text-view>) text)
   "Sets source @var{view} text buffer to @var{text}"
   (let ((buf (gtk-text-view-get-buffer self)))
     (gtk-text-buffer-set-text buf text -1)))
