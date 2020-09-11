@@ -50,15 +50,16 @@
 (define (yes-or-no-p prompt thunk)
   "Creates a Yes or No message dialog with @var{prompt}. If the Ok button is
 clicked @var{thunk} is called."
-  (let ((dialog (make <gtk-message-dialog>
-                  #:text prompt
-                  #:buttons 'ok-cancel)))
-    (let* ((response (run dialog))
-           (enum     (gi-cache-ref 'enum 'gtk-response-type))
-           (ok       (assoc-ref (slot-ref enum 'enum-set) 'ok)))
-      (when (= response ok)
-        (thunk))
-      (destroy dialog))))
+  (let* ((dialog   (make <gtk-message-dialog>
+                     #:text prompt
+                     #:buttons 'ok-cancel))
+         (value    (run dialog))
+         (response (enum->symbol
+                    (gi-cache-ref 'enum 'gtk-response-type)
+                    value)))
+    (when (eq? response 'ok)
+      (thunk))
+    (destroy dialog)))
 
 (define (copy-text text)
   "Copies @var{text} to primary clipboard"
