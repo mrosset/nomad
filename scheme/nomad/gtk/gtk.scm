@@ -24,6 +24,7 @@
   #:use-module (nomad gtk application)
   #:use-module (nomad gtk web)
   #:use-module (nomad gtk frame)
+  #:use-module (nomad gtk menu)
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk util)
   #:use-module (nomad gtk widget)
@@ -40,4 +41,5 @@
  '(nomad gtk widget)
  '(nomad gtk web)
  '(nomad gtk frame)
+ '(nomad gtk menu)
  '(nomad gtk util))

@@ -39,6 +39,7 @@
             <widget-mini-popup>
             <widget-text-view>
             <widget-thunk-view>
+            <widget-entry>
             <widget-terminal>
             <window-container>))
 
@@ -291,6 +292,17 @@
                                 #f #f #f))
     (lambda (key . vals)
       (co-message "Error: key: ~a Value: ~a" key vals))))
+
+(define-class <widget-entry> (<widget-with-buffer> <gtk-entry>))
+
+(define-method (initialize (self <widget-entry>) args)
+  (next-method)
+  (unless (!buffer self)
+    (set! (!buffer self) (make <text-buffer> #:name "*uri-entry*")))
+  (add-hook! after-buffer-change-hook
+             (lambda (buffer)
+               (when (eq? buffer (!buffer self))
+                 (set-text self (buffer:buffer-string buffer))))))
 
 (define-method (make-buffer-widget (buffer <web-buffer>))
   (make <widget-web-view> #:buffer buffer))

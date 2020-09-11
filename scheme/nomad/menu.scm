@@ -18,13 +18,7 @@
 
 (define-module (nomad menu)
   #:use-module (emacsy emacsy)
-  #:export (%menu-bar-mode
-            %menu-bar-hook))
-
-(define %menu-bar-mode
-  (make-parameter #t ;; (lambda (val)
-                     ;;   (menu-bar-toggle (current-frame))
-                     ;;   val)
-                  ))
+  #:use-module (g-golf)
+  #:export (%menu-bar-hook))
 
 (define %menu-bar-hook (make-hook))

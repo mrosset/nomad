@@ -27,6 +27,7 @@
   #:use-module (nomad ibuffer)
   #:use-module (nomad web-mode)
   #:use-module (nomad gtk widget)
+  #:use-module (nomad gtk frame)
   #:use-module (nomad gtk util)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<widget-menu-bar>))
@@ -37,7 +38,7 @@
 ;; Menu box
 (define-class <title-box> (<gtk-stack>)
   (entry #:accessor !entry
-         #:init-form (make <gtk-entry>
+         #:init-form (make <widget-entry>
                        #:hexpand #t
                        #:single-line-mode #t)))
 
@@ -59,7 +60,11 @@
   (next-method)
   (add-hook! %menu-bar-hook
              (lambda _
-               (set-text (!title-box self) (buffer-uri (current-buffer)) )))
+               (let ((buffer (!buffer (!entry (!title-box self))))
+                     (url    (buffer-uri (current-buffer))))
+                 (with-buffer buffer
+                   (delete-region (point-min) (point-max))
+                   (insert url)))))
   (let ((back    (make-menu-button "gtk-go-back"))
         (forward (make-menu-button "gtk-go-forward"))
         (buffers (make-menu-button "gtk-dnd-multiple"))
@@ -94,3 +99,8 @@
                    (run-hook %thunk-view-hook))
                 (lambda (key . vals)
                   (co-message "Error: key: ~a Value: ~a" key vals)))))))
+
+(define-interactive (menu-bar-mode)
+  (let ((visible? (get-visible (current-menu-bar))))
+    (set-visible (current-menu-bar) (not visible?)))
+  (get-visible (current-menu-bar)))

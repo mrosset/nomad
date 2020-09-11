@@ -33,13 +33,11 @@
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<gtk-frame>
             gtk-frame-new
-            current-frame))
+            current-frame
+            current-menu-bar))
 
-(g-export !container)
-
-(define-public (current-popup)
-  "Returns the current frame"
-  (!mini-popup (current-frame)))
+(g-export !container
+          !menu)
 
 (define (current-frame)
   "Returns the current frame"
@@ -48,6 +46,7 @@
     frame))
 
 (define (current-menu-bar)
+  "Returns the current frames menu bar."
   (!menu (current-frame)))
 
 (define emacsy-flag-map '((mod1-mask . meta)
@@ -70,9 +69,8 @@
                                #:buffer minibuffer
                                #:thunk  emacsy-message-or-echo-area))
   (menu        #:accessor    !menu
-               #:init-form   (if (%menu-bar-mode)
-                                 (make <widget-menu-bar>)
-                                 #f))
+               #:init-form   (make <widget-menu-bar>
+                               #:visible #f))
 
   (window      #:accessor    !emacsy-window
                #:init-form   (make <widget-window>
@@ -92,8 +90,7 @@
 
     (nomad-set-wrap-mode (!echo-area self) #t)
 
-    (when (%menu-bar-mode)
-      (set-titlebar self (!menu self)))
+    (set-titlebar self (!menu self))
 
     ;; Initialize slots
     ;;
