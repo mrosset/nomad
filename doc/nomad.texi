@@ -272,8 +272,11 @@ The modules and features provided by Nomad are in flux. The best option is
 to consult the source directly. @uref{@value{GITWEB}}
 
 * Menu bar mode.
+
+To enable and disable the browser menu bar.  The interactive command
+@var{menu-bar-mode} can be used.
 @example
-(%menu-bar-mode #t)
+(menu-bar-mode)
 @end example
 
 * Zooming in and out.
