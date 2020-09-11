@@ -43,9 +43,7 @@
 
 (define-method (initialize (self <title-box>) args)
   (next-method)
-  (let ((hbox (make <gtk-hbox>)))
-    (add self hbox)
-    (pack-start hbox (!entry self) #t #t 0))
+  (add self (!entry self))
   (show-all self))
 
 (define-method (set-text (self <title-box>)
