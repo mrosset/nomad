@@ -271,6 +271,11 @@ See also, scheme/nomad/repl.scm variable 'socket-file'.
 The modules and features provided by Nomad are in flux. The best option is
 to consult the source directly. @uref{@value{GITWEB}}
 
+* Menu bar mode.
+@example
+(%menu-bar-mode #t)
+@end example
+
 * Zooming in and out.
 @example
 (define-interactive (zoom-web-view -/+)
