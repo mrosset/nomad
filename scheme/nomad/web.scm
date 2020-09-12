@@ -34,6 +34,7 @@
             %default-web-settings
             %load-committed-hook
             <web-buffer>
+            !menu
             buffer-uri
             buffer-progress
             buffer-title
@@ -66,6 +67,8 @@
 (define %default-web-settings (make-parameter #f))
 
 (define-class <web-buffer> (<widget-buffer>)
+  (menu     #:accessor     !menu
+            #:init-value   #f)
   (keymap   #:accessor     local-keymap
             #:init-keyword #:keymap
             #:init-form    %web-mode-map)

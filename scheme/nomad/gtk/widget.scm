@@ -222,7 +222,8 @@
               manager
               (webkit-user-style-sheet-new style
                                            'all-frames
-                                           'user #f #f)))))))
+                                           'user #f #f))))
+         (run-hook %menu-bar-hook))))
     (lambda (key . vals)
       (co-message "Error: key: ~a value: ~a" key vals))))
 

@@ -69,7 +69,7 @@
                                #:buffer minibuffer
                                #:thunk  emacsy-message-or-echo-area))
   (menu        #:accessor    !menu
-               #:init-form   (make <widget-menu-bar>
+               #:init-form   (make <widget-web-bar>
                                #:visible #f))
 
   (window      #:accessor    !emacsy-window

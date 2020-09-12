@@ -17,6 +17,7 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad gtk menu)
+  #:use-module (srfi srfi-1)
   #:use-module (nomad gtk gi)
   #:use-module (g-golf)
   #:use-module (oop goops)
@@ -29,51 +30,29 @@
   #:use-module (nomad gtk widget)
   #:use-module (nomad gtk frame)
   #:use-module (nomad gtk util)
-  #:duplicates (merge-generics replace warn-override-core warn last)
-  #:export (<widget-menu-bar>))
+  #:duplicates (merge-generics replace warn-override-core warn first)
+  #:export (<widget-web-bar>))
 
-(define-method (make-menu-button (id <string>))
+(define-method (make-icon-button (id <string>))
   (gtk-button-new-from-icon-name id (enum-ref 'gtk-icon-size 'small-toolbar)))
 
-;; Menu box
-(define-class <title-box> (<gtk-stack>)
-  (entry #:accessor !entry
-         #:init-form (make <widget-entry>
-                       #:hexpand #t
-                       #:single-line-mode #t)))
-
-(define-method (initialize (self <title-box>) args)
-  (next-method)
-  (add self (!entry self))
-  (show-all self))
-
-(define-method (set-text (self <title-box>)
-                         (text <string>))
-  (set-text (!entry self) text))
-
 ;; Menu bar
-(define-class <widget-menu-bar> (<gtk-header-bar>)
-  (title-box #:accessor  !title-box
-            #:init-form (make <title-box>)))
+(define-class <widget-web-bar> (<gtk-header-bar>)
+  (entry     #:accessor  !entry
+             #:init-form (make <widget-entry>
+                           #:hexpand #t
+                           #:single-line-mode #t)))
 
-(define-method (initialize (self <widget-menu-bar>) args)
+(define-method (initialize (self <widget-web-bar>) args)
   (next-method)
-  (add-hook! %menu-bar-hook
-             (lambda _
-               (let ((buffer (!buffer (!entry (!title-box self))))
-                     (url    (buffer-uri (current-buffer))))
-                 (with-buffer buffer
-                   (delete-region (point-min) (point-max))
-                   (insert url)))))
-  (let ((back    (make-menu-button "gtk-go-back"))
-        (forward (make-menu-button "gtk-go-forward"))
-        (buffers (make-menu-button "gtk-dnd-multiple"))
+  (let ((back    (make-icon-button "gtk-go-back"))
+        (forward (make-icon-button "gtk-go-forward"))
+        (buffers (make-icon-button "gtk-dnd-multiple"))
         (m-x     (make <gtk-button> #:label "M-x")))
 
-    (set-custom-title self (!title-box self))
+    (set-custom-title self (!entry self))
 
     ;; Packing
-    ;; (gtk-menu-shell-append self menu)
     (pack-start self back)
     (pack-start self forward)
 
@@ -89,18 +68,27 @@
                (buffer-forward (current-buffer))))
     (connect buffers 'clicked
              (lambda _
-               (ibuffer)))
-    (connect m-x 'clicked
-             (lambda _
-               (catch #t
-                 (lambda _
-                   (emacsy-key-event #\x '("alt"))
-                   (emacsy-tick)
-                   (run-hook %thunk-view-hook))
-                (lambda (key . vals)
-                  (co-message "Error: key: ~a Value: ~a" key vals)))))))
+               (ibuffer))))
 
-(define-interactive (menu-bar-mode)
-  (let ((visible? (get-visible (current-menu-bar))))
-    (set-visible (current-menu-bar) (not visible?)))
+  (add-hook! %menu-bar-hook
+             (lambda _
+               (let* ((buffer   (!buffer (!entry self)))
+                      (uri      (buffer-uri (current-buffer))))
+                 (with-buffer buffer
+                   (delete-region (point-min) (point-max))
+                   (insert uri))))))
+
+(define-method (make-menu-bar (buffer <web-buffer>))
+  (make <widget-web-bar>))
+
+(define-interactive (menu-bar-mode #:optional (buffer (current-buffer)))
+   (let ((visible? (get-visible (current-menu-bar))))
+    (set-visible (current-menu-bar) (not visible?))
+    (if visible?
+        (set! (buffer-modes buffer)
+              (cons %menu-bar-mode
+                    (buffer-modes buffer)))
+        (set! (buffer-modes buffer)
+              (delete %menu-bar-mode
+                      (buffer-modes buffer)))))
   (get-visible (current-menu-bar)))
