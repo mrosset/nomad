@@ -76,7 +76,7 @@
                       (uri      (buffer-uri (current-buffer))))
                  (with-buffer buffer
                    (delete-region (point-min) (point-max))
-                   (insert uri))))))
+                   (insert (webkit-uri-for-display uri)))))))
 
 (define-method (make-menu-bar (buffer <web-buffer>))
   (make <widget-web-bar>))
