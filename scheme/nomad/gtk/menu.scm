@@ -34,7 +34,11 @@
   #:export (<widget-web-bar>))
 
 (define-method (make-icon-button (id <string>))
-  (gtk-button-new-from-icon-name id (enum-ref 'gtk-icon-size 'small-toolbar)))
+  (let ((btn (gtk-button-new-from-icon-name
+              id
+              (enum-ref 'gtk-icon-size 'small-toolbar))))
+    (gtk-button-set-relief btn 'none)
+    btn))
 
 ;; Menu bar
 (define-class <widget-web-bar> (<gtk-header-bar>)
@@ -48,7 +52,9 @@
   (let ((back    (make-icon-button "gtk-go-back"))
         (forward (make-icon-button "gtk-go-forward"))
         (buffers (make-icon-button "gtk-dnd-multiple"))
-        (m-x     (make <gtk-button> #:label "M-x")))
+        (m-x     (make <gtk-button>
+                   #:label "M-x"
+                   #:relief 'none)))
 
     (set-custom-title self (!entry self))
 
