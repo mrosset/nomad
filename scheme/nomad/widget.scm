@@ -1,5 +1,5 @@
-;; text.scm
-;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+;; widget.scm
+;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
 
@@ -16,7 +16,7 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad text)
+(define-module (nomad widget)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
   #:duplicates (merge-generics replace warn-override-core warn last)

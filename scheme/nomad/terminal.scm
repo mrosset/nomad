@@ -18,7 +18,7 @@
 
 (define-module (nomad terminal)
   #:use-module (emacsy emacsy)
-  #:use-module (nomad text)
+  #:use-module (nomad widget)
   #:use-module (nomad util)
   #:use-module (oop goops)
   #:export (<terminal>

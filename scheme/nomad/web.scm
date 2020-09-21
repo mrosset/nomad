@@ -22,7 +22,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
   #:use-module (nomad util)
-  #:use-module (nomad text)
+  #:use-module (nomad widget)
   #:use-module (oop goops)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (%search-provider-format

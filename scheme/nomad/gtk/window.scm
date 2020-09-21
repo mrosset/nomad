@@ -23,7 +23,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (emacsy window)
   #:use-module (nomad web)
-  #:use-module (nomad text)
+  #:use-module (nomad widget)
   #:use-module (nomad gtk widget)
   #:use-module (nomad gtk frame)
   #:use-module (g-golf)

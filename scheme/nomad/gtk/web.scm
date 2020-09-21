@@ -22,7 +22,7 @@
   #:use-module (nomad menu)
   #:use-module (nomad web)
   #:use-module (nomad terminal)
-  #:use-module (nomad text)
+  #:use-module (nomad widget)
   #:use-module (nomad gtk widget)
   #:use-module (nomad gtk window)
   #:use-module (emacsy emacsy)
@@ -150,7 +150,7 @@
 
 (save-module-excursion
  (lambda _
-   (set-current-module (resolve-module '(nomad text)))
+   (set-current-module (resolve-module '(nomad widget)))
    (g-export buffer-proxy-set!)
    (define-method (initialize (buffer <widget-buffer>) args)
      (next-method)

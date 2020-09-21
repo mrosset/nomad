@@ -62,7 +62,7 @@ doc-snarf-api:
 		$(top_builddir)/scheme/nomad/repl.scm			\
 		$(top_builddir)/scheme/nomad/shroud.scm				\
 		$(top_builddir)/scheme/nomad/tests.scm			\
-		$(top_builddir)/scheme/nomad/text.scm			\
+		$(top_builddir)/scheme/nomad/widget.scm			\
 		$(top_builddir)/scheme/nomad/util.scm			\
 		$(top_builddir)/scheme/nomad/views.scm			\
 		$(top_builddir)/scheme/nomad/webview.scm

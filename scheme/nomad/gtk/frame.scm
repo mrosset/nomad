@@ -29,7 +29,7 @@
   #:use-module (nomad gtk menu)
   #:use-module (nomad menu)
   #:use-module (nomad web)
-  #:use-module (nomad text)
+  #:use-module (nomad widget)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<gtk-frame>
             gtk-frame-new

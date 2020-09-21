@@ -26,7 +26,7 @@
   #:use-module (emacsy window)
   #:use-module (nomad util)
   #:use-module (nomad download)
-  #:use-module (nomad text)
+  #:use-module (nomad widget)
   #:use-module (nomad web)
   #:use-module (nomad menu)
   #:use-module (nomad ibuffer)
