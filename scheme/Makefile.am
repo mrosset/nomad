@@ -58,6 +58,7 @@ SOURCES =			\
 	nomad/gtk/widget.scm	\
 	nomad/gtk/window.scm	\
 	nomad/gtk/util.scm	\
+	nomad/gtk/terminal.scm	\
 	nomad/graph.scm		\
 	nomad/gtk/gtk.scm	\
 	nomad/web.scm		\

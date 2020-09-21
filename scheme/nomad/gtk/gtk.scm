@@ -28,6 +28,7 @@
   #:use-module (nomad gtk window)
   #:use-module (nomad gtk util)
   #:use-module (nomad gtk widget)
+  #:use-module (nomad gtk terminal)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<application>
             <app-frame>))
@@ -39,6 +40,7 @@
 (re-export-modules
  '(nomad gtk application)
  '(nomad gtk widget)
+ '(nomad gtk terminal)
  '(nomad gtk web)
  '(nomad gtk frame)
  '(nomad gtk menu)

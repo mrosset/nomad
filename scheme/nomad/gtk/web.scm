@@ -78,12 +78,6 @@
              (next-method)
              (buffer-progress buffer)))
 
-   (define-method (emacsy-mode-line (buffer <terminal>))
-     (let ((vte (buffer-widget buffer)))
-       (format #f "~a~/~a"
-               (next-method)
-               (get-window-title vte))))
-
    (define-method (load-html (buffer <web-buffer>)
                              (html <string>)
                              uri)
