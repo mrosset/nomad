@@ -30,126 +30,131 @@
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last))
 
-(save-module-excursion
- (lambda _
-   (set-current-module (resolve-module '(nomad web)))
-   (g-export widget-is-loading?
-             emacsy-mode-line
-             widget-uri
-             buffer-title
-             buffer-load-uri
-             load-html
-             buffer-back
-             buffer-forward
-             buffer-hints
-             hints-finish
-             buffer-proxy-set!
-             buffer-scroll-up
-             buffer-scroll-down
-             buffer-scroll-top
-             buffer-page-up
-             buffer-page-down
-             buffer-scroll-bottom
-             buffer-reload
-             search-forward
-             search-finish)
+(set-current-module (resolve-module '(nomad web)))
 
-   (define-method (initialize (buffer <web-buffer>) arg)
-     (next-method)
-     (add-hook! (buffer-enter-hook buffer)
-                (lambda _
-                  (run-hook %menu-bar-hook)))
-     (set! (buffer-widget buffer)
-           (make <widget-web-view> #:buffer buffer)))
+(define-class <gtk-web-buffer> (<web-buffer>))
 
-   (define-method (buffer-title (buffer <web-buffer>))
-     (if (!is-loading (buffer-widget buffer))
-         "loading..."
-         (get-title (buffer-widget buffer))))
+(use-modules (nomad gtk widget)
+             (nomad menu)
+             (g-golf))
 
-   (define-method (widget-is-loading? (buffer <web-buffer>))
-     (!is-loading (buffer-widget buffer)))
+(g-export widget-is-loading?
+          emacsy-mode-line
+          widget-uri
+          buffer-title
+          buffer-load-uri
+          load-html
+          buffer-back
+          buffer-forward
+          buffer-hints
+          hints-finish
+          buffer-proxy-set!
+          buffer-scroll-up
+          buffer-scroll-down
+          buffer-scroll-top
+          buffer-page-up
+          buffer-page-down
+          buffer-scroll-bottom
+          buffer-reload
+          search-forward
+          search-finish)
 
-   (define-method (widget-uri (buffer <web-buffer>))
-     (get-uri (buffer-widget buffer)))
+(define-method (initialize (buffer <web-buffer>) arg)
+  (next-method)
+  (add-hook! (buffer-enter-hook buffer)
+             (lambda _
+               (run-hook %menu-bar-hook)))
+  (set! (buffer-widget buffer)
+        (make <widget-web-view> #:buffer buffer)))
 
-   (define-method (emacsy-mode-line (buffer <web-buffer>))
-     (format #f "~a~/~a%"
-             (next-method)
-             (buffer-progress buffer)))
+(define-method (buffer-title (buffer <web-buffer>))
+  (if (!is-loading (buffer-widget buffer))
+      "loading..."
+      (get-title (buffer-widget buffer))))
 
-   (define-method (load-html (buffer <web-buffer>)
-                             (html <string>)
-                             uri)
-     (load-html (buffer-widget buffer) html uri))
+(define-method (widget-is-loading? (buffer <web-buffer>))
+  (!is-loading (buffer-widget buffer)))
 
-   (define-method (buffer-load-uri (buffer <web-buffer>) uri)
-     (webkit-web-view-load-uri (buffer-widget buffer)
-                               uri))
+(define-method (widget-uri (buffer <web-buffer>))
+  (get-uri (buffer-widget buffer)))
 
-   (define-method (buffer-forward (buffer <web-buffer>))
-     (go-forward (buffer-widget buffer)))
+(define-method (emacsy-mode-line (buffer <web-buffer>))
+  (format #f "~a~/~a%"
+          (next-method)
+          (buffer-progress buffer)))
 
-   (define-method (buffer-back (buffer <web-buffer>))
-     (go-back (buffer-widget buffer)))
+(define-method (load-html (buffer <web-buffer>)
+                          (html <string>)
+                          uri)
+  (load-html (buffer-widget buffer) html uri))
 
-   (define-method (buffer-reload (buffer <web-buffer>))
-     (webkit-web-view-reload (buffer-widget buffer)))
+(define-method (buffer-load-uri (buffer <web-buffer>) uri)
+  (webkit-web-view-load-uri (buffer-widget buffer)
+                            uri))
 
-   ;; (define-syntax call-javascript
-   ;;   (lambda (x)
-   ;;     (syntax-case x ()
-   ;;       ((_ js)
-   ;;        #`(run-javascript #,(datum->syntax x '(buffer-widget buffer)) js #f #f #f)))))
+(define-method (buffer-forward (buffer <web-buffer>))
+  (go-forward (buffer-widget buffer)))
 
-   (define-method (buffer-scroll-up (buffer <web-buffer>))
-     (run-javascript (buffer-widget buffer)
-                     "window.scrollBy(0, -25);" #f #f #f))
+(define-method (buffer-back (buffer <web-buffer>))
+  (go-back (buffer-widget buffer)))
 
-   (define-method (buffer-scroll-down (buffer <web-buffer>))
-     (run-javascript (buffer-widget buffer)
-                     "window.scrollBy(0, 25);" #f #f #f))
+(define-method (buffer-reload (buffer <web-buffer>))
+  (webkit-web-view-reload (buffer-widget buffer)))
 
-   (define-method (buffer-scroll-top (buffer <web-buffer>))
-     (run-javascript (buffer-widget buffer)
-                     "window.scrollTo(0, 0);" #f #f #f))
+;; (define-syntax call-javascript
+;;   (lambda (x)
+;;     (syntax-case x ()
+;;       ((_ js)
+;;        #`(run-javascript #,(datum->syntax x '(buffer-widget buffer)) js #f #f #f)))))
 
-   (define-method (buffer-scroll-bottom (buffer <web-buffer>))
-     (run-javascript (buffer-widget buffer)
-                     "window.scrollTo(0,document.body.scrollHeight);" #f #f #f))
+(define-method (buffer-scroll-up (buffer <web-buffer>))
+  (run-javascript (buffer-widget buffer)
+                  "window.scrollBy(0, -25);" #f #f #f))
 
-   (define-method (buffer-page-up (buffer <web-buffer>))
-     (run-javascript (buffer-widget buffer)
-                     "window.scrollBy(0, -window.innerHeight + 25);" #f #f #f))
+(define-method (buffer-scroll-down (buffer <web-buffer>))
+  (run-javascript (buffer-widget buffer)
+                  "window.scrollBy(0, 25);" #f #f #f))
 
-   (define-method (buffer-page-down (buffer <web-buffer>))
-     (run-javascript (buffer-widget buffer)
-                     "window.scrollBy(0,window.innerHeight - 25);" #f #f #f))
+(define-method (buffer-scroll-top (buffer <web-buffer>))
+  (run-javascript (buffer-widget buffer)
+                  "window.scrollTo(0, 0);" #f #f #f))
 
-   (define-method (hints-finish (buffer <web-buffer>))
-     (nomad-app-send-message (buffer-widget buffer)
-                             (make <webkit-user-message> #:name "hints-finish")))
+(define-method (buffer-scroll-bottom (buffer <web-buffer>))
+  (run-javascript (buffer-widget buffer)
+                  "window.scrollTo(0,document.body.scrollHeight);" #f #f #f))
 
-   (define-method (buffer-hints (buffer <web-buffer>))
-     (nomad-app-send-message (buffer-widget buffer)
-                             (make <webkit-user-message> #:name "show-hints")))
+(define-method (buffer-page-up (buffer <web-buffer>))
+  (run-javascript (buffer-widget buffer)
+                  "window.scrollBy(0, -window.innerHeight + 25);" #f #f #f))
 
-   (define-method (search-forward (buffer <web-buffer>))
-     (let ((controller (get-find-controller (buffer-widget buffer))))
-       (search controller (current-search buffer) 1 255)))
+(define-method (buffer-page-down (buffer <web-buffer>))
+  (run-javascript (buffer-widget buffer)
+                  "window.scrollBy(0,window.innerHeight - 25);" #f #f #f))
 
-   (define-method (search-finish (buffer <web-buffer>))
-     (set! (current-search buffer) #f)
-     (let ((controller (get-find-controller (buffer-widget buffer))))
-       (search-finish controller)))
+(define-method (hints-finish (buffer <web-buffer>))
+  (nomad-app-send-message (buffer-widget buffer)
+                          (make <webkit-user-message> #:name "hints-finish")))
 
-   (define-method (buffer-proxy-set! (buffer <web-buffer>) proxy)
-     (let ((widget (buffer-widget buffer)))
-       (if widget
-           (set-network-proxy-settings
-            widget
-            'custom
-            proxy))))))
+(define-method (buffer-hints (buffer <web-buffer>))
+  (nomad-app-send-message (buffer-widget buffer)
+                          (make <webkit-user-message> #:name "show-hints")))
+
+(define-method (search-forward (buffer <web-buffer>))
+  (let ((controller (get-find-controller (buffer-widget buffer))))
+    (search controller (current-search buffer) 1 255)))
+
+(define-method (search-finish (buffer <web-buffer>))
+  (set! (current-search buffer) #f)
+  (let ((controller (get-find-controller (buffer-widget buffer))))
+    (search-finish controller)))
+
+(define-method (buffer-proxy-set! (buffer <web-buffer>) proxy)
+  (let ((widget (buffer-widget buffer)))
+    (if widget
+        (set-network-proxy-settings
+         widget
+         'custom
+         proxy))))
 
 (define-interactive (webkit-version)
   (message "~a.~a.~a"
