@@ -305,6 +305,15 @@
                (when (eq? buffer (!buffer self))
                  (set-text self (buffer:buffer-string buffer))))))
 
+;; Generic constructors
+(define-method (initialize (buffer <widget-buffer>) args)
+  (next-method)
+  (add-hook! (buffer-kill-hook buffer)
+             (lambda _
+               (destroy (buffer-widget buffer))
+               (prev-buffer)
+               (set! (window-buffer current-window) (current-buffer)))))
+
 (define-method (make-buffer-widget (buffer <web-buffer>))
   (make <widget-web-view> #:buffer buffer))
 

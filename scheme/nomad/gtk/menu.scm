@@ -40,7 +40,7 @@
     (gtk-button-set-relief btn 'none)
     btn))
 
-;; Menu bar
+;; Web menu bar
 (define-class <widget-web-bar> (<gtk-header-bar>)
   (entry     #:accessor  !entry
              #:init-form (make <widget-entry>

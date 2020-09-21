@@ -152,13 +152,6 @@
  (lambda _
    (set-current-module (resolve-module '(nomad widget)))
    (g-export buffer-proxy-set!)
-   (define-method (initialize (buffer <widget-buffer>) args)
-     (next-method)
-     (add-hook! (buffer-kill-hook buffer)
-                (lambda _
-                  (destroy (buffer-widget buffer))
-                  (prev-buffer)
-                  (set! (window-buffer current-window) (current-buffer)))))
 
    (define-method (buffer-proxy-set! (buffer <widget-buffer>) proxy)
      (let ((widget (buffer-widget buffer)))
