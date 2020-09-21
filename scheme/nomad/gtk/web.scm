@@ -43,6 +43,7 @@
              buffer-forward
              buffer-hints
              hints-finish
+             buffer-proxy-set!
              buffer-scroll-up
              buffer-scroll-down
              buffer-scroll-top
@@ -146,14 +147,9 @@
    (define-method (search-finish (buffer <web-buffer>))
      (set! (current-search buffer) #f)
      (let ((controller (get-find-controller (buffer-widget buffer))))
-       (search-finish controller)))))
+       (search-finish controller)))
 
-(save-module-excursion
- (lambda _
-   (set-current-module (resolve-module '(nomad widget)))
-   (g-export buffer-proxy-set!)
-
-   (define-method (buffer-proxy-set! (buffer <widget-buffer>) proxy)
+   (define-method (buffer-proxy-set! (buffer <web-buffer>) proxy)
      (let ((widget (buffer-widget buffer)))
        (if widget
            (set-network-proxy-settings
