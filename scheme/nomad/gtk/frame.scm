@@ -119,6 +119,7 @@
     (gtk-box-pack-start box (!container self) #t #t 0)
     (gtk-box-pack-start box (!echo-area self) #f #f 0)
 
+    ;; Signals
     (connect self 'key-press-event key-press-event)
     (connect self 'key-release-event key-press-event)
 
@@ -134,7 +135,7 @@
                             (window-buffer current-window)))
                #f))
 
-    ;; Redraw the windows for the first time.
+    ;; Draw the windows for the first time.
     (window-config-change root-window)
 
     (add-hook! after-buffer-change-hook
