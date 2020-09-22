@@ -26,6 +26,7 @@
   #:use-module (nomad widget)
   #:use-module (nomad gtk widget)
   #:use-module (nomad gtk frame)
+  #:use-module (nomad gtk menu)
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<widget-window>))
@@ -104,8 +105,14 @@
       (container-replace container widget)
       (run-hook %thunk-view-hook))
 
+    ;; Text buffers are not derived from <widget-buffer> so we need to switch
+    ;; to the right menu-bar if needed here
+    (when (and (is-a? buffer <text-buffer>)
+               (not (eq? (get-titlebar (current-frame))
+                         (menu-bar buffer))))
+      (set-titlebar (current-frame) (menu-bar buffer)))
+
     (when (not (eq? buffer (!buffer (user-data window))))
-      ;; (gtk-widget-unparent widget)
       (set! (!buffer (user-data window)) buffer)
       (container-replace container widget)
       (run-hook %thunk-view-hook))))

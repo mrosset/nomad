@@ -27,27 +27,14 @@
   #:use-module (nomad gtk util)
   #:use-module (nomad gtk application)
   #:use-module (nomad gtk menu)
-  #:use-module (nomad menu)
   #:use-module (nomad web)
   #:use-module (nomad widget)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<gtk-frame>
-            gtk-frame-new
-            current-frame
-            current-menu-bar))
+            !menu
+            gtk-frame-new))
 
-(g-export !container
-          !menu)
-
-(define (current-frame)
-  "Returns the current frame"
-  (let* ((app (g-application-get-default))
-         (frame (gtk-application-get-active-window app)))
-    frame))
-
-(define (current-menu-bar)
-  "Returns the current frames menu bar."
-  (!menu (current-frame)))
+(g-export !container)
 
 (define emacsy-flag-map '((mod1-mask . meta)
                           (control-mask . control)
@@ -69,9 +56,7 @@
                                #:buffer minibuffer
                                #:thunk  emacsy-message-or-echo-area))
   (menu        #:accessor    !menu
-               #:init-form   (make <widget-web-bar>
-                               #:visible #f))
-
+               #:init-form   (make <gtk-header-bar> #:title "Nomad"))
   (window      #:accessor    !emacsy-window
                #:init-form   (make <widget-window>
                                #:window-buffer (current-buffer)))

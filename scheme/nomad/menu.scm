@@ -19,10 +19,7 @@
 (define-module (nomad menu)
   #:use-module (emacsy emacsy)
   #:use-module (g-golf)
-  #:export (%menu-bar-mode
-            %menu-bar-hook))
+  #:export (%menu-bar-mode))
 
 (define %menu-bar-mode (make <mode>
                          #:mode-name "Menu-Bar"))
-
-(define %menu-bar-hook (make-hook))

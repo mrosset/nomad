@@ -35,6 +35,8 @@
 (define-class <gtk-web-buffer> (<web-buffer>))
 
 (use-modules (nomad gtk widget)
+             (nomad gtk menu)
+             (nomad gtk frame)
              (nomad menu)
              (g-golf))
 
@@ -63,7 +65,8 @@
   (next-method)
   (add-hook! (buffer-enter-hook buffer)
              (lambda _
-               (run-hook %menu-bar-hook)))
+               (set-titlebar (current-frame) (menu-bar buffer))
+               (run-hook (!menu-hook buffer))))
   (set! (buffer-widget buffer)
         (make <widget-web-view> #:buffer buffer)))
 

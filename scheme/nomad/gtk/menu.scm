@@ -27,11 +27,14 @@
   #:use-module (nomad web)
   #:use-module (nomad ibuffer)
   #:use-module (nomad web-mode)
+  #:use-module (nomad widget)
   #:use-module (nomad gtk widget)
   #:use-module (nomad gtk frame)
   #:use-module (nomad gtk util)
   #:duplicates (merge-generics replace warn-override-core warn first)
   #:export (<widget-web-bar>))
+
+(g-export menu-bar)
 
 (define-method (make-icon-button (id <string>))
   (let ((btn (gtk-button-new-from-icon-name
@@ -41,11 +44,7 @@
     btn))
 
 ;; Web menu bar
-(define-class <widget-web-bar> (<gtk-header-bar>)
-  (entry     #:accessor  !entry
-             #:init-form (make <widget-entry>
-                           #:hexpand #t
-                           #:single-line-mode #t)))
+(define-class <widget-web-bar> (<gtk-header-bar>))
 
 (define-method (initialize (self <widget-web-bar>) args)
   (next-method)
@@ -55,8 +54,6 @@
         (m-x     (make <gtk-button>
                    #:label "M-x"
                    #:relief 'none)))
-
-    (set-custom-title self (!entry self))
 
     ;; Packing
     (pack-start self back)
@@ -76,16 +73,20 @@
              (lambda _
                (ibuffer))))
 
-  (add-hook! %menu-bar-hook
+  (add-hook! (!menu-hook (current-buffer))
              (lambda _
-               (let* ((buffer   (!buffer (!entry self)))
-                      (uri      (buffer-uri (current-buffer))))
-                 (with-buffer buffer
-                   (delete-region (point-min) (point-max))
-                   (insert (webkit-uri-for-display uri)))))))
+               (set-subtitle self (widget-uri (current-buffer)))
+               (set-title self (buffer-title (current-buffer)))))
 
-(define-method (make-menu-bar (buffer <web-buffer>))
-  (make <widget-web-bar>))
+  (show-all self))
+
+(define-method (menu-bar (buffer <text-buffer>))
+  (!menu (current-frame)))
+
+(define-method (menu-bar (buffer <web-buffer>))
+  (unless (!menu buffer)
+    (set! (!menu buffer) (make <widget-web-bar>)))
+  (!menu buffer))
 
 (define-interactive (menu-bar-mode #:optional (buffer (current-buffer)))
    (let ((visible? (get-visible (current-menu-bar))))

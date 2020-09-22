@@ -57,6 +57,8 @@
          ("GtkSource" "Buffer")
          ("GtkSource" "Language")
          ("GtkSource" "LanguageManager")
+         ("GtkSource" "SpaceDrawer")
+         ("GtkSource" "Completion")
          ("GtkSource" "StyleScheme")
          ("GtkSource" "StyleSchemeManager")))
   (gi-import "Vte")

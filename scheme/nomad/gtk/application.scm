@@ -28,6 +28,7 @@
   #:use-module (nomad web)
   #:use-module (nomad gtk frame)
   #:use-module (nomad gtk util)
+  #:use-module (nomad gtk widget)
   #:use-module (nomad web)
   #:use-module (nomad log)
   #:duplicates (merge-generics replace warn-override-core warn last)

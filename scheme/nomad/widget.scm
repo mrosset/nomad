@@ -21,13 +21,17 @@
   #:use-module (oop goops)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<widget-buffer>
+            !menu
+            !menu-hook
             buffer-widget))
 
 (define-class <widget-buffer> (<buffer>)
-  (widget #:accessor    buffer-widget
-          #:init-value  #f)
-  (add    #:init-keyword #:add
-          #:init-value  #t))
+  (menu      #:accessor   !menu
+             #:init-value #f)
+  (menu-hook #:accessor   !menu-hook
+             #:init-form  (make-hook))
+  (widget #:accessor   buffer-widget
+          #:init-value  #f))
 
 (define-method (buffer-widget (buffer <text-buffer>))
   (local-var 'widget))

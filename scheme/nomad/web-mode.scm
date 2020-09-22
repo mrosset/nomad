@@ -136,7 +136,7 @@ follow that link."
 
 (define-interactive (copy-current-url)
   "Copy current url to clipboard"
-  (copy-text (buffer-uri (current-buffer)))
+  (copy-text (widget-uri (current-buffer)))
   #t)
 
 (define-interactive (isearch-forward

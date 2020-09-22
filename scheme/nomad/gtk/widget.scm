@@ -41,7 +41,8 @@
             <widget-thunk-view>
             <widget-entry>
             <widget-terminal>
-            <window-container>))
+            <window-container>
+            current-frame))
 
 (g-export !container
           !grid
@@ -55,8 +56,14 @@
           make-buffer-widget
           redisplay
           set-point!
-          set-text!
+          set-text
           show-all)
+
+(define (current-frame)
+  "Returns the current frame"
+  (let* ((app (g-application-get-default))
+         (frame (gtk-application-get-active-window app)))
+    frame))
 
 ;; Widgets that have an associated buffer
 (define-class <widget-with-buffer> ()
@@ -110,7 +117,7 @@
 (define-method (redisplay (self <widget-text-view>))
   (let ((buffer (!buffer self)))
     (unless  (eq? (buffer-modified-tick buffer) (last-tick self))
-      (set-text! self (buffer:buffer-string buffer))
+      (set-text self (buffer:buffer-string buffer))
       (set! (last-tick self) (buffer-modified-tick buffer))
       (set! (last-pos self) -2))
     (unless (eq? (buffer:point buffer) (last-pos self))
@@ -128,7 +135,7 @@
   (next-method)
   (add-hook! %thunk-view-hook
              (lambda _
-               (set-text! self ((!thunk self)))
+               (set-text self ((!thunk self)))
                (when (!buffer self)
                  (set-point! self (buffer:point (!buffer self)))))))
 
@@ -200,7 +207,7 @@
 (define (load-change view event)
   (catch #t
     (lambda _
-      (run-hook %menu-bar-hook)
+      (run-hook (!menu-hook (!buffer view)))
       (let ((buffer (!buffer view)))
         (set! (buffer-title buffer)
               (!title view))
@@ -223,7 +230,7 @@
               (webkit-user-style-sheet-new style
                                            'all-frames
                                            'user #f #f))))
-         (run-hook %menu-bar-hook))))
+         (run-hook (!menu-hook (!buffer view))))))
     (lambda (key . vals)
       (co-message "Error: key: ~a value: ~a" key vals))))
 
@@ -355,7 +362,7 @@
          (lang    (gtk-source-language-manager-get-language manager text)))
     (gtk-source-buffer-set-language buf lang)))
 
-(define-method (set-text! (self <gtk-text-view>) text)
+(define-method (set-text (self <gtk-text-view>) text)
   "Sets source @var{view} text buffer to @var{text}"
   (let ((buf (gtk-text-view-get-buffer self)))
     (gtk-text-buffer-set-text buf text -1)))
