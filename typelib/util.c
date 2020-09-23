@@ -167,6 +167,15 @@ uri_request_cb (WebKitURISchemeRequest *request, gpointer user_data)
   scm_call_2 (scm_c_public_ref ("nomad uri", "handle-uri"), pointer, uri);
 }
 
+// Required because Glib-Object cannot create instance of abstract
+// (non-instantiatable) type 'GTlsCertificate'
+gboolean
+nomad_view_uses_tls (WebKitWebView *view)
+{
+  GTlsCertificate *certificate = NULL;
+  return webkit_web_view_get_tls_info (view, &certificate, NULL);
+}
+
 void
 nomad_register_uri_scheme (WebKitWebContext *context, const gchar *scheme)
 {

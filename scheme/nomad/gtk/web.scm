@@ -50,6 +50,7 @@
           buffer-forward
           buffer-hints
           hints-finish
+          secure?
           buffer-proxy-set!
           buffer-scroll-up
           buffer-scroll-down
@@ -69,6 +70,14 @@
                (run-hook (!menu-hook buffer))))
   (set! (buffer-widget buffer)
         (make <widget-web-view> #:buffer buffer)))
+
+(define-method (secure? (buffer <web-buffer>))
+  (let* ((view (buffer-widget buffer))
+         (policy (get-tls-errors-policy (get-context view)))
+         (tls? (nomad-view-uses-tls view)))
+    (if (and tls? (eq? policy 'fail))
+        #t
+        #f)))
 
 (define-method (buffer-title (buffer <web-buffer>))
   (if (!is-loading (buffer-widget buffer))

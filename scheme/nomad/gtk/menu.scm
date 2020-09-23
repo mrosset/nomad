@@ -44,7 +44,13 @@
     btn))
 
 ;; Web menu bar
-(define-class <widget-web-bar> (<gtk-header-bar>))
+(define-class <widget-web-bar> (<gtk-header-bar>)
+  (entry     #:accessor  !entry
+             #:init-form (make <widget-entry>
+                           #:editable #f
+                           ;; #:primary-icon-name "dialog-warning"
+                           #:secondary-icon-activatable #t
+                           #:hexpand #t)))
 
 (define-method (initialize (self <widget-web-bar>) args)
   (next-method)
@@ -54,6 +60,8 @@
         (m-x     (make <gtk-button>
                    #:label "M-x"
                    #:relief 'none)))
+
+    (set-custom-title self (!entry self))
 
     ;; Packing
     (pack-start self back)
@@ -75,8 +83,20 @@
 
   (add-hook! (!menu-hook (current-buffer))
              (lambda _
-               (set-subtitle self (widget-uri (current-buffer)))
-               (set-title self (buffer-title (current-buffer)))))
+               (let* ((uri  (widget-uri (current-buffer)))
+                      (icon (cond
+                             ((!is-loading (buffer-widget (current-buffer)))
+                              #f)
+                             ((secure? (current-buffer))
+                              "channel-secure-symbolic")
+                             (else #f))))
+
+                 (set-icon-from-icon-name (!entry self)
+                                          'primary
+                                          icon)
+                 (with-buffer (!buffer (!entry self))
+                              (delete-region (point-min) (point-max))
+                              (insert (webkit-uri-for-display uri))))))
 
   (show-all self))
 

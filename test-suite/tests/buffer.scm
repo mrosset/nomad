@@ -34,9 +34,4 @@
 
 (define-method (test-buffers (self <test-buffer>))
   (emacsy-initialize #f)
-  (assert-equal 2 (length (buffer-list)))
-  ;; (let ((buffers `(,(make <uri-buffer>)
-  ;;                  ,(make <uri-buffer> #:uri "https://gnu.org"))))
-  ;;   (assert-true (is-a? (car buffers) <uri-buffer>))
-  ;;   (assert-equal %default-home-page (buffer-uri (car buffers))))
-  )
+  (assert-equal 2 (length (buffer-list)))  )

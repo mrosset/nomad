@@ -37,4 +37,6 @@ const char *nomad_get_version ();
 void nomad_register_uri_scheme (WebKitWebContext *context,
                                 const gchar *scheme);
 
+gboolean nomad_view_uses_tls (WebKitWebView *view);
+
 #endif
