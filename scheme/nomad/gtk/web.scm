@@ -72,9 +72,9 @@
         (make <widget-web-view> #:buffer buffer)))
 
 (define-method (secure? (buffer <web-buffer>))
-  (let* ((view (buffer-widget buffer))
+  (let* ((view   (buffer-widget buffer))
          (policy (get-tls-errors-policy (get-context view)))
-         (tls? (nomad-view-uses-tls view)))
+         (tls?   (nomad-view-uses-tls view)))
     (if (and tls? (eq? policy 'fail))
         #t
         #f)))

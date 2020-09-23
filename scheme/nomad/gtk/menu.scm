@@ -48,8 +48,6 @@
   (entry     #:accessor  !entry
              #:init-form (make <widget-entry>
                            #:editable #f
-                           ;; #:primary-icon-name "dialog-warning"
-                           #:secondary-icon-activatable #t
                            #:hexpand #t)))
 
 (define-method (initialize (self <widget-web-bar>) args)
