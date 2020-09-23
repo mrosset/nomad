@@ -32,9 +32,13 @@
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<gtk-frame>
             !menu
+            current-menu
             gtk-frame-new))
 
 (g-export !container)
+
+(define (current-menu)
+  (get-titlebar (current-frame)))
 
 (define emacsy-flag-map '((mod1-mask . meta)
                           (control-mask . control)

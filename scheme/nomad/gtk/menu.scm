@@ -88,14 +88,12 @@
     (set! (!menu buffer) (make <widget-web-bar>)))
   (!menu buffer))
 
-(define-interactive (menu-bar-mode #:optional (buffer (current-buffer)))
-   (let ((visible? (get-visible (current-menu-bar))))
-    (set-visible (current-menu-bar) (not visible?))
-    (if visible?
-        (set! (buffer-modes buffer)
-              (cons %menu-bar-mode
-                    (buffer-modes buffer)))
-        (set! (buffer-modes buffer)
-              (delete %menu-bar-mode
-                      (buffer-modes buffer)))))
-  (get-visible (current-menu-bar)))
+(set-current-module (resolve-module '(nomad menu)))
+
+(use-modules (nomad gtk frame))
+
+(define-interactive (menu-bar-mode)
+  "Toggles the current menu bar on or off."
+  (let* ((visible? (get-visible (current-menu))))
+    (set-visible (current-menu) (not visible?)))
+  (get-visible (current-menu)))
