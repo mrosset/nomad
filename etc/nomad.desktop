@@ -1,11 +1,11 @@
 [Desktop Entry]
 Name=Nomad
 GenericName=Web Browser
-Comment=Hackable Web Browser
+Comment=Nomad is a Emacs-like web browser (and more)
 Exec=nomad %F
 Icon=nomad
 Type=Application
 Terminal=false
 Categories=Web;Development;GTK;Viewer;Internet;
-StartupWMClass=Emacs
+StartupWMClass=Nomad
 Keywords=Web;Browser;
