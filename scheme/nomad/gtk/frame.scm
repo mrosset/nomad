@@ -60,7 +60,9 @@
                                #:buffer minibuffer
                                #:thunk  emacsy-message-or-echo-area))
   (menu        #:accessor    !menu
-               #:init-form   (make <gtk-header-bar> #:title "Nomad"))
+               #:init-form   (make <gtk-header-bar>
+                               #:show-close-button #t
+                               #:title "Nomad"))
   (window      #:accessor    !emacsy-window
                #:init-form   (make <widget-window>
                                #:window-buffer (current-buffer)))
@@ -79,6 +81,7 @@
 
     (nomad-set-wrap-mode (!echo-area self) #t)
 
+    (pack-end (!menu self) (make <menu-button>))
     (set-titlebar self (!menu self))
 
     ;; Initialize slots

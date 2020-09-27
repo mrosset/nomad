@@ -32,15 +32,63 @@
   #:use-module (nomad gtk frame)
   #:use-module (nomad gtk util)
   #:duplicates (merge-generics replace warn-override-core warn first)
-  #:export (<widget-web-bar>))
+  #:export (<widget-web-bar>
+            <menu-button>))
 
 (g-export menu-bar)
+
+(define* (make-menu-button label #:optional (command #f))
+  (let ((button (make <gtk-button>
+                  #:relief 'none
+                  #:xalign 0
+                  #:label label)))
+    (when command
+      (connect button 'clicked
+               (lambda _
+                 (command))))
+    button))
+
+(define-class <menu-button> (<gtk-menu-button>))
+
+(define-method (initialize (self <menu-button>) args)
+  (next-method)
+  (let* ((icon    (make <gtk-image>
+                   #:icon-name "open-menu"))
+         (pop     (make <gtk-popover-menu>))
+         (box     (make <gtk-vbox> #:margin 10
+                        #:halign 'start))
+         (buffers (make-menu-button "Buffers" ibuffer))
+         (kill    (make-menu-button "kill-buffer" kill-buffer))
+         (m-x     (make-menu-button "M-x"
+                                    (lambda _
+                                      (emacsy-key-event #\x '(meta))
+                                      (emacsy-tick))))
+         (about   (make-menu-button "About Nomad"))
+         (quit    (make-menu-button "Quit Nomad"
+                                    (lambda _ ((colambda _ (kill-nomad)))))))
+
+    ;; Model
+    ;; (set-menu-model self (make <main-menu>))
+    ;; Properties
+    (set-relief self 'none)
+    (set-popover self pop)
+    (set-image self icon)
+    ;; Packing
+    (pack-start box m-x #f #f 1)
+    (pack-start box buffers #f #f 1)
+    (pack-start box kill #f #f 1)
+    (pack-start box (make <gtk-vseparator>) #f #f 1)
+    (pack-start box about #f #f 2)
+    (pack-start box (make <gtk-vseparator>) #f #f 1)
+    (pack-start box quit #f #f 1)
+
+    (show-all box)
+    (add pop box)))
 
 (define-method (make-icon-button (id <string>))
   (let ((btn (gtk-button-new-from-icon-name
               id
               (enum-ref 'gtk-icon-size 'small-toolbar))))
-    (gtk-button-set-relief btn 'none)
     btn))
 
 ;; Web menu bar
@@ -52,21 +100,24 @@
 
 (define-method (initialize (self <widget-web-bar>) args)
   (next-method)
-  (let ((back    (make-icon-button "gtk-go-back"))
-        (forward (make-icon-button "gtk-go-forward"))
-        (buffers (make-icon-button "gtk-dnd-multiple"))
-        (m-x     (make <gtk-button>
-                   #:label "M-x"
-                   #:relief 'none)))
+  (let* ((box     (make <gtk-hbox>))
+         (context (get-style-context box))
+         (back    (make-icon-button "go-previous-symbolic"))
+         (forward (make-icon-button "go-next-symbolic"))
+         (menu    (make <menu-button>)))
 
+    ;; Input Box
     (set-custom-title self (!entry self))
+    (set-show-close-button self #t)
 
-    ;; Packing
-    (pack-start self back)
-    (pack-start self forward)
+    ;; Button Box
+    (pack-start box back #f #f 0)
+    (pack-start box forward #f #f 0)
+    (gtk-style-context-add-class context "linked")
 
-    (pack-end self m-x)
-    (pack-end self buffers)
+    ;; Pack Header
+    (pack-start self box)
+    (pack-end self menu)
 
     ;; Signals
     (connect back 'clicked
@@ -74,10 +125,7 @@
                (buffer-back (current-buffer))))
     (connect forward 'clicked
              (lambda _
-               (buffer-forward (current-buffer))))
-    (connect buffers 'clicked
-             (lambda _
-               (ibuffer))))
+               (buffer-forward (current-buffer)))))
 
   (add-hook! (!menu-hook (current-buffer))
              (lambda _
@@ -88,7 +136,6 @@
                              ((secure? (current-buffer))
                               "channel-secure-symbolic")
                              (else #f))))
-
                  (set-icon-from-icon-name (!entry self)
                                           'primary
                                           icon)
@@ -97,6 +144,9 @@
                               (insert (webkit-uri-for-display uri))))))
 
   (show-all self))
+
+(define-method (menu-bar (buffer <widget-buffer>))
+  (!menu (current-frame)))
 
 (define-method (menu-bar (buffer <text-buffer>))
   (!menu (current-frame)))

@@ -107,10 +107,11 @@
 
     ;; Text buffers are not derived from <widget-buffer> so we need to switch
     ;; to the right menu-bar if needed here
-    (when (and (is-a? buffer <text-buffer>)
-               (not (eq? (get-titlebar (current-frame))
-                         (menu-bar buffer))))
+    (unless (eq? (get-titlebar (current-frame))
+                   (menu-bar buffer))
       (set-titlebar (current-frame) (menu-bar buffer)))
+
+    (set-title (menu-bar buffer) (buffer-name buffer))
 
     (when (not (eq? buffer (!buffer (user-data window))))
       (set! (!buffer (user-data window)) buffer)

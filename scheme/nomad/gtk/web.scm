@@ -66,7 +66,8 @@
   (next-method)
   (add-hook! (buffer-enter-hook buffer)
              (lambda _
-               (set-titlebar (current-frame) (menu-bar buffer))
+               (when (%inhibit-menu-bar)
+                 (set-titlebar (current-frame) (menu-bar buffer)))
                (run-hook (!menu-hook buffer))))
   (set! (buffer-widget buffer)
         (make <widget-web-view> #:buffer buffer)))
@@ -74,7 +75,7 @@
 (define-method (secure? (buffer <web-buffer>))
   (let* ((view   (buffer-widget buffer))
          (policy (get-tls-errors-policy (get-context view)))
-         (tls?   (nomad-view-uses-tls view)))
+         (tls?    (nomad-view-uses-tls view)))
     (if (and tls? (eq? policy 'fail))
         #t
         #f)))

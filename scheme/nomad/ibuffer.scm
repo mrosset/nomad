@@ -23,6 +23,7 @@
   #:use-module (nomad widget)
   #:use-module (nomad web)
   #:use-module (nomad util)
+  #:use-module (nomad menu)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -44,7 +45,14 @@
   (next-method)
   (add-hook! (buffer-enter-hook buffer)
              (lambda ()
-               (update buffer))))
+               (%inhibit-menu-bar #f)
+               (update buffer)))
+  (add-hook! (buffer-kill-hook buffer)
+             (lambda ()
+               (%inhibit-menu-bar #t)))
+  (add-hook! (buffer-exit-hook buffer)
+             (lambda ()
+               (%inhibit-menu-bar #t))))
 
 (set! buffer-classes (cons <ibuffer>
                             buffer-classes))
