@@ -3,6 +3,7 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix download)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages guile-xyz))
 
@@ -55,6 +56,7 @@
                            (package-native-inputs nomad)))
       (inputs (cons* `("g-golf" ,g-golf-git)
                      `("emacsy" ,emacsy-git)
+                     `("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
                      (alist-delete "emacsy" (alist-delete "g-golf" (package-inputs nomad))))))))
 
 (define-public nomad-aarch64
