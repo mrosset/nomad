@@ -39,4 +39,8 @@ void nomad_register_uri_scheme (WebKitWebContext *context,
 
 gboolean nomad_view_uses_tls (WebKitWebView *view);
 
+void nomad_entry_set_position (GtkEntry *entry, gint position);
+
+gint nomad_entry_get_position (GtkEntry *entry);
+
 #endif

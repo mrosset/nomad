@@ -68,7 +68,8 @@
              (lambda _
                (when (%inhibit-menu-bar)
                  (set-titlebar (current-frame) (menu-bar buffer)))
-               (run-hook (!menu-hook buffer))))
+               (unless %reading-uri?
+                 (run-hook (!menu-hook buffer)))))
   (set! (buffer-widget buffer)
         (make <widget-web-view> #:buffer buffer)))
 

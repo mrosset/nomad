@@ -90,33 +90,35 @@
          (widget    (cond ((is-a? buffer <widget-buffer>)
                            (buffer-widget buffer))
                           ((is-a? buffer <text-buffer>)
-                           (local-var 'widget))
-                          (else (error "Buffer not implimented")))))
-    (unless widget
-      (cond
-       ((is-a? buffer <widget-buffer>)
-        (set! widget (make-buffer-widget buffer))
-        (set! (buffer-widget buffer) widget))
-       ((is-a? buffer <text-buffer>)
-        (set! widget (make <widget-text-view> #:buffer buffer)))
-       (else (error "Buffer not implimented")))
-      (set! (!buffer (user-data window)) buffer)
-      (set! (local-var 'widget) widget)
-      (container-replace container widget)
-      (run-hook %thunk-view-hook))
+                           (local-var 'widget)))))
 
-    ;; Text buffers are not derived from <widget-buffer> so we need to switch
-    ;; to the right menu-bar if needed here
-    (unless (eq? (get-titlebar (current-frame))
-                   (menu-bar buffer))
-      (set-titlebar (current-frame) (menu-bar buffer)))
+    (unless (is-a? buffer <minibuffer>)
+      (unless widget
+        (cond
+         ((is-a? buffer <widget-buffer>)
+          (set! widget (make-buffer-widget buffer))
+          (set! (buffer-widget buffer) widget))
+         ((is-a? buffer <text-buffer>)
+          (set! widget (make <widget-text-view> #:buffer buffer)))
+         (else (error "Buffer not implimented")))
+        (set! (!buffer (user-data window)) buffer)
+        (set! (local-var 'widget) widget)
+        (container-replace container widget)
+        (run-hook %thunk-view-hook))
 
-    (set-title (menu-bar buffer) (buffer-name buffer))
+      ;; Text buffers are not derived from <widget-buffer> so we need to switch
+      ;; to the right menu-bar if needed here
+      (unless (eq? (get-titlebar (current-frame))
+                     (menu-bar buffer))
+        (set-titlebar (current-frame) (menu-bar buffer)))
 
-    (when (not (eq? buffer (!buffer (user-data window))))
-      (set! (!buffer (user-data window)) buffer)
-      (container-replace container widget)
-      (run-hook %thunk-view-hook))))
+      (set-title (menu-bar buffer) (buffer-name buffer))
+
+      (when (and (not (eq? buffer (!buffer (user-data window))))
+                 (not (is-a? buffer <minibuffer>)))
+        (set! (!buffer (user-data window)) buffer)
+        (container-replace container widget)
+        (run-hook %thunk-view-hook)))))
 
 (define-method (needs-redisplay? (widget <widget-text-view>) (window <widget-window>))
          (let* ((buffer (window-buffer window))

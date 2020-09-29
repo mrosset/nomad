@@ -35,7 +35,8 @@
   #:export (<widget-web-bar>
             <menu-button>))
 
-(g-export menu-bar)
+(g-export menu-bar
+          !entry)
 
 (define* (make-menu-button label #:optional (command #f))
   (let ((button (make <gtk-button>
@@ -106,6 +107,9 @@
          (forward (make-icon-button "go-next-symbolic"))
          (menu    (make <menu-button>)))
 
+    ;; Style
+    ;; (nomad-app-set-style (!entry self) "entry{border: none; box-shadow: none; }")
+
     ;; Input Box
     (set-custom-title self (!entry self))
     (set-show-close-button self #t)
@@ -127,21 +131,22 @@
              (lambda _
                (buffer-forward (current-buffer)))))
 
-  (add-hook! (!menu-hook (current-buffer))
-             (lambda _
-               (let* ((uri  (widget-uri (current-buffer)))
-                      (icon (cond
-                             ((!is-loading (buffer-widget (current-buffer)))
-                              #f)
-                             ((secure? (current-buffer))
-                              "channel-secure-symbolic")
-                             (else #f))))
-                 (set-icon-from-icon-name (!entry self)
-                                          'primary
-                                          icon)
-                 (with-buffer (!buffer (!entry self))
-                              (delete-region (point-min) (point-max))
-                              (insert (webkit-uri-for-display uri))))))
+  (let ((buffer (current-buffer)))
+    (add-hook! (!menu-hook buffer)
+               (lambda _
+                 (let* ((uri  (widget-uri buffer))
+                        (icon (cond
+                               ((!is-loading (buffer-widget buffer))
+                                #f)
+                               ((secure? buffer)
+                                "channel-secure-symbolic")
+                               (else #f))))
+                   (set-icon-from-icon-name (!entry self)
+                                            'primary
+                                            icon)
+                   (with-buffer (!buffer (!entry self))
+                     (delete-region (point-min) (point-max))
+                     (insert (webkit-uri-for-display uri)))))))
 
   (show-all self))
 
@@ -158,7 +163,30 @@
 
 (set-current-module (resolve-module '(nomad menu)))
 
-(use-modules (nomad gtk frame))
+(use-modules (nomad gtk frame)
+             (nomad gtk menu)
+             (nomad widget)
+             (nomad web)
+             (nomad web-mode))
+
+(define-public %entry-local-map (make-keymap minibuffer-local-map))
+
+(define-public %reading-uri? #f)
+
+(define-interactive (edit-menu-uri)
+  (if (get-visible (current-menu))
+      (let ((old-mini minibuffer))
+        (set! %reading-uri? #t)
+        (set! minibuffer (!buffer (!entry (current-menu))))
+        (let ((str (completing-read "Url: " '())))
+          (buffer-load-uri (current-buffer) str))
+        (set! %reading-uri? #f)
+        (set! minibuffer old-mini)
+        (run-hook (!menu-hook (current-buffer))))
+      (edit-uri))
+  #t)
+
+(define-key %web-mode-map (kbd "C-c e") 'edit-menu-uri)
 
 (define-interactive (menu-bar-mode)
   "Toggles the current menu bar on or off."

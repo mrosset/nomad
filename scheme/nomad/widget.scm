@@ -35,3 +35,6 @@
 
 (define-method (buffer-widget (buffer <text-buffer>))
   (local-var 'widget))
+
+(define-method (buffer-widget (buffer <minibuffer>))
+  #f)
