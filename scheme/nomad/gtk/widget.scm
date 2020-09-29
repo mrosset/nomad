@@ -308,7 +308,7 @@
   (unless (!buffer self)
     (set! (!buffer self) (make <minibuffer>
                            #:name "*minibuffer-uri*"
-                           #:keymap %entry-local-map)))
+                           #:keymap minibuffer-local-map)))
 
   (add-hook! %thunk-view-hook
              (lambda _

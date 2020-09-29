@@ -169,8 +169,6 @@
              (nomad web)
              (nomad web-mode))
 
-(define-public %entry-local-map (make-keymap minibuffer-local-map))
-
 (define-public %reading-uri? #f)
 
 (define-interactive (edit-menu-uri)
