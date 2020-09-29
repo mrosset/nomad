@@ -94,6 +94,7 @@
     (slot-set! self 'icon-name "nomad")
     (gtk-window-set-icon-name self "nomad")
 
+
     ;; Add buffer hooks for minibuffer
     (add-hook! (buffer-enter-hook minibuffer)
                (lambda _
@@ -116,18 +117,14 @@
 
     (connect self 'focus-in-event
              (lambda (widget event)
-               (catch #t
-                 (lambda _
-                   (set! current-window (!emacsy-window self))
-                   (set! root-window  (make <internal-window>
-                                        #:orientation 'vertical
-                                        #:window-children `(,current-window)))
-                   (switch-to-buffer (window-buffer current-window))
-                   (redisplay root-window)
-                   (grab-focus (buffer-widget
-                                (window-buffer current-window))))
-                 (lambda (key . args)
-                   ((colambda _ (message "Error: key: ~a value: ~a" key args)))))
+               (set! current-window (!emacsy-window self))
+               (set! root-window  (make <internal-window>
+                                    #:orientation 'vertical
+                                    #:window-children `(,current-window)))
+               (switch-to-buffer (window-buffer current-window))
+               (redisplay root-window)
+               (grab-focus (buffer-widget
+                            (window-buffer current-window)))
                #f))
 
     ;; Draw the windows for the first time.

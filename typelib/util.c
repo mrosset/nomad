@@ -176,19 +176,6 @@ nomad_view_uses_tls (WebKitWebView *view)
   return webkit_web_view_get_tls_info (view, &certificate, NULL);
 }
 
-/* This works around  */
-void
-nomad_entry_set_position (GtkEntry *entry, gint position)
-{
-  gtk_editable_set_position (GTK_EDITABLE (entry), position);
-}
-
-gint
-nomad_entry_get_position (GtkEntry *entry)
-{
-  return gtk_editable_get_position (GTK_EDITABLE (entry));
-}
-
 void
 nomad_register_uri_scheme (WebKitWebContext *context, const gchar *scheme)
 {

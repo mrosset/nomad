@@ -306,36 +306,11 @@
 (define-method (initialize (self <widget-entry>) args)
   (next-method)
   (unless (!buffer self)
-    (set! (!buffer self) (make <minibuffer>
-                           #:name (uniquify-name
-                                   "*minibuffer-~a*"
-                                   (map buffer-name (buffer-list)))
-                           #:keymap minibuffer-local-map)))
-
-  (add-hook! %thunk-view-hook
-             (lambda _
-               (when (eq? (current-buffer) (!buffer self))
-                 (set-text self (buffer-string))
-                 (nomad-entry-set-position self (1- (point))))))
-
-  (add-hook! (buffer-enter-hook (!buffer self))
-             (lambda _
-               (grab-focus self)))
-
+    (set! (!buffer self) (make <text-buffer> #:name "*uri-entry*")))
   (add-hook! after-buffer-change-hook
              (lambda (buffer)
                (when (eq? buffer (!buffer self))
-                 (set-text self (buffer:buffer-string buffer)))))
-
-  (connect self 'focus-in-event
-           (lambda _
-             (unless (eq? (current-buffer) (!buffer self))
-               (switch-to-buffer (!buffer self)))))
-
-  (connect self 'focus-out-event
-           (lambda _
-             (unless (eq? last (!buffer self))
-               (switch-to-buffer last-buffer)))))
+                 (set-text self (buffer:buffer-string buffer))))))
 
 ;; Generic constructors
 (define-method (initialize (buffer <widget-buffer>) args)
