@@ -173,14 +173,21 @@
 
 (define-interactive (edit-menu-uri)
   (if (get-visible (current-menu))
-      (let ((old-mini minibuffer))
-        (set! %reading-uri? #t)
-        (set! minibuffer (!buffer (!entry (current-menu))))
-        (let ((str (completing-read "Url: " '())))
-          (buffer-load-uri (current-buffer) str))
-        (set! %reading-uri? #f)
-        (set! minibuffer old-mini)
-        (run-hook (!menu-hook (current-buffer))))
+      (let ((old-mini minibuffer)
+            (buffer   (!buffer (!entry (current-menu)))))
+        (dynamic-wind
+          (lambda _
+            (set! %reading-uri? #t)
+            (set! minibuffer buffer))
+          (lambda _
+            (let ((str (completing-read "Uri: " '("https://"))))
+              (buffer-load-uri (current-buffer) str)
+              (run-hook (!menu-hook (current-buffer)))))
+          (lambda _
+            (set! %reading-uri? #f)
+            (set! minibuffer old-mini)))
+        (slot-set! buffer 'prompt "")
+        (slot-set! buffer 'message ""))
       (edit-uri))
   #t)
 
