@@ -155,11 +155,15 @@ follow that link."
   #t)
 
 (define-interactive (query #:optional
-                           (text (read-from-minibuffer "Query: ")))
-  "Queries the default search provider @var{%search-provider-format}. This creates  a new
+                           (text (read-from-minibuffer "Query: "))
+                           (buffer #f))
+  "Queries the default search provider @var{%search-provider-format} using
+@var{buffer}. If buffer is #f which is the default, the query is preformed with a new
 @var{<web-buffer>}."
   (let ((uri (format #f %search-provider-format text)))
-    (make-buffer <web-buffer> #:uri uri)
+    (if buffer
+        (buffer-load-uri buffer uri)
+        (make-buffer <web-buffer> #:uri uri))
     #t))
 
 (define-interactive (title #:optional buffer)

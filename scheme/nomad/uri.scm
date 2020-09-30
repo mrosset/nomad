@@ -30,7 +30,8 @@
             <uri-handler>
             <nomad-uri-handler>
             %uri-schemes
-            handle-uri))
+            handle-uri
+            valid-uri?))
 
 (define %links '((nomad        . "https://www.nongnu.org/nomad")
                  (nomad-git    . "https://git.savannah.nongnu.org/cgit/nomad.git")
@@ -51,6 +52,12 @@
 (define-class <nomad-uri-handler> (<uri-handler>))
 
 (define %uri-schemes `(("nomad" . ,<nomad-uri-handler>)))
+
+(define (valid-uri? string)
+  "Returns #t if the string @var{string} is a valid URI or #f if is not."
+  (if (not (string->uri string))
+      #f
+      #t))
 
 (define-method (handle-uri (handler <nomad-uri-handler>))
   (catch #t

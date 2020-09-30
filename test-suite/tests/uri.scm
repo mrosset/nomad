@@ -1,5 +1,5 @@
-;; menu.scm
-;; Copyright (C) 2017-2018 Michael Rosset <mike.rosset@gmail.com>
+;; uri.scm
+;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
 
@@ -16,14 +16,13 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (nomad menu)
-  #:use-module (emacsy emacsy)
+(define-module (tests uri)
+  #:use-module (oop goops)
   #:use-module (nomad uri)
-  #:use-module (g-golf)
-  #:export (%menu-bar-mode
-            %inhibit-menu-bar))
+  #:use-module (unit-test))
 
-(define %inhibit-menu-bar (make-parameter #t))
+(define-class <test-init> (<test-case>))
 
-(define %menu-bar-mode (make <mode>
-                         #:mode-name "Menu-Bar"))
+(define-method (test-public (self <test-init>))
+  (assert-true (valid-uri? "http://gnu.org"))
+  (assert-false (valid-uri? "gnu.org")))

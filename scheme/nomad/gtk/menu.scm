@@ -181,9 +181,11 @@
             (set! %reading-uri? #t)
             (set! minibuffer buffer))
           (lambda _
-            (let ((str (completing-read "Uri: " '("https://")
+            (let ((str (completing-read "Uri or Query: " '("https://")
                                         #:initial-input (buffer:buffer-string buffer))))
-              (buffer-load-uri (current-buffer) str)))
+              (if (valid-uri? str)
+                  (buffer-load-uri (current-buffer) str)
+                  (query str (current-buffer)))))
           (lambda _
             (set! %reading-uri? #f)
             (set! minibuffer old-mini))))
