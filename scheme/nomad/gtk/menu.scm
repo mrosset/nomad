@@ -97,6 +97,7 @@
   (entry     #:accessor  !entry
              #:init-form (make <widget-entry>
                            #:editable #f
+                           #:overwrite-mode #t
                            #:hexpand #t)))
 
 (define-method (initialize (self <widget-web-bar>) args)
@@ -180,14 +181,12 @@
             (set! %reading-uri? #t)
             (set! minibuffer buffer))
           (lambda _
-            (let ((str (completing-read "Uri: " '("https://"))))
-              (buffer-load-uri (current-buffer) str)
-              (run-hook (!menu-hook (current-buffer)))))
+            (let ((str (completing-read "Uri: " '("https://")
+                                        #:initial-input (buffer:buffer-string buffer))))
+              (buffer-load-uri (current-buffer) str)))
           (lambda _
             (set! %reading-uri? #f)
-            (set! minibuffer old-mini)))
-        (slot-set! buffer 'prompt "")
-        (slot-set! buffer 'message ""))
+            (set! minibuffer old-mini))))
       (edit-uri))
   #t)
 

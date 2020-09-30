@@ -318,10 +318,14 @@
 
   (add-hook! (buffer-enter-hook (!buffer self))
              (lambda _
-               (grab-focus self)))
+               (unless (has-focus self)
+                 (grab-focus self))))
 
   (add-hook! (buffer-exit-hook (!buffer self))
              (lambda _
+               (slot-set! (!buffer self) 'prompt "")
+               (slot-set! (!buffer self) 'message "")
+               (run-hook after-buffer-change-hook (!buffer self))
                (grab-focus (buffer-widget last-buffer))))
 
   (add-hook! after-buffer-change-hook
@@ -332,7 +336,9 @@
   (connect self 'focus-in-event
            (lambda _
              (unless (eq? (current-buffer) (!buffer self))
-               (switch-to-buffer (!buffer self)))))
+               (emacsy-key-event #\c '(control))
+               (emacsy-key-event #\e '())
+               (update-agenda))))
 
   (connect self 'focus-out-event
            (lambda _
