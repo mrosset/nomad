@@ -33,9 +33,14 @@
 
 (define-key global-map "C-x 5" frame-map)
 
-(define-key global-map "C-x 2" 'undefined-command)
-(define-key global-map "C-x 3" 'undefined-command)
-(define-key global-map "C-x o" 'undefined-command)
+(define-key global-map "C-x 2"
+  (lambda-cmd _ (undefined-command "split-window-below")))
+
+(define-key global-map "C-x 3"
+  (lambda-cmd _ (undefined-command "split-window-right")))
+
+(define-key global-map "C-x o"
+  (lambda-cmd _ (undefined-command "other-window")))
 
 (define-key frame-map "2" 'make-frame-command)
 (define-key frame-map "0" 'delete-frame)

@@ -30,6 +30,7 @@
             pretty-string
             co-message
             nomad-get-version
+            undefined-command
             ensure-directory))
 
 (define (nomad-get-version) ((@ (g-golf) nomad-get-version)))
@@ -41,8 +42,9 @@
 (codefine* (co-message fmt . args)
           (apply message fmt args))
 
-(define-interactive (undefined-command)
-  (message "Undefined command"))
+(define (undefined-command command)
+  ((colambda _ (message "undefined command '~a"
+                        command))))
 
 (define-public (make-buffer class . args)
   (let ((buffer (apply make class args)))

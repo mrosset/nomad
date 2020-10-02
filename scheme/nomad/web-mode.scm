@@ -203,8 +203,14 @@ it uses the current buffer."
                       ("M-v" web-page-up)
                       ("C-v" web-page-down)
                       ("C-f" hints)
-                      ("C-o" load-uri)
                       ("C-y" make-buffer-clipboard)
                       ("C-r" reload)
                       ("C-g" web-keyboard-quit)
                       ("C-s" isearch-forward))))
+
+(define-key global-map (kbd "C-c l") 'load-uri)
+(define-key global-map (kbd "C-c q") 'query)
+
+(define-key global-map (kbd "C-o")
+  (lambda-cmd _
+              (undefined-command "other-line")))
