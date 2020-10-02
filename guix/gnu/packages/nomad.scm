@@ -8,8 +8,8 @@
   #:use-module (gnu packages guile-xyz))
 
 (define-public emacsy-git
-  (let ((commit "v0.4.1-31-g415d96f")
-        (hash   (base32 "1cs1i1hxwrv0a512j54yrvfh743nci1chx6qjgp4jyzq98ncvxgg")))
+  (let ((commit "v0.4.1-33-ge90ede5")
+        (hash   (base32 "01kb2glfl8y12f551jk9sjc6sbj73yxzd8xrlshylsp2pgyqm9ic")))
     (package
       (inherit emacsy-minimal)
       (name "emacsy-git")
