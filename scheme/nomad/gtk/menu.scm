@@ -172,7 +172,26 @@
 
 (define-public %reading-uri? #f)
 
+(define-public (read-query-or-uri initial)
+  (catch #t
+    (lambda _
+      (let ((input (completing-read "Uri or Query: "
+                                    '("https://")
+                                    #:initial-input initial)))
+        (if (valid-uri? input)
+            (buffer-load-uri (current-buffer) input)
+            (query input (current-buffer)))))
+    (lambda (key . args)
+      (message "Error: key: ~a Arguments: ~a" key args))))
+
+(define (current-menu-uri)
+  "Returns the current @var{<web-buffer>}'s menu-bar URI."
+  (buffer:buffer-string (!buffer (!entry (current-menu)))))
+
 (define-interactive (edit-menu-uri)
+  "Loads or queries the default search provider using the current
+@var{<web-buffer>}. If menu-bar-mode is active it uses the main minibuffer
+instead of the URI minibuffer."
   (if (get-visible (current-menu))
       (let ((old-mini minibuffer)
             (buffer   (!buffer (!entry (current-menu)))))
@@ -181,15 +200,11 @@
             (set! %reading-uri? #t)
             (set! minibuffer buffer))
           (lambda _
-            (let ((str (completing-read "Uri or Query: " '("https://")
-                                        #:initial-input (buffer:buffer-string buffer))))
-              (if (valid-uri? str)
-                  (buffer-load-uri (current-buffer) str)
-                  (query str (current-buffer)))))
+            (read-query-or-uri (current-menu-uri)))
           (lambda _
             (set! %reading-uri? #f)
             (set! minibuffer old-mini))))
-      (edit-uri))
+      (read-query-or-uri (current-menu-uri)))
   #t)
 
 (define-key %web-mode-map (kbd "C-c e") 'edit-menu-uri)
