@@ -138,6 +138,3 @@
     (if bookmark? book)
     (set! bookmarks (cons book bookmarks)))
   (write-bookmarks))
-
-;; Do not Attempt to load user bookmarks.
-;; (bookmark-init)
