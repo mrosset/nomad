@@ -55,8 +55,10 @@
 (define* (read-bookmarks #:optional file)
   (let ((bookmark-file (or file %bookmark-file)))
     (let* ((in (open-input-file bookmark-file))
-          (sexp (read in)))
-      (set! bookmarks (map alist->bookmark sexp))
+           (sexp (read in)))
+      (if (eof-object? sexp)
+          "Use inbuilt bookmarks"
+          (set! bookmarks (map alist->bookmark sexp)))
       (close-port in))))
 
 (define* (write-bookmarks #:optional file (books bookmarks))
@@ -92,21 +94,9 @@
        (contents . ,contents)))))
 
 (define bookmarks
-  (map alist->bookmark
-       `(((id . "nomad")
-          (contents . ,(assoc-ref %links 'nomad)))
-         ((id . "nomad-g")
-          (contents . ,(assoc-ref %links 'nomad-git)))
-         ((id . "gnu")
-          (contents . ,(assoc-ref %links 'gnu)))
-         ((id . "emacsy")
-          (contents . ,(assq-ref %links 'emacsy)))
-         ((id . "guilem")
-          (contents . ,(assq-ref %links 'guile-manual)))
-         ((id . "emacs")
-          (contents . ,(assoc-ref %links 'emacs)))
-         ((id . "guile")
-          (contents . ,(assoc-ref %links 'guile))))))
+  (map (lambda (pair)
+         (make-bookmark (symbol->string (car pair)) (cdr pair)))
+       %links))
 
 (define* (add-bookmark book #:optional (books bookmarks))
   (if (bookmark? book)
@@ -148,3 +138,6 @@
     (if bookmark? book)
     (set! bookmarks (cons book bookmarks)))
   (write-bookmarks))
+
+;; Attempt to load user bookmarks.
+(bookmark-init)
