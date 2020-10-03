@@ -212,5 +212,4 @@ it uses the current buffer."
 (define-key global-map (kbd "C-c q") 'query)
 
 (define-key global-map (kbd "C-o")
-  (lambda-cmd _
-              (undefined-command "other-line")))
+  (lambda _ (undefined-command "other-line")))
