@@ -54,12 +54,12 @@
 
 (define* (read-bookmarks #:optional file)
   (let ((bookmark-file (or file %bookmark-file)))
-    (let* ((in (open-input-file bookmark-file))
-           (sexp (read in)))
-      (if (eof-object? sexp)
-          "Use inbuilt bookmarks"
-          (set! bookmarks (map alist->bookmark sexp)))
-      (close-port in))))
+    (if (file-exists? bookmark-file)
+        (let* ((in (open-input-file bookmark-file))
+               (sexp (read in)))
+          (unless (eof-object? sexp)
+            (set! bookmarks (map alist->bookmark sexp)))
+          (close-port in)))))
 
 (define* (write-bookmarks #:optional file (books bookmarks))
   (let ((bookmark-file (or file %bookmark-file)))
