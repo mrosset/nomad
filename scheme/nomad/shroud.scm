@@ -56,8 +56,8 @@
         (secret-ref e key))))
 
 (define-interactive
-  (shroud-find-password
-   #:optional (entry (completing-read "Entry: "
+  (shroud
+   #:optional (entry (completing-read "Shroud: "
                                       (shroud-list (shroud-config-file)
                                                    (delay (load-secrets
                                                            (shroud-database-file)))))))
