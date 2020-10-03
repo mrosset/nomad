@@ -139,5 +139,5 @@
     (set! bookmarks (cons book bookmarks)))
   (write-bookmarks))
 
-;; Attempt to load user bookmarks.
-(bookmark-init)
+;; Do not Attempt to load user bookmarks.
+;; (bookmark-init)

@@ -237,6 +237,13 @@ Examples
 (set! search-provider-format "https://google.ca/search?q=~a")
 @end example
 
+To enable loading bookmarks from ~/.nomad.d/bookmarks.scm. Add this to
+your config:
+@example
+(use-modules (nomad bookmark))
+(bookmark-init)
+@end example
+
 Start the remote REPL with the startup hook.
 @example
 (use-modules (nomad repl))
