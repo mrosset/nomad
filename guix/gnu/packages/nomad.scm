@@ -39,8 +39,8 @@
                 (sha256 hash))))))
 
 (define-public nomad-git
-  (let ((commit "0.2.0-alpha-139-ge36c04b")
-        (hash   (base32 "1i502wmlfckx889kyidgv71ig8kbd4b562nni06yi0dcr065lb6n")))
+  (let ((commit "0.2.0-alpha-141-ga2d26d9")
+        (hash   (base32 "1a98s5yh305b2r0m6pn3qy6gqq1q0q5iz5fywj19kf6h0nj2hsy6")))
     (package
       (inherit nomad)
       (name "nomad-git")
