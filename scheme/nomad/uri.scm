@@ -37,9 +37,12 @@
                  (nomad-git    . "https://git.savannah.nongnu.org/cgit/nomad.git")
                  (gnu          . "https://gnu.org")
                  (guile        . "https://www.gnu.org/software/guile")
+                 (guix         . "https://guix.gnu.org")
+                 (guix-git     . "https://git.savannah.gnu.org/cgit/guix.git")
                  (emacs        . "https://www.gnu.org/software/emacs")
                  (emacsy       . "https://savannah.nongnu.org/projects/emacsy")
-                 (guile-manual . "https://www.gnu.org/software/guile/manual/html_node")))
+                 (guile-manual . "https://www.gnu.org/software/guile/manual/html_node")
+                 (guix-manual  . "https://guix.gnu.org/manual/devel/")))
 
 (define-class <uri-handler> ()
   (pointer #:accessor    pointer
