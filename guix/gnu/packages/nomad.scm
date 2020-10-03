@@ -8,8 +8,8 @@
   #:use-module (gnu packages guile-xyz))
 
 (define-public emacsy-git
-  (let ((commit "v0.4.1-33-ge90ede5")
-        (hash   (base32 "01kb2glfl8y12f551jk9sjc6sbj73yxzd8xrlshylsp2pgyqm9ic")))
+  (let ((commit "v0.4.1-35-g86083cb")
+        (hash   (base32 "1xkay6pvnrmvrazxgiffxiqb0qkhmcsdsy0v8580ic03fpmmn6kk")))
     (package
       (inherit emacsy-minimal)
       (name "emacsy-git")
@@ -39,8 +39,8 @@
                 (sha256 hash))))))
 
 (define-public nomad-git
-  (let ((commit "0.2.0-alpha-141-ga2d26d9")
-        (hash   (base32 "1a98s5yh305b2r0m6pn3qy6gqq1q0q5iz5fywj19kf6h0nj2hsy6")))
+  (let ((commit "0.2.0-alpha-148-g17f5cc8")
+        (hash   (base32 "0vci6pplfwkyz19vcjb5wr2wnn21ajnpyay7g340yahi9ml60428")))
     (package
       (inherit nomad)
       (name "nomad-git")
