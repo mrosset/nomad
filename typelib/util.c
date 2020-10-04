@@ -176,19 +176,21 @@ nomad_view_uses_tls (WebKitWebView *view)
   return webkit_web_view_get_tls_info (view, &certificate, NULL);
 }
 
-/* This works around  */
+/* This works around G-golf not able to use Glib interfaces */
 void
 nomad_entry_set_position (GtkEntry *entry, gint position)
 {
   gtk_editable_set_position (GTK_EDITABLE (entry), position);
 }
 
+/* This works around G-golf not able to use Glib interfaces */
 gint
 nomad_entry_get_position (GtkEntry *entry)
 {
   return gtk_editable_get_position (GTK_EDITABLE (entry));
 }
 
+/* Works around g-golf not able to get the default GdkDisplay on Wayland */
 void
 nomad_copy_text (const gchar *text)
 {
@@ -208,6 +210,7 @@ nomad_copy_text (const gchar *text)
     }
 }
 
+/* Works around g-golf not able to get the default GdkDisplay on Wayland */
 gchar *
 nomad_get_clipboard ()
 {
