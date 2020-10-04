@@ -65,7 +65,7 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
       #f)))
 
 (define-interactive (load-clipboard-uri)
-  (load-uri (current-buffer) (get-clipboard)))
+  (load-uri (get-clipboard) (current-buffer)))
 
 (define-interactive (make-buffer-clipboard)
   "Creates a new @var{<web-buffer>} and loads the URI found in clipboard."
