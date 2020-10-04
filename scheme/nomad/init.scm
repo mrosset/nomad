@@ -31,6 +31,7 @@
             %use-cookies?
             %user-cookie-file
             %user-init-file
+            %init-file-name
             %environment-file
             %user-nomad-directory
             %module-directory
@@ -61,10 +62,13 @@
     (when (file-exists? file)
       (load file))))
 
+;; %init-file-name is a top level parameter used to change the base file name of the
+;; %user-init-file. it's default value is @code{.nomad}.
+(define %init-file-name (make-parameter ".nomad"))
+
 ;; Path of user's initialization file. This is a top level identifier, it's
 ;; default value is @code{$HOME/.nomad}.
-(define-ident %user-init-file
-   (~/ ".nomad"))
+(define-ident %user-init-file (~/ (%init-file-name)))
 
 ;; Directory where per-user configuration files are placed. It's default value
 ;; is @code{$HOME/.nomad.d}.

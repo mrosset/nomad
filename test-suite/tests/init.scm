@@ -27,6 +27,8 @@
 (define-method (test-init-ident (self <test-init>))
   (with-fluids ((fluid~ "/tmp/home"))
     (assert-equal "/tmp/home/.nomad" %user-init-file)
+    (parameterize ((%init-file-name ".nomad.scm"))
+      (assert-equal "/tmp/home/.nomad.scm" %user-init-file))
     (assert-equal <string> (class-of %user-init-file))
     (assert-equal "/tmp/home/.nomad.d" %user-nomad-directory)
     (assert-equal "/tmp/home/.nomad.d/session.scm" %session-file)
