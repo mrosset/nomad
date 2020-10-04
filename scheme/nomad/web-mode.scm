@@ -64,9 +64,6 @@ e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
       (message "Error: Failed to load URI ~a\nkey: ~a args: ~a" uri key args)
       #f)))
 
-(define-interactive (load-clipboard-uri)
-  (load-uri (get-clipboard) (current-buffer)))
-
 (define-interactive (make-buffer-clipboard)
   "Creates a new @var{<web-buffer>} and loads the URI found in clipboard."
   (make-buffer <web-buffer>
