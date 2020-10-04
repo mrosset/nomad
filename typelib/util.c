@@ -190,6 +190,44 @@ nomad_entry_get_position (GtkEntry *entry)
 }
 
 void
+nomad_copy_text (const gchar *text)
+{
+  GdkDisplay *display = NULL;
+  GtkClipboard *clipboard = NULL;
+
+  display = gdk_display_get_default ();
+
+  if (display)
+    {
+      clipboard = gtk_clipboard_get_default (gdk_display_get_default ());
+      gtk_clipboard_set_text (clipboard, text, -1);
+    }
+  else
+    {
+      g_error ("Could not get the default GdkDisplay");
+    }
+}
+
+gchar *
+nomad_get_clipboard ()
+{
+  GdkDisplay *display = NULL;
+  GtkClipboard *clipboard = NULL;
+
+  display = gdk_display_get_default ();
+
+  if (!display)
+    {
+      g_error ("Could not get the default GdkDisplay");
+      return "";
+    }
+
+  clipboard = gtk_clipboard_get_default (display);
+
+  return gtk_clipboard_wait_for_text (clipboard);
+}
+
+void
 nomad_register_uri_scheme (WebKitWebContext *context, const gchar *scheme)
 {
   webkit_web_context_register_uri_scheme (context, scheme, uri_request_cb,

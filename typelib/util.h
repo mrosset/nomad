@@ -43,4 +43,8 @@ void nomad_entry_set_position (GtkEntry *entry, gint position);
 
 gint nomad_entry_get_position (GtkEntry *entry);
 
+void nomad_copy_text (const gchar *text);
+
+gchar *nomad_get_clipboard ();
+
 #endif

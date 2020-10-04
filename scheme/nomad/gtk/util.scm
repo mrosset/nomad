@@ -75,10 +75,12 @@ to (current-application)"
 
 (define (copy-text text)
   "Copies @var{text} to primary clipboard"
-  (let ((clipboard (gtk-clipboard-get-default (gdk-display-get-default))))
-    (gtk-clipboard-set-text clipboard text -1)))
+  ;; (let ((clipboard (gtk-clipboard-get-default (gdk-display-get-default))))
+  ;;   (gtk-clipboard-set-text clipboard text -1))
+  (nomad-copy-text text))
 
 (define (get-clipboard)
   "Return text from primary clipboard"
-  (let* ((clipboard (gtk-clipboard-get-default (gdk-display-get-default))))
-    (gtk-clipboard-wait-for-text clipboard)))
+  ;; (let* ((clipboard (gtk-clipboard-get-default (gdk-display-get-default))))
+  ;;   (gtk-clipboard-wait-for-text clipboard))
+  (nomad-get-clipboard))
