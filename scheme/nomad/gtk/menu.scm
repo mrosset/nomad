@@ -148,8 +148,8 @@
                    (with-buffer (!buffer (!entry self))
                      (delete-region (point-min) (point-max))
                      (insert (webkit-uri-for-display uri)))))))
-
-  (show-all self))
+  (show-all self)
+  (set-visible self (%menu-bar-mode)))
 
 (define-method (menu-bar (buffer <widget-buffer>))
   (!menu (current-frame)))
@@ -165,6 +165,7 @@
 (set-current-module (resolve-module '(nomad menu)))
 
 (use-modules (nomad gtk frame)
+             (nomad gtk widget)
              (nomad gtk menu)
              (nomad widget)
              (nomad web)
@@ -209,8 +210,11 @@ instead of the URI minibuffer."
 
 (define-key %web-mode-map (kbd "C-c e") 'edit-menu-uri)
 
-(define-interactive (menu-bar-mode)
-  "Toggles the current menu bar on or off."
-  (let* ((visible? (get-visible (current-menu))))
-    (set-visible (current-menu) (not visible?)))
-  (get-visible (current-menu)))
+(define-interactive (menu-bar-mode #:optional (enable? (not (%menu-bar-mode))))
+  "Toggles the menu-bar-mode on or off."
+  (%menu-bar-mode enable?)
+  (for-each (lambda (buffer)
+              (set-visible (menu-bar buffer) (%menu-bar-mode)))
+            (buffer-list))
+  (message "~a" (%menu-bar-mode))
+  (%menu-bar-mode))

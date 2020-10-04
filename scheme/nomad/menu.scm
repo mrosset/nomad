@@ -25,5 +25,4 @@
 
 (define %inhibit-menu-bar (make-parameter #t))
 
-(define %menu-bar-mode (make <mode>
-                         #:mode-name "Menu-Bar"))
+(define %menu-bar-mode (make-parameter #t))
