@@ -201,7 +201,7 @@ nomad_copy_text (const gchar *text)
 
   if (display)
     {
-      clipboard = gtk_clipboard_get_default (gdk_display_get_default ());
+      clipboard = gtk_clipboard_get_default (display);
       gtk_clipboard_set_text (clipboard, text, -1);
     }
   else
