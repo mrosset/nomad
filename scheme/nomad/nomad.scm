@@ -42,6 +42,7 @@
   #:use-module (nomad web)
   #:use-module (nomad web-mode)
   #:use-module (nomad graph)
+  #:use-module  (nomad emacsy text)
   #:duplicates (merge-generics replace warn-override-core warn last))
 
 (re-export-modules
@@ -68,4 +69,5 @@
  '(nomad views)
  '(nomad web)
  '(nomad web-mode)
- '(nomad graph))
+ '(nomad graph)
+ '(nomad emacsy text))

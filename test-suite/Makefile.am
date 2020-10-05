@@ -2,7 +2,7 @@ TESTS  = tests/util.scm
 TESTS += tests/init.scm
 TESTS += tests/buffer.scm
 TESTS += tests/uri.scm
-
+TESTS += tests/text.scm
 # TESTS += tests/download.scm
 
 TEST_EXTENSIONS = .scm

@@ -72,4 +72,5 @@ SOURCES =			\
 	nomad/repl.scm		\
 	nomad/shroud.scm	\
 	nomad/widget.scm	\
+	nomad/emacsy/text.scm   \
 	nomad/views.scm
