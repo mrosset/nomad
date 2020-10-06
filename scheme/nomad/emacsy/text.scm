@@ -29,20 +29,20 @@
 
 (define (count-lines)
   "Returns the number of lines for buffer."
-  (let ((done 0))
+  (let ((line 0))
     (save-excursion
         (goto-char (point-min))
       (while (re-search-forward newline-regex #f #t)
-        (set! done (1+ done))))
-    done))
+        (set! line (1+ line))))
+    line))
 
 (define (line-number-at-pos)
   "Return the buffer line number at current point."
   (let ((opoint (point))
-        (line 0))
+        (line 1))
     (save-excursion
         (goto-char (point-min))
         (while (let ((eol (re-search-forward newline-regex #f #t)))
                  (and eol (>= opoint eol)))
           (set! line (1+ line))))
-    (1+ line)))
+    line))
