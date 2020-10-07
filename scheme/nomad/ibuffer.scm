@@ -27,19 +27,23 @@
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
-  #:export (<ibuffer>))
+  #:export (<ibuffer>
+            !buffers))
 
 (define ibuffer-map (make-keymap))
+
+(define header-lines 2)
+(define hidden-buffer 1 )
+
+;; Line offset is 2 header lines + one line for the hidden ibuffer.
+(define line-offset (+ header-lines hidden-buffer))
 
 (define-public ibuffer-mode (make <mode>
                               #:mode-name "IBuffer"
                               #:mode-map ibuffer-map))
 
 (define-class <ibuffer> (<widget-buffer> <text-buffer>)
-  (index   #:accessor   !index
-           #:init-value 0)
-  (buffers #:accessor   !buffers
-           #:init-thunk buffer-list))
+  (buffers #:accessor !buffers #:init-value #f))
 
 (define-method (initialize (buffer <ibuffer>) args)
   (next-method)
@@ -72,49 +76,44 @@
 (define* (update #:optional (buffer (current-buffer)))
   (delete-region (point-min) (point-max))
   (ibuffer-header)
-  (set! (!index buffer) 0)
   (set! (!buffers buffer)
         (filter-map
          (lambda (b) (if (is-a? b <ibuffer>)
                          #f
                          b))
-         (buffer-list)))
+         (reverse (buffer-list))))
   (for-each (lambda (b)
               (insert (ibuffer-line b)))
             (!buffers buffer))
   (backward-delete-char 1)
   (goto-char (point-min))
-  (forward-line 2))
+  (forward-line header-lines))
 
-(define* (ibuffer-forward-line #:optional (n 1))
-  (let* ((buffer  (current-buffer))
-         (index   (!index buffer)))
-    (do ((i 0 (+ i 1)))
-        ((>= i n))
-      (when (< index (- (length (!buffers buffer)) 1))
-        (set! (!index buffer) (+ index 1))
-        (forward-line)))))
+(define-interactive (ibuffer-forward-line #:optional (n 1))
+  (do ((i 0 (1+ i)))
+      ((>= i n))
+   (when (<= (line-number-at-pos) (count-lines))
+    (forward-line))))
 
-(define (ibuffer-backward-line)
-  (let* ((buffer  (current-buffer))
-         (index   (!index buffer)))
-    (when (> index 0)
-      (set! (!index buffer) (- index 1))
-      (backward-line))))
+(define-interactive (ibuffer-backward-line)
+  (when (>= (line-number-at-pos) 4)
+    (backward-line)))
+
+(define (buffer-at-line ibuffer)
+  (list-ref (!buffers ibuffer) (- (line-number-at-pos) line-offset)))
 
 (define (switch-to)
-  (let ((buffer (current-buffer)))
-    (switch-to-buffer
-     (list-ref (!buffers buffer) (!index buffer)))))
+  (switch-to-buffer
+   (buffer-at-line (current-buffer))))
 
 (define-interactive (ibuffer-kill-buffer)
   (let* ((buffer   (current-buffer))
-         (selected (list-ref (!buffers buffer) (!index buffer)))
-         (index    (!index buffer)))
+         (selected (buffer-at-line buffer))
+         (line     (- (line-number-at-pos) line-offset)))
     (with-buffer selected
       (kill-buffer))
     (switch-to-buffer buffer)
-    (ibuffer-forward-line index)))
+    (ibuffer-forward-line line)))
 
 (define-interactive (ibuffer #:optional (index 0))
   (let* ((current (find (compose (cut is-a? <> <ibuffer>))
