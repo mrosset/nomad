@@ -108,9 +108,6 @@
          (forward (make-icon-button "go-next-symbolic"))
          (menu    (make <menu-button>)))
 
-    ;; Style
-    ;; (nomad-app-set-style (!entry self) "entry{border: none; box-shadow: none; }")
-
     ;; Input Box
     (set-custom-title self (!entry self))
     (set-show-close-button self #t)
