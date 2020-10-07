@@ -33,6 +33,8 @@
     (let ((name (format #f "test-buffer-~a" i)))
       (add-buffer! (make <text-buffer> #:name name)))))
 
+(define buffer-at-line (@@ (nomad ibuffer) buffer-at-line))
+
 (define-method (test-interactive (self <test-ibuffer>))
   (emacsy-initialize #t)
   (set! current-window (make <window> #:window-buffer (current-buffer)))
@@ -44,4 +46,5 @@
   (ibuffer-forward-line 2)
   (assert-equal 5 (line-number-at-pos))
   (ibuffer-kill-buffer)
-  (assert-equal 5 (line-number-at-pos)))
+  (assert-equal 5 (line-number-at-pos))
+  (assert-equal "test-buffer-0" (buffer-name-at-line)))

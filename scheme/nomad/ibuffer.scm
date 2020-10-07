@@ -28,7 +28,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (<ibuffer>
-            !buffers))
+            buffer-name-at-line))
 
 (define ibuffer-map (make-keymap))
 
@@ -38,12 +38,13 @@
 ;; Line offset is 2 header lines + one line for the hidden ibuffer.
 (define line-offset (+ header-lines hidden-buffer))
 
-(define-public ibuffer-mode (make <mode>
+(define ibuffer-mode (make <mode>
                               #:mode-name "IBuffer"
                               #:mode-map ibuffer-map))
 
 (define-class <ibuffer> (<widget-buffer> <text-buffer>)
-  (buffers #:accessor !buffers #:init-value #f))
+  (buffers #:accessor  !buffers
+           #:init-form (make-hash-table)))
 
 (define-method (initialize (buffer <ibuffer>) args)
   (next-method)
@@ -76,15 +77,13 @@
 (define* (update #:optional (buffer (current-buffer)))
   (delete-region (point-min) (point-max))
   (ibuffer-header)
-  (set! (!buffers buffer)
-        (filter-map
-         (lambda (b) (if (is-a? b <ibuffer>)
-                         #f
-                         b))
-         (reverse (buffer-list))))
   (for-each (lambda (b)
-              (insert (ibuffer-line b)))
-            (!buffers buffer))
+              (unless (eq? (current-buffer) b)
+                (hash-set! (!buffers (current-buffer))
+                           (line-number-at-pos)
+                           b)
+                (insert (ibuffer-line b))))
+            (buffer-list))
   (backward-delete-char 1)
   (goto-char (point-min))
   (forward-line header-lines))
@@ -99,12 +98,14 @@
   (when (>= (line-number-at-pos) 4)
     (backward-line)))
 
-(define (buffer-at-line ibuffer)
-  (list-ref (!buffers ibuffer) (- (line-number-at-pos) line-offset)))
+(define-method (buffer-at-line (ibuffer <ibuffer>))
+  (hash-ref (!buffers ibuffer) (line-number-at-pos)))
+
+(define (buffer-name-at-line)
+  (buffer-name (buffer-at-line (current-buffer))))
 
 (define (switch-to)
-  (switch-to-buffer
-   (buffer-at-line (current-buffer))))
+  (switch-to-buffer (buffer-at-line (current-buffer))))
 
 (define-interactive (ibuffer-kill-buffer)
   (let* ((buffer   (current-buffer))
