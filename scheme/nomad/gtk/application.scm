@@ -83,6 +83,7 @@
 (define-method (initialize (self <nomad-gtk-application>) args)
   (next-method)
   (g-application-set-flags self '(handles-open can-override-app-id))
+  (nomad-app-add-options self)
   (connect self 'open open)
   (connect self 'startup startup)
   (connect self 'activate activate)

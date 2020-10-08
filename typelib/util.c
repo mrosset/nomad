@@ -231,6 +231,19 @@ nomad_get_clipboard ()
 }
 
 void
+nomad_app_add_options (GtkApplication *app)
+{
+  // clang-format off
+  g_application_add_main_option (G_APPLICATION (app),
+                                 "quick",
+                                 81,
+                                 G_OPTION_FLAG_NONE,
+                                 G_OPTION_ARG_STRING,
+                                 "disables loading of %user-init-file", "");
+  // clang-format on
+}
+
+void
 nomad_register_uri_scheme (WebKitWebContext *context, const gchar *scheme)
 {
   webkit_web_context_register_uri_scheme (context, scheme, uri_request_cb,

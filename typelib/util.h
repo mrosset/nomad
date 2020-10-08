@@ -47,4 +47,6 @@ void nomad_copy_text (const gchar *text);
 
 gchar *nomad_get_clipboard ();
 
+void nomad_app_add_options (GtkApplication *app);
+
 #endif
