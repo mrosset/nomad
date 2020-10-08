@@ -236,7 +236,7 @@ nomad_app_add_options (GtkApplication *app)
   // clang-format off
   g_application_add_main_option (G_APPLICATION (app),
                                  "quick",
-                                 81,
+                                 'Q',
                                  G_OPTION_FLAG_NONE,
                                  G_OPTION_ARG_STRING,
                                  "disables loading of %user-init-file", "");
