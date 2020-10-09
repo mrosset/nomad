@@ -1,12 +1,10 @@
 (define-module (nomad options)
   #:use-module (ice-9 getopt-long)
-  #:export (
-            option-app-id
+  #:export (option-app-id
             option-client
             option-listen
             option-url
-            option-quick
-            ))
+            option-quick))
 
 (define option-spec
   '((listen  (value #t))

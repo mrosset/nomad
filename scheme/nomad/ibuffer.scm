@@ -138,12 +138,14 @@
     (ibuffer-forward-line line)))
 
 (define-interactive (ibuffer-forward-line #:optional (n 1))
+  "Move forward @var{n} lines. Default is one line."
   (do ((i 0 (1+ i)))
       ((>= i n))
    (when (<= (line-number-at-pos) (count-lines))
     (forward-line))))
 
 (define-interactive (ibuffer-backward-line)
+  "Move backward one line"
   (when (>= (line-number-at-pos) 4)
     (backward-line)))
 
@@ -159,11 +161,13 @@
 (define (switch-to)
   (switch-to-buffer (buffer-at-line (current-buffer))))
 
-(define-interactive (ibuffer-mark-delete)
+(define-interactive (ibuffer-mark-for-delete)
+  "Mark for deletion the buffer on the current line."
   (mark-entry (entry-at-line) 'D)
   (update (line-number-at-pos)))
 
 (define-interactive (ibuffer #:optional (index 0))
+  "Begin using Ibuffer to edit a list of buffers"
   (let* ((current (find (compose (cut is-a? <> <ibuffer>))
                         (buffer-list)))
          (buffer  (if current
@@ -201,7 +205,7 @@
             (define-key ibuffer-map key ibuffer-backward-line))
           '("C-p" "p"))
 (define-key ibuffer-map "ESC" kill-buffer)
-(define-key ibuffer-map "d" ibuffer-mark-delete)
+(define-key ibuffer-map "d" ibuffer-mark-for-delete)
 (define-key ibuffer-map "x" ibuffer-do-kill-on-deletion-marks)
 (define-key ibuffer-map "u" ibuffer-unmark-forward)
 (define-key ibuffer-map "q" kill-buffer)
