@@ -1,12 +1,12 @@
 (define-module (nomad options)
   #:use-module (ice-9 getopt-long)
-  #:export (
-            option-app-id
+  #:export (option-app-id
             option-client
             option-listen
             option-url
-            option-quick
-            ))
+            %option-quick))
+
+(define %option-quick (make-parameter #f) )
 
 (define option-spec
   '((listen  (value #t))
@@ -21,8 +21,8 @@
 (define (get-option key options default)
   (option-ref (getopt-long options option-spec) key default))
 
-(define (option-quick options)
-  (get-option 'quick options #f))
+;; (define (option-quick options)
+;;   (get-option 'quick options #f))
 
 (define (option-app-id options)
   (get-option 'app-id options "org.gnu.nomad"))

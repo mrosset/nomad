@@ -230,8 +230,31 @@ nomad_get_clipboard ()
   return gtk_clipboard_wait_for_text (clipboard);
 }
 
+static gint
+handle_local_options (GApplication *application, GVariantDict *options,
+                      gpointer user_data)
+{
+  gboolean quick;
+
+  if (!g_variant_dict_lookup (options, "quick", "b", &quick))
+    {
+      return -1;
+    }
+
+  if (quick == TRUE)
+    {
+      scm_call_1 (scm_c_public_ref ("nomad options", "%option-quick"),
+                  SCM_BOOL_T);
+    }
+
+  return -1;
+}
+
+// g-golf can not handle G_OPTION_FLAG_NONE or G_OPTION_ARG_NONE also we
+// connect the handle-local-options signal here because g-golf can't handle
+// GVariantDict
 void
-nomad_app_add_options (GtkApplication *app)
+nomad_app_connect_options (GtkApplication *app)
 {
   // clang-format off
   g_application_add_main_option (G_APPLICATION (app),
@@ -241,6 +264,9 @@ nomad_app_add_options (GtkApplication *app)
                                  G_OPTION_ARG_NONE,
                                  "disables loading of %user-init-file", "");
   // clang-format on
+
+  g_signal_connect (app, "handle-local-options",
+                    G_CALLBACK (handle_local_options), NULL);
 }
 
 void
