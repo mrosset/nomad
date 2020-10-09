@@ -163,15 +163,6 @@
   (mark-entry (entry-at-line) 'D)
   (update (line-number-at-pos)))
 
-(define-interactive (ibuffer-kill-buffer)
-  (let* ((buffer   (current-buffer))
-         (selected (buffer-at-line buffer))
-         (line     (- (line-number-at-pos) line-offset)))
-    (with-buffer selected
-      (kill-buffer))
-    (switch-to-buffer buffer)
-    (ibuffer-forward-line line)))
-
 (define-interactive (ibuffer #:optional (index 0))
   (let* ((current (find (compose (cut is-a? <> <ibuffer>))
                         (buffer-list)))
@@ -180,13 +171,13 @@
                       (make-buffer <ibuffer>
                                    #:name         "ibuffer"
                                    #:buffer-modes `(,ibuffer-mode)))))
-    (ibuffer-forward-line index)))
+    #t))
 
 (define-interactive (ibuffer-do-kill-on-deletion-marks)
   "Kill buffers marked for deletion"
   (let* ((marked (marks (current-buffer)))
          (total  (length marked))
-         (prompt (format #f "Really kill ~a buffers (y or n) " total)))
+         (prompt (format #f "Really kill ~a buffers? (y or n) " total)))
     (when (and (> total 0)
                (string= "y" (read-from-minibuffer prompt)))
       (for-each (lambda (item)
