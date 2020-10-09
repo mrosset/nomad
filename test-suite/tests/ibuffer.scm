@@ -33,7 +33,35 @@
     (let ((name (format #f "test-buffer-~a" i)))
       (add-buffer! (make <text-buffer> #:name name)))))
 
-(define buffer-at-line (@@ (nomad ibuffer) buffer-at-line))
+(define buffer-name-at-line (@@ (nomad ibuffer) buffer-name-at-line))
+(define entry-at-line (@@ (nomad ibuffer) entry-at-line))
+(define apply-marks (@@ (nomad ibuffer) apply-marks))
+
+(define mark-entry (@@ (nomad ibuffer) mark-entry))
+(define unmark (@@ (nomad ibuffer) unmark))
+
+(define marked? (@@ (nomad ibuffer) marked?))
+
+(define-method (test-ibuffer-entry (self <test-ibuffer>))
+  (emacsy-initialize #t)
+  (let* ((entry (make <ibuffer-entry>
+                  #:buffer (make <text-buffer> #:name "test-buffer")))  )
+    (assert-true (is-a? (slot-ref entry 'buffer) <buffer>))
+    (add-buffer! (slot-ref entry 'buffer))
+    (assert-equal 3 (length (buffer-list)))
+    (assert-false (marked? entry))
+    ;; mark
+    (mark-entry entry 'D)
+    (assert-true (marked? entry))
+    ;; umark
+    (unmark entry)
+    (assert-false (marked? entry))
+    ;; apply-marks
+    (mark-entry entry 'D)
+    (assert-true (marked? entry))
+    (apply-marks entry)
+    (assert-false (marked? entry))
+    (assert-equal 2 (length (buffer-list)))))
 
 (define-method (test-interactive (self <test-ibuffer>))
   (emacsy-initialize #t)
@@ -43,8 +71,18 @@
   (ibuffer)
   (assert-equal "ibuffer" (buffer-name))
   (assert-equal 3 (line-number-at-pos))
+  (assert-equal "*Messages*" (buffer-name-at-line))
   (ibuffer-forward-line 2)
   (assert-equal 5 (line-number-at-pos))
-  (ibuffer-kill-buffer)
-  (assert-equal 5 (line-number-at-pos))
-  (assert-equal "test-buffer-0" (buffer-name-at-line)))
+  (ibuffer-forward-line)
+  (ibuffer-mark-delete)
+  (ibuffer-backward-line)
+  (assert-true (marked? (entry-at-line)))
+  (emacsy-key-event #\x)
+  (emacsy-key-event #\y)
+  (emacsy-key-event #\return)
+  (agenda-schedule (colambda _
+                    (ibuffer-do-kill-on-deletion-marks)))
+  (update-agenda)
+  (assert-equal 6 (length (buffer-list)))
+  (assert-equal "*scratch*" (buffer-name-at-line)))

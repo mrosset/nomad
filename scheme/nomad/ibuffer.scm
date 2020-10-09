@@ -27,13 +27,14 @@
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (<ibuffer>
-            buffer-name-at-line))
+            <ibuffer-entry>))
 
 (define ibuffer-map (make-keymap))
 
 (define header-lines 2)
-(define hidden-buffer 1 )
+(define hidden-buffer 1)
 
 ;; Line offset is 2 header lines + one line for the hidden ibuffer.
 (define line-offset (+ header-lines hidden-buffer))
@@ -42,9 +43,33 @@
                               #:mode-name "IBuffer"
                               #:mode-map ibuffer-map))
 
+(define-class <ibuffer-entry> ()
+  (key    #:accessor !key    #:init-keyword #:key #:init-value #f)
+  (buffer #:accessor !buffer #:init-keyword #:buffer #:init-value #f)
+  (marks  #:accessor !marks  #:init-form (make-list 1 #f)))
+
+(define-method (unmark (self <ibuffer-entry>))
+  (set! (!marks self) (make-list 1 #f)))
+
+(define-method (mark-entry (self <ibuffer-entry>) mark)
+  (list-set! (!marks self) 0 mark))
+
+(define-method (marked? (self <ibuffer-entry>))
+  (car (!marks self)))
+
+(define-method (apply-marks (self <ibuffer-entry>))
+  (for-each (lambda (mark)
+              (case mark
+                ((D)
+                 (with-buffer (!buffer self)
+                   (kill-buffer))
+                 (set! (!marks self) (make-list 3 #f)))
+                (else #f)))
+            (!marks self)))
+
 (define-class <ibuffer> (<widget-buffer> <text-buffer>)
   (buffers     #:accessor  !buffers
-               #:init-form (make-hash-table))
+               #:init-form '())
   (last-buffer #:accessor  !last-buffer
                #:init-form last-buffer))
 
@@ -54,7 +79,7 @@
              (lambda ()
                (%inhibit-menu-bar #f)
                (set! (!last-buffer (current-buffer)) last-buffer)
-               (update buffer)))
+               (update)))
   (add-hook! (buffer-kill-hook buffer)
              (lambda ()
                (%inhibit-menu-bar #t)))
@@ -65,34 +90,52 @@
 (set! buffer-classes (cons <ibuffer>
                             buffer-classes))
 
-(define (ibuffer-header)
+(define-method (marks (self <ibuffer>))
+  (filter (lambda (item)
+            (marked? (cdr item)))
+          (!buffers self)))
+
+(define (insert-header)
   (insert (format #f "MR     Name ~/~/   Uri/Filename~%"))
   (insert (format #f "--     -----~/~/   ------------~%")))
 
-(define (ibuffer-line buffer)
-  (format #f "       ~a~/~/    ~a\n"
-          (buffer-name buffer)
-           (if (is-a? buffer <web-buffer>)
-               (buffer-uri buffer)
-               (or (buffer-file-name buffer)
-                   "--"))))
+(define (ibuffer-line entry)
+  (let ((buffer (!buffer entry))
+        (key    (!key entry))
+        (mark   (list-ref (!marks entry) 0)))
+    (format #f "~a       ~a~/~/    ~a\n"
+            (or mark "")
+            (buffer-name buffer)
+            (if (is-a? buffer <web-buffer>)
+                (buffer-uri buffer)
+                (or (buffer-file-name buffer)
+                    "--")))))
 
-(define* (update #:optional (buffer (current-buffer)))
-  (delete-region (point-min) (point-max))
-  (ibuffer-header)
-  (let ((current (line-number-at-pos)))
+(define (insert-buffers buffers)
+  (for-each (lambda (item)
+                   (insert (ibuffer-line (cdr item))))
+            (reverse buffers)))
+
+(define (buffers->alist index)
+  "Converts (buffer-list) to a <hash-map> starting with @var{index}."
+  (let ((lst '()))
     (for-each (lambda (b)
                 (unless (eq? (current-buffer) b)
-                  (hash-set! (!buffers (current-buffer))
-                             (line-number-at-pos)
-                             b)
-                  (when (eq? (!last-buffer buffer) b)
-                    (set! current (line-number-at-pos)))
-                  (insert (ibuffer-line b))))
-              (buffer-list))
+                  (set! lst (acons index (make <ibuffer-entry> #:key index #:buffer b) lst))
+                  (set! index (1+ index))))
+              (reverse (buffer-list)))
+    lst))
+
+(define* (update #:optional (line 2))
+  (delete-region (point-min) (point-max))
+  (insert-header)
+  (let ((current (line-number-at-pos)))
+    (when (= (length (!buffers (current-buffer))) 0)
+      (set! (!buffers (current-buffer)) (buffers->alist current)))
+    (insert-buffers (!buffers (current-buffer)))
     (backward-delete-char 1)
     (goto-char (point-min))
-    (forward-line (- current hidden-buffer))))
+    (ibuffer-forward-line line)))
 
 (define-interactive (ibuffer-forward-line #:optional (n 1))
   (do ((i 0 (1+ i)))
@@ -104,14 +147,21 @@
   (when (>= (line-number-at-pos) 4)
     (backward-line)))
 
+(define-method (entry-at-line)
+  (assoc-ref (!buffers (current-buffer)) (line-number-at-pos)))
+
 (define-method (buffer-at-line (ibuffer <ibuffer>))
-  (hash-ref (!buffers ibuffer) (line-number-at-pos)))
+  (!buffer (entry-at-line)))
 
 (define (buffer-name-at-line)
   (buffer-name (buffer-at-line (current-buffer))))
 
 (define (switch-to)
   (switch-to-buffer (buffer-at-line (current-buffer))))
+
+(define-interactive (ibuffer-mark-delete)
+  (mark-entry (entry-at-line) 'D)
+  (update (line-number-at-pos)))
 
 (define-interactive (ibuffer-kill-buffer)
   (let* ((buffer   (current-buffer))
@@ -132,9 +182,27 @@
                                    #:buffer-modes `(,ibuffer-mode)))))
     (ibuffer-forward-line index)))
 
+(define-interactive (ibuffer-do-kill-on-deletion-marks)
+  "Kill buffers marked for deletion"
+  (let* ((marked (marks (current-buffer)))
+         (total  (length marked))
+         (prompt (format #f "Really kill ~a buffers (y or n) " total)))
+    (when (and (> total 0)
+               (string= "y" (read-from-minibuffer prompt)))
+      (for-each (lambda (item)
+                  (apply-marks (cdr item)))
+                marked)
+      (set! (!buffers (current-buffer)) '())
+      (update (line-number-at-pos)))))
+
+(define-interactive (ibuffer-unmark-forward)
+  "Umarks the current buffer and moves forward."
+  (unmark (entry-at-line))
+  (update (line-number-at-pos)))
+
 ;; Ibuffer map
 (define-key ibuffer-map "RET" switch-to)
-(define-key ibuffer-map "g" (lambda _ (update (current-buffer))))
+(define-key ibuffer-map "g" (lambda _ (update (line-number-at-pos))))
 (for-each (lambda (key)
             (define-key ibuffer-map key ibuffer-forward-line))
           '("C-n" "n"))
@@ -142,7 +210,9 @@
             (define-key ibuffer-map key ibuffer-backward-line))
           '("C-p" "p"))
 (define-key ibuffer-map "ESC" kill-buffer)
-(define-key ibuffer-map "d" ibuffer-kill-buffer)
+(define-key ibuffer-map "d" ibuffer-mark-delete)
+(define-key ibuffer-map "x" ibuffer-do-kill-on-deletion-marks)
+(define-key ibuffer-map "u" ibuffer-unmark-forward)
 (define-key ibuffer-map "q" kill-buffer)
 
 ;; Global map
