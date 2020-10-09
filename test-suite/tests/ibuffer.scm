@@ -75,7 +75,7 @@
   (ibuffer-forward-line 2)
   (assert-equal 5 (line-number-at-pos))
   (ibuffer-forward-line)
-  (ibuffer-mark-delete)
+  (ibuffer-mark-for-delete)
   (ibuffer-backward-line)
   (assert-true (marked? (entry-at-line)))
   (emacsy-key-event #\x)
