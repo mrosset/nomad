@@ -99,16 +99,14 @@
           (!buffers self)))
 
 (define (insert-header)
-  (insert (format #f "MR     Name ~/~/   Uri/Filename~%"))
-  (insert (format #f "--     -----~/~/   ------------~%")))
+  (insert (format #f "MR ~/ Name            Uri/Filename~%"))
+  (insert (format #f "---~/ -------         ------------~%")))
 
 (define (ibuffer-line index entry)
   (let ((buffer (!buffer entry))
         (mark   (list-ref (!marks entry) 0)))
-    (format #f "~a ~a ~a      ~a~/~/    ~a\n"
+    (format #f "~a  ~/ ~a~/ ~a\n"
             (or mark "")
-            index
-            (line-number-at-pos)
             (buffer-name buffer)
             (if (is-a? buffer <web-buffer>)
                 (buffer-uri buffer)
