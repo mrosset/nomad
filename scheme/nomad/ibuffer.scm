@@ -115,7 +115,7 @@
             (reverse buffers)))
 
 (define (buffers->alist index)
-  "Converts (buffer-list) to a <hash-map> starting with @var{index}."
+  "Converts (buffer-list) to a alist starting with @var{index}."
   (let ((lst '()))
     (for-each (lambda (b)
                 (unless (eq? (current-buffer) b)
