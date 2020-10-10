@@ -44,7 +44,6 @@
                               #:mode-map ibuffer-map))
 
 (define-class <ibuffer-entry> ()
-  (key    #:accessor !key    #:init-keyword #:key #:init-value #f)
   (buffer #:accessor !buffer #:init-keyword #:buffer #:init-value #f)
   (marks  #:accessor !marks  #:init-form (make-list 1 #f)))
 
@@ -101,7 +100,6 @@
 
 (define (ibuffer-line entry)
   (let ((buffer (!buffer entry))
-        (key    (!key entry))
         (mark   (list-ref (!marks entry) 0)))
     (format #f "~a       ~a~/~/    ~a\n"
             (or mark "")
@@ -121,7 +119,7 @@
   (let ((lst '()))
     (for-each (lambda (b)
                 (unless (eq? (current-buffer) b)
-                  (set! lst (acons index (make <ibuffer-entry> #:key index #:buffer b) lst))
+                  (set! lst (acons index (make <ibuffer-entry> #:buffer b) lst))
                   (set! index (1+ index))))
               (reverse (buffer-list)))
     lst))
