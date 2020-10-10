@@ -20,10 +20,11 @@
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 format)
   #:use-module (ice-9 optargs)
-  #:use-module (nomad widget)
-  #:use-module (nomad web)
-  #:use-module (nomad util)
+  #:use-module (ice-9 receive)
   #:use-module (nomad menu)
+  #:use-module (nomad util)
+  #:use-module (nomad web)
+  #:use-module (nomad widget)
   #:use-module (oop goops)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -45,6 +46,7 @@
 
 (define-class <ibuffer-entry> ()
   (buffer #:accessor !buffer #:init-keyword #:buffer #:init-value #f)
+  (key    #:accessor !key    #:init-keyword #:key)
   (marks  #:accessor !marks  #:init-form (make-list 1 #f)))
 
 (define-method (unmark (self <ibuffer-entry>))
@@ -64,7 +66,9 @@
                    (kill-buffer))
                  (set! (!marks self) (make-list 3 #f)))
                 (else #f)))
-            (!marks self)))
+            (!marks self))
+  (set! (!buffers (current-buffer)) '())
+  (update))
 
 (define-class <ibuffer> (<widget-buffer> <text-buffer>)
   (buffers     #:accessor  !buffers
@@ -98,11 +102,13 @@
   (insert (format #f "MR     Name ~/~/   Uri/Filename~%"))
   (insert (format #f "--     -----~/~/   ------------~%")))
 
-(define (ibuffer-line entry)
+(define (ibuffer-line index entry)
   (let ((buffer (!buffer entry))
         (mark   (list-ref (!marks entry) 0)))
-    (format #f "~a       ~a~/~/    ~a\n"
+    (format #f "~a ~a ~a      ~a~/~/    ~a\n"
             (or mark "")
+            index
+            (line-number-at-pos)
             (buffer-name buffer)
             (if (is-a? buffer <web-buffer>)
                 (buffer-uri buffer)
@@ -111,7 +117,7 @@
 
 (define (insert-buffers buffers)
   (for-each (lambda (item)
-                   (insert (ibuffer-line (cdr item))))
+              (insert (ibuffer-line (car item) (cdr item))))
             (reverse buffers)))
 
 (define (buffers->alist index)
@@ -124,12 +130,32 @@
               (reverse (buffer-list)))
     lst))
 
+(define (update-buffer-list)
+  "Compares the ibuffers buffer list with emacys (buffer-list). Adding new buffers to the !buffers slot"
+  (let ((index (+ (length (!buffers (current-buffer)))
+                  line-offset))
+        (new (map (lambda (b)
+                    (if (not (find (lambda (e)
+                                     (eq? b (!buffer (cdr e))))
+                                   (!buffers (current-buffer))))
+                        b
+                        #f))
+                  (buffer-list))))
+    (for-each (lambda (b)
+                (when b
+                  (unless (eq? (buffer-name b) "ibuffer")
+                    (set! (!buffers (current-buffer))
+                          (acons index
+                                 (make <ibuffer-entry> #:key index #:buffer b)
+                                 (!buffers (current-buffer))))
+                    (set! index (1+ index)))))
+              (reverse new))))
+
 (define* (update #:optional (line 2))
   (delete-region (point-min) (point-max))
   (insert-header)
   (let ((current (line-number-at-pos)))
-    (when (= (length (!buffers (current-buffer))) 0)
-      (set! (!buffers (current-buffer)) (buffers->alist current)))
+    (update-buffer-list)
     (insert-buffers (!buffers (current-buffer)))
     (backward-delete-char 1)
     (goto-char (point-min))
@@ -161,6 +187,9 @@
 
 (define-interactive (ibuffer-mark-for-delete)
   "Mark for deletion the buffer on the current line."
+  (unless (entry-at-line)
+    (format #t "~a\n" (entry-at-line))
+    (error "Cant find entry at line"))
   (mark-entry (entry-at-line) 'D)
   (update (line-number-at-pos)))
 
@@ -185,7 +214,6 @@
       (for-each (lambda (item)
                   (apply-marks (cdr item)))
                 marked)
-      (set! (!buffers (current-buffer)) '())
       (update (line-number-at-pos)))))
 
 (define-interactive (ibuffer-unmark-forward)

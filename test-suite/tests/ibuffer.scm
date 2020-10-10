@@ -44,24 +44,24 @@
 
 (define-method (test-ibuffer-entry (self <test-ibuffer>))
   (emacsy-initialize #t)
-  (let* ((entry (make <ibuffer-entry>
-                  #:buffer (make <text-buffer> #:name "test-buffer")))  )
-    (assert-true (is-a? (slot-ref entry 'buffer) <buffer>))
+  (set! current-window (make <window> #:window-buffer (current-buffer)))
+  (let* ((entry (make <ibuffer-entry> #:key (+ (length (buffer-list)) 3)
+                  #:buffer (make <text-buffer> #:name "test-buffer"))))
     (add-buffer! (slot-ref entry 'buffer))
-    (assert-equal 3 (length (buffer-list)))
+    (assert-true (is-a? (slot-ref entry 'buffer) <buffer>))
+    (ibuffer)
+    (assert-equal 4 (length (buffer-list)))
     (assert-false (marked? entry))
-    ;; mark
     (mark-entry entry 'D)
     (assert-true (marked? entry))
-    ;; umark
     (unmark entry)
     (assert-false (marked? entry))
-    ;; apply-marks
     (mark-entry entry 'D)
     (assert-true (marked? entry))
     (apply-marks entry)
     (assert-false (marked? entry))
-    (assert-equal 2 (length (buffer-list)))))
+    (assert-equal 3 (length (buffer-list)))
+    (kill-buffer)))
 
 (define-method (test-interactive (self <test-ibuffer>))
   (emacsy-initialize #t)
