@@ -186,7 +186,6 @@
 (define-interactive (ibuffer-mark-for-delete)
   "Mark for deletion the buffer on the current line."
   (unless (entry-at-line)
-    (format #t "~a\n" (entry-at-line))
     (error "Cant find entry at line"))
   (mark-entry (entry-at-line) 'D)
   (update (line-number-at-pos)))
