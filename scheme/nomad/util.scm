@@ -22,7 +22,7 @@
   #:use-module (ice-9 threads)
   #:use-module (emacsy emacsy)
   #:use-module (oop goops)
-  #:export (list->keymap
+  #:export (define-each-key
             fluid~
             ~
             ~/
@@ -60,6 +60,12 @@
        (module-re-export! (current-module) (list sym)))
      (resolve-interface module)))
   (for-each re-export-module modules))
+
+(define (define-each-key key-map lst)
+  "Defines each key command pair in @var{lst} using @var{key-map}."
+  (for-each (match-lambda ((key . command)
+                           (define-key key-map (kbd key) command)))
+            lst))
 
 (define (list->keymap lst)
   "Creates a new keymap from LST"

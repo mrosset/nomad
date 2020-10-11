@@ -25,7 +25,8 @@
   #:use-module (nomad widget)
   #:use-module (oop goops)
   #:duplicates (merge-generics replace warn-override-core warn last)
-  #:export (%search-provider-format
+  #:export (web-mode
+            %search-provider-format
             %default-home-page
             %search-providers
             %web-mode-map
@@ -50,15 +51,18 @@
 
 (define %load-committed-hook (make-hook 1))
 
-(define-public web-mode (make <mode> #:mode-name "Web"))
+(define %web-mode-map (make-keymap))
+
+(define (web-mode)
+  (make <mode>
+    #:mode-name "Web"
+    #:mode-map %web-mode-map))
 
 ;; search providers
 (define %search-providers
   (circular-list "https://searx.info/?q=~a"
                  "https://google.com/?q=~a"
                  "https://duckduckgo.com/?q=~a"))
-
-(define %web-mode-map)
 
 (define %styles #f)
 
@@ -69,13 +73,11 @@
 (define-class <web-buffer> (<widget-buffer>)
   (menu     #:accessor     !menu
             #:init-value   #f)
-  (keymap   #:accessor     local-keymap
-            #:init-keyword #:keymap
-            #:init-form    %web-mode-map)
   (name     #:init-keyword #:name
             #:init-form    (uniquify-name "*web-buffer*<~a>"
                                           (map buffer-name (buffer-list))))
-  (buffer-modes #:accessor buffer-modes #:init-value `(,web-mode))
+  (buffer-modes #:accessor buffer-modes
+                #:init-form `(,(web-mode)))
   (progress #:accessor     buffer-progress
             #:init-value   0)
   (title    #:accessor     buffer-title
