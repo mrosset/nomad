@@ -41,8 +41,8 @@
 (define line-offset (+ header-lines hidden-buffer))
 
 (define ibuffer-mode (make <mode>
-                              #:mode-name "IBuffer"
-                              #:mode-map ibuffer-map))
+                       #:mode-name "IBuffer"
+                       #:mode-map ibuffer-map))
 
 (define-class <ibuffer-entry> ()
   (buffer #:accessor !buffer #:init-keyword #:buffer #:init-value #f)
@@ -68,11 +68,13 @@
                 (else #f)))
             (!marks self))
   (set! (!buffers (current-buffer)) '())
-  (update))
+  (ibuffer-update))
 
 (define-class <ibuffer> (<widget-buffer> <text-buffer>)
   (buffers     #:accessor  !buffers
                #:init-form '())
+  (modes       #:accessor  buffer-modes
+               #:init-form (list ibuffer-mode))
   (last-buffer #:accessor  !last-buffer
                #:init-form last-buffer))
 
@@ -82,7 +84,7 @@
              (lambda ()
                (%inhibit-menu-bar #f)
                (set! (!last-buffer (current-buffer)) last-buffer)
-               (update)))
+               (ibuffer-update)))
   (add-hook! (buffer-kill-hook buffer)
              (lambda ()
                (%inhibit-menu-bar #t)))
@@ -149,7 +151,8 @@
                     (set! index (1+ index)))))
               (reverse new))))
 
-(define* (update #:optional (line 2))
+(define-interactive (ibuffer-update #:optional (line 2))
+  "Regenerates the list of buffers"
   (delete-region (point-min) (point-max))
   (insert-header)
   (let ((current (line-number-at-pos)))
@@ -180,7 +183,8 @@
 (define (buffer-name-at-line)
   (buffer-name (buffer-at-line (current-buffer))))
 
-(define (switch-to)
+(define-interactive (ibuffer-visit-buffer)
+  "Visits this buffer on the current line"
   (switch-to-buffer (buffer-at-line (current-buffer))))
 
 (define-interactive (ibuffer-mark-for-delete)
@@ -188,7 +192,7 @@
   (unless (entry-at-line)
     (error "Cant find entry at line"))
   (mark-entry (entry-at-line) 'D)
-  (update (line-number-at-pos)))
+  (ibuffer-update (line-number-at-pos)))
 
 (define-interactive (ibuffer #:optional (index 0))
   "Begin using Ibuffer to edit a list of buffers"
@@ -211,23 +215,23 @@
       (for-each (lambda (item)
                   (apply-marks (cdr item)))
                 marked)
-      (update (line-number-at-pos)))))
+      (ibuffer-update (line-number-at-pos)))))
 
 (define-interactive (ibuffer-unmark-forward)
   "Umarks the current buffer and moves forward."
   (unmark (entry-at-line))
-  (update (line-number-at-pos)))
+  (ibuffer-update (line-number-at-pos)))
 
 ;; Ibuffer map
-(define-key ibuffer-map "RET" switch-to)
-(define-key ibuffer-map "g" (lambda _ (update (line-number-at-pos))))
+(define-key ibuffer-map "RET" ibuffer-visit-buffer)
+(define-key ibuffer-map (kbd "g") ibuffer-update)
 (for-each (lambda (key)
             (define-key ibuffer-map key ibuffer-forward-line))
           '("C-n" "n"))
 (for-each (lambda (key)
             (define-key ibuffer-map key ibuffer-backward-line))
           '("C-p" "p"))
-(define-key ibuffer-map "ESC" kill-buffer)
+(define-key ibuffer-map (kbd "ESC") kill-buffer)
 (define-key ibuffer-map "d" ibuffer-mark-for-delete)
 (define-key ibuffer-map "x" ibuffer-do-kill-on-deletion-marks)
 (define-key ibuffer-map "u" ibuffer-unmark-forward)

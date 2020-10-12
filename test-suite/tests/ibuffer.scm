@@ -43,6 +43,7 @@
 (define marked? (@@ (nomad ibuffer) marked?))
 
 (define-method (test-ibuffer-entry (self <test-ibuffer>))
+  (set! emacsy-log? #f)
   (emacsy-initialize #t)
   (set! current-window (make <window> #:window-buffer (current-buffer)))
   (let* ((entry (make <ibuffer-entry> #:key (+ (length (buffer-list)) 3)

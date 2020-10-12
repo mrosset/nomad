@@ -17,32 +17,32 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad help-mode)
-  #:use-module (ice-9 readline)
   #:use-module (emacsy emacsy)
-  #:use-module (oop goops)
+  #:use-module (ice-9 readline)
   #:use-module (nomad doc)
-  #:use-module (nomad util)
-  #:use-module (nomad web)
   #:use-module (nomad html)
+  #:use-module (nomad util)
   #:use-module (nomad views)
+  #:use-module (nomad web)
+  #:use-module (oop goops describe)
+  #:use-module (oop goops)
   #:export (<help-buffer>
             %help-mode-map
             help-mode))
 
-(define help-mode (make <mode> #:mode-name "Help"))
-
 (define %help-mode-map (make-keymap))
 
+(define help-mode (make <mode>
+                    #:mode-name "Help"
+                    #:mode-map %help-mode-map))
+
 (define-class <help-buffer> (<web-buffer>)
-  (keymap #:accessor local-keymap
-          #:init-keyword #:keymap
-          #:init-value %help-mode-map)
   (name   #:init-value "*Help*")
   (uri    #:accessor     buffer-uri
           #:init-keyword #:uri
-          #:init-value  "nomad:unknown")
+          #:init-value  "nomad:help")
   (modes  #:accessor buffer-modes
-          #:init-value (list help-mode web-mode))
+          #:init-form (list help-mode (web-mode)))
   (view   #:accessor !view
           #:init-keyword #:view
           #:init-form (404-view "Help not found.")))
@@ -63,6 +63,23 @@
       (p ,ref)
       (p ,(doc->shtml symbol)))))
 
+(define (modes->string-names modes)
+  "Converts a list of @var{modes} to a string of mode names"
+  (string-join (map (lambda (mode)
+                      (string-append (mode-name mode) " ")) modes)
+               " "))
+
+(define-view (describe-mode-view buffer)
+  "Returns a HTML string describing @var{mode}"
+  (let* ((modes (buffer-modes buffer))
+         (class (class-name (class-of buffer))))
+    `((h3 "This is a ",class)
+      (p "Enabled modes ",(modes->string-names modes))
+      ,(map (lambda (mode)
+                       `((h5 "Key bindings for " ,(mode-name mode) " mode")
+                         ,(keymap->table (mode-map mode))))
+                     modes))))
+
 (define-interactive (nomad-help)
   (make-buffer <help-buffer>))
 
@@ -73,7 +90,14 @@
                #:uri "nomad:describe"
                #:view (describe-view "Describe Function" function)))
 
+(define-interactive (describe-mode #:optional (buffer (current-buffer)))
+  "Display the documentation for the current mode."
+  (make-buffer <help-buffer>
+               #:uri "nomad:describe-mode"
+               #:view (describe-mode-view "Describe Mode" buffer)))
+
 ;; Global key bindings.
 (define-key global-map (kbd "C-h f") 'describe-function)
+(define-key global-map (kbd "C-h m") 'describe-mode)
 
 (define-key %help-mode-map (kbd "q") 'kill-buffer)

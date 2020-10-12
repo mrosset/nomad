@@ -32,6 +32,7 @@
   #:use-module (system vm vm)
   #:export (restful-view
             define-view
+            keymap->table
             %nomad-restful-views))
 
 (define (a key body)
@@ -86,37 +87,38 @@ target-new:tab;
            (title "*Help*"))
           (body ,thunk)))))))
 
-(define entries (@@ (emacsy keymap) entries))
-
 (define (command->proc-name command)
   (let* ((name       (command-name command))
          (trampoline (if (symbol? name)
                          (symbol->string (command-name command))
-                         "failed-trampoline"))
-         (proc       (string-drop-right trampoline 11)))
-      proc))
+                         "anonymous"))
+         (proc       (if (string-suffix? "-trampoline" trampoline)
+                         (string-drop-right trampoline 11)
+                         trampoline)))
+    proc))
 
 (define (key< x y)
   (string< (car x) (car y)))
 
-(define (entries->row entry)
-  (let* ((key     (car entry))
-         (command (if (command? (cdr entry))
-                      (command->proc-name (cdr entry))
-                      (class-name (class-of (cdr entry)))))
-         (desc    (catch 'misc-error
+(define (entries->row pair)
+  (let* ((key     (car pair))
+         (proc    (cdr pair))
+         (command (if (command? proc)
+                      (command->proc-name proc)
+                      (class-name (class-of proc))))
+         (doc    (catch 'misc-error
                     (lambda _
-                      (if (command? (cdr entry))
-                          (doc->shtml (string->symbol (command->proc-name (cdr entry))))
-                          (class-name (class-of (cdr entry)))))
+                      (if (command? proc)
+                          (doc->shtml (string->symbol (command->proc-name proc)))
+                          (class-name (class-of proc))))
                     (lambda _
                       "Unresolved command."))))
     `(tr (td (@ (style "text-align:center;")) ,key)
          (td ,command)
-         (td ,desc))))
+         (td ,doc))))
 
 (define (keymap->table keymap)
-  `(table (@ (align "center") (width "75%")) (th "Key") (th "Command") (th "Description")
+  `(table (@ (align "center") (width "85%")) (th "Key") (th "Command") (th "Description")
           ,(map entries->row
                 (sort-list (hash-map->list cons (entries keymap)) key<))))
 
@@ -130,11 +132,7 @@ target-new:tab;
       (h4 "Web Mode Keymap")
       ,(keymap->table (@ (nomad web) %web-mode-map))
       (h4 "Global Keymap")
-      ,(keymap->table global-map)
-      ;; (h4 "Minibuffer Keymap")
-      ;; ,(keymap->table minibuffer-local-map)
-      (h4 "Help Mode Keymap")
-      ,(keymap->table (@ (nomad help-mode) %help-mode-map)))))
+      ,(keymap->table global-map))))
 
 (define-view (404-view)
   "Returns HTML string with 404 error."

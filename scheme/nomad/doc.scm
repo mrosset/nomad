@@ -27,6 +27,7 @@
   #:use-module (emacsy self-doc)
   #:export (doc-names
             doc-object
+            find-doc
             doc-get
             doc->shtml))
 
@@ -48,9 +49,14 @@
   "Get the documentation for an object, looking in MODULE, for NAME."
   (object-documentation (doc-object module name)))
 
+(define (find-doc sym)
+  "Finds the doc-string in known nomad modules"
+  (or (false-if-exception (doc-get '(nomad nomad) sym))
+      (false-if-exception (doc-get '(emacsy emacsy) sym))
+      (false-if-exception (doc-get '(guile-user) sym))))
+
 (define (doc->stexi sym)
-  (let ((doc (doc-get '(nomad nomad) sym)))
-    (texi-fragment->stexi doc)))
+  (texi-fragment->stexi (find-doc sym)))
 
 (define (doc->shtml sym)
   (stexi->shtml (doc->stexi sym)))
