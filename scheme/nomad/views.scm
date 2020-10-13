@@ -48,8 +48,8 @@ border: 1px solid black;
 border-collapse: collapse;
 }
 
-td {
-width: 33.3%;
+th, td {
+  padding: 6px;
 }
 
 a {
@@ -122,11 +122,11 @@ target-new:tab;
             (map (lambda (i)
                    (entries->row i key))
                  (sort-list (hash-map->list cons (entries proc)) key<))
-            `(tr (td (@ (style "text-align:center;")) ,(if prefix
+            `(tr (td (@ (style "width: 25%; text-align:center;")) ,(if prefix
                                                            (string-append prefix " ")
                                                            "") ,key)
-                 (td ,command)
-                 (td ,doc)))))
+                 (td (@ (style "width: 25%;")) ,command)
+                 (td (@ (style "width: 50%;")) ,doc)))))
     (lambda _
       `())))
 
