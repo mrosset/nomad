@@ -101,21 +101,28 @@ target-new:tab;
   (string< (car x) (car y)))
 
 (define (entries->row pair)
-  (let* ((key     (car pair))
-         (proc    (cdr pair))
-         (command (if (command? proc)
-                      (command->proc-name proc)
-                      (class-name (class-of proc))))
-         (doc    (catch 'misc-error
-                    (lambda _
-                      (if (command? proc)
-                          (doc->shtml (string->symbol (command->proc-name proc)))
+  (catch 'self-insert
+    (lambda _
+      (let* ((key     (car pair))
+             (proc    (cdr pair))
+             (command (if (command? proc)
+                          (let ((name (command->proc-name proc)))
+                            (when (string= name "self-insert-command")
+                              (throw 'self-insert))
+                            name)
                           (class-name (class-of proc))))
-                    (lambda _
-                      "Unresolved command."))))
-    `(tr (td (@ (style "text-align:center;")) ,key)
-         (td ,command)
-         (td ,doc))))
+             (doc    (catch 'misc-error
+                       (lambda _
+                         (if (command? proc)
+                             (doc->shtml (string->symbol (command->proc-name proc)))
+                             (class-name (class-of proc))))
+                       (lambda _
+                         "Unresolved command."))))
+        `(tr (td (@ (style "text-align:center;")) ,key)
+             (td ,command)
+             (td ,doc))))
+    (lambda _
+      `())))
 
 (define (keymap->table keymap)
   `(table (@ (align "center") (width "85%")) (th "Key") (th "Command") (th "Description")
