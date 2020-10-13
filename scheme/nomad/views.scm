@@ -100,7 +100,7 @@ target-new:tab;
 (define (key< x y)
   (string< (car x) (car y)))
 
-(define (entries->row pair)
+(define* (entries->row pair #:optional (prefix #f))
   (catch 'self-insert
     (lambda _
       (let* ((key     (car pair))
@@ -118,9 +118,15 @@ target-new:tab;
                              (class-name (class-of proc))))
                        (lambda _
                          "Unresolved command."))))
-        `(tr (td (@ (style "text-align:center;")) ,key)
-             (td ,command)
-             (td ,doc))))
+        (if (is-a? proc <keymap>)
+            (map (lambda (i)
+                   (entries->row i key))
+                 (sort-list (hash-map->list cons (entries proc)) key<))
+            `(tr (td (@ (style "text-align:center;")) ,(if prefix
+                                                           (string-append prefix " ")
+                                                           "") ,key)
+                 (td ,command)
+                 (td ,doc)))))
     (lambda _
       `())))
 
