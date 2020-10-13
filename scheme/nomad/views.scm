@@ -140,7 +140,7 @@ target-new:tab;
   (begin
     (rename-buffer (current-buffer) "Welcome")
     `((h3 (@ (align "center")) "Welcome to "  ,(a 'nomad "Nomad"))
-      (p "Nomad is a " ,(a 'emacs "Emacs-like") " web browser (and more) that consists of a modular feature-set, fully programmable in "
+      (p "Nomad is a " ,(a 'emacs "Emacs") " like web browser (and more) that consists of a modular feature-set, fully programmable in "
          ,(a 'guile "Guile Scheme") ".")
       (h4 "Web Mode Keymap")
       ,(keymap->table (@ (nomad web) %web-mode-map))
