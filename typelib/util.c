@@ -246,6 +246,10 @@ nomad_app_add_options (GtkApplication *app)
 void
 nomad_register_uri_scheme (WebKitWebContext *context, const gchar *scheme)
 {
+  WebKitSecurityManager *sm
+      = webkit_web_context_get_security_manager (context);
+
+  webkit_security_manager_uri_scheme_is_local (sm, scheme);
   webkit_web_context_register_uri_scheme (context, scheme, uri_request_cb,
                                           NULL, NULL);
 }

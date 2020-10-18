@@ -17,19 +17,22 @@
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (nomad views)
+  #:use-module (emacsy emacsy)
   #:use-module (ice-9 match)
   #:use-module (nomad application)
-  #:use-module (emacsy emacsy)
-  #:use-module (nomad doc)
   #:use-module (nomad buffer)
-  #:use-module (nomad util)
-  #:use-module (nomad uri)
+  #:use-module (nomad doc)
   #:use-module (nomad html)
-  #:use-module (oop goops)
+  #:use-module (nomad uri)
+  #:use-module (nomad util)
+  #:use-module (nomad web)
+  #:use-module (nomad web-mode)
   #:use-module (oop goops describe)
+  #:use-module (oop goops)
   #:use-module (srfi srfi-19)
   #:use-module (system vm coverage)
   #:use-module (system vm vm)
+  #:use-module (web uri)
   #:export (restful-view
             define-view
             keymap->table
@@ -113,9 +116,8 @@ target-new:tab;
                           (class-name (class-of proc))))
              (doc    (catch 'misc-error
                        (lambda _
-                         (if (command? proc)
-                             (doc->shtml (string->symbol (command->proc-name proc)))
-                             (class-name (class-of proc))))
+                         (when (command? proc)
+                           (find-doc (string->symbol command))))
                        (lambda _
                          "Unresolved command."))))
         (if (is-a? proc <keymap>)
@@ -126,7 +128,7 @@ target-new:tab;
                                                            (string-append prefix " ")
                                                            "") ,key)
                  (td (@ (style "width: 25%;")) ,command)
-                 (td (@ (style "width: 50%;")) ,doc)))))
+                 (td (@ (style "width: 50%;")) ,(or (and doc (doc->shtml doc)) ""))))))
     (lambda _
       `())))
 
@@ -149,12 +151,20 @@ target-new:tab;
 
 (define-view (404-view)
   "Returns HTML string with 404 error."
-  '(h1 "404 view not found "))
+  ;; FIXME: Don't use a new <web-buffer>. This is just a hack till we have
+  ;; proper regex restful URI handling.
+  (let* ((uri  (string->uri (current-url)))
+         (prev (current-buffer))
+         (path (uri-path uri)))
+    (if (file-exists? path)
+        (begin (with-buffer prev
+                 (kill-buffer))
+               (make-buffer <web-buffer>
+                            #:uri (string-append "file://" path)))
+        '(h1 "404 view not found "))))
 
 (define-view (info-view)
   "TODO:"
   `((h2 (@ (align "center")) "Info")))
 
 (define %nomad-restful-views `(("" . ("Welcome" . ,root-view))))
-
-;; ((@ (nomad web-mode) reload))

@@ -188,8 +188,8 @@
 
 (define-interactive (edit-menu-uri)
   "Loads or queries the default search provider using the current
-@var{<web-buffer>}. If menu-bar-mode is active it uses the main minibuffer
-instead of the URI minibuffer."
+@var{<web-buffer>}. If menu-bar-mode is active it uses the URI minibuffer
+instead of the minibuffer."
   (if (get-visible (current-menu))
       (let ((old-mini minibuffer)
             (buffer   (!buffer (!entry (current-menu)))))

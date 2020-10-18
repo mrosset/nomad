@@ -19,16 +19,21 @@
 (define-module (nomad help-mode)
   #:use-module (emacsy emacsy)
   #:use-module (ice-9 readline)
+  #:use-module (ice-9 session)
   #:use-module (nomad doc)
   #:use-module (nomad html)
   #:use-module (nomad util)
   #:use-module (nomad views)
   #:use-module (nomad web)
-  #:use-module (oop goops describe)
   #:use-module (oop goops)
+  #:use-module (texinfo html)
+  #:use-module (texinfo reflection)
   #:export (<help-buffer>
+            !view
             %help-mode-map
             help-mode))
+
+(define help-doc (@@ (ice-9 session) help-doc))
 
 (define %help-mode-map (make-keymap))
 
@@ -52,16 +57,20 @@
   (when (!view buffer)
     (load-html buffer (!view buffer) (buffer-uri buffer))))
 
-(define-view (describe-view symbol)
+(define-view (describe-object-view symbol)
   "returns a HTML string describing @var{symbol}"
-  (let* ((str   (symbol->string symbol))
-         (ref   (eval symbol (current-module)))
-         (class (if (memq symbol (commands global-cmdset))
-                    "interactive command"
-                    (class-name (class-of ref)))))
-    `((p ,(format #f "~a is a ~a in FIXME: location" str class))
-      (p ,ref)
-      (p ,(doc->shtml symbol)))))
+  (let* ((doc (with-output-to-string
+                (lambda _
+                  (help-doc symbol (format #f "^~A$" symbol))))))
+    `(p (@ (style "white-space: pre;")) ,doc))
+  ;; (let ((doc (find-doc symbol)))
+  ;;   `((p ,(format #f "`~a' is a ~a in the ~a module."
+  ;;                 (!name doc)
+  ;;                 (!type doc)
+  ;;                 (module->string doc)))
+  ;;     (p (a (@ (target "_blank") (href ,(module-uri doc))) ,(module->string doc)))
+  ;;     (p (@ (style "white-space: pre;")) ,(doc->plain-text doc))))
+)
 
 (define (modes->string-names modes)
   "Converts a list of @var{modes} to a string of mode names"
@@ -80,15 +89,21 @@
                          ,(keymap->table (mode-map mode))))
                      modes))))
 
-(define-interactive (nomad-help)
-  (make-buffer <help-buffer>))
+(define-view (describe-module-view)
+  "Returns a HTML string describing @var{module}"
+  `(,(stexi->shtml (module-stexi-documentation '(nomad web)))))
+
+(define-interactive (describe-module)
+  (make-buffer <help-buffer>
+               #:uri "nomad:module"
+               #:view (describe-module-view "Describe Module")))
 
 (define-interactive (describe-function
                      #:optional (function (string->symbol (completing-read "Describe Function: " apropos-completion-function))))
   "Display the documentation of @var{function} a symbol."
   (make-buffer <help-buffer>
                #:uri "nomad:describe"
-               #:view (describe-view "Describe Function" function)))
+               #:view (describe-object-view "Describe Function" function)))
 
 (define-interactive (describe-mode #:optional (buffer (current-buffer)))
   "Display the documentation for the current mode."

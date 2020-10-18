@@ -5,6 +5,7 @@ TESTS += tests/uri.scm
 TESTS += tests/text.scm
 TESTS += tests/ibuffer.scm
 TESTS += tests/views.scm
+TESTS += tests/doc.scm
 
 TEST_EXTENSIONS = .scm
 
