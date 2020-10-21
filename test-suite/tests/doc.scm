@@ -42,7 +42,7 @@
     (assert-equal (string-append scheme-path // "nomad/web.scm") (filename web))
     (assert-equal (string-append "nomad://file" scheme-path // "nomad/web.scm")
                   (module-uri web))
-    (assert-equal "nomad://unknown" (module-uri doc))))
+    (assert-equal "nomad:not-found" (module-uri doc))))
 
 (define-method (test-doc-loc (self <test-doc>))
   (let ((get-line (lambda (sym)
