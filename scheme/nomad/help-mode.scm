@@ -59,18 +59,20 @@
 
 (define-view (describe-object-view symbol)
   "returns a HTML string describing @var{symbol}"
-  (let* ((doc (with-output-to-string
-                (lambda _
-                  (help-doc symbol (format #f "^~A$" symbol))))))
-    `(p (@ (style "white-space: pre;")) ,doc))
-  ;; (let ((doc (find-doc symbol)))
-  ;;   `((p ,(format #f "`~a' is a ~a in the ~a module."
-  ;;                 (!name doc)
-  ;;                 (!type doc)
-  ;;                 (module->string doc)))
-  ;;     (p (a (@ (target "_blank") (href ,(module-uri doc))) ,(module->string doc)))
-  ;;     (p (@ (style "white-space: pre;")) ,(doc->plain-text doc))))
-)
+  ;; (let* ((doc (with-output-to-string
+  ;;               (lambda _
+  ;;                 (help-doc symbol (format #f "^~A$" symbol))))))
+  ;;   `(p (@ (style "white-space: pre;")) ,doc))
+  (let ((doc (find-doc symbol)))
+    `((p ,(format #f "`~a' is a ~a in the "
+                  (!name doc)
+                  (!type doc))
+         (a (@ (target "_blank") (href ,(module-uri doc))) ,(module->string doc)) " module.")
+      (div "It's value is."
+           (p (@ (style "white-space: pre;")) ,(pretty-string (!object doc))))
+      ;; (p (a (@ (target "_blank") (href ,(module-uri doc))) ,(module->string doc)))
+      (p (@ (style "white-space: pre;")) ,(doc->shtml doc))))
+  )
 
 (define (modes->string-names modes)
   "Converts a list of @var{modes} to a string of mode names"

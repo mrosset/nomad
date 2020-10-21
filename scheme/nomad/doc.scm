@@ -101,7 +101,7 @@ then the !docstring method"
     (lambda _
       (string-append "nomad://file" (filename doc)))
     (lambda _
-      "nomad://unknown")))
+      "nomad:not-found")))
 
 (define (nomad-load-path)
   (dirname (dirname (current-filename))))

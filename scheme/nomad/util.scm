@@ -35,9 +35,9 @@
 
 (define (nomad-get-version) ((@ (g-golf) nomad-get-version)))
 
-(define (pretty-string sym)
+(define (pretty-string obj)
   (with-output-to-string (lambda _
-                           (pretty-print sym))))
+                           (pretty-print obj))))
 
 (codefine* (co-message fmt . args)
           (apply message fmt args))

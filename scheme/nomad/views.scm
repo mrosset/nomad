@@ -152,7 +152,7 @@ target-new:tab;
 (define-view (404-view)
   "Returns HTML string with 404 error."
   ;; FIXME: Don't use a new <web-buffer>. This is just a hack till we have
-  ;; proper regex restful URI handling.
+  ;; proper regex URI handling.
   (let* ((uri  (string->uri (current-url)))
          (prev (current-buffer))
          (path (uri-path uri)))
@@ -161,7 +161,8 @@ target-new:tab;
                  (kill-buffer))
                (make-buffer <web-buffer>
                             #:uri (string-append "file://" path)))
-        '(h1 "404 view not found "))))
+        (begin (rename-buffer (current-buffer) "404")
+               '(h1 "404 view not found ")))))
 
 (define-view (info-view)
   "TODO:"
