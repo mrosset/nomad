@@ -40,7 +40,7 @@
     (assert-equal "eval" (!name doc))
     (assert-equal 409 (string-length (!docstring doc)))
     (assert-equal (string-append scheme-path // "nomad/web.scm") (filename web))
-    (assert-equal (string-append "nomad://file" scheme-path // "nomad/web.scm")
+    (assert-equal (string-append "nomad:/file" scheme-path // "nomad/web.scm")
                   (module-uri web))
     (assert-equal "nomad:not-found" (module-uri doc))))
 

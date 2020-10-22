@@ -21,6 +21,7 @@
   #:use-module (emacsy emacsy)
   #:use-module (nomad views)
   #:use-module (nomad ibuffer)
+  #:use-module (ice-9 regex)
   #:use-module (unit-test))
 
 (define-class <test-views> (<test-case>))
@@ -36,3 +37,9 @@
 (define-method (test-views-procs (self <test-views>))
   (assert-equal "test-command" (command->proc-name (lookup-key test-map "C-g")))
   (assert-equal "keyboard-quit" (command->proc-name (lookup-key global-map "C-g"))))
+
+(define-method (test-views-ref (self <test-views>))
+  (let ((routes '(("^$" . #t)
+                  ("^file" . #t))))
+    (assert-true (match-route "" routess))
+    (assert-true (match-route "file/path" routes))))

@@ -18,7 +18,7 @@
 
 (define-module (nomad views)
   #:use-module (emacsy emacsy)
-  #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (nomad application)
   #:use-module (nomad buffer)
   #:use-module (nomad doc)
@@ -29,14 +29,16 @@
   #:use-module (nomad web-mode)
   #:use-module (oop goops describe)
   #:use-module (oop goops)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (system vm coverage)
   #:use-module (system vm vm)
   #:use-module (web uri)
-  #:export (restful-view
+  #:export (route-view
+            match-route
             define-view
             keymap->table
-            %nomad-restful-views))
+            %routes))
 
 (define (a key body)
   `(a (@ (target "_blank") (href ,(assoc-ref %links key))) ,body))
@@ -61,34 +63,39 @@ target-new:tab;
 }
 ")
 
-(define (restful-ref views path)
-  "Returns a sxml @var{path} from a alist @var{views}"
-  (let ((view (assoc-ref views path)))
-    (if view
-        view
-        `("Error: View not found" . , 404-view ))))
+(define (match-route path views)
+  "Returns a shtml view for @var{path} from a alist @var{views}"
+  (let ((match (find
+                (lambda (route)
+                  (let* ((rx (make-regexp (car route)))
+                         (m  (regexp-exec rx path)))
+                    m))
+                views)))
+    (if match
+         (cdr match)
+         #f)))
 
-(define (restful-view path)
-  (let* ((view (restful-ref %nomad-restful-views path))
-         (title (car view))
-         (thunk (cdr view)))
+(define (route-view path)
+  (let* ((view (match-route path %routes)))
     (catch #t
       (lambda _
-        (thunk title))
+        (if view
+            (view)
+            (404-view)))
       (lambda (key . vals)
         (co-message "Error: key: ~a Value: ~a" key vals)))))
 
 (define-syntax define-view
   (syntax-rules ()
-    ((_ (proc . args) doc thunk)
-     (define-public (proc title . args)
+    ((_ (proc view-title . args) doc view-body)
+     (define-public (proc . args)
        doc
        (sxml->html-string
         `(html
           (head
            (style ,style-sheet)
-           (title "*Help*"))
-          (body ,thunk)))))))
+           (title view-title))
+          (body ,view-body)))))))
 
 (define (command->proc-name command)
   (let* ((name       (command-name command))
@@ -137,7 +144,7 @@ target-new:tab;
           ,(map entries->row
                 (sort-list (hash-map->list cons (entries keymap)) key<))))
 
-(define-view (root-view)
+(define-view (root-view "Welcome")
   "Returns the root @url{nomad:} scheme URI view."
   (begin
     (rename-buffer (current-buffer) "Welcome")
@@ -149,23 +156,26 @@ target-new:tab;
       (h4 "Global Keymap")
       ,(keymap->table global-map))))
 
-(define-view (404-view)
-  "Returns HTML string with 404 error."
-  ;; FIXME: Don't use a new <web-buffer>. This is just a hack till we have
-  ;; proper regex URI handling.
-  (let* ((uri  (string->uri (current-url)))
-         (prev (current-buffer))
-         (path (uri-path uri)))
+(define-view (file-view "File View")
+  "Returns a view containing contents of a file."
+  (let ((path (string-drop
+               (uri-path (string->uri (current-url))) 5)))
     (if (file-exists? path)
-        (begin (with-buffer prev
-                 (kill-buffer))
-               (make-buffer <web-buffer>
-                            #:uri (string-append "file://" path)))
-        (begin (rename-buffer (current-buffer) "404")
-               '(h1 "404 view not found ")))))
+        (begin
+          ;; FIXME: This is should use find-file. But we don't have a complete
+          ;; <text-buffer> implementation to use that yet.
+          (with-buffer (current-buffer)
+            (kill-buffer))
+          (make-buffer <web-buffer>
+                       #:uri (string-append "file://" path)))
+        `((h1 "File not found")
+          (p ,path)))))
 
-(define-view (info-view)
-  "TODO:"
-  `((h2 (@ (align "center")) "Info")))
+(define-view (404-view "Error 404 (Not Found)")
+  "Returns HTML string with 404 error."
+  (begin
+    (rename-buffer (current-buffer) "404")
+    '(h1 "404 view not found ")))
 
-(define %nomad-restful-views `(("" . ("Welcome" . ,root-view))))
+(define %routes `(("^$" . ,root-view)
+                  ("^/file" . ,file-view)))

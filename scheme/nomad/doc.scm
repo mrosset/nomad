@@ -99,7 +99,7 @@ then the !docstring method"
 (define-method (module-uri (doc <doc>))
   (catch 'unknown-module-file
     (lambda _
-      (string-append "nomad://file" (filename doc)))
+      (string-append "nomad:/file" (filename doc)))
     (lambda _
       "nomad:not-found")))
 

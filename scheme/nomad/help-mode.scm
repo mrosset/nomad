@@ -57,7 +57,7 @@
   (when (!view buffer)
     (load-html buffer (!view buffer) (buffer-uri buffer))))
 
-(define-view (describe-object-view symbol)
+(define-view (describe-object-view "Describe Object" symbol)
   "returns a HTML string describing @var{symbol}"
   ;; (let* ((doc (with-output-to-string
   ;;               (lambda _
@@ -71,8 +71,7 @@
       (div "It's value is."
            (p (@ (style "white-space: pre;")) ,(pretty-string (!object doc))))
       ;; (p (a (@ (target "_blank") (href ,(module-uri doc))) ,(module->string doc)))
-      (p (@ (style "white-space: pre;")) ,(doc->shtml doc))))
-  )
+      (p (@ (style "white-space: pre;")) ,(doc->shtml doc)))))
 
 (define (modes->string-names modes)
   "Converts a list of @var{modes} to a string of mode names"
@@ -80,7 +79,7 @@
                       (string-append (mode-name mode) " ")) modes)
                " "))
 
-(define-view (describe-mode-view buffer)
+(define-view (describe-mode-view "Describe Mode" buffer)
   "Returns a HTML string describing @var{mode}"
   (let* ((modes (buffer-modes buffer))
          (class (class-name (class-of buffer))))
@@ -91,27 +90,27 @@
                          ,(keymap->table (mode-map mode))))
                      modes))))
 
-(define-view (describe-module-view)
+(define-view (describe-module-view "Describe Module")
   "Returns a HTML string describing @var{module}"
   `(,(stexi->shtml (module-stexi-documentation '(nomad web)))))
 
 (define-interactive (describe-module)
   (make-buffer <help-buffer>
                #:uri "nomad:module"
-               #:view (describe-module-view "Describe Module")))
+               #:view (describe-module-view)))
 
 (define-interactive (describe-function
                      #:optional (function (string->symbol (completing-read "Describe Function: " apropos-completion-function))))
   "Display the documentation of @var{function} a symbol."
   (make-buffer <help-buffer>
                #:uri "nomad:describe"
-               #:view (describe-object-view "Describe Function" function)))
+               #:view (describe-object-view function)))
 
 (define-interactive (describe-mode #:optional (buffer (current-buffer)))
   "Display the documentation for the current mode."
   (make-buffer <help-buffer>
                #:uri "nomad:describe-mode"
-               #:view (describe-mode-view "Describe Mode" buffer)))
+               #:view (describe-mode-view buffer)))
 
 ;; Global key bindings.
 (define-key global-map (kbd "C-h f") 'describe-function)

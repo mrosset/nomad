@@ -21,8 +21,11 @@
   #:use-module (nomad uri)
   #:use-module (unit-test))
 
-(define-class <test-init> (<test-case>))
+(define-class <test-uri> (<test-case>))
 
-(define-method (test-public (self <test-init>))
+(define-method (test-public (self <test-uri>))
   (assert-true (valid-uri? "http://gnu.org"))
   (assert-false (valid-uri? "gnu.org")))
+
+(define-method (test-restful (self <test-uri>))
+  (assert-false #f))
