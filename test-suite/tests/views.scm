@@ -41,5 +41,5 @@
 (define-method (test-views-ref (self <test-views>))
   (let ((routes '(("^$" . #t)
                   ("^file" . #t))))
-    (assert-true (match-route "" routess))
+    (assert-true (match-route "" routes))
     (assert-true (match-route "file/path" routes))))
