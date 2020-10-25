@@ -32,6 +32,17 @@
 
 (set-current-module (resolve-module '(nomad web)))
 
+(define (inspect-link-hook event)
+  (when (is-a? (current-buffer) <web-buffer>)
+    (set! %inspect-link? #t)
+    (g-timeout-add 500
+                   (lambda _
+                     (set! %inspect-link? #f)
+                     #f))))
+
+;; If a key is being pressed then we enable inspection of hovered links.
+(add-hook! read-event-hook inspect-link-hook)
+
 (define-class <gtk-web-buffer> (<web-buffer>))
 
 (use-modules (nomad gtk widget)

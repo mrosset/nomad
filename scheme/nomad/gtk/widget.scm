@@ -239,7 +239,8 @@
     (lambda _
       (cond
        ((context-is-link hit)
-        (unless emacsy-display-minibuffer?
+        (when (and (not emacsy-display-minibuffer?)
+                   %inspect-link?)
           (co-message "~a"(get-link-uri hit))))
        (else
         (co-message ""))))

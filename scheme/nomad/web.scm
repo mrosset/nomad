@@ -26,6 +26,7 @@
   #:use-module (oop goops)
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (web-mode
+            %inspect-link?
             %search-provider-format
             %default-home-page
             %search-providers
@@ -44,6 +45,8 @@
             proxy-uri
             proxy-ignore-hosts
             current-search))
+
+(define %inspect-link? #f)
 
 (define %search-provider-format "https://duckduckgo.com/?q=~a")
 
