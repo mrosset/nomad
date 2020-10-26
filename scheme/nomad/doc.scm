@@ -69,7 +69,7 @@
 (define-method (doc->stexi (doc <doc>))
   "Returns the @var<doc> docstring as a stexi expression."
   (texi-fragment->stexi (or (!docstring doc)
-                            "No Documentation string.")))
+                            "No documentation string.")))
 
 (define-method (doc->stexi (doc <doc>) (full <boolean>))
   "Returns the @var<doc> docstring as a stexi expression. If @var{full} is #t

@@ -25,6 +25,7 @@
   #:use-module (nomad util)
   #:use-module (nomad views)
   #:use-module (nomad web)
+  #:use-module (nomad uri)
   #:use-module (oop goops)
   #:use-module (texinfo html)
   #:use-module (texinfo reflection)
@@ -32,8 +33,6 @@
             !view
             %help-mode-map
             help-mode))
-
-(define help-doc (@@ (ice-9 session) help-doc))
 
 (define %help-mode-map (make-keymap))
 
@@ -50,28 +49,29 @@
           #:init-form (list help-mode (web-mode)))
   (view   #:accessor !view
           #:init-keyword #:view
-          #:init-form (404-view "Help not found.")))
+          #:init-form (404-view)))
 
 (define-method (initialize (buffer <help-buffer>) args)
   (next-method)
-  (when (!view buffer)
-    (load-html buffer (!view buffer) (buffer-uri buffer))))
+  (if (!view buffer)
+      (load-html buffer (!view buffer) (buffer-uri buffer))
+      (buffer-load-uri buffer (buffer-uri buffer))))
 
-(define-view (describe-object-view "Describe Object" symbol)
+(define-view (describe-object-view "Describe Object" #:optional (symbol #f))
   "returns a HTML string describing @var{symbol}"
-  ;; (let* ((doc (with-output-to-string
-  ;;               (lambda _
-  ;;                 (help-doc symbol (format #f "^~A$" symbol))))))
-  ;;   `(p (@ (style "white-space: pre;")) ,doc))
-  (let ((doc (find-doc symbol)))
-    `((p ,(format #f "`~a' is a ~a in the "
-                  (!name doc)
-                  (!type doc))
-         (a (@ (target "_blank") (href ,(module-uri doc))) ,(module->string doc)) " module.")
-      (div "It's value is."
-           (p (@ (style "white-space: pre;")) ,(pretty-string (!object doc))))
-      ;; (p (a (@ (target "_blank") (href ,(module-uri doc))) ,(module->string doc)))
-      (p (@ (style "white-space: pre;")) ,(doc->shtml doc)))))
+  (let* ((arg (or symbol
+                  (uri-arg (%request-uri))))
+         (doc (find-doc arg)))
+    (if doc
+        `((p ,(format #f "`~a' is a ~a in the "
+                      (!name doc)
+                      (!type doc))
+             (a (@ (target "_blank") (href ,(module-uri doc))) ,(module->string doc)) " module.")
+          (div "It's value is."
+               (p (@ (style "white-space: pre;")) ,(pretty-string (!object doc))))
+          ;; (p (a (@ (target "_blank") (href ,(module-uri doc))) ,(module->string doc)))
+          (p (@ (style "white-space: pre;")) ,(doc->shtml doc)))
+        `(p "Could not find documentation for " ,arg))))
 
 (define (modes->string-names modes)
   "Converts a list of @var{modes} to a string of mode names"
@@ -79,7 +79,7 @@
                       (string-append (mode-name mode) " ")) modes)
                " "))
 
-(define-view (describe-mode-view "Describe Mode" buffer)
+(define-view (describe-mode-view "Describe Mode" #:optional (buffer (current-buffer)))
   "Returns a HTML string describing @var{mode}"
   (let* ((modes (buffer-modes buffer))
          (class (class-name (class-of buffer))))
@@ -100,16 +100,16 @@
                #:view (describe-module-view)))
 
 (define-interactive (describe-function
-                     #:optional (function (string->symbol (completing-read "Describe Function: " apropos-completion-function))))
+                     #:optional (arg (completing-read "Describe Function: " apropos-completion-function)))
   "Display the documentation of @var{function} a symbol."
   (make-buffer <help-buffer>
-               #:uri "nomad:describe"
-               #:view (describe-object-view function)))
+               #:uri (string-append "nomad:/describe/object/" arg)
+               #:view (describe-object-view (string->symbol arg))))
 
 (define-interactive (describe-mode #:optional (buffer (current-buffer)))
-  "Display the documentation for the current mode."
+  "Display the documentation for the current @var{current-buffer} mode."
   (make-buffer <help-buffer>
-               #:uri "nomad:describe-mode"
+               #:uri "nomad:/describe/mode/"
                #:view (describe-mode-view buffer)))
 
 ;; Global key bindings.
@@ -117,3 +117,6 @@
 (define-key global-map (kbd "C-h m") 'describe-mode)
 
 (define-key %help-mode-map (kbd "q") 'kill-buffer)
+
+(add-route! "^/describe/object/" describe-object-view)
+(add-route! "^/describe/mode/" describe-mode-view)

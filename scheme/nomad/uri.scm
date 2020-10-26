@@ -25,13 +25,18 @@
   #:use-module (oop goops)
   #:use-module (system foreign)
   #:duplicates (merge-generics replace warn-override-core warn last)
-  #:export (%links
+  #:export (!pointer
             !uri
-            <uri-handler>
-            <nomad-uri-handler>
+            %links
+            %request-uri
             %uri-schemes
+            <nomad-uri-handler>
+            <uri-handler>
             handle-uri
+            uri-arg
             valid-uri?))
+
+(define %request-uri (make-parameter #f))
 
 (define %links '((nomad        . "https://www.nongnu.org/nomad")
                  (nomad-git    . "https://git.savannah.nongnu.org/cgit/nomad.git")
@@ -44,13 +49,20 @@
                  (guile-manual . "https://www.gnu.org/software/guile/manual/html_node")
                  (guix-manual  . "https://guix.gnu.org/manual/devel/")))
 
+(define (uri-arg str)
+  "Returns the @var{str} argument as a string. Given a URI of
+'nomad:/describe/%load-path' it would return @var{%load-path}."
+  (let* ((uri   (string->uri str))
+         (path  (uri-path uri))
+         (parts (split-and-decode-uri-path path)))
+    (if (>= (length parts) 1)
+        (string->symbol (list-ref parts (1- (length parts))))
+        'none)))
+
 (define-class <uri-handler> ()
-  (pointer #:accessor    pointer
+  (pointer #:accessor     !pointer
            #:init-keyword #:pointer
-           #:init-value  #f)
-  (uri     #:accessor    !uri
-           #:init-keyword #:uri
-           #:init-value #f))
+           #:init-value   #f))
 
 (define-class <nomad-uri-handler> (<uri-handler>))
 
@@ -62,20 +74,25 @@
       #f
       #t))
 
-(define-method (handle-uri (handler <nomad-uri-handler>))
+(define-method (handle-uri (handler <nomad-uri-handler>)
+                           uri)
   (catch #t
     (lambda _
-      (let* ((path (uri-path (!uri handler)))
-             (html (route-view path)))
+      (let* ((html (route-view uri)))
         (unless (string? html)
           (error (format #f "HTML view is not a string. ~a" (class-of html))))
-        (load-view (pointer handler) html (!uri handler))))
+        (load-view (!pointer handler) html uri)))
     (lambda (key . vals)
       (format #t "Error: key: ~a Value: ~a" key vals))))
 
-(define-method (handle-uri (pointer <foreign>) (string-uri <string>))
-  (let* ((uri     (string->uri string-uri))
-         (scheme  (symbol->string (uri-scheme uri)))
-         (class   (assoc-ref %uri-schemes scheme))
-         (handler (make class #:pointer pointer #:uri uri)))
-    (handle-uri handler)))
+(define-method (handle-uri (pointer <foreign>)
+                           (string-uri <string>))
+  ;; FIXME: using a parameter could cause problems if multiple schemes were
+  ;; being used at the same time. Views should handle URI paths as an
+  ;; procedure argument?
+  (parameterize ((%request-uri string-uri))
+    (let* ((uri     (string->uri string-uri))
+           (scheme  (symbol->string (uri-scheme uri)))
+           (class   (assoc-ref %uri-schemes scheme))
+           (handler (make class #:pointer pointer)))
+      (handle-uri handler uri))))

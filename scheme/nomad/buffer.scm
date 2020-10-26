@@ -81,8 +81,8 @@
 
 (define-interactive (rename-buffer
                      #:optional
-                     (buffer (current-buffer))
-                     (input (read-from-minibuffer "Name: ")))
+                     (input (read-from-minibuffer "Name: "))
+                     (buffer (current-buffer)))
   "Renames the @var{buffer} to @var{input}."
   (set-buffer-name! input buffer))
 

@@ -1,4 +1,4 @@
-;; uri.scm
+;; help-mode.scm
 ;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,21 +16,16 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tests uri)
+(define-module (tests help-mode)
   #:use-module (oop goops)
-  #:use-module (nomad uri)
+  #:use-module (nomad help-mode)
+  #:use-module (nomad views)
   #:use-module (unit-test))
 
-(define-class <test-uri> (<test-case>))
+(define-class <test-help> (<test-case>))
 
-(define-method (test-public (self <test-uri>))
-  (assert-true (valid-uri? "http://gnu.org"))
-  (assert-false (valid-uri? "gnu.org")))
-
-(define-method (test-args (self <test-uri>))
-  (let ((uris '((load-uri . "nomad:///describe/object/load-uri")
-                (load-uri . "nomad:/describe/object/load-uri")
-                (none     . "nomad:"))))
-    (for-each (lambda (pair)
-                (assert-equal (car pair) (uri-arg (cdr pair))))
-              uris)))
+(define-method (test-routes (self <test-help>))
+  (assert-equal 4 (length %routes))
+  (let ((view (match-route "/describe/object/%load-path" %routes)))
+    (assert-true view)
+    (assert-equal 'describe-object-view (procedure-name view))))

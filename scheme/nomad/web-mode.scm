@@ -31,8 +31,9 @@
 
 (define (ensure-protocol url)
   "Returns a full protocol URI for domain URI.
-e.g. (prefix-url \"gnu.org\") returns \"https://gnu.org\""
-  (if (string-contains url "://")
+e.g. @code{(ensure-protocol \"gnu.org\") returns \"https://gnu.org\"}"
+  (if (or (string-contains url "://")
+          (string-prefix? "nomad:" url))
       url
       (string-append "https://" url)))
 
@@ -145,7 +146,7 @@ follow that link."
   #t)
 
 (define-interactive (web-keyboard-quit)
-  "Quit hints, isearch and finally calls @url{keyboard-quit}"
+  "Quit hints, isearch and finally calls @url{nomad:/describe/object/keyboard-quit,keyboard-quit}"
   (hints-finish (current-buffer))
   (search-finish (current-buffer))
   (keyboard-quit)

@@ -6,6 +6,7 @@ TESTS += tests/text.scm
 TESTS += tests/ibuffer.scm
 TESTS += tests/views.scm
 TESTS += tests/doc.scm
+TESTS += tests/help-mode.scm
 
 TEST_EXTENSIONS = .scm
 

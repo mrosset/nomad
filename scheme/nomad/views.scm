@@ -38,7 +38,8 @@
             match-route
             define-view
             keymap->table
-            %routes))
+            %routes
+            add-route!))
 
 (define (a key body)
   `(a (@ (target "_blank") (href ,(assoc-ref %links key))) ,body))
@@ -63,39 +64,40 @@ target-new:tab;
 }
 ")
 
-(define (match-route path views)
-  "Returns a shtml view for @var{path} from a alist @var{views}"
+(define (match-route path routes)
+  "Returns a shtml view for @var{path} from a alist @var{routes}"
   (let ((match (find
                 (lambda (route)
                   (let* ((rx (make-regexp (car route)))
                          (m  (regexp-exec rx path)))
                     m))
-                views)))
+                routes)))
     (if match
          (cdr match)
          #f)))
 
-(define (route-view path)
-  (let* ((view (match-route path %routes)))
+(define (route-view uri)
+  (let* ((path (uri-path uri))
+         (view (or (match-route path %routes) 404-view)))
     (catch #t
       (lambda _
-        (if view
-            (view)
-            (404-view)))
+        (view))
       (lambda (key . vals)
         (co-message "Error: key: ~a Value: ~a" key vals)))))
 
 (define-syntax define-view
   (syntax-rules ()
     ((_ (proc view-title . args) doc view-body)
-     (define-public (proc . args)
-       doc
-       (sxml->html-string
-        `(html
-          (head
-           (style ,style-sheet)
-           (title view-title))
-          (body ,view-body)))))))
+     (begin
+       (define* (proc . args)
+         doc
+         (sxml->html-string
+          `(html
+            (head
+             (style ,style-sheet)
+             (title view-title))
+            (body ,view-body))))
+       (export proc)))))
 
 (define (command->proc-name command)
   (let* ((name       (command-name command))
@@ -147,7 +149,7 @@ target-new:tab;
 (define-view (root-view "Welcome")
   "Returns the root @url{nomad:} scheme URI view."
   (begin
-    (rename-buffer (current-buffer) "Welcome")
+    (rename-buffer "Welcome")
     `((h3 (@ (align "center")) "Welcome to "  ,(a 'nomad "Nomad"))
       (p "Nomad is a " ,(a 'emacs "Emacs") " like web browser (and more) that consists of a modular feature-set, fully programmable in "
          ,(a 'guile "Guile Scheme") ".")
@@ -174,8 +176,13 @@ target-new:tab;
 (define-view (404-view "Error 404 (Not Found)")
   "Returns HTML string with 404 error."
   (begin
-    (rename-buffer (current-buffer) "404")
+    (rename-buffer "404")
     '(h1 "404 view not found ")))
 
 (define %routes `(("^$" . ,root-view)
                   ("^/file" . ,file-view)))
+
+(define (add-route! regx proc)
+  "Add a @var{regx} @var{proc} pair to @var{%routes}. %routes resolves shtml
+views for the nomad: URI scheme."
+  (set! %routes (cons `(,regx . ,proc) %routes)))
