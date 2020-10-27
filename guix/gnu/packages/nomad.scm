@@ -23,9 +23,9 @@
                 (sha256 hash))))))
 
 (define-public g-golf-git
-  (let ((commit   "84e894eb7945c3bcdf7f8d5135c1be3efa524c92")
-        (revision "822")
-        (hash     (base32 "1pkcij65zy2lkip5yrfzj85nq17pp9mrf0d4sk6hpjqr4kd0bxd5")))
+  (let ((commit   "ef830107b9765bd6a2da848d0cbe45e11374c0b5")
+        (revision "839")
+        (hash     (base32 "0r472hvmf447kqvkahp1wy4irb5gy8y793hm8r9rc511smdx66cw")))
      (package
       (inherit g-golf)
       (name "g-golf-git")
@@ -39,8 +39,8 @@
                 (sha256 hash))))))
 
 (define-public nomad-git
-  (let ((commit "0.2.0-alpha-182-g70e7710")
-        (hash   (base32 "1w1qx8xf3318f5fi4pa8ldiak7im25zfzp7hxkcjly707jfq2ilf")))
+  (let ((commit "0.2.0-alpha-195-g340b51f")
+        (hash   (base32 "1lgfghhgvr4c8915fp1yg1if7dg4k76zxwmlkh8569w5yvl6kq6a")))
     (package
       (inherit nomad)
       (name "nomad-git")
