@@ -99,12 +99,20 @@
                #:uri "nomad:module"
                #:view (describe-module-view)))
 
-(define-interactive (describe-function
-                     #:optional (arg (completing-read "Describe Function: " apropos-completion-function)))
-  "Display the documentation of @var{function} a symbol."
+(define (primitive-describe arg)
   (make-buffer <help-buffer>
                #:uri (string-append "nomad:/describe/object/" arg)
                #:view (describe-object-view (string->symbol arg))))
+
+(define-interactive (describe-function
+                     #:optional (arg (completing-read "Describe function: " complete-procedures)))
+  "Display the documentation of @var{function} a symbol."
+  (primitive-describe arg))
+
+(define-interactive (describe-variable
+                     #:optional (arg (completing-read "Describe variable: " complete-variables)))
+  "Display the documentation of @var{variable} a symbol."
+  (primitive-describe arg))
 
 (define-interactive (describe-mode #:optional (buffer (current-buffer)))
   "Display the documentation for the current @var{current-buffer} mode."
@@ -114,6 +122,7 @@
 
 ;; Global key bindings.
 (define-key global-map (kbd "C-h f") 'describe-function)
+(define-key global-map (kbd "C-h v") 'describe-variable)
 (define-key global-map (kbd "C-h m") 'describe-mode)
 
 (define-key %help-mode-map (kbd "q") 'kill-buffer)

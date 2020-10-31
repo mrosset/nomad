@@ -47,7 +47,9 @@
             module-uri
             module->string
             doc->shtml
-            doc->plain-text))
+            doc->plain-text
+            complete-procedures
+            complete-variables))
 
 (define module-filename (@@ (ice-9 session) module-filename))
 
@@ -160,12 +162,12 @@ then the !docstring method"
       (false-if-exception (doc-get '(emacsy emacsy) sym))
       (false-if-exception (doc-get '(guile-user) sym))))
 
-;; Portions of this procedures are derived from guile (ice-9 session)
+;; Portions of this procedure are derived from guile (ice-9 session)
 ;; help-doc. Though it is not an exact copy we should add a copyright for
-;; this. guile is copyright of Free Software Foundation, Inc under GPL Version 3
+;; this. GNU guile is copyright of Free Software Foundation, Inc under GPL Version 3
 (define (find-doc sym)
-  "Finds documentation details for @var{sym} and returns a @var{<doc>} or a
-list of @var{doc}.  If no symbols are found it returns #f."
+  "Finds documentation details for @var{sym} and returns a @var{<doc>} or
+#f. If no symbols are found it returns #f."
   (let ((found (apropos-fold
                 (lambda (module name object data)
                   (cons (make <doc>
@@ -180,10 +182,50 @@ list of @var{doc}.  If no symbols are found it returns #f."
                           #:doctring (object-documentation object))
                         data))
                 '()
-                (simple-format
+                (format
                  #f "^~A$"
                  (regexp-quote (symbol->string sym)))
                 apropos-fold-exported)))
     (if (> (length found) 0)
         (car found)
         #f)))
+
+(define (primitive-find-objects text type)
+  "Returns a string list of all exported objects matching @var{text} of
+@var{type}. @var{type} can be of 'procedure or 'variable"
+  (let ((found (apropos-fold
+                (lambda (module name object data)
+                  (case type
+                    ((procedure)
+                     (when (procedure? object)
+                       (set! data (cons name data))))
+                    ((variable)
+                     (when (not (procedure? object))
+                       (set! data (cons name data))))
+                    (else #f))
+                  data)
+                '()
+                (format #f "~A" (regexp-quote text))
+                apropos-fold-exported)))
+    found))
+
+;; Portions of this procedure are derived from guile (ice-9 readline)
+;; apropos-completion-function. GNU guile is copyright of Free Software
+;; Foundation, Inc under GPL Version 3
+(define (make-completer type)
+  (let ((completions '()))
+    (lambda (text cont?)
+      (if (not cont?)
+          (set! completions
+                (map symbol->string
+                     (primitive-find-objects text type))))
+      (if (null? completions)
+          #f
+          (let ((retval (car completions)))
+            (begin
+              (set! completions (cdr completions))
+              retval))))))
+
+(define complete-procedures (make-completer 'procedure))
+
+(define complete-variables (make-completer 'variable))
