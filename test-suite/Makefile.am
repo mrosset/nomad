@@ -1,12 +1,12 @@
 TESTS  = tests/util.scm
 TESTS += tests/init.scm
-TESTS += tests/buffer.scm
 TESTS += tests/uri.scm
 TESTS += tests/text.scm
 TESTS += tests/ibuffer.scm
 TESTS += tests/views.scm
 TESTS += tests/doc.scm
 TESTS += tests/help-mode.scm
+TESTS += tests/web.scm
 
 TEST_EXTENSIONS = .scm
 

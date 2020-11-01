@@ -1,4 +1,4 @@
-;; buffer.scm
+;; web.scm
 ;; Copyright (C) 2017-2020 Michael Rosset <mike.rosset@gmail.com>
 
 ;; This file is part of Nomad
@@ -16,22 +16,16 @@
 ;; You should have received a copy of the GNU General Public License along
 ;; with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (tests buffer)
+(define-module (tests web)
   #:use-module (oop goops)
-  #:use-module (oop goops describe)
-  #:use-module (nomad buffer)
   #:use-module (emacsy emacsy)
   #:use-module (nomad web)
-  #:use-module (unit-test)
-  #:duplicates (merge-generics replace warn-override-core warn last))
+  #:use-module (unit-test))
 
-(define-class <test-buffer> (<test-case>))
+(define-class <test-web> (<test-case>))
 
-(define-class <uri-buffer> (<web-buffer>))
+(define-class <test-buffer> (<web-buffer>))
 
-(define-method (buffer-uri (buffer <uri-buffer>))
-  (slot-ref buffer 'uri))
-
-(define-method (test-buffers (self <test-buffer>))
-  (emacsy-initialize #f)
-  (assert-equal 2 (length (buffer-list)))  )
+(define-method (test-class (test <test-web>))
+  (let ((buffer (make <test-buffer> #:uri "https://gnu.org")))
+    (assert-equal "https://gnu.org" (buffer-uri buffer))))
