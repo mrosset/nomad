@@ -19,12 +19,9 @@
 (define-module (nomad uri)
   #:use-module (nomad views)
   #:use-module (nomad util)
-  ;; FIXME: we should not use GTK from here make this generic
-  #:use-module (nomad gtk foreign)
   #:use-module (web uri)
   #:use-module (oop goops)
   #:use-module (system foreign)
-  #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (!pointer
             !uri
             %links
@@ -73,17 +70,6 @@
   (if (not (string->uri string))
       #f
       #t))
-
-(define-method (handle-uri (handler <nomad-uri-handler>)
-                           uri)
-  (catch #t
-    (lambda _
-      (let* ((html (route-view uri)))
-        (unless (string? html)
-          (error (format #f "HTML view is not a string. ~a" (class-of html))))
-        (load-view (!pointer handler) html uri)))
-    (lambda (key . vals)
-      (format #t "Error: key: ~a Value: ~a" key vals))))
 
 (define-method (handle-uri (pointer <foreign>)
                            (string-uri <string>))

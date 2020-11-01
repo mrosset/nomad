@@ -22,10 +22,12 @@
   #:use-module (ice-9 session)
   #:use-module (nomad doc)
   #:use-module (nomad html)
+  #:use-module (nomad uri)
   #:use-module (nomad util)
   #:use-module (nomad views)
   #:use-module (nomad web)
-  #:use-module (nomad uri)
+  ;; FIXME: we should not use GTK from here make this generic
+  #:use-module (nomad gtk foreign)
   #:use-module (oop goops)
   #:use-module (texinfo html)
   #:use-module (texinfo reflection)
@@ -51,12 +53,6 @@
           #:init-keyword #:view
           #:init-form (404-view)))
 
-(define-method (initialize (buffer <help-buffer>) args)
-  (next-method)
-  (if (!view buffer)
-      (load-html buffer (!view buffer) (buffer-uri buffer))
-      (buffer-load-uri buffer (buffer-uri buffer))))
-
 (define-view (describe-object-view "Describe Object" #:optional (symbol #f))
   "returns a HTML string describing @var{symbol}"
   (let* ((arg (or symbol
@@ -79,6 +75,36 @@
                       (string-append (mode-name mode) " ")) modes)
                " "))
 
+(define (primitive-describe arg)
+  (make-buffer <help-buffer>
+               #:uri (string-append "nomad:/describe/object/" arg)
+               #:view (describe-object-view (string->symbol arg))))
+
+;; Generic Methods
+;;
+
+;; <help-buffer> constructor
+(define-method (initialize (buffer <help-buffer>) args)
+  (next-method)
+  (if (!view buffer)
+      (load-html buffer (!view buffer) (buffer-uri buffer))
+      (buffer-load-uri buffer (buffer-uri buffer))))
+
+(define-method (handle-uri (handler <nomad-uri-handler>)
+                           uri)
+  (catch #t
+    (lambda _
+      (let* ((html (route-view uri)))
+        (unless (string? html)
+          (error (format #f "HTML view is not a string. ~a" (class-of html))))
+        (unless (is-a? (current-buffer) <help-buffer>)
+          (change-class (current-buffer) <help-buffer>))
+        (load-view (!pointer handler) html uri)))
+    (lambda (key . vals)
+      (format #t "Error: key: ~a Value: ~a" key vals))))
+
+;; Interactive
+;;
 (define-view (describe-mode-view "Describe Mode" #:optional (buffer (current-buffer)))
   "Returns a HTML string describing @var{mode}"
   (let* ((modes (buffer-modes buffer))
@@ -98,11 +124,6 @@
   (make-buffer <help-buffer>
                #:uri "nomad:module"
                #:view (describe-module-view)))
-
-(define (primitive-describe arg)
-  (make-buffer <help-buffer>
-               #:uri (string-append "nomad:/describe/object/" arg)
-               #:view (describe-object-view (string->symbol arg))))
 
 (define-interactive (describe-function
                      #:optional (arg (completing-read "Describe function: " complete-procedures)))
