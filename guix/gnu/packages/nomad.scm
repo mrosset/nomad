@@ -23,9 +23,9 @@
                 (sha256 hash))))))
 
 (define-public g-golf-git
-  (let ((commit   "50ec76cd28ef2f97bb5e891dec17cb5a153ad630")
-        (revision "879")
-        (hash     (base32 "0ynh7803cw9hmirbh63zg6ibd88siq6zq2b6ry15cdhm33r51mia")))
+  (let ((commit   "ef830107b9765bd6a2da848d0cbe45e11374c0b5")
+        (revision "839")
+        (hash     (base32 "0r472hvmf447kqvkahp1wy4irb5gy8y793hm8r9rc511smdx66cw")))
      (package
       (inherit g-golf)
       (name "g-golf-git")

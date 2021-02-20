@@ -157,7 +157,7 @@
          ;; FIXME:  What happens if GDK_KEY_BackSpace is not 8?
          (unichar   (if (= unicode 8) #\del  (integer->char unicode)))
          (state     (!state event))
-         (type      (!event-type event))
+         (type      (!type event))
          (mod-flags (gdk-state->emacsy-flags state)))
     (cond
      ;; If unicode is 0 then it is not a regular key sequence. Return #f so
