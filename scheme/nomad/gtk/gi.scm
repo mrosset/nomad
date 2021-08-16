@@ -21,11 +21,14 @@
   #:use-module (g-golf)
   #:duplicates (merge-generics replace warn-override-core warn last))
 
-(set! %gi-method-short-names-skip '(query
+(set! %gi-method-short-names-skip '(init
+                                    query
                                     setenv
                                     insert
                                     reload
                                     load-uri))
+
+(define-public insert (@@ (emacsy emacsy) insert))
 
 (eval-when (expand load eval)
   (gi-import "Gdk")

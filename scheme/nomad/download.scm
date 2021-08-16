@@ -64,7 +64,7 @@
   "Retrieves URL synchronously and writes to current output port. If the http
 request fails it will return the http status code."
   (receive (res body)
-      (http-request url #:decode-body? #f#:streaming? #t)
+      (http-request url #:decode-body? #f #:streaming? #t)
     (if (= (response-code res) 200)
         (begin (copy-to-port (current-output-port)
                      body)

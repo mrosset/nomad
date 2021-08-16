@@ -25,6 +25,7 @@
   #:use-module (nomad log)
   #:use-module (nomad web)
   #:use-module (oop goops)
+  #:declarative? #f
   #:duplicates (merge-generics replace warn-override-core warn last)
   #:export (init
             load-environment

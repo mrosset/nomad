@@ -27,12 +27,11 @@ AM_INIT_AUTOMAKE([-Wall gnu silent-rules color-tests])
 AM_SILENT_RULES([yes])
 
 # programs
-AC_PROG_CC_C99
+AC_PROG_CC
 AM_PROG_AR
 AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
-AC_PROG_LIBTOOL
 
 # libtool
 LT_INIT([dlopen])
